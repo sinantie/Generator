@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources>
+<block id="data/weather-data-full/data/texas/rio_grande_city/2009-02-08-0_human">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;59&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;65&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;79&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;21&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;30&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;SE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Gust (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;29&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;41&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Cloud Sky Cover (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;percentage:&lt;/td&gt;&lt;td&gt;50-75&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/plainview/2009-02-10-0_model">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;36&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;46&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;62&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;23&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;26&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;WSW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Gust (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;37&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Snow&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Snow&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 02.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/levelland/2009-02-10-0_baseline">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;35&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;45&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;61&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;WNW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/schertz/2009-02-08-1_gabor">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;60&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;70&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;78&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;14&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;SW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Cloud Sky Cover (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;percentage:&lt;/td&gt;&lt;td&gt;25-50&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 09.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;Slight Chance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/houston/2009-02-09-0_human">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;64&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;66&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;72&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;9&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;15&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;S&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Cloud Sky Cover (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;percentage:&lt;/td&gt;&lt;td&gt;75-100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Precipitation Potential (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;10&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;12&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;38&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;02.00(+1) - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;Slight Chance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/huntsville/2009-02-10-1_model">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;52&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;63&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;75&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;8&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;W&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Thunderstorm&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Thunderstorm&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 13.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/lubbock/2009-02-10-0_baseline">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;37&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;47&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;64&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;WSW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/pampa/2009-02-08-1_gabor">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;42&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;53&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;63&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;23&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;31&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;SSW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Gust (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;24&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;31&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;44&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Cloud Sky Cover (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;percentage:&lt;/td&gt;&lt;td&gt;25-50&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/utah/murray/2009-02-07-1_human">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;29&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;38&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;45&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;0-10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;WNW&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Cloud Sky Cover (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;percentage:&lt;/td&gt;&lt;td&gt;75-100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Precipitation Potential (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;42&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;45&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;47&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;Chance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/washington/issaquah/2009-02-07-1_model">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;34&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;39&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;44&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;7&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;17&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;0-10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;ESE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Thunderstorm&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Thunderstorm&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 13.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;Slight Chance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;13.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;Likely&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/washington/tacoma/2009-02-09-0_baseline">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;33&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;35&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;39&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;17.00 - 06.00(+1 day)&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;S&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+<block id="data/weather-data-full/data/texas/weatherford/2009-02-07-1_gabor">
+<resource id="events">
+&lt;html&gt;
+&lt;center&gt;
+&lt;table border=1&gt;
+&lt;tr&gt;&lt;th&gt;Event types&lt;img src="/home/konstas/EDI/webexp2/statgen/resources/icons/eventType_freezingRainChance.jpg"/&gt;&lt;/th&gt;&lt;th colspan=10&gt;Fields - Values&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Temperature (F)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;55&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;63&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;69&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Speed (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;13&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;20&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;26&lt;/td&gt;
+&lt;td&gt;scale:&lt;/td&gt;&lt;td&gt;10-20&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Wind Direction&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;SE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Gust (mph)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;25&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;36&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Precipitation Potential (%)&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;min:&lt;/td&gt;&lt;td&gt;11&lt;/td&gt;
+&lt;td&gt;mean:&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;
+&lt;td&gt;max:&lt;/td&gt;&lt;td&gt;38&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Thunderstorm&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chance of Rain&lt;/td&gt;
+&lt;td&gt;time:&lt;/td&gt;&lt;td&gt;06.00 - 21.00&lt;/td&gt;
+&lt;td&gt;mode:&lt;/td&gt;&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/center&gt;
+&lt;/html&gt;
+</resource>
+</block>
+
+
+</resources>
