@@ -2,7 +2,6 @@ package induction;
 
 import fig.basic.LogInfo;
 import fig.exec.Execution;
-import fig.record.Record;
 import induction.Options.InitType;
 import induction.problem.ModelInterface;
 import induction.problem.event3.Event3Model;
@@ -28,15 +27,13 @@ public class Generation implements Runnable
         model.readExamples();
         
 //model.init(InitType.staged, opts.initRandom, "");
-        Record.begin("stats");
+//        Record.begin("stats");
         LogInfo.track("Stats", true);
         model.logStats();
         LogInfo.end_track();
-        Record.end();
+//        Record.end();
                 
         opts.outputIterFreq = opts.stage1.numIters ;
-//        model.init(InitType.staged, opts.initRandom, "stage1");
-//        model.learn("stage1", opts.stage1);
         model.generate("stage1", opts.stage1);
     }
 

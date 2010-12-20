@@ -303,65 +303,21 @@ public abstract class AModel<Widget extends AWidget,
 
     // ext specifies the iteration or example number
     // Use the given params (which are actually counts so we can evaluate even in batch EM)
-    private void record(String ext, Params params, String name, FullStatFig complexity,
-                        boolean output, double temperature)
+    private void record(String ext, String name, FullStatFig complexity,
+                        boolean output)
     {
         Utils.logs("Inference complexity: %s", complexity);
-        if (!trainPerformance.isEmpty())
+        if (!(trainPerformance == null || trainPerformance.isEmpty()))
         {
             trainPerformance.record("train");
-//            if (output)
-            {
-                trainPerformance.output(
-                        Execution.getFile(name+".train.performance."+ext));
-            }
+            trainPerformance.output(
+                    Execution.getFile(name+".train.performance."+ext));
         }
-        if (!testPerformance.isEmpty())
+        if (!(testPerformance == null || testPerformance.isEmpty()))
         {
             testPerformance.record("test");
-//            if (output)
-            {
-                testPerformance.output(
-                        Execution.getFile(name+".test.performance."+ext));
-            }
-        }
-//        if (output)
-//        {
-//            params.output(Execution.getFile(name+".params."+ext));
-//        }
-
-        if (opts.outputCurrentState) // Only makes sense for online learning
-        {
-            /*track("Output training objective on current parameters") // This is slow
-            val performance = newPerformance
-            foreach(examples, { (i:Int,ex:Example) =>
-              if (isTrain(i)) {
-                val inferState = newInferState(ex, params, params,
-                  InferSpec(temperature, true, false, false, false, false, 0))
-                performance.add(inferState.stats)
-              }
-            })
-            performance.output(Execution.getFile(name+".current.train.performance."+ext))
-            end_track*/
-            Utils.begin_track("Output test predictions on current parameters");
-            Performance performance = newPerformance();
-            String[] lines = new String[examples.size()];
-            for(int i = 0; i < lines.length; i++)
-            {
-                if(isTest(i))
-                {
-                    InferState inferState = newInferState(examples.get(i), params, params,
-                        new InferSpec(temperature, false, true, false, false,
-                                      false, false, 0, -1));
-                    lines[i] = Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
-                    performance.add(examples.get(i).getTrueWidget(), inferState.bestWidget);
-                }
-            }
-            Utils.writeLines(Execution.getFile(name+".current.test.pred."+ext), lines);
-            performance.record("current.test");
-            performance.output(Execution.getFile(name+".current.test.performance."+ext));
-
-            LogInfo.end_track();
+            testPerformance.output(
+                    Execution.getFile(name+".test.performance."+ext));
         }
     }
 
@@ -474,10 +430,11 @@ public abstract class AModel<Widget extends AWidget,
             Record.begin("iteration", iter+1);
             Execution.putOutput("currIter", iter+1);
 
-            trainPerformance = newPerformance();
-            testPerformance = newPerformance();
+            trainPerformance = existsTrain ? newPerformance() : null;
+            testPerformance = existsTest ? newPerformance() : null;
 
-            output = opts.outputIterFreq != 0 && iter % opts.outputIterFreq == 0;
+//            output = opts.outputIterFreq != 0 && iter % opts.outputIterFreq == 0;
+            output = (iter+1) % lopts.numIters == 0; // output only at the last iteration
             fullOutput = output && opts.outputFullPred;
             try
             {
@@ -526,7 +483,7 @@ public abstract class AModel<Widget extends AWidget,
                 params.optimise(lopts.smoothing);
             }
             
-            record(""+iter, params, name, complexity, output, temperature);
+            record(String.valueOf(iter), name, complexity, output);
             if(trainPredOut != null) trainPredOut.close();
             if(testPredOut != null) testPredOut.close();
             if(trainFullPredOut != null) trainFullPredOut.close();
@@ -539,11 +496,13 @@ public abstract class AModel<Widget extends AWidget,
             if (iter == lopts.numIters - 1)
             {
                 LogInfo.track("Final", true);
-                trainPerformance.record("train");
-                testPerformance.record("test");
+                if(trainPerformance != null)
+                    trainPerformance.record("train");
+                if(testPerformance != null)
+                    testPerformance.record("test");
             }
             iter++;
-            if (Execution.shouldBail())
+            if (Execution.shouldBail() || existsTest) // it makes sense to perform one iteration at test time
                 lopts.numIters = iter;
         } // while (iter < lopts.numIters)
         saveParams(name);
@@ -571,12 +530,9 @@ public abstract class AModel<Widget extends AWidget,
                 ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
             LogInfo.end_track();
         }
-        Utils.begin_track("Test: " + name);        
-        FullStatFig complexity = new FullStatFig(); // Complexity inference
+        FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)
         double temperature = lopts.initTemperature;
-
-        testPerformance = newPerformance();
-       
+        testPerformance = newPerformance();       
         try
         {
             testFullPredOut = (opts.outputFullPred) ?
@@ -585,35 +541,27 @@ public abstract class AModel<Widget extends AWidget,
             testPredOut = IOUtils.openOut(Execution.getFile(name+".tst.xml"));
             // write prediction file header, conforming to SGML NIST standard
             testPredOut.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-//                    "<!DOCTYPE mteval SYSTEM \"ftp://jaguar.ncsl.nist.gov/mt/" +
-//                    "resources/mteval-xml-v1.3.dtd\">\n" +
-                    "<mteval>\n" +
-                    "<tstset setid=\"" + name + "\" srclang=\"English\" " +
-                    "trglang=\"English\" sysid=\"sample_system\">");
+                                "<mteval>\n" +
+                                "<tstset setid=\"" + name + "\" srclang=\"English\" " +
+                                "trglang=\"English\" sysid=\"sample_system\">");
         }
         catch(IOException ioe)
         {
             Utils.begin_track("Error opening file");
             LogInfo.end_track();
-        }
-        Params counts = newParams();
-        
+        }                
         // E-step
-        Utils.begin_track("Generation-step");
+        Utils.begin_track("Generation-step " + name);
+        Params counts = newParams();
         Collection<BatchEM> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
             list.add(new BatchEM(i, examples.get(i), counts, temperature,
                     lopts, 0, complexity));                
         }
-
         Utils.parallelForeach(opts.numThreads, list);
         LogInfo.end_track();
         list.clear();
-//params.output(Execution.getFile(name+".params"));
-//        record("", params, name, complexity, fullOutput, temperature);
-
-
 
         if(testFullPredOut != null) testFullPredOut.close();
         testPredOut.println("</tstset>\n</mteval>");
@@ -621,15 +569,9 @@ public abstract class AModel<Widget extends AWidget,
         testPredOut.close();
         Execution.putOutput("currExample", examples.size());
 
-        LogInfo.end_track();
-
         // Final
-        LogInfo.track("Final", true);
-//        testPerformance.record("test");
         testPerformance.output(Execution.getFile(name+".test.performance"));
         LogInfo.end_track();
-        LogInfo.end_track();
-//        Record.end();
         Record.end();
     }
 

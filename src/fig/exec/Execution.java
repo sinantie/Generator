@@ -295,7 +295,7 @@ public class Execution {
     // Load classes
     if (!dontInitializeJars && !initializeJarsAfterDirCreation)
     {
-			initializeJars(false);
+        initializeJars(false);
     }
     // Set character encoding
     if(charEncoding != null)
@@ -317,9 +317,9 @@ public class Execution {
         for(String jarFile : jarFiles)
           Utils.systemHard(String.format("cp %s %s", jarFile, virtualExecDir));
         if (initializeJarsAfterDirCreation)
-				{
-					initializeJars(true);
-				}
+        {
+                initializeJars(true);
+        }
       }
     }
     else {
@@ -379,7 +379,7 @@ public class Execution {
   public static void printOptions() {
     boolean saveMakeThunk = makeThunk; makeThunk = false;
     parser.doGetOptionPairs().printEasy(getFile("options.map"));
-    parser.doGetOptionStrings().printEasy(getFile("options.help"));
+//    parser.doGetOptionStrings().printEasy(getFile("options.help"));
     makeThunk = saveMakeThunk;
   }
 
@@ -398,7 +398,7 @@ public class Execution {
 
       if(monitor) monitorThread.finish();
       setExecStatus(shouldBail ? "bailed" : "done", false);
-      outputMap.printEasy(getFile("output.map"));
+//      outputMap.printEasy(getFile("output.map"));
       StopWatchSet.getStats().printEasy(getFile("time.map"));
       if(!makeThunk && virtualExecDir != null) logs("Execution directory: " + virtualExecDir);
       if(makeThunk && virtualExecDir != null) stderr.println(virtualExecDir);
