@@ -29,10 +29,6 @@ public class Induction implements Runnable
             model.init(InitType.staged, opts.initRandom, "");
         }
         model.readExamples();
-//if(opts.initType == InitType.staged)
-//        {
-//            model.init(InitType.staged, opts.initRandom, "");
-//        }
         Record.begin("stats");
         LogInfo.track("Stats", true);
         model.logStats();
@@ -41,7 +37,7 @@ public class Induction implements Runnable
           
         if(opts.stage1.numIters > 0)
         {
-            opts.outputIterFreq = opts.stage1.numIters ;
+            opts.outputIterFreq = opts.stage1.numIters;
             if(opts.initType != InitType.staged)
                 model.init(opts.initType, opts.initRandom, "");
             model.learn("stage1", opts.stage1);

@@ -166,7 +166,7 @@ public class IOUtils {
   }
 
   // openOut
-  public static PrintWriter openOut(String path) throws IOException { return openOut(new File(path)); }
+  public static PrintWriter openOut(String path) throws IOException, NullPointerException { return openOut(new File(path)); }
   public static PrintWriter openOut(File path) throws IOException {
     OutputStream os = new FileOutputStream(path);
     if (path.getName().endsWith(".gz")) os= new GZIPOutputStream(os);

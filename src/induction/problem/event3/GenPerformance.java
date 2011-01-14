@@ -6,6 +6,7 @@ import edu.cmu.meteor.Meteor;
 import edu.cmu.meteor.scorer.MeteorScorer;
 import edu.cmu.meteor.scorer.MeteorStats;
 import fig.basic.EvalResult;
+import induction.MyList;
 import induction.Utils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -181,6 +182,7 @@ public class GenPerformance extends Performance
         return out;
     }
 
+    @Override
     public double getAccuracy()
     {
         meteorScorer.computeMetrics(meteorAggStats);
@@ -188,19 +190,28 @@ public class GenPerformance extends Performance
     }
 
     @Override
-    protected String summary()
+    protected MyList<String> foreachStat()
     {
-        return String.format("logZ = %s, logVZ = %s\n",
-                            Utils.fmt(stats.getAvg_logZ()),
-                            Utils.fmt(stats.getAvg_logVZ())
-                            );
+        MyList<String> list = new MyList();
+        list.add( "BLEU-4", Utils.fmt(bleuScorer.getScore().getScore()) );
+        list.add( "METEOR", Utils.fmt(getAccuracy()) );
+        return list;
     }
 
-    @Override
-    protected void record(String name)
-    {
-        Utils.logs(name + ": " + summary());
-    }
+//    @Override
+//    protected String summary()
+//    {
+//        return String.format("logZ = %s, logVZ = %s\n",
+//                            Utils.fmt(stats.getAvg_logZ()),
+//                            Utils.fmt(stats.getAvg_logVZ())
+//                            );
+//    }
+
+//    @Override
+//    protected void record(String name)
+//    {
+//        Utils.logs(name + ": " + summary());
+//    }
 
     @Override
     protected void output(String path)

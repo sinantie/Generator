@@ -373,7 +373,7 @@ public class Hypergraph<Widget> {
     if(!allowEmptyNodes) {
       int numBadNodes = 0;
       for(NodeInfo nodeInfo : nodes.values()) {
-        if(nodeInfo.edges.size() == 0 && nodeInfo.node != endNode) {
+        if(nodeInfo.edges.isEmpty() && nodeInfo.node != endNode) {
           errors("Node has no children: "+nodeInfo.node);
           numBadNodes++;
         }

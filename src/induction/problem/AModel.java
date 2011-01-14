@@ -38,7 +38,7 @@ public abstract class AModel<Widget extends AWidget,
     protected Options opts;
     protected Params params;
     protected Performance performance;
-    protected InferState inferState;
+//    protected InferState inferState;
     protected List<Example> examples = new ArrayList<Example>();
     private int numExamples, maxExamples;
     private PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
@@ -303,8 +303,7 @@ public abstract class AModel<Widget extends AWidget,
 
     // ext specifies the iteration or example number
     // Use the given params (which are actually counts so we can evaluate even in batch EM)
-    private void record(String ext, String name, FullStatFig complexity,
-                        boolean output)
+    private void record(String ext, String name, FullStatFig complexity)
     {
         Utils.logs("Inference complexity: %s", complexity);
         if (!(trainPerformance == null || trainPerformance.isEmpty()))
@@ -483,7 +482,7 @@ public abstract class AModel<Widget extends AWidget,
                 params.optimise(lopts.smoothing);
             }
             
-            record(String.valueOf(iter), name, complexity, output);
+            record(String.valueOf(iter), name, complexity);
             if(trainPredOut != null) trainPredOut.close();
             if(testPredOut != null) testPredOut.close();
             if(trainFullPredOut != null) trainFullPredOut.close();
@@ -545,9 +544,9 @@ public abstract class AModel<Widget extends AWidget,
                                 "<tstset setid=\"" + name + "\" srclang=\"English\" " +
                                 "trglang=\"English\" sysid=\"sample_system\">");
         }
-        catch(IOException ioe)
+        catch(Exception ioe)
         {
-            Utils.begin_track("Error opening file");
+            Utils.begin_track("Error opening file(s) for writing. No output will be written!");
             LogInfo.end_track();
         }                
         // E-step
@@ -564,17 +563,42 @@ public abstract class AModel<Widget extends AWidget,
         list.clear();
 
         if(testFullPredOut != null) testFullPredOut.close();
-        testPredOut.println("</tstset>\n</mteval>");
-        // write prediction file footer, conforming to SGML NIST standard
-        testPredOut.close();
+        if(testPredOut != null)
+        {
+            // write prediction file footer, conforming to SGML NIST standard
+            testPredOut.println("</tstset>\n</mteval>");
+            testPredOut.close();
+        }
         Execution.putOutput("currExample", examples.size());
 
         // Final
-        testPerformance.output(Execution.getFile(name+".test.performance"));
-        LogInfo.end_track();
+//        testPerformance.output(Execution.getFile(name+".test.performance"));
+        Record.begin("generation");
+        record("results", name, complexity);
         Record.end();
+        LogInfo.end_track();
     }
 
+    /**
+     * helper method for testing the generation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the results summary() and generated text output
+     */
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        Params counts = newParams();
+        Example ex = examples.get(0);
+        InferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        return widgetToSGMLOutput(ex, inferState.bestWidget);
+    }
+    
     class InitParams extends MyCallable
     {
         private Example ex;
@@ -620,13 +644,13 @@ public abstract class AModel<Widget extends AWidget,
         }
         public Object call() throws Exception
         {
-//            if (isLog()) Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
+            processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
             if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
                 Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                          Utils.fmt(examples.size()), summary(i));
             if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
                 Execution.putOutput("currExample", i);
-            processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
+//            processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
             if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
                 LogInfo.end_track();
             return null;

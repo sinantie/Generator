@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.Integer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ import java.util.List;
  * An event type has a fixed set of fields.
  * Each field has a type (numeric, categorical, symbol, string).
  * Each event has a fixed event type and values for each of the fields.
- * The model is essentially a hierachical labeled segmentation process.
+ * The model is essentially a hierarchical labelled segmentation process.
  *
  * Change log:
  *  - 03/02/10: complete rewrite in Java
@@ -825,25 +824,6 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     { // Hard code things
         params = newParams();
         params.setUniform(1);
-
-        // Not used anymore
-//        final int t = eventTypeNameIndexer.indexOf("windDir");
-//        final int f = 0;
-//        final EventTypeParams tparams = params.eventTypeParams[t];
-//        eventTypes(t).fields(f) match {
-//        case field:CatField =>
-//          tparams.fieldParams(f) match {
-//            case fparams:CatFieldParams =>
-//              val x = 100
-//              fparams.emissions(field.indexer.indexOf("N")).addCount_!(wordIndexer.indexOf("north"), x)
-//              fparams.emissions(field.indexer.indexOf("S")).addCount_!(wordIndexer.indexOf("south"), x)
-//              fparams.emissions(field.indexer.indexOf("E")).addCount_!(wordIndexer.indexOf("east"), x)
-//              fparams.emissions(field.indexer.indexOf("W")).addCount_!(wordIndexer.indexOf("west"), x)
-//            case _ => impossible
-//          }
-//        case _ => impossible
-//      }
-//      params.optimize_!(opts.initSmoothing)
     }
     @Override
     protected Params newParams()
@@ -881,25 +861,5 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     public Options getOpts()
     {
         return opts;
-    }
-   
-    public static void main(String[] args)
-    {
-        int N = 5, maxTracks = 3;
-        final ArrayList<Integer>[] trueEventsBuffer = new ArrayList[N];
-        for(int i = 0; i < N; i++)
-        {
-            trueEventsBuffer[i] = new ArrayList<Integer>((int)Math.random() * maxTracks);
-        }
-        final int[][] trueEvents = new int[maxTracks][N];
-        for(int c = 0; c < maxTracks; c++)
-        {
-            for(int i = 0; i < N; i++)
-            {
-                trueEvents[c][i] = (c < trueEventsBuffer[i].size()) ?
-                    trueEventsBuffer[i].get(c) : Parameters.none_e;
-            } // for
-        } // for
-        System.out.println("");
-    }
+    }     
 }
