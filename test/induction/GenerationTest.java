@@ -3,32 +3,45 @@
  * and open the template in the editor.
  */
 
-package induction.problem.event3;
+package induction;
 
 import fig.exec.Execution;
-import induction.LearnOptions;
-import induction.Options;
 import induction.Options.InitType;
-import junit.framework.TestCase;
+import induction.problem.event3.Event3Model;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author konstas
  */
-public class Event3ModelTest extends TestCase{
+public class GenerationTest
+{
+    LearnOptions lopts;
+    String name;
+    Event3Model model;
 
-    public Event3ModelTest() {
+    public GenerationTest() {
     }
-   
-   /**
-     * Test of generate method, of class AModel.
-     */
-    @Test
-    public void testGenerate()
+
+    @BeforeClass
+    public static void setUpClass() throws Exception
     {
-        System.out.println("generate");
-        String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception
+    {
+    }
+
+    @Before
+    public void setUp() 
+    {
+         String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
                     + "-inputFileExt events -stagedParamsFile ../ContentSelectionJava/"
                     + "results/output/model_3_gabor/0.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
@@ -38,14 +51,26 @@ public class Event3ModelTest extends TestCase{
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
-        Event3Model model = new Event3Model(opts);
+        model = new Event3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-        LearnOptions lopts = opts.stage1;
-        String name = "stage1";
-        
+        lopts = opts.stage1;
+        name = "stage1";
+    }
+
+    @After
+    public void tearDown() {
+    }
+
+    /**
+     * Test of run method, of class Induction.
+     */
+    @Test
+    public void testRun()
+    {
+        System.out.println("run");
         String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
                             + "falls_church/2009-02-07-0.text\" genre=\"nw\"><p>"
                             + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
