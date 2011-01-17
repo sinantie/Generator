@@ -580,9 +580,28 @@ public abstract class AModel<Widget extends AWidget,
     }
 
     /**
+     * helper method for testing the learning output. Simulates learn(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the aligned events' indices
+     */
+    public String testLearn(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        Params counts = newParams();
+        Example ex = examples.get(0);
+        InferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+    }
+
+    /**
      * helper method for testing the generation output. Simulates generate(...) method
      * for a single example without the thread mechanism
-     * @return a String with the results summary() and generated text output
+     * @return a String with the generated SGML text output (contains results as well)
      */
     public String testGenerate(String name, LearnOptions lopts)
     {
