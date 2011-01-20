@@ -121,7 +121,7 @@ public class Example extends WordExample<Widget>
     String genWidgetToSemantics(GenWidget widget)
     {
         int n = widget.events[0].length;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for(int c = 0; c < widget.events.length; c++)
         {
             int i = 0;
@@ -136,16 +136,13 @@ public class Example extends WordExample<Widget>
                 }
                 if (e != Parameters.none_e)
                 {
-                    buf.append(  ( (e == Parameters.unreachable_e) ?
-                        "(unreachable)" :
-                        model.eventTypeToString(events[e].getEventTypeIndex())) +
-                        "(" + events[e].id + ")[");
+                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : model.eventTypeToString(events[e].getEventTypeIndex())).append("(").append(events[e].id).append(  ")[");
                 }
                 if (widget.fields == null)
                 {
                     for(int k = i; k < j; k++)
                     {
-                        buf.append(Event3Model.wordToString(widget.text[k]) + " ");
+                        buf.append(Event3Model.wordToString(widget.text[k])).append(" ");
                     }
                     buf.deleteCharAt(buf.length() - 1);
                 } // if
@@ -166,7 +163,7 @@ public class Example extends WordExample<Widget>
                         }
                         if (f != -1)
                         {
-                            buf.append(events[e].fieldToString(f) + "[");
+                            buf.append(events[e].fieldToString(f)).append("[");
                         }
                         for(int m = k; m < l; m++)
                         {
@@ -179,7 +176,7 @@ public class Example extends WordExample<Widget>
                             {
                                 str += Parameters.short_mstr[widget.numMethods[c][m]];
                             }
-                            buf.append(str + " ");
+                            buf.append(str).append(" ");
                         }
                         buf.deleteCharAt(buf.length() - 1);
                         if (f != -1)
@@ -204,7 +201,7 @@ public class Example extends WordExample<Widget>
         // Returns a string on one line; use tabs later to separate
         int n = Utils.same(N(), widget.events[0].length);
         StringBuffer buf = new StringBuffer();
-        buf.append(name + ":");
+        buf.append(name).append(":");
 
         // This is rough (do it for entire example)
 
@@ -241,8 +238,7 @@ public class Example extends WordExample<Widget>
         {
             buf.append("\t- True:");
             renderWidget(trueWidget, false, n, trueEvents, buf);
-            buf.append("\t" + trueWidget.performance + " ("+ events.length +
-                       " possible events)");
+            buf.append("\t").append(trueWidget.performance).append(" (").append(events.length).append(" possible events)");
             /*if (trueWidget.eventPosterior != null)
                 buf.append("\t" + trueWidget.eventPosteriorStr(events));*/
         }
@@ -253,7 +249,7 @@ public class Example extends WordExample<Widget>
     private boolean isOkay(int c, int e, HashSet<Integer>[] trueEvents)
     {
         return trueWidget == null || ((e == Parameters.none_e) ?
-            trueEvents[c].size() == 0 : trueEvents[c].contains(e));
+            trueEvents[c].isEmpty() : trueEvents[c].contains(e));
     }
 
     private void renderWidget(Widget widget, boolean printUnused, int n,
@@ -275,19 +271,16 @@ public class Example extends WordExample<Widget>
                 {
                     j += 1;
                 }
-                buf.append("\t" + ((widget == trueWidget ||
-                        isOkay(c, e, trueEvents)) ? "" : "*") +
-                        "[TRACK" + c + "] ");
+                buf.append("\t").append((widget == trueWidget || isOkay(c, e, trueEvents)) ? "" : "*").append("[TRACK").append(c).append("] ");
                 if (e != Parameters.none_e)
                 {
-                    buf.append( ( (e == Parameters.unreachable_e) ?
-                        "(unreachable)" : events[e]) + "[");
+                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : events[e]).append( "[");
                 }
                 if (widget.fields == null || !Parameters.isRealEvent(e))
                 {
                     for(int k = i; k < j; k++)
                     {
-                        buf.append(Event3Model.wordToString(text[k]) + " ");
+                        buf.append(Event3Model.wordToString(text[k])).append(" ");
                     }
                     buf.deleteCharAt(buf.length() - 1);
                 } // if
@@ -308,7 +301,7 @@ public class Example extends WordExample<Widget>
                         }
                         if (f != -1)
                         {
-                            buf.append(events[e].fieldToString(f) + "[");
+                            buf.append(events[e].fieldToString(f)).append("[");
                         }
                         for(int m = k; m < l; m++)
                         {
@@ -321,7 +314,7 @@ public class Example extends WordExample<Widget>
                             {
                                 str += Parameters.short_mstr[widget.numMethods[c][m]];
                             }
-                            buf.append(str + " ");
+                            buf.append(str).append(" ");
                         }
                         buf.deleteCharAt(buf.length() - 1);
                         if (f != -1)

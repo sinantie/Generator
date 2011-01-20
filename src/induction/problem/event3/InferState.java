@@ -4,7 +4,6 @@ import fig.basic.Pair;
 import induction.Hypergraph;
 import induction.NgramModel;
 import induction.Utils;
-import induction.problem.AHypergraphInferState;
 import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
@@ -23,37 +22,24 @@ import induction.problem.event3.nodes.SymFieldValueNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  *
  * @author konstas
  */
-public class InferState extends AHypergraphInferState<Widget, Example, Params>
-{
-    protected double[] segPenalty;
-    protected Event3Model model;
-    protected int[] words, nums;
-    protected int[] labels;
-    protected int L, N, wildcard_pc;
-
+public class InferState extends Event3InferState
+{    
     public InferState(Event3Model model, Example ex, Params params, Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec, ngramModel);
     }
 
+    @Override
     protected void initInferState(AModel model)
     {
-        this.model = (Event3Model) model;
-        wildcard_pc = -1;
-        L = opts.maxPhraseLength;
-        segPenalty = new double[L + 1];
-        for(int l = 0; l < L +1; l++)
-        {
-            segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
-        }
+        super.initInferState(model);
+//        N = words.length;
         words = ex.text;
-        N = words.length;
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
         {
@@ -78,17 +64,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
             } // if
         } // if
     }
-    
-    protected int[][] newMatrix()
-    {
-        int[][] out = new int[model.C][ex.N()];
-        for(int i = 0; i < out.length; i++)
-        {
-            Arrays.fill(out[i], -1);
-        }
-        return out;
-    }
-
+       
     @Override
     protected Widget newWidget()
     {
@@ -98,154 +74,9 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
            eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
         }
         return new Widget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
-                               ex.startIndices, model.eventTypeAllowedOnTrack,
+                               ex.startIndices, ((Event3Model)model).eventTypeAllowedOnTrack,
                                eventTypeIndices);
-    }
-
-    protected int end(int i, int N)
-    {
-        return Math.min(i + L, N);
-    }
-
-    // FUTURE: speed up these lookups
-    protected int getValue(int event, int field)
-    {
-        return ex.events[event].values.get(field);
-    }
-    protected EventTypeParams getEventTypeParams(int event)
-    {
-        return params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-    }
-    protected EventTypeParams getEventTypeCounts(int event)
-    {
-        return counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
-    }
-    protected NumFieldParams getNumFieldParams(int event, int field)
-    {
-        AParams p = getEventTypeParams(event).fieldParams[field];
-        if(p instanceof NumFieldParams) return (NumFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected NumFieldParams getNumFieldCounts(int event, int field)
-    {
-        AParams p = getEventTypeCounts(event).fieldParams[field];
-        if(p instanceof NumFieldParams) return (NumFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected CatFieldParams getCatFieldParams(int event, int field)
-    {
-        AParams p = getEventTypeParams(event).fieldParams[field];
-        if(p instanceof CatFieldParams) return (CatFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected CatFieldParams getCatFieldCounts(int event, int field)
-    {
-        AParams p = getEventTypeCounts(event).fieldParams[field];
-        if(p instanceof CatFieldParams) return (CatFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected SymFieldParams getSymFieldParams(int event, int field)
-    {
-        AParams p = getEventTypeParams(event).fieldParams[field];
-        if(p instanceof SymFieldParams) return (SymFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected SymFieldParams getSymFieldCounts(int event, int field)
-    {
-        AParams p = getEventTypeCounts(event).fieldParams[field];
-        if(p instanceof SymFieldParams) return (SymFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected StrFieldParams getStrFieldParams(int event, int field)
-    {
-        AParams p = getEventTypeParams(event).fieldParams[field];
-        if(p instanceof StrFieldParams) return (StrFieldParams)p;
-        throw Utils.impossible();
-    }
-    protected StrFieldParams getStrFieldCounts(int event, int field)
-    {
-        AParams p = getEventTypeCounts(event).fieldParams[field];
-        if(p instanceof StrFieldParams) return (StrFieldParams)p;
-        throw Utils.impossible();
-    }
-
-    private boolean iterInRange(Pair<Integer, Integer> interval)
-    {
-        return ispec.iter >= interval.getFirst().intValue() &&
-                (interval.getSecond().intValue() == -1 ||
-                ispec.iter < interval.getSecond().intValue());
-    }
-    private boolean prevIterInRange(Pair<Integer, Integer> interval)
-    {
-        return ispec.iter - 1 >= interval.getFirst().intValue() &&
-                (interval.getSecond().intValue() == -1 ||
-                ispec.iter - 1 < interval.getSecond().intValue());
-    }
-    // Options which change depending on iteration
-    protected boolean indepEventTypes()
-    {
-        return iterInRange(opts.indepEventTypes);
-    }
-    protected boolean indepFields()
-    {
-        return iterInRange(opts.indepFields);
-    }
-    private boolean newEventTypeFieldPerWord()
-    {
-        return iterInRange(opts.newEventTypeFieldPerWord);
-    }
-    protected boolean newFieldPerWord()
-    {
-        return iterInRange(opts.newFieldPerWord);
-    }
-    private boolean oneEventPerExample()
-    {
-        return iterInRange(opts.oneEventPerExample);
-    }
-    protected boolean oneFieldPerEvent()
-    {
-        return iterInRange(opts.oneFieldPerEvent);
-    }
-    protected boolean genLabels()
-    {
-        return iterInRange(opts.genLabels);
-    }
-
-    protected boolean useFieldSets(int eventTypeIndex)
-    {
-        return model.getEventTypes()[eventTypeIndex].useFieldSets &&
-                iterInRange(opts.useFieldSets);
-    }
-
-    // For smooth q-handoff
-    protected boolean prevIndepEventTypes()
-    {
-        return prevIterInRange(opts.indepEventTypes);
-    }
-    protected boolean prevIndepFields()
-    {
-        return prevIterInRange(opts.indepFields);
-    }
-    protected boolean prevGenLabels()
-    {
-        return prevIterInRange(opts.genLabels);
-    }
-
-    // Rounding schemes for generating numbers
-    protected int roundUp(int x)
-    {
-        return  (x + Parameters.ROUND_SPACING-1) / Parameters.ROUND_SPACING *
-                Parameters.ROUND_SPACING;
-    }
-    protected int roundDown(int x)
-    {
-        return  x / Parameters.ROUND_SPACING * Parameters.ROUND_SPACING;
-    }
-    protected int roundClose(int x)
-    {
-        return  (x + Parameters.ROUND_SPACING/2) / Parameters.ROUND_SPACING *
-                Parameters.ROUND_SPACING;
-    }
+    }   
 
     @Override
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
@@ -283,7 +114,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
             } // for
         } // if
 
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, model.none_t()),
+        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
             public double getWeight()
@@ -555,19 +386,6 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
         else if(tempField instanceof StrField) return genStrFieldValue(i, c, event, field);
         else return Utils.impossible();
     }
-
-    protected double getEventTypeGivenWord(int t, int w)
-    {
-        if (opts.includeEventTypeGivenWord)
-            return get(params.eventTypeChoicesGivenWord[w], t);
-        else return 1.0;
-    }
-
-    protected void updateEventTypeGivenWord(int t, int w, double prob)
-    {
-        if (opts.includeEventTypeGivenWord)
-            update(counts.eventTypeChoicesGivenWord[w], t, prob);
-    }
     
     // Generate word at position i with event e and field f
     protected WordNode genWord(final int i, final int c, int event, final int field)
@@ -769,7 +587,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
-               j-i <= model.getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
+               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :
@@ -847,11 +665,11 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                             return get(params.trackParams[c].noneEventTypeEmissions, w) *
-                                   getEventTypeGivenWord(model.none_t(), w);
+                                   getEventTypeGivenWord(((Event3Model)model).none_t(), w);
                     }
                     public void setPosterior(double prob) {
                          update(counts.trackParams[c].noneEventTypeEmissions, w, prob);
-                         updateEventTypeGivenWord(model.none_t(), w, prob);
+                         updateEventTypeGivenWord(((Event3Model)model).none_t(), w, prob);
                     }
                     public Widget choose(Widget widget) {
                         return widget;
@@ -972,10 +790,10 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
                       genNoneEvent(i, j, c), recurseNode,
                       new Hypergraph.HyperedgeInfo<Widget>() {
                           public double getWeight() {
-                                  return get(cparams.eventTypeChoices[t0], model.none_t());
+                                  return get(cparams.eventTypeChoices[t0], ((Event3Model)model).none_t());
                           }
                           public void setPosterior(double prob) {
-                               update(ccounts.eventTypeChoices[t0], model.none_t(), prob);
+                               update(ccounts.eventTypeChoices[t0], ((Event3Model)model).none_t(), prob);
                                if (ex.getTrueWidget() != null && i == 0) // HACK
                                {
                                    ex.getTrueWidget().setEventPosterior(
@@ -1020,7 +838,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
                       (!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {
-                  final int remember_t = (indepEventTypes()) ? model.none_t() : eventTypeIndex;
+                  final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
                   final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
                   if (opts.useEventTypeDistrib)
                   {
@@ -1030,7 +848,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
                           public double getWeight()
                           {
                               if(prevIndepEventTypes())
-                                  return get(cparams.eventTypeChoices[model.none_t()],
+                                  return get(cparams.eventTypeChoices[((Event3Model)model).none_t()],
                                           eventTypeIndex) *
                                           (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
                               else
@@ -1088,7 +906,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
         if(hypergraph.addProdNode(node))
         {
             // For each track, do independently
-            for(int c = 0; c < model.C; c++)
+            for(int c = 0; c < ((Event3Model)model).C; c++)
             {
                 hypergraph.addEdge(node, genTrack(i, j, t0, c, opts.allowNoneEvent,
                         allowReal(c, pc)) );
@@ -1099,17 +917,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
                hypergraph.assertNonEmpty(node);
         }
         return node;
-    }
-
-    private boolean allowNone(int c, int pc)
-    {
-        return pc == wildcard_pc || !Constants.setContains(pc, c);
-    }
-
-    private boolean allowReal(int c, int pc)
-    {
-        return pc == wildcard_pc || Constants.setContains(pc, c);
-    }
+    }    
    
     // Generate segmentation of i...N into event types; previous event type is t0
     // Incorporate eventType distributions
@@ -1170,7 +978,7 @@ public class InferState extends AHypergraphInferState<Widget, Example, Params>
     {
         if (opts.jointEventTypeDecision)
         {
-            for(int pc = 0; pc < model.PC; pc++) // Choose track bitmask pc
+            for(int pc = 0; pc < ((Event3Model)model).PC; pc++) // Choose track bitmask pc
             {
                 final int pcIter = pc;
                 hypergraph.addEdge(node, genPCEvents(i, j, t0, pc),

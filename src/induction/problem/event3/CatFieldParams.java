@@ -6,7 +6,7 @@ import induction.problem.ProbVec;
  *
  * @author konstas
  */
-class CatFieldParams extends FieldParams
+public class CatFieldParams extends FieldParams
 {
     static final long serialVersionUID = 5817675789060800073L;
     public ProbVec[] emissions, filters;

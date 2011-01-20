@@ -16,6 +16,7 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
         extends AInferState<Widget, Example, Params>
 {
     protected Options opts;
+    protected AModel model;
     protected final Hypergraph hypergraph = new Hypergraph<Widget>();
     //protected final double logZ, elogZ, entropy, logVZ;    
 
@@ -23,7 +24,8 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
                                  Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(ex, params, counts, ispec);
-        this.opts = model.opts;               
+        this.opts = model.opts;
+        this.model = model;
         initInferState(model);
         StopWatchSet.begin("createHypergraph");
         if(ngramModel != null)

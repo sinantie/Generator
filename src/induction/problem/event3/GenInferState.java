@@ -27,15 +27,15 @@ public class GenInferState extends InferState
     public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
     
 
-    public GenInferState(Event3Model model, Example ex, Params params, Params counts, InferSpec ispec, NgramModel ngramModel)
+    public GenInferState(Event3Model model, Example ex, Params params,
+            Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec, ngramModel);
     }
 
     @Override
     protected void initInferState(AModel model)
-    {
-        this.model = (Event3Model) model;
+    {   
         wildcard_pc = -1;
         L = opts.maxPhraseLength;
         segPenalty = new double[L + 1];
@@ -43,20 +43,9 @@ public class GenInferState extends InferState
         {
             segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
-        N = ex.N();             
+        N = ex.N();
     }
-    
-    @Override
-    protected int[][] newMatrix()
-    {
-        int[][] out = new int[model.C][ex.N()];
-        for(int i = 0; i < out.length; i++)
-        {
-            Arrays.fill(out[i], -1);
-        }
-        return out;
-    }
-
+        
     protected int[] newMatrixOne()
     {
         int[] out = new int[ex.N()];
@@ -77,7 +66,7 @@ public class GenInferState extends InferState
         }
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                                newMatrixOne(),
-                               model.eventTypeAllowedOnTrack, eventTypeIndices);
+                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
     }
 
     @Override
@@ -103,7 +92,7 @@ public class GenInferState extends InferState
         this.hypergraph.START_SYMBOL = Event3Model.getWordIndex("<s>");
         this.hypergraph.END_SYMBOL = Event3Model.getWordIndex("</s>");
         this.hypergraph.numbersAsSymbol = opts.ngramWrapper != Options.NgramWrapper.roark;
-        this.hypergraph.wordIndexer = model.getWordIndexer();
+        this.hypergraph.wordIndexer = ((Event3Model)model).getWordIndexer();
         this.hypergraph.ex = ex;
 
 //        for(int i = 0; i < hypergraph.wordIndexer.size(); i++)
@@ -113,7 +102,7 @@ public class GenInferState extends InferState
 
         if(opts.fullPredRandomBaseline)
         {
-            this.hypergraph.addEdge(this.hypergraph.prodStartNode(), genEvents(0, model.none_t()),
+            this.hypergraph.addEdge(this.hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()
     //        hypergraph.addEdge(hypergraph.prodStartNode(), test(),
     //                           new Hypergraph.HyperedgeInfo<Widget>()
@@ -186,7 +175,7 @@ public class GenInferState extends InferState
             {
                 list.add(startSymbol);
             }
-            list.add(genEvents(0, model.none_t()));
+            list.add(genEvents(0, ((Event3Model)model).none_t()));
 //            list.add(test());
             list.add(endSymbol);
             this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
@@ -674,7 +663,7 @@ public class GenInferState extends InferState
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
-               j-i <= model.getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
+               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :
@@ -748,7 +737,7 @@ public class GenInferState extends InferState
                         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
                         public double getWeight() {
                                 return get(params.trackParams[c].noneEventTypeEmissions, w) *
-                                       getEventTypeGivenWord(model.none_t(), w);
+                                       getEventTypeGivenWord(((Event3Model)model).none_t(), w);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
@@ -785,7 +774,7 @@ public class GenInferState extends InferState
 
     protected WordNode genNoneWord(final int i, final int c)
     {
-        WordNode node = new WordNode(i, c, model.none_t(), -1);
+        WordNode node = new WordNode(i, c, ((Event3Model)model).none_t(), -1);
         if(hypergraph.addSumNode(node))
         {
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
@@ -833,10 +822,10 @@ public class GenInferState extends InferState
         final double pTempWind = 0.85;
         final double pWindWind = 0.01;
         final double pWindTemp = 0.7;
-        EventsNode ev0Start = new EventsNode(0, model.none_t()); hypergraph.addSumNode(ev0Start);
-        TrackNode tr01Start = new TrackNode(0, 1, model.none_t(), 0, false, false); hypergraph.addSumNode(tr01Start);
-        TrackNode tr02Start = new TrackNode(0, 2, model.none_t(), 0, false, false); hypergraph.addSumNode(tr02Start);
-        TrackNode tr03Start = new TrackNode(0, 3, model.none_t(), 0, false, false); hypergraph.addSumNode(tr03Start);
+        EventsNode ev0Start = new EventsNode(0, ((Event3Model)model).none_t()); hypergraph.addSumNode(ev0Start);
+        TrackNode tr01Start = new TrackNode(0, 1, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr01Start);
+        TrackNode tr02Start = new TrackNode(0, 2, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr02Start);
+        TrackNode tr03Start = new TrackNode(0, 3, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr03Start);
         
         final FieldsNode fs01Temp = new FieldsNode(0, 1, 0, 1, 0, 0); hypergraph.addSumNode(fs01Temp);
         EventsNode ev1Temp = new EventsNode(1, 1); hypergraph.addSumNode(ev1Temp);

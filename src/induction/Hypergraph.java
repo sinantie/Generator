@@ -260,8 +260,8 @@ public class Hypergraph<Widget> {
   private ArrayList<NodeInfo> topologicalOrdering;
 
   // kBest stuff
-  public static int K, M, NUM, ELIDED_SYMBOL, START_SYMBOL, END_SYMBOL;
-  public static Options.ReorderType reorderType;
+  public  int K, M, NUM, ELIDED_SYMBOL, START_SYMBOL, END_SYMBOL;
+  public Options.ReorderType reorderType;
   public  NgramModel ngramModel;
   public  Indexer<String> wordIndexer;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents;
@@ -274,6 +274,30 @@ public class Hypergraph<Widget> {
   private final NodeInfo startNodeInfo = getNodeInfoOrFail(startNode);
   private final NodeInfo endNodeInfo = getNodeInfoOrFail(endNode);
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
+
+  public  void setupForGeneration(boolean debug, boolean allowEmptyNodes,
+                                        int K, int M, Options.ReorderType reorderType,
+                                        boolean allowConsecutiveEvents, int NUM,
+                                        int ELIDED_SYMBOL, int START_SYMBOL,
+                                        int END_SYMBOL, boolean numbersAsSymbol,
+                                        Indexer<String> wordIndexer, Example ex)
+  {
+        this.debug = debug;
+        // Need this because the pc sets might be inconsistent with the types
+        this.allowEmptyNodes = allowEmptyNodes;
+        this.K = K;
+        this.M = M;
+        this.reorderType = reorderType;
+        this.allowConsecutiveEvents = allowConsecutiveEvents;
+        /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+        this.NUM = NUM;
+        this.ELIDED_SYMBOL = ELIDED_SYMBOL;
+        this.START_SYMBOL = START_SYMBOL;
+        this.END_SYMBOL = END_SYMBOL;
+        this.numbersAsSymbol = numbersAsSymbol;
+        this.wordIndexer = wordIndexer;
+        this.ex = ex;
+  }
 
   // Things we're going to compute
   private double logZ = Double.NaN; // Normalization constant
