@@ -47,7 +47,7 @@ public class GenerationTest
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile data/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
-                    + "eventType -allowNoneEvent";
+                    + "eventType -allowNoneEvent -maxPhraseLength 5";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
