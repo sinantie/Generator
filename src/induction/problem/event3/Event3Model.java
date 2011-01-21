@@ -50,7 +50,7 @@ import java.util.List;
  * @author konstas
  */
 public class Event3Model extends WordModel<Widget, Params, Performance,
-                                           Example, InferState> implements Serializable
+                                           Example, Event3InferState> implements Serializable
 {
 
     private EventType[] eventTypes = null;  // Filled in later
@@ -842,13 +842,13 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     }
 
     @Override
-    protected InferState newInferState(Example ex, Params params, Params counts,
+    protected Event3InferState newInferState(Example ex, Params params, Params counts,
                                        InferSpec ispec)
     {
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferState(this, ex, params, counts, ispec, null);
+            default : return new InferStateSeg(this, ex, params, counts, ispec, null);
         }
     }
 

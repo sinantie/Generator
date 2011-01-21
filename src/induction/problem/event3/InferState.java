@@ -1,11 +1,9 @@
 package induction.problem.event3;
 
-import fig.basic.Pair;
 import induction.Hypergraph;
 import induction.NgramModel;
 import induction.Utils;
 import induction.problem.AModel;
-import induction.problem.AParams;
 import induction.problem.InferSpec;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.EventNode;

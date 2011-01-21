@@ -68,33 +68,20 @@ public class GenInferState extends InferState
                                newMatrixOne(),
                                ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
     }
-
-    @Override
-    protected int end(int i, int N)
-    {
-        return Math.min(i + L, N);
-    }
-
+    
     @Override
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
-        this.hypergraph.debug = opts.debug;
-        // Need this because the pc sets might be inconsistent with the types
-        this.hypergraph.allowEmptyNodes = true;
-        this.hypergraph.K = opts.kBest;
-        this.hypergraph.M = opts.ngramSize;
-        this.hypergraph.reorderType = opts.reorderType;
-        this.hypergraph.allowConsecutiveEvents = opts.allowConsecutiveEvents;
-        /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-        this.hypergraph.NUM = Event3Model.getWordIndex("<num>");
-        this.hypergraph.ELIDED_SYMBOL = Event3Model.getWordIndex("ELIDED_SYMBOL");
-//        model.getWordIndex("BOUNDARY");
-        this.hypergraph.START_SYMBOL = Event3Model.getWordIndex("<s>");
-        this.hypergraph.END_SYMBOL = Event3Model.getWordIndex("</s>");
-        this.hypergraph.numbersAsSymbol = opts.ngramWrapper != Options.NgramWrapper.roark;
-        this.hypergraph.wordIndexer = ((Event3Model)model).getWordIndexer();
-        this.hypergraph.ex = ex;
-
+        // setup hypergraph preliminaries
+        hypergraph.setupForGeneration(opts.debug, true, opts.kBest, opts.ngramSize,
+                opts.reorderType, opts.allowConsecutiveEvents,
+                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+                Event3Model.getWordIndex("<num>"),
+                Event3Model.getWordIndex("ELIDED_SYMBOL"),
+                Event3Model.getWordIndex("<s>"),
+                Event3Model.getWordIndex("</s>"),
+                opts.ngramWrapper != Options.NgramWrapper.roark,
+                ((Event3Model)model).getWordIndexer(), ex);
 //        for(int i = 0; i < hypergraph.wordIndexer.size(); i++)
 //        {
 //            System.out.println(String.format("%d -> %s", i, hypergraph.wordIndexer.getObject(i)));
@@ -102,10 +89,8 @@ public class GenInferState extends InferState
 
         if(opts.fullPredRandomBaseline)
         {
-            this.hypergraph.addEdge(this.hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
-                           new Hypergraph.HyperedgeInfo<Widget>()
-    //        hypergraph.addEdge(hypergraph.prodStartNode(), test(),
-    //                           new Hypergraph.HyperedgeInfo<Widget>()
+            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+                           new Hypergraph.HyperedgeInfo<Widget>()   
             {
                 public double getWeight()
                 {
@@ -131,9 +116,9 @@ public class GenInferState extends InferState
 //                }
 //            }
             WordNode startSymbol = new WordNode(-1, 0, -1, -1);
-            this.hypergraph.addSumNode(startSymbol);
+            hypergraph.addSumNode(startSymbol);
             WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
-            this.hypergraph.addSumNode(endSymbol);
+            hypergraph.addSumNode(endSymbol);
             this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
             {
                 public double getWeight()

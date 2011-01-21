@@ -1,6 +1,5 @@
 package induction.problem.event3;
 
-import induction.Hypergraph;
 import induction.NgramModel;
 import induction.Utils;
 import induction.problem.AHypergraphInferState;
@@ -51,7 +50,7 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
         return out;
     }
 
-     protected int end(int i, int N)
+    protected int end(int i, int N)
     {
         return Math.min(i + L, N);
     }
@@ -217,13 +216,5 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     {
         if (opts.includeEventTypeGivenWord)
             update(counts.eventTypeChoicesGivenWord[w], t, prob);
-    }
-
-    @Override
-    protected void createHypergraph(Hypergraph<Widget> hypergraph)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-
+    }  
 }
