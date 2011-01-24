@@ -435,8 +435,9 @@ public class InferStateSeg extends Event3InferState
      * @param t0 previous eventType
      * @return
      */
-    protected Object genEvents(int t0)
+    protected Object genEvents(int seqNo, int t0)
     {
+        
         EventsNode node = new EventsNode(0, t0);
         if(hypergraph.addSumNode(node))
         {

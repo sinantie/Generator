@@ -86,7 +86,7 @@ public class Constants
 
   public static String setstr(int n , int set)
   {
-      StringBuffer buf = new StringBuffer();
+      StringBuilder buf = new StringBuilder();
       for(int i = 0; i < n; i++)
       {
           if(setContains(set, i))

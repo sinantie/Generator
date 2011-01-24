@@ -783,20 +783,20 @@ public class GenInferState extends InferState
     @Override
     protected void selectEnd(int j, EventsNode node, int i, int t0)
     {
-        hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true),
-                           new Hypergraph.HyperedgeInfo<Widget>()
-        {
-            public double getWeight()
-            {
-                return 1;
-            }
-            public void setPosterior(double prob)
-            { }
-            public Widget choose(Widget widget)
-            {
-                return widget;
-            }
-        });
+        hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
+//                           new Hypergraph.HyperedgeInfo<Widget>()
+//        {
+//            public double getWeight()
+//            {
+//                return 1;
+//            }
+//            public void setPosterior(double prob)
+//            { }
+//            public Widget choose(Widget widget)
+//            {
+//                return widget;
+//            }
+//        });
     }
 
     private Object testOrder()
