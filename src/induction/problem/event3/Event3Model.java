@@ -848,7 +848,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferStateSeg(this, ex, params, counts, ispec, null);
+            default : return new InferState(this, ex, params, counts, ispec, null);
         }
     }
 

@@ -104,7 +104,7 @@ public class InferStateSeg extends Event3InferState
             } // for
         } // if
 
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(((Event3Model)model).none_t()),
+        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
             public double getWeight()
@@ -272,10 +272,10 @@ public class InferStateSeg extends Event3InferState
      * @param allowReal specifies what event types we may use
      * @return
      */
-    TrackNode genTrack(final int t0, final int c,
+    TrackNode genTrack(final int seqNo, final int t0, final int c,
                        boolean allowNone, boolean allowReal)
     {
-        TrackNode node = new TrackNode(0, 0, t0, c, allowNone, allowReal);
+        TrackNode node = new TrackNode(seqNo, 0, t0, c, allowNone, allowReal);
         final TrackParams cparams = params.trackParams[c];
         final TrackParams ccounts = counts.trackParams[c];
         // WARNING: allowNone/allowReal might not result in any valid nodes
@@ -287,7 +287,7 @@ public class InferStateSeg extends Event3InferState
           if (allowNone) // in the current context, trueInfer = true, which reduces to one parameter only
           {
               final int remember_t = t0; // Don't remember none_t (since t == none_t, skip t)
-              Object recurseNode = (c == 0) ? genEvents(remember_t) : hypergraph.endNode;
+              Object recurseNode = (c == 0) ? genEvents(seqNo+1, remember_t) : hypergraph.endNode;
               if(opts.useEventTypeDistrib)
               {
                   hypergraph.addEdge(node,
@@ -344,7 +344,7 @@ public class InferStateSeg extends Event3InferState
               if (allowReal) // in the current context, trueInfer = true, which reduces to one parameter only
               {
                   final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
-                  final Object recurseNode = (c == 0) ? genEvents(remember_t) : hypergraph.endNode;
+                  final Object recurseNode = (c == 0) ? genEvents(seqNo+1, remember_t) : hypergraph.endNode;
                   if (opts.useEventTypeDistrib)
                   {
                       hypergraph.addEdge(node,
@@ -405,21 +405,22 @@ public class InferStateSeg extends Event3InferState
     }
 
     /**
-     * 
+     *
+     * @param seqNo the sequence number of the event to be generated
      * @param t0 previous eventType
      * @param pc says for each c whether the event type on track c can be none_t or not
      * @return
      */
     //
-    protected PCEventsNode genPCEvents(int t0, int pc)
+    protected PCEventsNode genPCEvents(int seqNo, int t0, int pc)
     {
-        PCEventsNode node = new PCEventsNode(0, 0, t0, pc);
+        PCEventsNode node = new PCEventsNode(seqNo, 0, t0, pc);
         if(hypergraph.addProdNode(node))
         {
             // For each track, do independently
             for(int c = 0; c < ((Event3Model)model).C; c++)
             {
-                hypergraph.addEdge(node, genTrack(t0, c, opts.allowNoneEvent,
+                hypergraph.addEdge(node, genTrack(seqNo, t0, c, opts.allowNoneEvent,
                         allowReal(c, pc)) );
             }
            // Note: there might be nothing consistent with pc
@@ -432,16 +433,19 @@ public class InferStateSeg extends Event3InferState
 
     /**
      * Generate sequence of events ignoring segmentation
+     * @param seqNo the sequence number of the event to be generated
      * @param t0 previous eventType
      * @return
      */
     protected Object genEvents(int seqNo, int t0)
     {
-        
-        EventsNode node = new EventsNode(0, t0);
+        /* The maximum sequence number is the total number of event types. */
+//        if(seqNo >= ((Event3Model)model).T())
+//            return hypergraph.endNode;
+        EventsNode node = new EventsNode(seqNo, t0);
         if(hypergraph.addSumNode(node))
         {
-            selectEnd(node, t0);
+            selectEnd(node, seqNo, t0);
             hypergraph.assertNonEmpty(node);
         }
         return node;
@@ -450,16 +454,17 @@ public class InferStateSeg extends Event3InferState
     /**
      * Choose whether we will split events to tracks
      * @param node
+     * @param seqNo the sequence number of the event to be generated
      * @param t0
      */
-    protected void selectEnd(EventsNode node, int t0)
+    protected void selectEnd(EventsNode node, int seqNo, int t0)
     {
         if (opts.jointEventTypeDecision)
         {
             for(int pc = 0; pc < ((Event3Model)model).PC; pc++) // Choose track bitmask pc
             {
                 final int pcIter = pc;
-                hypergraph.addEdge(node, genPCEvents(t0, pc),
+                hypergraph.addEdge(node, genPCEvents(seqNo, t0, pc),
                     new Hypergraph.HyperedgeInfo<Widget>() {
                         public double getWeight() {
                             return get(params.trackChoices, pcIter);
@@ -476,21 +481,8 @@ public class InferStateSeg extends Event3InferState
         else
         { // Do each track independently
 //            System.out.println(String.format("[%d] => [%d,%d]", i, i, j));
-//            hypergraph.addEdge(node, genPCEvents(t0, wildcard_pc));
-            hypergraph.addEdge(node, genTrack(t0, 0, opts.allowNoneEvent, true),
-                           new Hypergraph.HyperedgeInfo<Widget>()
-            {
-                public double getWeight()
-                {
-                    return 1;
-                }
-                public void setPosterior(double prob)
-                { }
-                public Widget choose(Widget widget)
-                {
-                    return widget;
-                }
-            });
+//            hypergraph.addEdge(node, genPCEvents(seqNo, t0, wildcard_pc));
+            hypergraph.addEdge(node, genTrack(seqNo, t0, 0, opts.allowNoneEvent, true));
         }
     }
 }

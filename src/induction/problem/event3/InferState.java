@@ -780,7 +780,7 @@ public class InferState extends Event3InferState
           if (allowNone && (!trueInfer || ex.getTrueWidget() == null ||
               ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
           {
-              final int remember_t = t0; // Don't remember none_t (since t == none_t, skip t)
+              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
               Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
               if(opts.useEventTypeDistrib)
               {
