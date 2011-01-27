@@ -173,8 +173,12 @@ public class InferStateSeg extends Event3InferState
             return node;
         }
         else
+        {
 //            return genNoneEventWords(c);
-            return new WordNode(-1, c, ((Event3Model)model).none_t(), 0);
+            WordNode node = new WordNode(-1, c, ((Event3Model)model).none_t(), 0);
+            hypergraph.addSumNode(node);
+            return node;
+        }
     }
 
     /**
@@ -263,6 +267,11 @@ public class InferStateSeg extends Event3InferState
         }
     }
 
+    Object genEndNode()
+    {
+        return hypergraph.endNode;
+    }
+
     /**
      * Generate events for track c
      * @param t0 previous eventType
@@ -287,7 +296,14 @@ public class InferStateSeg extends Event3InferState
           if (allowNone) // in the current context, trueInfer = true, which reduces to one parameter only
           {
               final int remember_t = t0; // Don't remember none_t (since t == none_t, skip t)
-              Object recurseNode = (c == 0) ? genEvents(seqNo+1, remember_t) : hypergraph.endNode;
+              // if we generate all in one track (c == 0), then check whether we are in
+              // the end of our sequence and generate the final end node (we don't want
+              // to get stuck in infinite recursion. If we generate events in more than
+              // one tracks then events are independent of each other (see Percy paper)
+              // so just emit an endNode as the recurseNode
+//             final Object recurseNode = (c == 0) ? (seqNo < ex.trackEvents[c].length ?
+             final Object recurseNode = (c == 0) ? (seqNo < 2 ?
+                      genEvents(seqNo+1, remember_t): genEndNode()) : hypergraph.endNode;
               if(opts.useEventTypeDistrib)
               {
                   hypergraph.addEdge(node,
@@ -333,7 +349,9 @@ public class InferStateSeg extends Event3InferState
               } // else
           } // if (none event)
           // (2) Choose an event type t and event e for track c
-          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
+          int l=2;
+//          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
+          for(int e = 0; e < l && ex.events[e] != null; e++)
           {
               final int eventId = e;
               final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
@@ -344,7 +362,14 @@ public class InferStateSeg extends Event3InferState
               if (allowReal) // in the current context, trueInfer = true, which reduces to one parameter only
               {
                   final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
-                  final Object recurseNode = (c == 0) ? genEvents(seqNo+1, remember_t) : hypergraph.endNode;
+                  // if we generate all in one track (c == 0), then check whether we are in
+                  // the end of our sequence and generate the final end node (we don't want
+                  // to get stuck in infinite recursion. If we generate events in more than
+                  // one tracks then events are independent of each other (see Percy paper)
+                  // so just emit an endNode as the recurseNode
+//                  final Object recurseNode = (c == 0) ? (seqNo < ex.trackEvents[c].length ?
+                  final Object recurseNode = (c == 0) ? (seqNo < l ?
+                      genEvents(seqNo+1, remember_t): genEndNode()) : hypergraph.endNode;
                   if (opts.useEventTypeDistrib)
                   {
                       hypergraph.addEdge(node,
