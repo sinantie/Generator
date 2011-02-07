@@ -49,7 +49,22 @@ public class EventType implements Serializable
         return F;
     }
 
-    protected String fieldToString(int f)
+    public int getNone_f()
+    {
+        return none_f;
+    }
+
+    public int getBoundary_f()
+    {
+        return boundary_f;
+    }
+
+    public Field[] getFields()
+    {
+        return fields;
+    }
+
+    public String fieldToString(int f)
     {
         if (f == none_f)
         {

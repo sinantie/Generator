@@ -44,7 +44,7 @@ public class NumField extends Field implements Serializable
     }
 
     @Override
-    protected AParams newParams(String prefix)
+    public AParams newParams(String prefix)
     {
         return new NumFieldParams(prefix);
     }

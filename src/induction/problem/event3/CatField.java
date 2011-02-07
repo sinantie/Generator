@@ -56,7 +56,7 @@ public class CatField extends Field implements Serializable
     }
 
     @Override
-    protected AParams newParams(String prefix)
+    public AParams newParams(String prefix)
     {
         return new CatFieldParams(Event3Model.W(), prefix, this);
     }

@@ -1,6 +1,8 @@
 package induction.problem.event3;
 
-import induction.problem.event3.params.StrField;
+import induction.problem.event3.params.EventTypeParams;
+import induction.problem.event3.params.SymFieldParams;
+import induction.problem.event3.params.StrFieldParams;
 import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.Params;
@@ -745,7 +747,7 @@ public class InferState extends Event3InferState
             if(hypergraph.addSumNode(node))
             {
                 // Choose which fields to use
-                for(int fs = 0; fs < eventTypeParams.allowed_fs.length; fs++)
+                for(int fs = 0; fs < eventTypeParams.getAllowed_fs().length; fs++)
                 {
                     final int fsIter = fs;
                     hypergraph.addEdge(node,
@@ -767,7 +769,7 @@ public class InferState extends Event3InferState
         } // if
         else // Can use any field set
         {
-            return genEFSEvent(i, j, c, event, eventTypeParams.dontcare_efs);
+            return genEFSEvent(i, j, c, event, eventTypeParams.getDontcare_efs());
         }
     }
     

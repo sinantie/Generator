@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.Params;

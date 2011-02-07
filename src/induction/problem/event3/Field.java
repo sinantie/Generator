@@ -17,5 +17,5 @@ public abstract class Field implements Serializable
     public abstract int getV(); // number of possible values
     public abstract String valueToString(int v);
     protected abstract int parseValue(int role, String str);
-    protected abstract AParams newParams(String prefix);    
+    public abstract AParams newParams(String prefix);
 }

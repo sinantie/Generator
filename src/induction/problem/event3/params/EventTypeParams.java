@@ -1,8 +1,10 @@
-package induction.problem.event3;
+package induction.problem.event3.params;
 
-import induction.problem.event3.params.Parameters;
 import induction.problem.AParams;
 import induction.problem.ProbVec;
+import induction.problem.event3.Constants;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.EventType;
 
 /**
  *
@@ -31,11 +33,11 @@ public class EventTypeParams extends AParams
         super();
         this.model = model;
         this.eventType = eventType;
-        none_f = eventType.none_f;
-        boundary_f = eventType.boundary_f;
-        this.W = model.W();
-        this.F = eventType.F;
-        this.typeToString = eventType.name;
+        none_f = eventType.getNone_f();
+        boundary_f = eventType.getBoundary_f();
+        this.W = Event3Model.W();
+        this.F = eventType.getF();
+        this.typeToString = eventType.getName();
         this.fieldToString = new String[F + 2];
         for(int i = 0; i < F + 2; i++)
         {
@@ -89,7 +91,7 @@ public class EventTypeParams extends AParams
         fieldParams = new AParams[F];
         for(int f = 0; f < F; f++)
         {
-            fieldParams[f] = eventType.fields[f].newParams(typeToString + " " + fieldToString[f]);
+            fieldParams[f] = eventType.getFields()[f].newParams(typeToString + " " + fieldToString[f]);
             addVec(fieldParams[f].getVecs());
         }
         // whether this type should be generated or not
@@ -136,6 +138,16 @@ public class EventTypeParams extends AParams
             }
         } // for
         return efs;
+    }
+
+    public int[] getAllowed_fs()
+    {
+        return allowed_fs;
+    }
+
+    public int getDontcare_efs()
+    {
+        return dontcare_efs;
     }
 
     @Override

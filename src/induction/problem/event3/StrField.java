@@ -1,11 +1,9 @@
-package induction.problem.event3.params;
+package induction.problem.event3;
 
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
-import induction.problem.event3.Event3Model;
-import induction.problem.event3.Field;
-import induction.problem.event3.StrFieldParams;
+import induction.problem.event3.params.StrFieldParams;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +12,7 @@ import java.util.Arrays;
  * String ($) - sequence of words
  * Example: description in the NFL domain
  * indexer = possible sequences of words
- * 
+ *
  * @author konstas
  */
 public class StrField extends Field implements Serializable
@@ -73,7 +71,7 @@ public class StrField extends Field implements Serializable
     }
 
     @Override
-    protected AParams newParams(String prefix)
+    public AParams newParams(String prefix)
     {
         return new StrFieldParams(Event3Model.LB(), prefix);
     }

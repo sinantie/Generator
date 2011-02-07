@@ -1,6 +1,5 @@
 package induction.problem.event3;
 
-import induction.problem.event3.params.StrField;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;

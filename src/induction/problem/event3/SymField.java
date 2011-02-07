@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.SymFieldParams;
 import induction.Utils;
 import induction.problem.AParams;
 
@@ -45,7 +46,7 @@ public class SymField extends Field
     }
 
     @Override
-    protected AParams newParams(String prefix)
+    public AParams newParams(String prefix)
     {
         return new SymFieldParams(Event3Model.LB(), prefix);
     }

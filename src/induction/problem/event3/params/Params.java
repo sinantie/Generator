@@ -5,7 +5,6 @@ import induction.problem.AParams;
 import induction.problem.ProbVec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
-import induction.problem.event3.EventTypeParams;
 
 /**
  *
