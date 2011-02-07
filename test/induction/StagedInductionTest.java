@@ -19,13 +19,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class InductionTest
+public class StagedInductionTest
 {
     LearnOptions lopts;
     String name;
     Event3Model model;
 
-    public InductionTest() {
+    public StagedInductionTest() {
     }
 
     @BeforeClass
@@ -41,25 +41,26 @@ public class InductionTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 15 -testInputLists "
-                + "gaborLists/weatherEvalScenariosRandomBest12Events -inputFileExt events "
-                + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
-                + "-disallowConsecutiveRepeatFields "
-                + "-dontCrossPunctuation -Options.stage1.smoothing 0.1";
+         String args = "-modelType event3 -Options.stage1.numIters 1 -testInputLists "
+                + "test/testWeatherGovEvents -inputFileExt events "
+                + "-Options.stage1.smoothing 0.1 -initNoise 0 -initType staged "
+                + "-stagedParamsFile ../ContentSelectionJava/results/output/"
+                + "model_3_gabor/0.exec/stage1.params.obj -dontCrossPunctuation "
+                + "-disallowConsecutiveRepeatFields -allowNoneEvent";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new Event3Model(opts);
+        model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
         lopts = opts.stage1;
         name = "stage1";
     }
 
     @After
-    public void tearDown() throws Throwable {
+    public void tearDown() {
     }
 
     /**
@@ -69,7 +70,7 @@ public class InductionTest
     public void testRun()
     {
         System.out.println("run");
-        String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
-        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
+        String targetOutput = "5 5 5 0 0 0 0 0 0 3 3 3 2 2 2 2 2";
+        assertEquals(model.testStagedLearn(name, lopts).trim(), targetOutput);
     }
 }
