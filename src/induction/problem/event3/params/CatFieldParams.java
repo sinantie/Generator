@@ -1,6 +1,8 @@
-package induction.problem.event3;
+package induction.problem.event3.params;
 
 import induction.problem.ProbVec;
+import induction.problem.event3.CatField;
+import induction.problem.event3.Event3Model;
 
 /**
  *
@@ -20,9 +22,9 @@ public class CatFieldParams extends FieldParams
         this.prefix = prefix;
         this.field = field;
         // v, w -> express value v with word w
-        emissions = ProbVec.zeros2(field.V(), W);
+        emissions = ProbVec.zeros2(field.getV(), W);
         addVec(emissions);
-        filters = ProbVec.zeros2(field.V(), Parameters.B);
+        filters = ProbVec.zeros2(field.getV(), Parameters.B);
         addVec(filters);
     }
 
@@ -30,14 +32,14 @@ public class CatFieldParams extends FieldParams
     public String output()
     {
         String out = "";
-        String[][] labels = getLabels(field.V(), W, "catE " + prefix + " ",
+        String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), Event3Model.wordsToStringArray());
         int i = 0;
         for(ProbVec v: emissions)
         {
             out += forEachProb(v, labels[i++]);
         }
-        labels = getLabels(field.V(), Parameters.B, "catFilter " + prefix + " ",
+        labels = getLabels(field.getV(), Parameters.B, "catFilter " + prefix + " ",
                     field.valuesToStringArray(), Parameters.booleanToString);
         i = 0;
         for(ProbVec v: filters)

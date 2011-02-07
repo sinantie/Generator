@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.NumFieldParams;
 import induction.Utils;
 import induction.problem.AParams;
 import java.io.Serializable;
@@ -22,7 +23,7 @@ public class NumField extends Field implements Serializable
         maxLength = 1;
     }
 
-    public int V()
+    public int getV()
     {
         return max - min + 1; // Range (inclusive)
     }

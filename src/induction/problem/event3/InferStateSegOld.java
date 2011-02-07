@@ -1,5 +1,8 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.Params;
+import induction.problem.event3.params.Parameters;
+import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
 import induction.NgramModel;
 import induction.problem.AModel;
@@ -310,10 +313,10 @@ public class InferStateSegOld extends Event3InferState
                       genNoneEvent(c), recurseNode,
                       new Hypergraph.HyperedgeInfo<Widget>() {
                           public double getWeight() {
-                                  return get(cparams.eventTypeChoices[t0], ((Event3Model)model).none_t());
+                                  return get(cparams.getEventTypeChoices()[t0], ((Event3Model)model).none_t());
                           }
                           public void setPosterior(double prob) {
-                               update(ccounts.eventTypeChoices[t0], ((Event3Model)model).none_t(), prob);
+                               update(ccounts.getEventTypeChoices()[t0], ((Event3Model)model).none_t(), prob);
 //                               if (ex.getTrueWidget() != null && i == 0) // HACK
 //                               {
 //                                   ex.getTrueWidget().setEventPosterior(
@@ -378,15 +381,15 @@ public class InferStateSegOld extends Event3InferState
                           public double getWeight()
                           {
                               if(prevIndepEventTypes())
-                                  return get(cparams.eventTypeChoices[((Event3Model)model).none_t()],
+                                  return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
                                           eventTypeIndex) *
                                           (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
                               else
-                                  return get(cparams.eventTypeChoices[t0], eventTypeIndex) *
+                                  return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
                                           (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
                           }
                           public void setPosterior(double prob) {
-                               update(ccounts.eventTypeChoices[t0], eventTypeIndex, prob);
+                               update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
 //                               if (ex.getTrueWidget() != null && i == 0) // HACK
 //                               {
 //                                   ex.getTrueWidget().setEventPosterior(eventId, ex.events.length, prob);

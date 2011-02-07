@@ -1,5 +1,8 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.StrField;
+import induction.problem.event3.params.Params;
+import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
@@ -99,9 +102,24 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         return wordIndexer.getIndex(processWord(str));
     }
 
-    public int T()
+    public int getT()
     {
         return eventTypes.length;
+    }
+
+    public int getPC()
+    {
+        return PC;
+    }
+
+    public int getC()
+    {
+        return C;
+    }
+
+    public static int getNone_lb()
+    {
+        return none_lb;
     }
 
     public void stagedInitParams()
@@ -190,7 +208,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 
     public int none_t()
     {
-        return T();
+        return getT();
     }
 
     public String eventTypeToString(int eventTypeIndex)
@@ -324,8 +342,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         super.logStats();
 //        Execution.putLogRec("numWords", W());
         Execution.putLogRec("numLabels", LB());
-        Execution.putLogRec("numEventTypes", T());
-        String[] ar = new String[T()];
+        Execution.putLogRec("numEventTypes", getT());
+        String[] ar = new String[getT()];
         for(int i = 0; i < ar.length; i++)
         {
             ar[i] = String.valueOf(eventTypes[i].F);
@@ -797,7 +815,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             for(String s : str.split(","))
             {
                 if (s.equals("ALL")) // Everything
-                for(int t = 0; t < T(); t++)
+                for(int t = 0; t < getT(); t++)
                 {
                     set.add(t);
                 }
@@ -848,7 +866,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferStateSeg(this, ex, params, counts, ispec, null);
+            default : return new InferStateOld(this, ex, params, counts, ispec, null);
         }
     }
 

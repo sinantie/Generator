@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.CatFieldParams;
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
@@ -42,7 +43,7 @@ public class CatField extends Field implements Serializable
         return indexer.getObject(v);
     }
 
-    protected String[] valuesToStringArray()
+    public String[] valuesToStringArray()
     {
         String[] out = new String[indexer.getObjects().size()];
         return indexer.getObjects().toArray(out);
@@ -61,7 +62,7 @@ public class CatField extends Field implements Serializable
     }
 
     @Override
-    protected int V()
+    public int getV()
     {
         return indexer.size();
     }
@@ -69,6 +70,6 @@ public class CatField extends Field implements Serializable
     @Override
     public String toString()
     {
-        return Utils.fmts("@%s(%s)", name, V());
+        return Utils.fmts("@%s(%s)", name, getV());
     }
 }

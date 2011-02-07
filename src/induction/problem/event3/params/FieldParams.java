@@ -1,6 +1,7 @@
-package induction.problem.event3;
+package induction.problem.event3.params;
 
 import induction.problem.AParams;
+import induction.problem.event3.Example;
 import java.io.Serializable;
 
 /**

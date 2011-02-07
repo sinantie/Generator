@@ -1,8 +1,11 @@
-package induction.problem.event3;
+package induction.problem.event3.params;
 
 import induction.Options;
 import induction.problem.AParams;
 import induction.problem.ProbVec;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.EventType;
+import induction.problem.event3.EventTypeParams;
 
 /**
  *
@@ -22,12 +25,12 @@ public class Params extends AParams
     {
         super();
         this.opts = opts;
-        T = model.T();
-        W = model.W();
-        C = model.C;
+        T = model.getT();
+        W = Event3Model.W();
+        C = model.getC();
         this.model = model;
         this.eventTypes = model.getEventTypes();
-        trackChoices = ProbVec.zeros(model.PC);
+        trackChoices = ProbVec.zeros(model.getPC());
         addVec(trackChoices);
         trackParams = new TrackParams[C];
         for(int c = 0; c < C; c++)
@@ -39,7 +42,7 @@ public class Params extends AParams
         genericEmissions = ProbVec.zeros(W);
         addVec(genericEmissions);
         // Generate labels
-        genericLabelChoices = ProbVec.zeros(model.LB());
+        genericLabelChoices = ProbVec.zeros(Event3Model.LB());
         addVec(genericLabelChoices);
         // w, t -> probability of generating an event type given word
         // (not useful in practice)
@@ -65,20 +68,20 @@ public class Params extends AParams
                 // Select the none event more often
 //                trackParams[c].eventTypeChoices[t].addCount(model.none_t, opts.noneEventTypeSmoothing);
                 // Select the none event more often
-                trackParams[c].eventTypeChoices[t].addCount(T,
+                trackParams[c].getEventTypeChoices()[t].addCount(T,
                         opts.noneEventTypeSmoothing);
 
                 if (!Double.isNaN(opts.fixedNoneEventTypeProb))
                 {
 //                    trackParams[c].eventTypeChoices[t].setCountToObtainProb(model.none_t, opts.fixedNoneEventTypeProb);
-                    trackParams[c].eventTypeChoices[t].setCountToObtainProb(T,
+                    trackParams[c].getEventTypeChoices()[t].setCountToObtainProb(T,
                             opts.fixedNoneEventTypeProb);
                 }
             } // for c
 //            if (t != none_t) {
             if (t != T)
             {
-                for(int f = 0; f < eventTypes[t].F + 1; f++)
+                for(int f = 0; f < eventTypes[t].getF() + 1; f++)
                 {
                     // Select none field more often
                     eventTypeParams[t].fieldChoices[f].addCount(
@@ -118,19 +121,19 @@ public class Params extends AParams
     {
         String out = "";
         out += forEachProb(trackChoices,
-                getLabels(model.PC, "trackC ", model.pcstrArray()));
+                getLabels(model.getPC(), "trackC ", model.pcstrArray()));
         for(AParams params : trackParams)
         {
             out += params.output() + "\n";
         }
         out += forEachProb(genericEmissions,
-               getLabels(W, "genericE ", model.wordsToStringArray())) +
+               getLabels(W, "genericE ", Event3Model.wordsToStringArray())) +
                forEachProb(genericLabelChoices,
-               getLabels(model.LB(), "genericLabelC ", model.labelsToStringArray()));
+               getLabels(Event3Model.LB(), "genericLabelC ", Event3Model.labelsToStringArray()));
         if(opts.includeEventTypeGivenWord)
         {
             String[][] labels = getLabels(W, T + 1, "eventTypeChoice|w ",
-                    model.wordsToStringArray(), model.eventTypeStrArray());
+                    Event3Model.wordsToStringArray(), model.eventTypeStrArray());
             int i = 0;
             for(ProbVec v: eventTypeChoicesGivenWord)
             {

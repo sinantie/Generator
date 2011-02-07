@@ -1,5 +1,9 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.NumFieldParams;
+import induction.problem.event3.params.CatFieldParams;
+import induction.problem.event3.params.Params;
+import induction.problem.event3.params.Parameters;
 import induction.NgramModel;
 import induction.Utils;
 import induction.problem.AHypergraphInferState;

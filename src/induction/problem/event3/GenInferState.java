@@ -1,5 +1,9 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.NumFieldParams;
+import induction.problem.event3.params.CatFieldParams;
+import induction.problem.event3.params.Params;
+import induction.problem.event3.params.Parameters;
 import induction.BigDouble;
 import induction.Hypergraph;
 import induction.NgramModel;
@@ -718,10 +722,10 @@ public class GenInferState extends InferState
                 {
                     final int kIter = k;
                         final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
-                                params.trackParams[c].noneEventTypeEmissions.getCounts());
+                                params.trackParams[c].getNoneEventTypeEmissions().getCounts());
                         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
                         public double getWeight() {
-                                return get(params.trackParams[c].noneEventTypeEmissions, w) *
+                                return get(params.trackParams[c].getNoneEventTypeEmissions(), w) *
                                        getEventTypeGivenWord(((Event3Model)model).none_t(), w);
                         }
                         public void setPosterior(double prob) { }
@@ -766,7 +770,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public Pair getWeightLM(int rank)
                 {
-                    return getAtRank(params.trackParams[c].noneEventTypeEmissions, rank);
+                    return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }

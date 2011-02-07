@@ -1,8 +1,11 @@
-package induction.problem.event3;
+package induction.problem.event3.params;
 
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.Field;
+import induction.problem.event3.StrFieldParams;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,7 +49,7 @@ public class StrField extends Field implements Serializable
         String[] out = new String[ap.same()];
         for(int i = 0; i < out.length; i++)
         {
-            out[i] = (ap.labels.get(i) == Event3Model.none_lb) ? "" :
+            out[i] = (ap.labels.get(i) == Event3Model.getNone_lb()) ? "" :
                      "/"+ Event3Model.labelToString(ap.labels.get(i));
         }
         return Utils.mkString(out, " ");
@@ -76,7 +79,7 @@ public class StrField extends Field implements Serializable
     }
 
     @Override
-    protected int V()
+    public int getV()
     {
         return indexer.size(); // number of values
     }
@@ -84,7 +87,7 @@ public class StrField extends Field implements Serializable
     @Override
     public String toString()
     {
-        return Utils.fmts("$%s(%s)", name, V());
+        return Utils.fmts("$%s(%s)", name, getV());
     }
 
 
@@ -96,6 +99,16 @@ public class StrField extends Field implements Serializable
         {
             this.words = words;
             this.labels = labels;
+        }
+
+        public ArrayList<Integer> getWords()
+        {
+            return words;
+        }
+
+        public ArrayList<Integer> getLabels()
+        {
+            return labels;
         }
 
         int same()

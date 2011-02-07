@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.FieldParams;
 import induction.problem.ProbVec;
 
 /**

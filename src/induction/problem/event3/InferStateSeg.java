@@ -1,5 +1,8 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.Params;
+import induction.problem.event3.params.Parameters;
+import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
 import induction.NgramModel;
 import induction.problem.AModel;
@@ -7,9 +10,7 @@ import induction.problem.InferSpec;
 import induction.problem.event3.nodes.EventNode;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.NoneEventNode;
-import induction.problem.event3.nodes.PCEventsNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
-import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 
 /**
@@ -301,10 +302,10 @@ public class InferStateSeg extends Event3InferState
                           genNoneEvent(seqNo), recurseNode,
                           new Hypergraph.HyperedgeInfo<Widget>() {
                               public double getWeight() {
-                                      return get(cparams.eventTypeChoices[t0], ((Event3Model)model).none_t());
+                                      return get(cparams.getEventTypeChoices()[t0], ((Event3Model)model).none_t());
                               }
                               public void setPosterior(double prob) {
-                                   update(ccounts.eventTypeChoices[t0], ((Event3Model)model).none_t(), prob);
+                                   update(ccounts.getEventTypeChoices()[t0], ((Event3Model)model).none_t(), prob);
                               }
                               public Widget choose(Widget widget) {
     //                              for(int k = i; k < j; k++)
@@ -341,15 +342,15 @@ public class InferStateSeg extends Event3InferState
                           public double getWeight()
                           {
                               if(prevIndepEventTypes())
-                                  return get(cparams.eventTypeChoices[((Event3Model)model).none_t()],
+                                  return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
                                           eventTypeIndex) *
                                           (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
                               else
-                                  return get(cparams.eventTypeChoices[t0], eventTypeIndex) *
+                                  return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
                                           (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
                           }
                           public void setPosterior(double prob) {
-                               update(ccounts.eventTypeChoices[t0], eventTypeIndex, prob);
+                               update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
                           }
                           public Widget choose(Widget widget) {
 //                              for(int k = i; k < j; k++)

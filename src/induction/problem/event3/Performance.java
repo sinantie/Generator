@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.Parameters;
 import fig.basic.EvalResult;
 import induction.Utils;
 import induction.problem.APerformance;
@@ -32,7 +33,7 @@ public class Performance extends APerformance<Widget>
 
     private int T()
     {
-        return model.T();
+        return model.getT();
     }
 
     @Override

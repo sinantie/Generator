@@ -27,7 +27,7 @@ public class SymField extends Field
     }
 
     @Override
-    public int V()
+    public int getV()
     {
         return Event3Model.W();
     }

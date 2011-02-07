@@ -286,7 +286,7 @@ public abstract class AModel<Widget extends AWidget,
               case artificial: artificialInitParams(); break;
               default : throw new UnsupportedOperationException("Invalid init type");
           }
-          params.output(Execution.getFile("init.params"));
+          //params.output(Execution.getFile("init.params"));
       }
      
       LogInfo.end_track();
@@ -584,7 +584,7 @@ public abstract class AModel<Widget extends AWidget,
      * for a single example without the thread mechanism
      * @return a String with the aligned events' indices
      */
-    public String testLearn(String name, LearnOptions lopts)
+    public String testStagedLearn(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
         FullStatFig complexity = new FullStatFig();
@@ -595,6 +595,40 @@ public abstract class AModel<Widget extends AWidget,
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+    }
+
+    /**
+     * helper method for testing the learning output. Simulates learn(...) method
+     * for a number of examples without the thread mechanism.
+     * @return a String with the aligned events' indices of the last example
+     */
+    public String testInitLearn(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        int iter = 0;
+        InferState inferState = null;
+        while (iter < lopts.numIters)
+        {
+            testPerformance = newPerformance();
+            Params counts = newParams();
+//            Example ex = examples.get(0);
+            for(Example ex: examples)
+            {
+                inferState =  createInferState(ex, 1, counts, temperature,
+                    lopts, 0, complexity);
+                inferState.updateCounts();
+                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);            
+            }
+            // M step
+            params = counts;
+            params.saveSum();
+            params.optimise(lopts.smoothing);
+            
+            iter++;
+        }
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 

@@ -1,4 +1,4 @@
-package induction.problem.event3;
+package induction.problem.event3.params;
 
 public class Parameters
 {

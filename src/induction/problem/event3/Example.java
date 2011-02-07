@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.wordproblem.WordExample;
 import java.util.HashSet;
@@ -348,7 +349,7 @@ public class Example extends WordExample<Widget>
     // Compute number of events of each type we have
     void computeEventTypeCounts()
     {
-        eventTypeCounts = new int[model.T()];
+        eventTypeCounts = new int[model.getT()];
 //        for(Event event : events)
         for(int i = 0; i < events.length && events[i] != null; i++)
         {

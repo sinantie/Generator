@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.params.Parameters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

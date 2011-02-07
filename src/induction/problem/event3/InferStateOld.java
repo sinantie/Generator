@@ -31,9 +31,9 @@ import java.util.ArrayList;
  *
  * @author konstas
  */
-public class InferState extends Event3InferState
+public class InferStateOld extends Event3InferState
 {    
-    public InferState(Event3Model model, Example ex, Params params, Params counts, InferSpec ispec, NgramModel ngramModel)
+    public InferStateOld(Event3Model model, Example ex, Params params, Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec, ngramModel);
     }
@@ -979,7 +979,30 @@ public class InferState extends Event3InferState
     }
 
     protected void selectEnd(int j, EventsNode node, int i, int t0)
-    {       
-        //hypergraph.addEdge(node, genEvents(i, j, t0, opts.allowNoneEvent));
+    {
+        if (opts.jointEventTypeDecision)
+        {
+            for(int pc = 0; pc < ((Event3Model)model).PC; pc++) // Choose track bitmask pc
+            {
+                final int pcIter = pc;
+                hypergraph.addEdge(node, genPCEvents(i, j, t0, pc),
+                    new Hypergraph.HyperedgeInfo<Widget>() {
+                        public double getWeight() {
+                            return get(params.trackChoices, pcIter);
+                        }
+                        public void setPosterior(double prob) {
+                             update(counts.trackChoices, pcIter, prob);
+                        }
+                        public Widget choose(Widget widget) {
+                            return widget;
+                        }
+                    });
+            } // for
+        } // if
+        else
+        { // Do each track independently
+//            System.out.println(String.format("[%d] => [%d,%d]", i, i, j));
+            hypergraph.addEdge(node, genPCEvents(i, j, t0, wildcard_pc));
+        }
     }
 }

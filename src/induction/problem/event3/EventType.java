@@ -44,6 +44,11 @@ public class EventType implements Serializable
         return name;
     }
 
+    public int getF()
+    {
+        return F;
+    }
+
     protected String fieldToString(int f)
     {
         if (f == none_f)
