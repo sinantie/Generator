@@ -85,7 +85,7 @@ public class EventTypeParams extends AParams
         // f, g -> how to generate (g) a word in event f
         genChoices = ProbVec.zeros2(F, Parameters.G);
         addVec(genChoices);
-        // f, w -> express field f with word w (G_FIELD_NAME)
+        // f, w -> express field f with word w (G_FIELD_NAME) (not used)
         fieldNameEmissions = ProbVec.zeros2(F, W);
         addVec(fieldNameEmissions);
         fieldParams = new AParams[F];
@@ -165,15 +165,15 @@ public class EventTypeParams extends AParams
                getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString)) +
                forEachProb(noneFieldEmissions,
                getLabels(W, "noneFieldE " + typeToString + " ",
-                          model.wordsToStringArray()));
+                          Event3Model.wordsToStringArray()));
         String[][] labelsGen = getLabels(F, Parameters.G, "genC " + typeToString + " ",
                           fieldToString, Parameters.generateToString);
-        String[][] labelsEm = getLabels(F, W, "fieldNameE " + typeToString + " " ,
-                          fieldToString, model.wordsToStringArray());
+//        String[][] labelsEm = getLabels(F, W, "fieldNameE " + typeToString + " " ,
+//                          fieldToString, Event3Model.wordsToStringArray());
         for(int f = 0; f < F; f++)
         {
             out += forEachProb(genChoices[f], labelsGen[f]) +
-                   forEachProb(fieldNameEmissions[f], labelsEm[f]) +
+//                   forEachProb(fieldNameEmissions[f], labelsEm[f]) +
                    fieldParams[f].output() + "\n";
         }
         out += forEachProb(filters,

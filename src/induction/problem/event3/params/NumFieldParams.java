@@ -1,7 +1,5 @@
 package induction.problem.event3.params;
 
-import induction.problem.event3.params.FieldParams;
-import induction.problem.event3.params.Parameters;
 import induction.problem.ProbVec;
 import java.io.Serializable;
 

@@ -615,15 +615,9 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         if (!opts.useOnlyLabeledExamples || alignPathExists)
         {
             final HashSet<String> excludedFields = new HashSet<String>();
-            for(String s : opts.excludedFields)
-            {
-                excludedFields.add(s);
-            }
+            excludedFields.addAll(Arrays.asList(opts.excludedFields));
             final HashSet<String> excludedEventTypes = new HashSet<String>();
-            for(String s : opts.excludedEventTypes)
-            {
-                excludedEventTypes.add(s);
-            }
+            excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
 
             //Read events                        
             Event[] events = readEvents(Utils.readLines(path),

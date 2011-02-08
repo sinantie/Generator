@@ -439,7 +439,7 @@ public class InferState extends Event3InferState
                     return widget;
                 }
             });
-                // G_FIELD_GENERIC: generate based on event type
+                // G_FIELD_GENERIC: generate based on event typeqsudo
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
                     return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC) *
