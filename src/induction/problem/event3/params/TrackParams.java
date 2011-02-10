@@ -19,7 +19,7 @@ public class TrackParams extends AParams
     {
         super();
         this.model = model;
-        this.T = model.getT(); this.W = model.W(); this.c = c;
+        this.T = model.getT(); this.W = Event3Model.W(); this.c = c;
         // t_0, t -> choose event of type t given we were in type t_0
         eventTypeChoices = ProbVec.zeros2(T + 1, T + 1);
         addVec(eventTypeChoices);

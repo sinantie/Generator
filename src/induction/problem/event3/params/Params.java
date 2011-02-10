@@ -30,7 +30,8 @@ public class Params extends AParams
         this.model = model;
         this.eventTypes = model.getEventTypes();
         trackChoices = ProbVec.zeros(model.getPC());
-        addVec(trackChoices);
+//        addVec(trackChoices);
+        addVec("trackChoices", trackChoices);
         trackParams = new TrackParams[C];
         for(int c = 0; c < C; c++)
         {
@@ -39,14 +40,22 @@ public class Params extends AParams
         }
         // ideally for function words
         genericEmissions = ProbVec.zeros(W);
-        addVec(genericEmissions);
+//        addVec(genericEmissions);
+        addVec("genericEmissions", genericEmissions);
         // Generate labels
         genericLabelChoices = ProbVec.zeros(Event3Model.LB());
-        addVec(genericLabelChoices);
+//        addVec(genericLabelChoices);
+        addVec("genericLabelChoices", genericLabelChoices);
         // w, t -> probability of generating an event type given word
         // (not useful in practice)
-        eventTypeChoicesGivenWord = ProbVec.zeros2(W, T+1);
-        addVec(eventTypeChoicesGivenWord);
+//        if(opts.includeEventTypeGivenWord)
+        {
+            eventTypeChoicesGivenWord = ProbVec.zeros2(W, T+1);
+    //        addVec(eventTypeChoicesGivenWord);
+            addVec(getLabels(W, "genericE ", Event3Model.wordsToStringArray()),
+                    eventTypeChoicesGivenWord);
+        }
+
         // t -> generate words for event type t
         eventTypeParams = new EventTypeParams[T];
         for(int t = 0; t < T; t++)

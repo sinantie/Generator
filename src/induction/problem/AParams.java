@@ -6,7 +6,10 @@ import induction.problem.event3.Constants.TypeAdd;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 /**
@@ -17,15 +20,18 @@ public abstract class AParams implements Serializable
 {
     static final long serialVersionUID = -8920104157808512229L;
     protected List<ProbVec> vecs;
+    protected Map<String, ProbVec> vecsMap;
 
     public AParams()
     {
         vecs = new ArrayList();
+        vecsMap = new HashMap<String, ProbVec>();
     }
 
     public void setUniform(double x)
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.set(x);
         }
@@ -33,7 +39,8 @@ public abstract class AParams implements Serializable
 
     public void randomise(Random random, double noise)
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.set(random, noise, TypeAdd.RANDOM);
         }
@@ -41,7 +48,8 @@ public abstract class AParams implements Serializable
 
     public void addNoise(Random random, double noise)
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.set(random, noise, TypeAdd.NOISE);
         }
@@ -57,7 +65,8 @@ public abstract class AParams implements Serializable
 
     public void optimise(double smoothing)
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.addCount(smoothing).normalise();
         }
@@ -65,7 +74,8 @@ public abstract class AParams implements Serializable
 
     public void optimiseVar(double smoothing)
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.addCount(smoothing).expDigamma();
         }
@@ -73,7 +83,8 @@ public abstract class AParams implements Serializable
 
     public void saveSum()
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.saveSum();
         }
@@ -81,7 +92,8 @@ public abstract class AParams implements Serializable
 
     public void div(double scale)
     {
-        for(ProbVec v: vecs)
+//        for(ProbVec v: vecs)
+        for(ProbVec v: vecsMap.values())
         {
             v.div(scale);
         }
@@ -89,11 +101,21 @@ public abstract class AParams implements Serializable
 
     public void add(double scale, AParams that)
     {
-        final List<ProbVec> thatVecs = that.vecs;
-        for(int i = 0; i < vecs.size(); i++)
+//        final List<ProbVec> thatVecs = that.vecs;
+//        for(int i = 0; i < vecs.size(); i++)
+//        {
+//            vecs.get(i).addCount(thatVecs.get(i), scale);
+//        }
+        final Map<String, ProbVec> thatVecsMap = that.vecsMap;
+        for(Entry<String, ProbVec> entry: vecsMap.entrySet())
         {
-            vecs.get(i).addCount(thatVecs.get(i), scale);
+            entry.getValue().addCount(thatVecsMap.get(entry.getKey()), scale);
         }
+    }
+
+    protected void addVec(String key, ProbVec vec)
+    {
+        vecsMap.put(key, vec);
     }
 
     protected void addVec(ProbVec vec)
@@ -101,14 +123,32 @@ public abstract class AParams implements Serializable
         vecs.add(vec);
     }
 
+    protected void addVec(String[] keys, ProbVec[] vec)
+    {
+        for(int i = 0; i < keys.length; i++)
+        {
+            vecsMap.put(keys[i], vec[i]);
+        }
+    }
+
     protected void addVec(ProbVec[] vec)
     {
         vecs.addAll(Arrays.asList(vec));
     }
 
+    protected void addVecsMap(Map<String, ProbVec> vecsMap)
+    {
+        vecsMap.putAll(vecsMap);
+    }
+
     protected void addVec(List<ProbVec> vec)
     {
         vecs.addAll(vec);
+    }
+
+    public Map<String, ProbVec> getVecsMap()
+    {
+        return vecsMap;
     }
 
     public List<ProbVec> getVecs()
