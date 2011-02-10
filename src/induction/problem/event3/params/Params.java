@@ -52,7 +52,7 @@ public class Params extends AParams
         {
             eventTypeChoicesGivenWord = ProbVec.zeros2(W, T+1);
     //        addVec(eventTypeChoicesGivenWord);
-            addVec(getLabels(W, "genericE ", Event3Model.wordsToStringArray()),
+            addVec(getLabels(W, "eventTypeChoicesGivenWord", Event3Model.wordsToStringArray()),
                     eventTypeChoicesGivenWord);
         }
 

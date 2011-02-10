@@ -75,19 +75,25 @@ public class EventTypeParams extends AParams
 
          // f0, f -> choose field f given previous field f_0 (in event type t)
         fieldChoices = ProbVec.zeros2(F+2, F+2);
-        addVec(fieldChoices);
+//        addVec(fieldChoices);
+        addVec(getLabels(F+2, "fieldChoices " + typeToString + " ",
+                          fieldToString), fieldChoices);
         // Distribution over field sets
         fieldSetChoices = ProbVec.zeros(FS);
-        addVec(fieldSetChoices);
+//        addVec(fieldSetChoices);
+        addVec("fieldSetChoices", fieldSetChoices);
         // w -> directly use word w (for none_f)
         noneFieldEmissions = ProbVec.zeros(W);
-        addVec(noneFieldEmissions);
+//        addVec(noneFieldEmissions);
+        addVec("noneFieldEmissions", noneFieldEmissions);
         // f, g -> how to generate (g) a word in event f
         genChoices = ProbVec.zeros2(F, Parameters.G);
-        addVec(genChoices);
+//        addVec(genChoices);
+        addVec(getLabels(F, "genChoices " + typeToString + " ",
+                          fieldToString), genChoices);
         // f, w -> express field f with word w (G_FIELD_NAME) (not used)
-        fieldNameEmissions = ProbVec.zeros2(F, W);
-        addVec(fieldNameEmissions);
+//        fieldNameEmissions = ProbVec.zeros2(F, W);
+//        addVec(fieldNameEmissions);
         fieldParams = new AParams[F];
         for(int f = 0; f < F; f++)
         {
@@ -96,7 +102,8 @@ public class EventTypeParams extends AParams
         }
         // whether this type should be generated or not
         filters = ProbVec.zeros(Parameters.B);
-        addVec(filters);
+//        addVec(filters);
+        addVec("filters", filters);
     }
 
     public String efsstr(int efs)
