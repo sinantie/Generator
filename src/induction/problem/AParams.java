@@ -19,12 +19,12 @@ import java.util.Random;
 public abstract class AParams implements Serializable
 {
     static final long serialVersionUID = -8920104157808512229L;
-    protected List<ProbVec> vecs;
+//    protected List<ProbVec> vecs;
     protected Map<String, ProbVec> vecsMap;
 
     public AParams()
     {
-        vecs = new ArrayList();
+//        vecs = new ArrayList();
         vecsMap = new HashMap<String, ProbVec>();
     }
 
@@ -118,10 +118,10 @@ public abstract class AParams implements Serializable
         vecsMap.put(key, vec);
     }
 
-    protected void addVec(ProbVec vec)
-    {
-        vecs.add(vec);
-    }
+//    protected void addVec(ProbVec vec)
+//    {
+//        vecs.add(vec);
+//    }
 
     protected void addVec(String[] keys, ProbVec[] vec)
     {
@@ -131,20 +131,20 @@ public abstract class AParams implements Serializable
         }
     }
 
-    protected void addVec(ProbVec[] vec)
-    {
-        vecs.addAll(Arrays.asList(vec));
-    }
+//    protected void addVec(ProbVec[] vec)
+//    {
+//        vecs.addAll(Arrays.asList(vec));
+//    }
 
     protected void addVec(Map<String, ProbVec> vecsMap)
     {
-        vecsMap.putAll(vecsMap);
+        this.vecsMap.putAll(vecsMap);
     }
 
-    protected void addVec(List<ProbVec> vec)
-    {
-        vecs.addAll(vec);
-    }
+//    protected void addVec(List<ProbVec> vec)
+//    {
+//        vecs.addAll(vec);
+//    }
 
     public Map<String, ProbVec> getVecs()
     {
@@ -167,26 +167,26 @@ public abstract class AParams implements Serializable
                                      vIn.getOldSum(), vIn.getLabels());
             v.setSortedIndices();
         }
-        for(int i = 0; i < vecs.size(); i++)
-        {
-            vIn = vecs.get(i);
-            this.vecs.get(i).setData(vIn.getCounts(), vIn.getSum(),
-                                     vIn.getOldSum(), vIn.getLabels());
-            this.vecs.get(i).setSortedIndices();
-        }        
+//        for(int i = 0; i < vecs.size(); i++)
+//        {
+//            vIn = vecs.get(i);
+//            this.vecs.get(i).setData(vIn.getCounts(), vIn.getSum(),
+//                                     vIn.getOldSum(), vIn.getLabels());
+//            this.vecs.get(i).setSortedIndices();
+//        }
     }
 
-    public void setVecs(List<ProbVec> vecs)
-    {
-        ProbVec v;
-        for(int i = 0; i < vecs.size(); i++)
-        {
-            v = vecs.get(i);
-            this.vecs.get(i).setData(v.getCounts(), v.getSum(),
-                                     v.getOldSum(), v.getLabels());
-            this.vecs.get(i).setSortedIndices();
-        }
-    }
+//    public void setVecs(List<ProbVec> vecs)
+//    {
+//        ProbVec v;
+//        for(int i = 0; i < vecs.size(); i++)
+//        {
+//            v = vecs.get(i);
+//            this.vecs.get(i).setData(v.getCounts(), v.getSum(),
+//                                     v.getOldSum(), v.getLabels());
+//            this.vecs.get(i).setSortedIndices();
+//        }
+//    }
     
     public abstract String output();
 

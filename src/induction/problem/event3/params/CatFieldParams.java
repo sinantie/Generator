@@ -23,9 +23,13 @@ public class CatFieldParams extends FieldParams
         this.field = field;
         // v, w -> express value v with word w
         emissions = ProbVec.zeros2(field.getV(), W);
-        addVec(emissions);
+//        addVec(emissions);
+        addVec(getLabels(field.getV(), "catE " + prefix + " ",
+                    field.valuesToStringArray()), emissions);
         filters = ProbVec.zeros2(field.getV(), Parameters.B);
-        addVec(filters);
+//        addVec(filters);
+        addVec(getLabels(field.getV(), "catFilter " + prefix + " ",
+                    field.valuesToStringArray()), filters);
     }
 
     @Override

@@ -23,7 +23,9 @@ public class StrFieldParams extends FieldParams
         this.prefix = prefix;
         // lb1, lb2 -> probability of transforming label lb1 to lb2
         labelChoices = ProbVec.zeros2(LB, LB);
-        addVec(labelChoices);
+//        addVec(labelChoices);
+        addVec(getLabels(LB, "labelC " + prefix + " ",
+                          Event3Model.labelsToStringArray()), labelChoices);
     }
 
     @Override

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A model of events and their text summaries (ACL 2009).
@@ -158,7 +159,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 //                }
             //eventTypesBuffer = (ArrayList<EventType>) ois.readObject();
             params = newParams();
-            params.setVecs((List<ProbVec>) ois.readObject());
+//            params.setVecs((List<ProbVec>) ois.readObject());
+            params.setVecs((Map<String, ProbVec>) ois.readObject());
 //            }
             ois.close();
         }

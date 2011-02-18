@@ -21,15 +21,20 @@ public class NumFieldParams extends FieldParams implements Serializable
         this.prefix = prefix;
 
         methodChoices = ProbVec.zeros(Parameters.M); // m -> use method m to generate numbers
-        addVec(methodChoices);
+//        addVec(methodChoices);
+        addVec("numMethodChoices", methodChoices);
         leftNoiseChoices = ProbVec.zeros(Parameters.S); // s -> generate noise s
-        addVec(leftNoiseChoices);
+//        addVec(leftNoiseChoices);
+        addVec("numLNoiseChoices", leftNoiseChoices);
         rightNoiseChoices = ProbVec.zeros(Parameters.S);// s -> generate noise s
-        addVec(rightNoiseChoices);
+//        addVec(rightNoiseChoices);
+        addVec("numRNoiseChoices", rightNoiseChoices);
         // h, b -> If the field value is in histogram bin h,
         // should we talk about this field?
         filters = ProbVec.zeros2(Parameters.H, Parameters.B);
-        addVec(filters);
+//        addVec(filters);
+        addVec(getLabels(Parameters.H, "numFilter " + prefix + " ",
+                Parameters.histToString), filters);
     }
 
     @Override
