@@ -48,7 +48,7 @@ public class Params extends AParams
         addVec("genericLabelChoices", genericLabelChoices);
         // w, t -> probability of generating an event type given word
         // (not useful in practice)
-//        if(opts.includeEventTypeGivenWord)
+        if(opts.includeEventTypeGivenWord)
         {
             eventTypeChoicesGivenWord = ProbVec.zeros2(W, T+1);
     //        addVec(eventTypeChoicesGivenWord);

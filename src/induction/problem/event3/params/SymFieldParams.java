@@ -24,7 +24,7 @@ public class SymFieldParams extends AParams
         // lb -> probability of producing labels
         labelChoices = ProbVec.zeros(LB);
 //        addVec(labelChoices);
-        addVec("labelChoices", labelChoices);
+        addVec("labelChoices" + prefix, labelChoices);
     }
 
     @Override

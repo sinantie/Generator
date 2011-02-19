@@ -81,11 +81,11 @@ public class EventTypeParams extends AParams
         // Distribution over field sets
         fieldSetChoices = ProbVec.zeros(FS);
 //        addVec(fieldSetChoices);
-        addVec("fieldSetChoices", fieldSetChoices);
+        addVec("fieldSetChoices" + typeToString, fieldSetChoices);
         // w -> directly use word w (for none_f)
         noneFieldEmissions = ProbVec.zeros(W);
 //        addVec(noneFieldEmissions);
-        addVec("noneFieldEmissions", noneFieldEmissions);
+        addVec("noneFieldEmissions" + typeToString, noneFieldEmissions);
         // f, g -> how to generate (g) a word in event f
         genChoices = ProbVec.zeros2(F, Parameters.G);
 //        addVec(genChoices);
@@ -103,7 +103,7 @@ public class EventTypeParams extends AParams
         // whether this type should be generated or not
         filters = ProbVec.zeros(Parameters.B);
 //        addVec(filters);
-        addVec("filters", filters);
+        addVec("filters" + typeToString, filters);
     }
 
     public String efsstr(int efs)
