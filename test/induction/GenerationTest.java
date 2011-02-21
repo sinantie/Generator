@@ -42,8 +42,8 @@ public class GenerationTest
     public void setUp() 
     {
          String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
-                    + "-inputFileExt events -stagedParamsFile ../ContentSelectionJava/"
-                    + "results/output/model_3_gabor/0.exec/stage1.params.obj "
+                    + "-inputFileExt events -stagedParamsFile "
+                    + "results/output/model_3_gabor_mapVecs/1.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile data/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
@@ -71,13 +71,20 @@ public class GenerationTest
     public void testRun()
     {
         System.out.println("run");
+//        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
+//                            + "falls_church/2009-02-07-0.text\" genre=\"nw\"><p>"
+//                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
+//                            + "bleu_modified=\"0.8039183415894011\" "
+//                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
+//                            + "mostly cloudy , with a low around 53 . southwest "
+//                            + "wind between 9 and 14 mph .</seg></p></doc>";
         String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-                            + "falls_church/2009-02-07-0.text\" genre=\"nw\"><p>"
+                            + "glen_allen/2009-02-08-1.text\" genre=\"nw\"><p>"
                             + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
                             + "bleu_modified=\"0.8039183415894011\" "
                             + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-                            + "mostly cloudy , with a low around 53 . southwest "
-                            + "wind between 9 and 14 mph .</seg></p></doc>";
+                            + "mostly cloudy , with a low around 56 . south "
+                            + "wind between 3 and 6 mph .</seg></p></doc>";
         assertEquals(model.testGenerate(name, lopts).trim().replaceAll("\\n", ""), targetOutput);
     }
 }
