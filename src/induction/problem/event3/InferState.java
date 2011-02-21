@@ -49,7 +49,7 @@ public class InferState extends Event3InferState
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
         {
-            nums[w] = Constants.str2num(Event3Model.wordToString(words[w])) ;
+            nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
         }
         labels = ex.labels;
 
@@ -272,10 +272,12 @@ public class InferState extends Event3InferState
 
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
-                    return get(fparams.emissions[v], w);
+                    return get(fparams.emissions[v], w);// *
+                         //  get(fparams.emissions[w], v);
                 }
                 public void setPosterior(double prob) {
                     update(fcounts.emissions[v], w, prob);
+                    update(fcounts.valueEmissions[w], v, prob); // values Emissions
                 }
                 public Widget choose(Widget widget) {
                     return widget;
@@ -439,7 +441,7 @@ public class InferState extends Event3InferState
                     return widget;
                 }
             });
-                // G_FIELD_GENERIC: generate based on event typeqsudo
+                // G_FIELD_GENERIC: generate based on event type
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
                     return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC) *

@@ -707,6 +707,12 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                             null, null, null, text.length,
                             new GenWidget(trueEvents, text)));
                     } // if (generation WITH gold-standard)
+                    else if(opts.modelType == Options.ModelType.semParse)
+                    {
+                        examples.add(new Example(this, textPath, events,
+                            text, null, null, text.length,
+                            new GenWidget(trueEvents, text)));
+                    }
                     else
                     {
                         examples.add(new Example(this, textPath, events, text,
@@ -861,7 +867,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferStateOld(this, ex, params, counts, ispec, null);
+            case semParse : return new ParserInferState(this, ex, params, counts, ispec, ngramModel);
+            default : return new InferState(this, ex, params, counts, ispec, null);
         }
     }
 

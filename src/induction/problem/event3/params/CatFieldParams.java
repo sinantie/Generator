@@ -11,7 +11,7 @@ import induction.problem.event3.Event3Model;
 public class CatFieldParams extends FieldParams
 {
     static final long serialVersionUID = 5817675789060800073L;
-    public ProbVec[] emissions, filters;
+    public ProbVec[] emissions, filters, valueEmissions;
     private String prefix;
     private CatField field;
     private int W;
@@ -26,6 +26,11 @@ public class CatFieldParams extends FieldParams
 //        addVec(emissions);
         addVec(getLabels(field.getV(), "catE " + prefix + " ",
                     field.valuesToStringArray()), emissions);
+
+        valueEmissions = ProbVec.zeros2(W, field.getV());
+        addVec(getLabels(W, "catVE " + prefix + " ",
+                    Event3Model.wordsToStringArray()), valueEmissions);
+
         filters = ProbVec.zeros2(field.getV(), Parameters.B);
 //        addVec(filters);
         addVec(getLabels(field.getV(), "catFilter " + prefix + " ",
@@ -40,6 +45,13 @@ public class CatFieldParams extends FieldParams
                     field.valuesToStringArray(), Event3Model.wordsToStringArray());
         int i = 0;
         for(ProbVec v: emissions)
+        {
+            out += forEachProb(v, labels[i++]);
+        }
+        labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
+                    Event3Model.wordsToStringArray(), field.valuesToStringArray());
+        i = 0;
+        for(ProbVec v: valueEmissions)
         {
             out += forEachProb(v, labels[i++]);
         }

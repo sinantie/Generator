@@ -4,7 +4,7 @@ import java.util.*;
 import fig.basic.*;
 
 public class Options {
-  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, generate };
+  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, generate, semParse };
   public enum InitType { random, bait, supervised, uniformz, artificial, staged };
   public enum InputFormat { raw, tag, mrg, seg };
   public enum AlignmentModel { m1, m2, hmm };
