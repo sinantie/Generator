@@ -855,7 +855,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     {
         switch(opts.modelType)
         {
-            case generate : return new GenPerformance(this);
+            case generate : case semParse : return new GenPerformance(this);
             default : return new Performance(this);
         }        
     }
@@ -867,7 +867,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            case semParse : return new ParserInferState(this, ex, params, counts, ispec, ngramModel);
+            case semParse : return new ParserInferState(this, ex, params, counts, ispec, null);
             default : return new InferState(this, ex, params, counts, ispec, null);
         }
     }

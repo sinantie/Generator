@@ -35,7 +35,8 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
         createHypergraph(hypergraph);
         StopWatchSet.end();
 
-        if(opts.modelType == Options.ModelType.generate)
+        if(opts.modelType == Options.ModelType.generate ||
+           opts.modelType == Options.ModelType.semParse)
         {
             HyperpathResult result;
             if(opts.fullPredRandomBaseline)

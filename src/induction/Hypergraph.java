@@ -232,7 +232,8 @@ public class Hypergraph<Widget> {
                                      "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
                                      ? "<num>" : temp;  
             }
-            return ngramModel.getProb(ngramStr);
+//            return ngramModel.getProb(ngramStr);
+            return 1.0;
         }
 
         @Override

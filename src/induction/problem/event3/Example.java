@@ -137,7 +137,9 @@ public class Example extends WordExample<Widget>
                 }
                 if (e != Parameters.none_e)
                 {
-                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : model.eventTypeToString(events[e].getEventTypeIndex())).append("(").append(events[e].id).append(  ")[");
+                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : 
+                        model.eventTypeToString(events[e].getEventTypeIndex())).
+                        append("(").append(events[e].id).append(  ")[");
                 }
                 if (widget.fields == null)
                 {
@@ -168,7 +170,8 @@ public class Example extends WordExample<Widget>
                         }
                         for(int m = k; m < l; m++)
                         {
-                            String str = (widget.nums[m] > -1 ? widget.nums[m] : Event3Model.wordToString(widget.text[m])) + "";
+                            String str = (widget.nums[m] > -1 ? widget.nums[m] :
+                                Event3Model.wordToString(widget.text[m])) + "";
                             if (widget.gens != null && widget.gens[c][m] != -1)
                             {
                                 str += "_" + Parameters.short_gstr[widget.gens[c][m]];
@@ -239,7 +242,8 @@ public class Example extends WordExample<Widget>
         {
             buf.append("\t- True:");
             renderWidget(trueWidget, false, n, trueEvents, buf);
-            buf.append("\t").append(trueWidget.performance).append(" (").append(events.length).append(" possible events)");
+            buf.append("\t").append(trueWidget.performance).append(" (").
+                    append(events.length).append(" possible events)");
             /*if (trueWidget.eventPosterior != null)
                 buf.append("\t" + trueWidget.eventPosteriorStr(events));*/
         }
@@ -272,7 +276,9 @@ public class Example extends WordExample<Widget>
                 {
                     j += 1;
                 }
-                buf.append("\t").append((widget == trueWidget || isOkay(c, e, trueEvents)) ? "" : "*").append("[TRACK").append(c).append("] ");
+                buf.append("\t").append((widget == trueWidget || 
+                        isOkay(c, e, trueEvents)) ? "" : "*").append("[TRACK").
+                        append(c).append("] ");
                 if (e != Parameters.none_e)
                 {
                     buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : events[e]).append( "[");

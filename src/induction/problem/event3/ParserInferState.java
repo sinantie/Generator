@@ -76,6 +76,7 @@ public class ParserInferState extends GenInferState
         final int eventTypeIndex = ex.events[event].getEventTypeIndex();
         final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
         final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
+        final int w = words[i];
 
         if(hypergraph.addSumNode(node))
         {
@@ -89,11 +90,12 @@ public class ParserInferState extends GenInferState
                     public GenWidget choose(GenWidget widget) { return widget; }
                     public Pair getWeightLM(int rank)
                     {
-                         return getAtRank(eventTypeParams.noneFieldEmissions, rank);
+                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, w);
+                        p.label = null;
+                        return p;
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
-                    {
-                        widget.text[i] = word;
+                    {                        
                         return widget;
                     }
                 });
@@ -114,23 +116,7 @@ public class ParserInferState extends GenInferState
                     return widget;
                 }
                 });
-                // G_FIELD_GENERIC: generate based on event type
-
-                final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
-                        params.genericEmissions.getCounts());
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
-                    public double getWeight() {
-                        return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC) *
-                               get(params.genericEmissions, w) *
-                               getEventTypeGivenWord(eventTypeIndex, w);
-                    }
-                    public void setPosterior(double prob) { }
-                    public GenWidget choose(GenWidget widget) {
-                        widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
-                        widget.text[i] = w;
-                        return widget;
-                    }
-                });
+                // G_FIELD_GENERIC: generate based on event type  
 
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                     public double getWeight() {
@@ -140,13 +126,13 @@ public class ParserInferState extends GenInferState
                     public GenWidget choose(GenWidget widget) { return widget; }
                     public Pair getWeightLM(int rank)
                     {
-                        Pair p =  getAtRank(params.genericEmissions, rank);
+                        Pair p =  getAtRank(params.genericEmissions, w);
                         p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+                        p.label = null;
                         return p;
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
-                    {
-                        widget.text[i] = word;
+                    {                        
                         return widget;
                     }
                 });
