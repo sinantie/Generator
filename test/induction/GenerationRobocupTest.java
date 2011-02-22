@@ -19,13 +19,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class GenerationTest
+public class GenerationRobocupTest
 {
     LearnOptions lopts;
     String name;
     Event3Model model;
 
-    public GenerationTest() {
+    public GenerationRobocupTest() {
     }
 
     @BeforeClass
@@ -41,13 +41,13 @@ public class GenerationTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
+         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/model_3_gabor_mapVecs/1.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 15 "
-                    + "-ngramModelFile data/gabor-srilm-abs-3-gram.model.arpa "
+                    + "results/output/robocup/model_3_percy_NO_NULL_semPar/fold1/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -kBest 5 "
+                    + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
-                    + "eventType -allowNoneEvent -maxPhraseLength 5";
+                    + "eventType -maxPhraseLength 5 -useGoldStandardOnly";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
@@ -71,20 +71,12 @@ public class GenerationTest
     public void testRun()
     {
         System.out.println("run");
-//        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-//                            + "falls_church/2009-02-07-0.text\" genre=\"nw\"><p>"
-//                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
-//                            + "bleu_modified=\"0.8039183415894011\" "
-//                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-//                            + "mostly cloudy , with a low around 53 . southwest "
-//                            + "wind between 9 and 14 mph .</seg></p></doc>";
-        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-                            + "glen_allen/2009-02-08-1.text\" genre=\"nw\"><p>"
-                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
-                            + "bleu_modified=\"0.8039183415894011\" "
-                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-                            + "mostly cloudy , with a low around 56 . south "
-                            + "wind between 3 and 6 mph .</seg></p></doc>";
+        String targetOutput = "<doc docid=\"data/robocup-data/2001final-percy/2001final-train-106.text\""
+                            + " genre=\"nw\"><p>"
+                            + "<seg id=\"1\" bleu=\"0.9375\" "
+                            + "bleu_modified=\"0.9375\" "
+                            + "meteor=\"1.0\" ter=\"0.0\">"
+                            + "purple10 passes to purple11</seg></p></doc>";
         assertEquals(model.testGenerate(name, lopts).trim().replaceAll("\\n", ""), targetOutput);
     }
 }
