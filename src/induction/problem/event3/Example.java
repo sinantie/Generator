@@ -105,6 +105,15 @@ public class Example extends WordExample<Widget>
 //        return out + "\n\n" + widgetToNiceFullString(widget);
     }
 
+    String semParseWidgetToNiceFullString(GenWidget widget)
+    {
+        String out = name + 
+                     "\n" + semParseWidgetToSemantics(widget) + "\n";
+        if(trueWidget != null)
+            out += trueWidget.performance + "\n";
+        return out;
+    }
+
     String genWidgetToSGMLOutput(GenWidget widget)
     {
         String out = "<doc docid=\"" + name  + "\" genre=\"nw\">\n" +
@@ -118,6 +127,89 @@ public class Example extends WordExample<Widget>
                      "</seg>\n</p>\n</doc>";
 
         return out;
+    }
+
+    String semParseWidgetToSemantics(GenWidget widget)
+    {
+        int n = widget.events[0].length;
+        StringBuilder buf = new StringBuilder();
+        for(int c = 0; c < widget.events.length; c++)
+        {
+            int i = 0;
+            while (i < n) // Segment into entries
+            {
+                int e = widget.events[c][i];
+
+                int j = i + 1;
+                while (j < n && widget.events[c][j] == e)
+                {
+                    j += 1;
+                }
+                if (e != Parameters.none_e)
+                {
+                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : 
+                        model.eventTypeToString(events[e].getEventTypeIndex())).
+                        append("(").append(events[e].id).append(  ")[");
+                }
+//                if (widget.fields == null)
+//                {
+//                    for(int k = i; k < j; k++)
+//                    {
+//                        buf.append(Event3Model.wordToString(widget.text[k])).append(" ");
+//                    }
+//                    buf.deleteCharAt(buf.length() - 1);
+//                } // if
+//                else
+//                {
+                    int k = i;
+                    while (k < j) // Segment i...j into fields
+                    {
+                        int f = widget.fields[c][k];
+                        int l = k+1;
+                        while (l < j && widget.fields[c][l] == f)
+                        {
+                            l += 1;
+                        }
+                        if (k != i)
+                        {
+                            buf.append(" ");
+                        }
+                        if (f != -1)
+                        {
+                            buf.append(events[e].fieldToString(f)).append("[");
+                        }
+                        for(int m = k; m < l; m++)
+                        {
+                            // widget.text[m] is the value of the field
+                            String str = (widget.nums[m] > -1 ? widget.nums[m] :
+                                f < events[e].F ?
+                                events[e].getFields()[f].valueToString(widget.text[m]) : "") + "";
+                            if (widget.gens != null && widget.gens[c][m] != -1)
+                            {
+                                str += "_" + Parameters.short_gstr[widget.gens[c][m]];
+                            }
+                            if (widget.numMethods != null && widget.numMethods[c][m] != -1)
+                            {
+                                str += Parameters.short_mstr[widget.numMethods[c][m]];
+                            }
+                            buf.append(str).append(" ");
+                        }
+                        buf.deleteCharAt(buf.length() - 1);
+                        if (f != -1)
+                        {
+                            buf.append("] ");
+                        }
+                        k = l;
+                    }
+//                } // else
+                if (e != Parameters.none_e)
+                {
+                    buf.append("] ");
+                }
+                i = j;
+            } // while
+        } // for
+        return buf.toString();
     }
     String genWidgetToSemantics(GenWidget widget)
     {
@@ -137,7 +229,7 @@ public class Example extends WordExample<Widget>
                 }
                 if (e != Parameters.none_e)
                 {
-                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : 
+                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" :
                         model.eventTypeToString(events[e].getEventTypeIndex())).
                         append("(").append(events[e].id).append(  ")[");
                 }

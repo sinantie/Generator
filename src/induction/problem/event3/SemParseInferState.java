@@ -17,9 +17,9 @@ import induction.problem.event3.params.Params;
  *
  * @author konstas
  */
-public class ParserInferState extends GenInferState
+public class SemParseInferState extends GenInferState
 {
-    public ParserInferState(Event3Model model, Example ex, Params params,
+    public SemParseInferState(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec, ngramModel);
@@ -54,12 +54,13 @@ public class ParserInferState extends GenInferState
             }
             public Pair getWeightLM(int rank)
             {
-                return getAtRank(fparams.emissions[rank], w); // p(v | w)
+                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
             }
             public void setPosterior(double prob) { }
             public GenWidget choose(GenWidget widget) { return widget; }
             public GenWidget chooseLM(GenWidget widget, int word)
             {
+                System.out.println("word " + word);
                 widget.text[i] = word;
                 return widget;
             }
@@ -90,12 +91,15 @@ public class ParserInferState extends GenInferState
                     public GenWidget choose(GenWidget widget) { return widget; }
                     public Pair getWeightLM(int rank)
                     {
-                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, w);
-                        p.label = null;
-                        return p;
+//                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, w);
+//                        p.label = null;
+//                        return p;
+                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), Event3Model.getWordIndex("to"));
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
-                    {                        
+                    {
+                        System.out.println("null");
+                        widget.text[i] = -1;
                         return widget;
                     }
                 });
@@ -126,13 +130,19 @@ public class ParserInferState extends GenInferState
                     public GenWidget choose(GenWidget widget) { return widget; }
                     public Pair getWeightLM(int rank)
                     {
-                        Pair p =  getAtRank(params.genericEmissions, w);
-                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-                        p.label = null;
-                        return p;
+//                        Pair p =  getAtRank(params.genericEmissions, w);
+//                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+//                        p.label = null;
+//                        return p;
+                        double value = get(params.genericEmissions, w)*
+                                       get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+                        return new Pair(value, Event3Model.getWordIndex("pass"));
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
-                    {                        
+                    {
+                        System.out.println("generic");
+                        widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
+                        widget.text[i] = -1;
                         return widget;
                     }
                 });

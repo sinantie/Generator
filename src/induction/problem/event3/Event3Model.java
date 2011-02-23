@@ -381,6 +381,10 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             {
                 return ex.genWidgetToNiceFullString((GenWidget)widget);
             }
+            else if(opts.modelType == ModelType.semParse)
+            {
+                return ex.semParseWidgetToNiceFullString((GenWidget)widget);
+            }
             return ex.widgetToNiceFullString(widget);
         }
     }
@@ -855,7 +859,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     {
         switch(opts.modelType)
         {
-            case generate : case semParse : return new GenPerformance(this);
+            case generate : return new GenPerformance(this);
+            case semParse : return new SemParsePerformance(this);
             default : return new Performance(this);
         }        
     }
@@ -867,7 +872,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            case semParse : return new ParserInferState(this, ex, params, counts, ispec, null);
+            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, null);
             default : return new InferState(this, ex, params, counts, ispec, null);
         }
     }

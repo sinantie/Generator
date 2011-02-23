@@ -41,10 +41,10 @@ public class GenerationRobocupTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
+         String args = "-modelType generate -testInputLists test/testRobocupEvents "
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/robocup/model_3_percy_NO_NULL_semPar/fold1/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 5 "
+                    + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -useGoldStandardOnly";
