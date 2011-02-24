@@ -632,7 +632,7 @@ public class Hypergraph<Widget> {
         // repetition of event types, just ignore the derivation
         for(int i = 0; i < mask.length; i++)
         {
-            if(dest.get(i).derivations.size() == 0)
+            if(dest.get(i).derivations.isEmpty())
                 return true;
         }
         // A TrackNode has two children, a FieldsNode and an EventsNode.

@@ -63,7 +63,18 @@ public class GenInferState extends InferState
 
     @Override
     protected Widget newWidget()
-    {
+    {       
+//        ArrayList<Integer> tempList = new ArrayList<Integer>(ex.events.length);
+//        for(int i = 0; i < ex.events.length; i++)
+//        {
+//            if(ex.events[i] != null) // in case we use gold standard events only
+//                tempList.add(ex.events[i].getEventTypeIndex());
+//        }
+//        int[] eventTypeIndices = new int[tempList.size()];
+//        for(int i = 0; i < eventTypeIndices.length; i++)
+//        {
+//            eventTypeIndices[i] = tempList.get(i);
+//        }
         int[] eventTypeIndices = new int[ex.events.length];
         for(int i = 0; i < eventTypeIndices.length; i++)
         {

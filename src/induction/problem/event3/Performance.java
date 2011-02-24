@@ -83,7 +83,7 @@ public class Performance extends APerformance<Widget>
                 {
                     addResult(subResult, false, true);
                 }
-                if(trueHit.size() == 0)
+                if(trueHit.isEmpty())
                 {
                     for(Integer e : predHit)
                     {
@@ -91,7 +91,7 @@ public class Performance extends APerformance<Widget>
                         counts[T()][pt]++;
                     }
                 }
-                else if(predHit.size() == 0)
+                else if(predHit.isEmpty())
                 {
                     for(Integer e : trueHit)
                     {

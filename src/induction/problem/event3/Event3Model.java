@@ -598,11 +598,16 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         /*ugly way to use gold standard events only as input to the model*/
         if(opts.useGoldStandardOnly)
         {
+            ArrayList<Event> tempList = new ArrayList<Event>(events.length);
             for(int i = 0; i < events.length; i++)
             {
-                if(!goldEvents.contains(i))
-                    events[i] = null;
+//                if(!goldEvents.contains(i))
+//                    events[i] = null;
+                if(goldEvents.contains(i))
+                    tempList.add(events[i]);
             }
+            events = new Event[tempList.size()];
+            tempList.toArray(events);
         }
         return trueEvents;
     }
