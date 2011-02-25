@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.AExample;
 import induction.problem.event3.params.Parameters;
 import fig.basic.EvalResult;
 import induction.Utils;
@@ -34,6 +35,12 @@ public class Performance extends APerformance<Widget>
     private int T()
     {
         return model.getT();
+    }
+
+    @Override
+    protected void add(AExample example, Widget predWidget)
+    {
+        add((Widget)example.getTrueWidget(), predWidget);
     }
 
     @Override
@@ -187,6 +194,4 @@ public class Performance extends APerformance<Widget>
     {
         return result.f1();
     }
-
-
 }

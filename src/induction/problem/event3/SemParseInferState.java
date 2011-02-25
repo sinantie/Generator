@@ -60,7 +60,7 @@ public class SemParseInferState extends GenInferState
             public GenWidget choose(GenWidget widget) { return widget; }
             public GenWidget chooseLM(GenWidget widget, int word)
             {
-                System.out.println("word " + word);
+//                System.out.println("word " + word);
                 widget.text[i] = word;
                 return widget;
             }
@@ -98,7 +98,7 @@ public class SemParseInferState extends GenInferState
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
                     {
-                        System.out.println("null");
+//                        System.out.println("null");
                         widget.text[i] = -1;
                         return widget;
                     }
@@ -140,7 +140,7 @@ public class SemParseInferState extends GenInferState
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
                     {
-                        System.out.println("generic");
+//                        System.out.println("generic");
                         widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
                         widget.text[i] = -1;
                         return widget;

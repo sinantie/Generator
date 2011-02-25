@@ -351,7 +351,8 @@ public abstract class AModel<Widget extends AWidget,
             synchronized(trainPerformance)
             {
                 trainPerformance.add(inferState.stats());
-                trainPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+//                trainPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+                trainPerformance.add(ex, inferState.bestWidget);
                 if(trainPredOut != null)
                 {
                     trainPredOut.println(Utils.mkString(widgetToIntSeq(inferState.bestWidget), " "));
@@ -367,7 +368,8 @@ public abstract class AModel<Widget extends AWidget,
             synchronized(testPerformance)
             {
                 testPerformance.add(inferState.stats());
-                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+//                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+                testPerformance.add(ex, inferState.bestWidget);
                 if(testPredOut != null)
                 {
                     if(opts.modelType == Options.ModelType.generate)
@@ -594,7 +596,8 @@ public abstract class AModel<Widget extends AWidget,
         Example ex = examples.get(0);
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
-        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        testPerformance.add(ex, inferState.bestWidget);
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 
@@ -620,7 +623,8 @@ public abstract class AModel<Widget extends AWidget,
                 inferState =  createInferState(ex, 1, counts, temperature,
                     lopts, 0, complexity);
                 inferState.updateCounts();
-                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);            
+//                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+                testPerformance.add(ex, inferState.bestWidget);
             }
             // M step
             params = counts;
@@ -648,7 +652,8 @@ public abstract class AModel<Widget extends AWidget,
         Example ex = examples.get(0);
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
-        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        testPerformance.add(ex, inferState.bestWidget);
         return widgetToSGMLOutput(ex, inferState.bestWidget);
     }
 
@@ -668,7 +673,8 @@ public abstract class AModel<Widget extends AWidget,
         Example ex = examples.get(0);
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
-        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        testPerformance.add(ex, inferState.bestWidget);
         return widgetToFullString(ex, inferState.bestWidget);
     }
     

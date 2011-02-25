@@ -4,10 +4,9 @@ import induction.problem.event3.params.Parameters;
 import fig.basic.EvalResult;
 import induction.MyList;
 import induction.Utils;
-import java.util.ArrayList;
+import induction.problem.AExample;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -24,13 +23,15 @@ public class SemParsePerformance extends Performance
     }
 
     @Override
-    protected void add(Widget trueWidget, Widget predWidget)
+    protected void add(AExample example, Widget predWidget)
     {
+        Example ex = (Example)example;
+        Widget trueWidget = ex.getTrueWidget();
         if(trueWidget != null)
         {
  
             // Compute Event Precision, Recall, F-measure
-            EvalResult subResult = computeFmeasure((GenWidget)trueWidget, (GenWidget)predWidget);
+            EvalResult subResult = computeFmeasure(ex, (GenWidget)trueWidget, (GenWidget)predWidget);
             double precision = subResult.precision();
             double recall = subResult.recall();
             double f1 = subResult.f1();              
@@ -44,20 +45,19 @@ public class SemParsePerformance extends Performance
         }
     }
 
-    private EvalResult computeFmeasure(GenWidget trueWidget, GenWidget predWidget)
+    private EvalResult computeFmeasure(Example ex, GenWidget trueWidget, GenWidget predWidget)
     {
         EvalResult subResult = new EvalResult();
-        Collection<Integer> predHit = new ArrayList<Integer>();
-
-        ArrayList<MRToken> trueMrTokens = parseMrTokens(trueWidget);
-        ArrayList<MRToken> predMrTokens = parseMrTokens(predWidget);
-        Iterator predIterator = predMrTokens.iterator();
+        Collection<MRToken> predMrTokens = parseMrTokens(ex, predWidget);
+        Collection<MRToken> trueMrTokens = parseMrTokens(ex, trueWidget);
+        Iterator<MRToken> predIterator = predMrTokens.iterator();
         while(predIterator.hasNext())
         {
-            MRToken predMrToken = (MRToken) predIterator.next();
+            MRToken predMrToken = predIterator.next();
             if(trueMrTokens.contains(predMrToken))
             {
                 addResult(subResult, true, true);
+                trueMrTokens.remove(predMrToken);
             }
             else
             {
@@ -65,42 +65,9 @@ public class SemParsePerformance extends Performance
             }
             predIterator.remove();
         }
-
-        int prev = -5, cur;
-        for(int i = 0; i < predWidget.events[0].length; i++)
-        {
-            cur = new Integer(predWidget.events[0][i]);
-            if(Parameters.isRealEvent(cur))
-            {                
-                if(prev != cur)
-                    predHit.add(cur);
-                prev = cur;
-            }
-        }
-        // Get the things in common
-        HashSet<Integer> set = new HashSet<Integer>(trueWidget.trueEvents.size());
-        set.addAll(trueWidget.trueEvents);
-//        Iterator<Integer> it = trueWidget.trueEvents.iterator();
-        Iterator<Integer> it = set.iterator();
-        while(it.hasNext())
-        {
-            Integer e = it.next();
-            if(predHit.contains(e))
-            {
-                it.remove();
-                predHit.remove(e);
-                addResult(subResult, true, true);
-            }
-        } // for
-        // Record differences between two sets
-//        for(Integer e : trueWidget.trueEvents)
-        for(Integer e : set)
+        for(int i = 0; i < trueMrTokens.size(); i++)
         {
             addResult(subResult, true, false);
-        }
-        for(Integer e : predHit)
-        {
-            addResult(subResult, false, true);
         }
         return subResult;
     }
@@ -141,97 +108,30 @@ public class SemParsePerformance extends Performance
         Utils.write(path, output());
     }
 
-    private ArrayList<MRToken> parseMrTokens(GenWidget widget)
+    private Collection<MRToken> parseMrTokens(Example ex, GenWidget widget)
     {
         // we can only parse a single MR per sentence at the moment
         HashMap<Integer, MRToken> map = new HashMap<Integer, MRToken>();
         int curEvent, curField, curValue;
-        MRToken mr;
+
         for(int i = 0; i < widget.events[0].length; i++)
         {
-            curEvent = widget.events[0][i];
+            // ugly, but it means to get the index of the type of the predicted event
+            // at the i'th position of widget.events[0]
+            curEvent = ex.events[widget.events[0][i]].getEventTypeIndex();
             curField = widget.fields[0][i];
             curValue = widget.text[i];
-            if(!map.containsKey(i))
+            if(!map.containsKey(curEvent))
             {
-                mr = new MRToken(curEvent);
-                if(curField < model.getEventTypes()[curEvent].F)
-                    mr.addField(curField);
-                if(curValue > -1)
-                    mr.addValue(curField, curValue);
-                map.put(i, mr);
+                MRToken mr = new MRToken(model, curEvent);
+                mr.parseMrToken(curEvent, curField, curValue);
+                map.put(curEvent, mr);
             }
             else
-            {
-                mr = map.get(i);
-                if(curField < model.getEventTypes()[curEvent].F)
-                    mr.addField(curField);
-                if(curValue > -1)
-                    mr.addValue(curField, curValue);
+            {   
+                map.get(curEvent).parseMrToken(curEvent, curField, curValue);
             }
         }
-        return (ArrayList<MRToken>) map.values();
-    }
-
-    class MRToken
-    {
-        private int event;
-        private HashMap<Integer, ArrayList<Integer>> fields;
-
-        public MRToken(int event)
-        {
-            this.event = event;
-            this.fields = new HashMap<Integer, ArrayList<Integer>>();
-        }
-
-        public void addField(int fieldId)
-        {
-            if(!fields.containsKey(fieldId))
-                fields.put(fieldId, new ArrayList<Integer>());
-        }
-
-        public void addValue(int fieldId, int value)
-        {
-            fields.get(fieldId).add(value);
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            assert obj instanceof MRToken;
-            MRToken mr = (MRToken)obj;
-            if(this.event != mr.event)
-                return false;
-            for(Integer fieldId : this.fields.keySet())
-            {
-                if(!mr.fields.containsKey(fieldId))
-                    return false;
-                // normally not a list
-                ArrayList<Integer> thisValues = fields.get(fieldId);
-                ArrayList<Integer> mrValues = mr.fields.get(fieldId);
-                // change that, very naive
-                if(thisValues.size() != mrValues.size())
-                    return false;
-                for(Integer value : thisValues)
-                {
-                    if(!mrValues.contains(value))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int hash = 3;
-            hash = 79 * hash + this.event;
-            hash = 79 * hash + (this.fields != null ? this.fields.hashCode() : 0);
-            return hash;
-        }
-
-
-    }
+        return map.values();
+    }      
 }

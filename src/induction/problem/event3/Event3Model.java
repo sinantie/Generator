@@ -23,6 +23,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -73,6 +74,9 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     private static HashMap<String, Integer> wordRoleMap = new HashMap<String,Integer>();
     private int eventTypeIndex = -1;
     private static int other_role = -1;
+    // map of fields names and indices - used for semantic parsing. It is filled in
+    // at stagedInitParams
+    private HashMap<Integer, HashMap<String, Integer>> fieldsMap;
 
     public Event3Model(Options opts)
     {
@@ -122,6 +126,11 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         return none_lb;
     }
 
+    public HashMap<Integer, HashMap<String, Integer>> getFieldsMap()
+    {
+        return fieldsMap;
+    }
+
     public void stagedInitParams()
     {
         Utils.begin_track("stagedInitParams");
@@ -135,10 +144,21 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             eventTypes = (EventType[]) ois.readObject(); // NEW
             eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
             // fill in eventTypesNameIndexer
+            fieldsMap = new HashMap<Integer, HashMap<String, Integer>>(eventTypes.length);
             for(EventType e: eventTypes)
             {
                 eventTypeNameIndexer.add(e.name);
+                HashMap<String, Integer> fields = new HashMap<String, Integer>();
+                int i = 0;
+                for(Field f : e.getFields())
+                {
+                    fields.put(f.name, i++);
+                }
+                fields.put("none_f", i++);
+                fieldsMap.put(e.getEventTypeIndex(), fields);
             }
+
+
 //                ois.readObject(); ois.readObject();
 //
 //                for(EventType e : eventTypes)
@@ -540,7 +560,52 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         } // for
         Event[] e = new Event[events.size()];
         return events.toArray(e);
-    }    
+    }
+
+    /**
+     * Method for reading Gold Meaning Representations from flat file. The
+     * representation in the input is the same as in a normal .events file, but
+     * in this case there is no consistency as far as eventTypes are concerned.
+     * We allow events of the same eventType to have different number of fields.
+     * @param eventLines
+     * @param excludedEventTypes
+     * @param excludedFields
+     * @return
+     */
+    public Collection<MRToken> readMrTokens(String[] eventLines,
+                               HashSet<String> excludedEventTypes,
+                               HashSet<String> excludedFields)
+    {
+        ArrayList<MRToken> mrList = new ArrayList<MRToken>(eventLines.length);
+        // Format: <fieldtype><field>:<value>\t...
+        for(String line : eventLines)
+        {
+            // parse tokens
+            final Token[] tokens = readTokens(line, excludedEventTypes,
+                                              excludedFields);           
+            // eventTypeIndex is already defined from readTokens(...). It's
+            // guaranteed to have a value, since readMRTokens(...) is called
+            // after readEvents(...)
+            MRToken mr = new MRToken(eventTypeIndex);
+            HashMap<String, Integer> fields = fieldsMap.get(eventTypeIndex);
+            EventType currentEventType = eventTypesBuffer.get(eventTypeIndex);      
+            for(Token token: tokens)
+            {
+                if(token.tchar != 'i') // not id
+                {
+                    int fieldIndex = fields.get(token.fieldName);
+                    // if the field is of numeric type, then parse the value as integer,
+                    // else get the correct value index from the corresponding field
+                    mr.parseMrToken(fieldIndex,
+                            token.tchar == '#' ? Integer.parseInt(token.value) :
+                            currentEventType.getFields()[fieldIndex].
+                            parseValue(token.role, token.value));
+                }               
+            } // for                   
+            mrList.add(mr);
+        } // for
+        return mrList;
+    }
 
     private int[][] readTrueEvents(String alignPath, int N, Event[] events,
                                    ArrayList<Integer> lineToStartText)
@@ -618,8 +683,9 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         //examples.clear();
         final String textPath = path.replaceAll("\\."+ opts.inputFileExt,
                                                 ".text");
-        final String alignPath = path.replaceAll("\\."+ opts.inputFileExt,
-                                                ".align");
+        final String alignPath = opts.modelType != ModelType.semParse ? 
+            path.replaceAll("\\."+ opts.inputFileExt,".align") :
+            path.replaceAll("\\."+ opts.inputFileExt,".salign");
         final boolean alignPathExists = new File(alignPath).exists();
         final boolean textPathExists = new File(textPath).exists();
 
@@ -674,9 +740,21 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                 // Read alignments
                 if (alignPathExists)
                 {
-                    int[][] trueEvents = readTrueEvents(alignPath, text.length,
+                    // Decide on type of alignments. Correspondences and Generation,
+                    // assume alignment on event level only. Semantic Parsing
+                    // assumes alignment per MR token (event, fields and values)
+                    int[][] trueEvents = null;
+                    Collection<MRToken> trueMrTokens = null;
+                    if(opts.modelType != ModelType.semParse)
+                    {
+                        trueEvents = readTrueEvents(alignPath, text.length,
                             events, lineToStartText);
-
+                    }
+                    else
+                    {
+                        trueMrTokens = readMrTokens(Utils.readLines(path),
+                                        excludedEventTypes, excludedFields);
+                    }
                     int[] eventTypeIndices = new int[events.length];
                     for(int i = 0; i < eventTypeIndices.length && events[i] != null; i++)
                     {

@@ -54,6 +54,7 @@ public abstract class APerformance<Widget>
 
     protected abstract double getAccuracy();
     protected abstract void add(Widget trueWidget, Widget predWidget);
+    protected abstract void add(AExample trueWidget, Widget predWidget);
 
     protected abstract String output();
 
