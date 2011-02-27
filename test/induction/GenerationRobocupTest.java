@@ -47,7 +47,7 @@ public class GenerationRobocupTest
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
                     + "-ngramWrapper kylm -reorderType "
-                    + "eventType -maxPhraseLength 5 -useGoldStandardOnly -ngramSize 2";
+                    + "eventType -maxPhraseLength 5 -useGoldStandardOnly -ngramSize 2 -allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
