@@ -41,10 +41,11 @@ public class SemParseRobocupTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
+//         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
+         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/robocup/model_3_percy_NO_NULL_semPar_values/fold1/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 5 "
+                    + "-disallowConsecutiveRepeatFields -kBest 2 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
                     + "-ngramWrapper kylm -reorderType "
                     + "eventType -maxPhraseLength 5 -useGoldStandardOnly -newFieldPerWord 0,-1";
@@ -71,13 +72,7 @@ public class SemParseRobocupTest
     public void testRun()
     {
         System.out.println("run");
-        String targetOutput = "<doc docid=\"data/robocup-data/2001final-percy/2001final-train-106.text\""
-                            + " genre=\"nw\"><p>"
-                            + "<seg id=\"1\" bleu=\"0.9375\" "
-                            + "bleu_modified=\"0.9375\" "
-                            + "meteor=\"1.0\" ter=\"0.0\">"
-                            + "purple10 passes to purple11</seg></p></doc>";
-//        assertEquals(model.testGenerate(name, lopts).trim().replaceAll("\\n", ""), targetOutput);
-        System.out.println(model.testSemParse(name, lopts));
+//        assertEquals(model.testSemParse(name, lopts), 1.0, 0);
+        model.testSemParse(name, lopts);
     }
 }
