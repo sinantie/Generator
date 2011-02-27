@@ -29,15 +29,15 @@ public class SemParsePerformance extends Performance
         Widget trueWidget = ex.getTrueWidget();
         if(trueWidget != null)
         {
- 
+            SemParseWidget predW = (SemParseWidget) predWidget;
             // Compute Event Precision, Recall, F-measure
-            EvalResult subResult = computeFmeasure(ex, (GenWidget)trueWidget, (GenWidget)predWidget);
+            EvalResult subResult = computeFmeasure(ex, (SemParseWidget)trueWidget, predW);
             double precision = subResult.precision();
             double recall = subResult.recall();
             double f1 = subResult.f1();              
-            ((GenWidget)predWidget).scores[Parameters.PRECISION_METRIC] = precision;
-            ((GenWidget)predWidget).scores[Parameters.RECALL_METRIC] = recall;
-            ((GenWidget)predWidget).scores[Parameters.F_MEASURE_METRIC] = f1;
+            predW.scores[Parameters.PRECISION_METRIC] = precision;
+            predW.scores[Parameters.RECALL_METRIC] = recall;
+            predW.scores[Parameters.F_MEASURE_METRIC] = f1;
             trueWidget.performance = "\tPrecision : " + precision +
                                      "\tRecall: " + recall +
                                      "\tF-measure : " + f1;
@@ -45,11 +45,12 @@ public class SemParsePerformance extends Performance
         }
     }
 
-    private EvalResult computeFmeasure(Example ex, GenWidget trueWidget, GenWidget predWidget)
+    private EvalResult computeFmeasure(Example ex, SemParseWidget trueWidget,
+                                       SemParseWidget predWidget)
     {
         EvalResult subResult = new EvalResult();
         Collection<MRToken> predMrTokens = parseMrTokens(ex, predWidget);
-        Collection<MRToken> trueMrTokens = parseMrTokens(ex, trueWidget);
+        Collection<MRToken> trueMrTokens = trueWidget.trueMrTokens;
         Iterator<MRToken> predIterator = predMrTokens.iterator();
         while(predIterator.hasNext())
         {
@@ -108,7 +109,7 @@ public class SemParsePerformance extends Performance
         Utils.write(path, output());
     }
 
-    private Collection<MRToken> parseMrTokens(Example ex, GenWidget widget)
+    private Collection<MRToken> parseMrTokens(Example ex, SemParseWidget widget)
     {
         // we can only parse a single MR per sentence at the moment
         HashMap<Integer, MRToken> map = new HashMap<Integer, MRToken>();

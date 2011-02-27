@@ -20,7 +20,11 @@ public class Generation implements Runnable
         ModelInterface model = null;
         switch(opts.modelType)
         {
-            case generate : default : model = new Event3Model(opts); break;
+            case generate:
+            case semParse:
+            default:
+                model = new Event3Model(opts);
+                break;
         }
         model.init(InitType.staged, opts.initRandom, "");        
         model.readExamples();

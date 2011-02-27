@@ -652,7 +652,6 @@ public abstract class AModel<Widget extends AWidget,
         Example ex = examples.get(0);
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
-//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
         testPerformance.add(ex, inferState.bestWidget);
         return widgetToSGMLOutput(ex, inferState.bestWidget);
     }
@@ -660,22 +659,25 @@ public abstract class AModel<Widget extends AWidget,
     /**
      * helper method for testing the semantic parse output. Simulates generate(...) method
      * for a single example without the thread mechanism
-     * @return a String with the generated semantic output (contains results as well)
+     * @return the accuracy of the semantic parsing
      */
-    public String testSemParse(String name, LearnOptions lopts)
+    public double testSemParse(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
 //        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
-        Params counts = newParams();
-        Example ex = examples.get(0);
+        Params counts = newParams(); int i = 0;
+        for(Example ex: examples){
+//        Example ex = examples.get(0);
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
-//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
         testPerformance.add(ex, inferState.bestWidget);
-        return widgetToFullString(ex, inferState.bestWidget);
+            System.out.println(i);
+        }
+        //System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return testPerformance.getAccuracy();
     }
     
     class InitParams extends MyCallable

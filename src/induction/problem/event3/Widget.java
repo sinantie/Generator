@@ -101,7 +101,8 @@ public class Widget implements AWidget
             exists = false;
             for(Integer e : foreachEvent(k))
             {
-                if(Parameters.isRealEvent(e) && eventTypeAllowedOnTrack[c].contains(eventTypeIndices[e]))
+                if(Parameters.isRealEvent(e) &&
+                        eventTypeAllowedOnTrack[c].contains(eventTypeIndices[e]))
                 {
                     exists = true;
                 }

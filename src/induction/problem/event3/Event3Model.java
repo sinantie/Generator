@@ -752,7 +752,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     }
                     else
                     {
-                        trueMrTokens = readMrTokens(Utils.readLines(path),
+                        trueMrTokens = readMrTokens(Utils.readLines(alignPath),
                                         excludedEventTypes, excludedFields);
                     }
                     int[] eventTypeIndices = new int[events.length];
@@ -798,7 +798,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     {
                         examples.add(new Example(this, textPath, events,
                             text, null, null, text.length,
-                            new GenWidget(trueEvents, text)));
+                            new SemParseWidget(trueMrTokens)));
                     }
                     else
                     {
@@ -835,6 +835,11 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 //                         examples.add(new Example(this, textPath, events,
 //                        null, null, null, opts.averageTextLength, null));
                     } // else (generation WITH gold-standard)
+                    else if(opts.modelType == Options.ModelType.semParse)
+                    {
+                        examples.add(new Example(this, textPath, events,
+                            text, null, null, text.length, null));
+                    }
                     else
                     {
                         examples.add(new Example(this, textPath, events, text,

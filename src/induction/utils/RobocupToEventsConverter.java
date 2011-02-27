@@ -167,7 +167,7 @@ public class RobocupToEventsConverter
                     break;
                 }                
             }
-            if(mrlsIdList.size() == 0) // if not found in mrlMap
+            if(mrlsIdList.isEmpty()) // if not found in mrlMap
             {
                 out += String.format(".id:0\t.mrlId:UNKNOWN\t%s\n", processMrl(mrl));
                 System.out.println("not found in the mrl list. Unknown mrl id!");
@@ -192,7 +192,7 @@ public class RobocupToEventsConverter
         // Write .align file
         out = "0 "; // Cheating: robocup has only one line per example
         
-        out += mrlsIdList.size() == 0 ? "0" : listOfMrls.indexOf(mrl);
+        out += mrlsIdList.isEmpty() ? "0" : listOfMrls.indexOf(mrl);
         writeToFile(prefix + id + ".align", out);
     }
 

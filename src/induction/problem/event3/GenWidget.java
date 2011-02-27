@@ -24,10 +24,13 @@ public class GenWidget extends Widget
     {
         super(events, fields, gens, numMethods, null,
               eventTypeAllowedOnTrack, eventTypeIndices);
-        this.text = text;
-        nums = new int[text.length];
-        Arrays.fill(nums, -1);
-        scores = new double[Parameters.NUMBER_OF_METRICS];
+        if(text != null)
+        {
+            this.text = text;
+            nums = new int[text.length];
+            Arrays.fill(nums, -1);
+        }
+        scores = new double[Parameters.NUMBER_OF_METRICS_GEN];
     }
 
     /**

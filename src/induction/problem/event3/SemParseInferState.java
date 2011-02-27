@@ -1,6 +1,5 @@
 package induction.problem.event3;
 
-import induction.BigDouble;
 import induction.Hypergraph;
 import induction.NgramModel;
 import induction.problem.AModel;
@@ -39,6 +38,19 @@ public class SemParseInferState extends GenInferState
     }
 
     @Override
+    protected Widget newWidget()
+    {
+        int[] eventTypeIndices = new int[ex.events.length];
+        for(int i = 0; i < eventTypeIndices.length; i++)
+        {
+           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+        }
+        return new SemParseWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
+                               newMatrixOne(),
+                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
+    }
+
+    @Override
     protected CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
     {
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
@@ -54,6 +66,7 @@ public class SemParseInferState extends GenInferState
             }
             public Pair getWeightLM(int rank)
             {
+//                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
                 return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
             }
             public void setPosterior(double prob) { }
