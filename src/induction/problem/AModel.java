@@ -209,8 +209,9 @@ public abstract class AModel<Widget extends AWidget,
 
     private boolean validName(String path)
     {
-        return Utils.isEmpty(opts.inputFileExt) ||
-               path.endsWith(opts.inputFileExt);
+        return (Utils.isEmpty(opts.inputFileExt) ||
+               path.endsWith(opts.inputFileExt)) &&
+               !path.startsWith("#");
     }
 
     private void addPath(String path)
@@ -674,7 +675,7 @@ public abstract class AModel<Widget extends AWidget,
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
-            System.out.println(i);
+            System.out.println(i++);
         }
         //System.out.println(widgetToFullString(ex, inferState.bestWidget));
         return testPerformance.getAccuracy();
