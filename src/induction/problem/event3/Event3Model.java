@@ -572,11 +572,12 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
      * @param excludedFields
      * @return
      */
-    public Collection<MRToken> readMrTokens(String[] eventLines,
+    public Collection<MRToken> readMrTokens(String[] eventLines, Event[] events,
                                HashSet<String> excludedEventTypes,
                                HashSet<String> excludedFields)
     {
         ArrayList<MRToken> mrList = new ArrayList<MRToken>(eventLines.length);
+        ArrayList<Integer> goldList = new ArrayList<Integer>(eventLines.length);
         // Format: <fieldtype><field>:<value>\t...
         for(String line : eventLines)
         {
@@ -600,10 +601,27 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                             token.tchar == '#' ? Integer.parseInt(token.value) :
                             currentEventType.getFields()[fieldIndex].
                             parseValue(token.role, token.value));
-                }               
+                }
+                else
+                {
+                    goldList.add(Integer.valueOf(token.value));
+                }
             } // for                   
             mrList.add(mr);
         } // for
+        if(opts.useGoldStandardOnly)
+        {
+            ArrayList<Event> tempList = new ArrayList<Event>(events.length);
+            for(int i = 0; i < events.length; i++)
+            {
+//                if(!goldEvents.contains(i))
+//                    events[i] = null;
+                if(goldList.contains(events[i].id))
+                    tempList.add(events[i]);
+            }
+            events = new Event[tempList.size()];
+            tempList.toArray(events);
+        }
         return mrList;
     }
 
@@ -733,8 +751,16 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                 for(int i = 0; i < text.length; i++)
                 {
                     labels[i] = getLabelIndex(textStr, i);
-                    text[i] = posTagger == null ? getWordIndex(textStr.get(i)) :
-                        getWordIndex(taggedTextArray[i]);
+                    String word = posTagger == null ? textStr.get(i) : taggedTextArray[i];
+                    if(opts.modelType == ModelType.semParse && opts.modelUnkWord)
+                    {                        
+                        text[i] = wordIndexer.contains(word) ?
+                            getWordIndex(word) : getWordIndex("<unk>");
+                    }
+                    else
+                    {
+                        text[i] = getWordIndex(word);
+                    }
                 }
 
                 // Read alignments
@@ -752,7 +778,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     }
                     else
                     {
-                        trueMrTokens = readMrTokens(Utils.readLines(alignPath),
+                        trueMrTokens = readMrTokens(Utils.readLines(alignPath), events, 
                                         excludedEventTypes, excludedFields);
                     }
                     int[] eventTypeIndices = new int[events.length];
@@ -872,6 +898,11 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         // if InitType == staged ignore eventTypesBuffer, everything is already loaded
         eventTypesBuffer.clear();
         eventTypeAllowedOnTrack = new HashSet[C];
+
+        if(opts.modelUnkWord)
+        {
+            wordIndexer.add("<unk>");
+        }
 
         Utils.begin_track("C=%s tracks", C);
         for(int c = 0; c < C; c++)

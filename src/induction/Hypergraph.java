@@ -1,5 +1,6 @@
 package induction;
 
+import induction.Options.ModelType;
 import java.util.*;
 import fig.basic.*;
 import induction.Options.ReorderType;
@@ -219,6 +220,8 @@ public class Hypergraph<Widget> {
       
         private double getLMProb(List<Integer> ngram)
         {
+            if(modelType == ModelType.semParse)
+                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
@@ -232,8 +235,8 @@ public class Hypergraph<Widget> {
                                      "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
                                      ? "<num>" : temp;  
             }
-//            return ngramModel.getProb(ngramStr);
-            return 1.0;
+
+            return ngramModel.getProb(ngramStr);
         }
 
         @Override
@@ -268,6 +271,7 @@ public class Hypergraph<Widget> {
   public boolean numbersAsSymbol = true, allowConsecutiveEvents;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
+  private Options.ModelType modelType;
   // Start and end nodes
   private final Object startNode = addNodeAndReturnIt("START", NodeType.sum); // use sum or prod versions
   public final Object endNode = addNodeAndReturnIt("END", NodeType.sum);
@@ -276,7 +280,7 @@ public class Hypergraph<Widget> {
   private final NodeInfo endNodeInfo = getNodeInfoOrFail(endNode);
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
 
-  public  void setupForGeneration(boolean debug, boolean allowEmptyNodes,
+  public  void setupForGeneration(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, int NUM,
                                         int ELIDED_SYMBOL, int START_SYMBOL,
@@ -286,6 +290,7 @@ public class Hypergraph<Widget> {
         this.debug = debug;
         // Need this because the pc sets might be inconsistent with the types
         this.allowEmptyNodes = allowEmptyNodes;
+        this.modelType = modelType;
         this.K = K;
         this.M = M;
         this.reorderType = reorderType;

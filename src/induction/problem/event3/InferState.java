@@ -467,7 +467,7 @@ public class InferState extends Event3InferState
     protected FieldNode genField(int begin, int end, int c, int event, int field)
     {
         FieldNode node = new FieldNode(begin, end, c, event, field);
-        if(opts.lmIntegration) // integrate bigram probabilities between words
+        if(opts.bigramsAtWordLevel) // integrate bigram probabilities between words
         {
 //            if(hypergraph.addSumNode(node))
 //            {

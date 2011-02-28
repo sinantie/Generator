@@ -654,6 +654,7 @@ public abstract class AModel<Widget extends AWidget,
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
         return widgetToSGMLOutput(ex, inferState.bestWidget);
     }
 
@@ -672,12 +673,16 @@ public abstract class AModel<Widget extends AWidget,
         Params counts = newParams(); int i = 0;
         for(Example ex: examples){
 //        Example ex = examples.get(0);
+            try{
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
-            System.out.println(i++);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            }catch(Exception e){System.out.println(i+ " " + e.getMessage());
+            e.printStackTrace();}
+            i++;
         }
-        //System.out.println(widgetToFullString(ex, inferState.bestWidget));
+
         return testPerformance.getAccuracy();
     }
     

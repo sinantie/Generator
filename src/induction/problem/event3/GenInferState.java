@@ -18,6 +18,7 @@ import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.nodes.FieldsNode;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
+import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class GenInferState extends InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(opts.debug, true, opts.kBest, opts.ngramSize,
+        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 Event3Model.getWordIndex("<num>"),
@@ -709,6 +710,41 @@ public class GenInferState extends InferState
                 }
             } // if
         } // for
+    }
+
+    // Default: don't generate any event (there should be only one of these nodes)
+    // Note: we don't need any state, but include i and c so that we get distinct
+    // nodes (see note in Hypergraph)
+    @Override
+    protected Object selectNoEvents(int i, int c)
+    {
+        if (ex.events.length == 0)
+            return hypergraph.endNode;
+        else
+        {
+            SelectNoEventsNode node = new SelectNoEventsNode(i, c);
+            if (hypergraph.addProdNode(node))
+            {
+                for(int e = 0; e < ex.events.length && ex.events[e] != null; e++)
+                {
+                    final int eventTypeIndex = ex.events[e].getEventTypeIndex();
+                    final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                        public double getWeight() {
+                                return get(eventTypeParams.filters, Parameters.B_FALSE);
+                        }
+                        public void setPosterior(double prob) {}
+                        public Pair getWeightLM(int rank)
+                        {
+                            return new Pair(getWeight(), null);
+                        }
+                        public GenWidget chooseLM(GenWidget widget, int word) {return widget;}
+                        public GenWidget choose(GenWidget widget) {return widget;}
+                    });
+                } // for
+            } // if
+            return node;
+        } // else
     }
 
     @Override

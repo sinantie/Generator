@@ -116,10 +116,11 @@ public class Options {
   @Option(gloss="n-gram size (default=3)") public int ngramSize = 3;
   @Option(gloss="n-gram wrapper (default=srilm)") public NgramWrapper ngramWrapper = NgramWrapper.srilm;
   @Option(gloss="allow none-event (default=false)") public boolean allowNoneEvent = false;
-  @Option(gloss="allow consecutive events (default=true)") public boolean allowConsecutiveEvents = false;
+  @Option(gloss="allow consecutive events (default=false)") public boolean allowConsecutiveEvents = false;
   @Option public ReorderType reorderType = ReorderType.eventType;
+  @Option(gloss="model unknown word (default=false)") public boolean modelUnkWord = false;
 
-  @Option(gloss="allow bigrams on word level (default=false)") public boolean lmIntegration = false;
+  @Option(gloss="allow bigrams on word level (default=false)") public boolean bigramsAtWordLevel = false;
   @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean posAtSurfaceLevel = false;
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;
 

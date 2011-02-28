@@ -67,7 +67,10 @@ public class SemParseInferState extends GenInferState
             public Pair getWeightLM(int rank)
             {
 //                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
-                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
+                Pair p = getAtRank(fparams.valueEmissions[w], rank);
+                p.value *=
+                        (w == Event3Model.getWordIndex("<unk>")? 0.000001 : 1.0);
+                return p;
             }
             public void setPosterior(double prob) { }
             public GenWidget choose(GenWidget widget) { return widget; }
