@@ -17,7 +17,7 @@ import org.junit.runners.Suite;
  * @author konstas
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({induction.InductionTest.class,induction.StagedInductionTest.class,induction.GenerationWeatherTest.class})
+@Suite.SuiteClasses({induction.WeatherInductionTest.class,induction.WeatherStagedInductionTest.class,induction.GenerationWeatherTest.class})
 public class TestSuite {
 
     @BeforeClass

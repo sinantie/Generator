@@ -7,3 +7,4 @@
 #data/robocup-data/2001final-percy/2001final-train-642.events - gen->event reordering issue (fixed with allowConsecutive events), semPar->missing word
 #data/robocup-data/2001final-percy/2001final-train-72.events - gen->missing value, semPar->missing word
 
+data/robocup-data/2001final-percy/2001final-train-642.events
