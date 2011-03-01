@@ -172,7 +172,7 @@ public abstract class AModel<Widget extends AWidget,
         {
             opts.trainStart = numExamples;
         }
-        read(opts.inputPaths, opts.inputLists);
+        read(opts.inputPaths, opts.inputLists, opts.excludeLists);
         if (setTrainTest)
         {
             opts.trainEnd = numExamples;
@@ -185,7 +185,7 @@ public abstract class AModel<Widget extends AWidget,
         {
             opts.testStart = numExamples;
         }
-        read(opts.testInputPaths, opts.testInputLists);
+        read(opts.testInputPaths, opts.testInputLists, opts.excludeLists);
         if (setTrainTest)
         {
             opts.testEnd = numExamples;
@@ -235,7 +235,8 @@ public abstract class AModel<Widget extends AWidget,
         }
     }
 
-    private void read(ArrayList<String> inputPaths, ArrayList<String> inputLists)
+    private void read(ArrayList<String> inputPaths, ArrayList<String> inputLists,
+                      ArrayList<String> excludeLists)
     {
         for(String path : inputPaths)
         {
@@ -245,7 +246,7 @@ public abstract class AModel<Widget extends AWidget,
         {
             for(String line : Utils.readLines(path))
             {
-                if(needMoreExamples())
+                if(needMoreExamples() && !excludeLists.contains(line))
                 {
 //                    addPath(pathName(path, line));
                     addPath(line);

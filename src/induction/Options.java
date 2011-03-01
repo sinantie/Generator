@@ -15,6 +15,7 @@ public class Options {
   @Option public ArrayList<String> inputLists = new ArrayList();
   @Option public ArrayList<String> testInputPaths = new ArrayList();
   @Option public ArrayList<String> testInputLists = new ArrayList();
+  @Option public ArrayList<String> excludeLists = new ArrayList();
   @Option public String inputFileExt;
   @Option public String inputFileExt2; // For word alignment, the extension of the other language
   @Option(gloss="Description file for initializing artificial parameters") public String artificialDescriptionPath;

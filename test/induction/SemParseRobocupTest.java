@@ -13,7 +13,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -49,7 +48,7 @@ public class SemParseRobocupTest
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
                     + "-ngramWrapper kylm -reorderType eventType "
                     + "-maxPhraseLength 5 -useGoldStandardOnly "
-                    + "-modelUnkWord -newFieldPerWord 0,-1";
+                    + "-modelUnkWord -newFieldPerWord 0,-1 -excludeLists  robocupLists/robocupAllUnreachable";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
