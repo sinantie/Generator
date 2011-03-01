@@ -68,8 +68,8 @@ public class SemParseInferState extends GenInferState
             {
 //                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
                 Pair p = getAtRank(fparams.valueEmissions[w], rank);
-                p.value *=
-                        (w == Event3Model.getWordIndex("<unk>")? 0.000001 : 1.0);
+//                p.value *=
+//                        (w == Event3Model.getWordIndex("<unk>")? 0.1 : 1.0);
                 return p;
             }
             public void setPosterior(double prob) { }
@@ -110,7 +110,7 @@ public class SemParseInferState extends GenInferState
 //                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, w);
 //                        p.label = null;
 //                        return p;
-                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), Event3Model.getWordIndex("to"));
+                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), null);
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
                     {
@@ -138,30 +138,30 @@ public class SemParseInferState extends GenInferState
                 });
                 // G_FIELD_GENERIC: generate based on event type  
 
-                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                    public double getWeight() {
-                        return 1.0;
-                    }
-                    public void setPosterior(double prob) { }
-                    public GenWidget choose(GenWidget widget) { return widget; }
-                    public Pair getWeightLM(int rank)
-                    {
-//                        Pair p =  getAtRank(params.genericEmissions, w);
-//                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-//                        p.label = null;
-//                        return p;
-                        double value = get(params.genericEmissions, w)*
-                                       get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-                        return new Pair(value, Event3Model.getWordIndex("pass"));
-                    }
-                    public GenWidget chooseLM(GenWidget widget, int word)
-                    {
-//                        System.out.println("generic");
-                        widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
-                        widget.text[i] = -1;
-                        return widget;
-                    }
-                });
+//                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                    public double getWeight() {
+//                        return 1.0;
+//                    }
+//                    public void setPosterior(double prob) { }
+//                    public GenWidget choose(GenWidget widget) { return widget; }
+//                    public Pair getWeightLM(int rank)
+//                    {
+////                        Pair p =  getAtRank(params.genericEmissions, w);
+////                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+////                        p.label = null;
+////                        return p;
+//                        double value = get(params.genericEmissions, w)*
+//                                       get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+//                        return new Pair(value,  Event3Model.getWordIndex("<s>"));
+//                    }
+//                    public GenWidget chooseLM(GenWidget widget, int word)
+//                    {
+////                        System.out.println("generic");
+//                        widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
+//                        widget.text[i] = 1;
+//                        return widget;
+//                    }
+//                });
             } // else
         }
         return node;

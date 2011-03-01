@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -65,6 +66,7 @@ public abstract class AModel<Widget extends AWidget,
     protected abstract InferState newInferState(Example ex, Params params,
                                                 Params counts, InferSpec ispec);
 
+    @Override
     public void logStats()
     {
         Execution.putLogRec("numExamples", examples.size());
@@ -77,6 +79,7 @@ public abstract class AModel<Widget extends AWidget,
 
     protected abstract Example genExample(int index);
 
+    @Override
     public void genExamples()
     {
         params.output(Execution.getFile("gen.params"));
@@ -148,6 +151,7 @@ public abstract class AModel<Widget extends AWidget,
         }
     }
 
+    @Override
     public void readExamples()
     {
         Utils.begin_track("Reading examples");
@@ -172,7 +176,13 @@ public abstract class AModel<Widget extends AWidget,
         {
             opts.trainStart = numExamples;
         }
-        read(opts.inputPaths, opts.inputLists, opts.excludeLists);
+        ArrayList<String> excludeLists = new ArrayList();
+        if(opts.excludeLists != null)
+        {
+            String[] temp = Utils.readLines(opts.excludeLists);
+            excludeLists.addAll(Arrays.asList(temp));
+        }
+        read(opts.inputPaths, opts.inputLists, excludeLists);
         if (setTrainTest)
         {
             opts.trainEnd = numExamples;
@@ -185,7 +195,7 @@ public abstract class AModel<Widget extends AWidget,
         {
             opts.testStart = numExamples;
         }
-        read(opts.testInputPaths, opts.testInputLists, opts.excludeLists);
+        read(opts.testInputPaths, opts.testInputLists, excludeLists);
         if (setTrainTest)
         {
             opts.testEnd = numExamples;
@@ -263,10 +273,12 @@ public abstract class AModel<Widget extends AWidget,
         }
         return new File(path).getParent() + "/" + f;
     }
+    @Override
     public void preInit() {}
 
     public abstract void stagedInitParams();
     
+    @Override
     public void init(InitType initType, Random initRandom, String name)
     {
       Utils.begin_track("Init parameters: %s", initType);
@@ -517,6 +529,7 @@ public abstract class AModel<Widget extends AWidget,
         Execution.putOutput("currIter", lopts.numIters);
     }
 
+    @Override
     public void generate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel; // HACK
@@ -700,6 +713,7 @@ public abstract class AModel<Widget extends AWidget,
             this.counts = counts;
         }     
 
+        @Override
         public Object call() throws Exception
         {
             if(isLog()) Utils.begin_track("Example %s/%s", Utils.fmt(i), Utils.fmt(examples.size()));
@@ -730,6 +744,7 @@ public abstract class AModel<Widget extends AWidget,
             this.iter = iter;
             this.complexity = complexity;
         }
+        @Override
         public Object call() throws Exception
         {
             processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);

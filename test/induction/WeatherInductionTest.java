@@ -45,7 +45,7 @@ public class WeatherInductionTest
                 + "gaborLists/weatherEvalScenariosRandomBest12Events -inputFileExt events "
                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                 + "-disallowConsecutiveRepeatFields "
-                + "-dontCrossPunctuation -Options.stage1.smoothing 0.1";
+                + "-dontCrossPunctuation -Options.stage1.smoothing 0.1 -fixedGenericProb 0";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

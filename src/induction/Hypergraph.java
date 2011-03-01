@@ -479,14 +479,7 @@ public class Hypergraph<Widget> {
             v = topologicalOrdering.get(i);
             if(v != endNodeInfo)
             {
-                // don't allow repetition of same event types
-//                if(v.node instanceof FieldsNode)
-//                {
-////                    kBest(v, ex.events[((FieldsNode)v.node).getEvent()].getEventTypeIndex() );
-//                    // event re-ordering
-//                    kBest(v, ((FieldsNode)v.node).getEvent());
-//                }
-//                else
+                // don't allow repetition of same event types or events
                 if (v.node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
                 {
                     if(reorderType == ReorderType.eventType)

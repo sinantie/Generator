@@ -238,7 +238,8 @@ public class GenInferState extends InferState
                 public GenWidget chooseLM(GenWidget widget, int word)
                 {
                     widget.numMethods[c][i] = Parameters.M_ROUNDDOWN;
-                    widget.text[i] = word;
+                    widget.nums[i] = roundDown(v);
+//                    widget.text[i] = word;
                     return widget;
                 }
             });
