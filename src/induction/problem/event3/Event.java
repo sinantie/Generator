@@ -47,6 +47,11 @@ public class Event
         return fields;
     }
 
+    public int getF()
+    {
+        return F;
+    }
+
     public List<Integer> getValues()
     {
         return values;

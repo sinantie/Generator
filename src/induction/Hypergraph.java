@@ -131,15 +131,17 @@ public class Hypergraph<Widget> {
         ArrayList<Integer> words;
         BigDouble weight;
         int[] mask;
-        Collection<Integer> typeSet;
+        Collection<Integer> eventTypeSet, fieldSet;
 
-        public Derivation(Hyperedge edge, int[] mask, Collection<Integer> eventTypeSet)
+        public Derivation(Hyperedge edge, int[] mask, Collection<Integer> eventTypeSet,
+                Collection<Integer> fieldSet)
         {
             words = new ArrayList<Integer>(2*M - 1);
             this.edge = edge;
             derArray = new ArrayList<Derivation>(edge.dest.size());            
             this.mask = mask;
-            this.typeSet = eventTypeSet;
+            this.eventTypeSet = eventTypeSet;
+            this.fieldSet = fieldSet;
             getSucc(mask);
         }
 
@@ -202,6 +204,7 @@ public class Hypergraph<Widget> {
             } // else
         }
 
+        @Override
         public int compareTo(Object o)
         {
             Derivation d = (Derivation)o;
@@ -249,12 +252,12 @@ public class Hypergraph<Widget> {
                 out += wordIndexer.getObject(words.get(i)) + " ";
             }
             out += "(" + weight + ")";
-            if(typeSet == null)
+            if(eventTypeSet == null)
                 return out;
             out += " [";
-            for(Integer e : typeSet)
+            for(Integer e : eventTypeSet)
                 out += e + ",";
-            return typeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
+            return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
         }
     }
 
@@ -267,6 +270,7 @@ public class Hypergraph<Widget> {
   // kBest stuff
   public  int K, M, NUM, ELIDED_SYMBOL, START_SYMBOL, END_SYMBOL;
   public Options.ReorderType reorderType;
+  private enum Reorder {eventType, event, field, ignore};
   public  NgramModel ngramModel;
   public  Indexer<String> wordIndexer;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents;
@@ -483,27 +487,32 @@ public class Hypergraph<Widget> {
                 // don't allow repetition of same event types or events
                 if (v.node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
                 {
-                    if(reorderType == ReorderType.eventType || reorderType == ReorderType.eventTypeAndField)
-                        kBest(v, ((EventsNode)v.node).getEventType());
+                    if(reorderType == ReorderType.eventType ||
+                            reorderType == ReorderType.eventTypeAndField)
+                        kBest(v, ((EventsNode)v.node).getEventType(), Reorder.eventType);
                     // event re-ordering
                     else if(reorderType == ReorderType.event)
-                        kBest(v, UNKNOWN_EVENT);
+                        kBest(v, UNKNOWN_EVENT, Reorder.event);
                 }
                 // don't allow repetition of same fields
                 else if(v.node instanceof FieldsNode)
                 {
                     if(reorderType == ReorderType.eventTypeAndField)
-                        kBest(v, ((FieldsNode)v.node).getField());
+                    {
+                        // we don't want to perform reordering on none_f
+                        int field = ((FieldsNode)v.node).getField();
+                        int none_f = ex.events[((FieldsNode)v.node).getEvent()].getF();
+                        kBest(v, field == none_f ? IGNORE_REORDERING : field, Reorder.field);
+                    }
                     else
-                        kBest(v, IGNORE_REORDERING); // don't mind about field order
+                        kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about field order
 
                 }
                 else
                 {
-                    kBest(v, IGNORE_REORDERING); // don't mind about order
+                    kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order
                 }
-            }
-            
+            }            
         }
 
         HyperpathChooser chooser = new HyperpathChooser();        
@@ -513,8 +522,15 @@ public class Hypergraph<Widget> {
 
         return new HyperpathResult(chooser.widget, chooser.logWeight);
     }
-  
-    private void kBest(NodeInfo v, int currentType)
+
+    /**
+     * Implementation of k-best cube pruning algorithm found in Huang and Chiang, 2005
+     * @param v the node for which we will create k-best derivations
+     * @param currentEventType the event id, eventType id or field id of the current node. Used
+     * for re-ordering
+     * @param reorder the type of reordering to perform - event, eventType or field
+     */
+    private void kBest(NodeInfo v, int currentEventType, Reorder reorder)
     {
         Queue<Derivation> cand = new PriorityQueue<Derivation>(); // a priority queue of candidates
         List<Derivation> buf = new ArrayList<Derivation>();
@@ -534,45 +550,45 @@ public class Hypergraph<Widget> {
             }
             // check whether the current derivation is of an event (type) OR field
             // that has already been included in the antedecendant derivations
-            if(currentType != IGNORE_REORDERING)
+            if(currentEventType != IGNORE_REORDERING)
             {
-                if(reorderType == ReorderType.eventType || reorderType == ReorderType.eventTypeAndField)
+                if(reorder == Reorder.eventType)
                 {
                     Collection<Integer> eventTypeSet = new HashSet<Integer>();
-                    if(!hyperpathContainsEventType(currentType, v.edges.get(i).dest, mask, eventTypeSet))
+                    if(!hyperpathContainsEventType(currentEventType,
+                            v.edges.get(i).dest, mask, eventTypeSet))
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet));
+                        cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet, null));
                     }
                 }
-                else if(reorderType == ReorderType.event)
+                else if(reorder == Reorder.event)
                 {
                     Collection<Integer> eventsStack = new Stack<Integer>();
                     if(!hyperpathContainsEvent(v.edges.get(i).dest, mask, eventsStack))
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, eventsStack));
+                        cand.add(new Derivation(v.edges.get(i), mask, eventsStack, null));
                     }
                 }
-                else if(reorderType == ReorderType.eventTypeAndField)
+                else if(reorder == Reorder.field)
                 {
                     Collection<Integer> fieldSet = new HashSet<Integer>();
-                    if(!hyperpathContainsField(currentType, v.edges.get(i).dest, mask, fieldSet))
+                    if(!hyperpathContainsField(currentEventType,
+                            v.edges.get(i).dest, mask, fieldSet))
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, fieldSet));
+                        cand.add(new Derivation(v.edges.get(i), mask, null, fieldSet));
                     }
                 }
             }
             else
             {
-                cand.add(new Derivation(v.edges.get(i), mask, null));
+                cand.add(new Derivation(v.edges.get(i), mask, null, null));
             }
         } // for
-//        if(cand.size() == 1)
-//            pushSucc(cand.peek(), cand);
         while(cand.size() > 0 && buf.size() < K)
         {
             item = cand.poll();
             buf.add(item);
-            pushSucc(item, cand, currentType);
+            pushSucc(item, cand, currentEventType, reorder);
         }
         // sort buf to D(v) in descending order
 //        Collections.sort(buf, Collections.reverseOrder());
@@ -582,7 +598,8 @@ public class Hypergraph<Widget> {
 //        this.logZ += ((Derivation)v.derivations.get(0)).weight.toLogDouble();
     }
 
-    private void pushSucc(Derivation item, Queue<Derivation> cand, int currentType)
+    private void pushSucc(Derivation item, Queue<Derivation> cand, int currentEventType,
+            Reorder reorder)
     {
         int[] mask = Arrays.copyOf(item.mask, item.mask.length);
         for(int i = 0; i < mask.length; i++) // for i in |e| do
@@ -594,23 +611,23 @@ public class Hypergraph<Widget> {
             {
                 // check whether the current derivation is of an event type
                 // that has already been included in the antedecendant derivations
-                if(currentType != IGNORE_REORDERING)
+                if(currentEventType != IGNORE_REORDERING)
                 {                    
-                    if(reorderType == ReorderType.eventType || reorderType == ReorderType.eventTypeAndField)
+                    if(reorder == Reorder.eventType)
                     {
                         Collection<Integer> eventTypeSet = new HashSet<Integer>();
-                        if(!hyperpathContainsEventType(currentType, item.edge.dest,
+                        if(!hyperpathContainsEventType(currentEventType, item.edge.dest,
                                 tempMask, eventTypeSet))
                         {
                             try
                             {
                                 cand.add(new Derivation(item.edge, tempMask,
-                                        eventTypeSet));
+                                        eventTypeSet, null));
                             }
                             catch(NullPointerException npe) {}
                         }
                     }
-                    else if(reorderType == ReorderType.event)
+                    else if(reorder == Reorder.event)
                     {
                         Collection<Integer> eventsStack = new Stack<Integer>();
                         if(!hyperpathContainsEvent(item.edge.dest, tempMask,
@@ -619,20 +636,20 @@ public class Hypergraph<Widget> {
                             try
                             {
                                 cand.add(new Derivation(item.edge, tempMask,
-                                        eventsStack));
+                                        eventsStack, null));
                             }
                             catch(NullPointerException npe) {}
                         }
                     }
-                    else if(reorderType == ReorderType.eventTypeAndField)
+                    else if(reorder == Reorder.field)
                     {
                         Collection<Integer> fieldSet = new HashSet<Integer>();
-                        if(!hyperpathContainsEventType(currentType, item.edge.dest,
+                        if(!hyperpathContainsEventType(currentEventType, item.edge.dest,
                                 tempMask, fieldSet))
                         {
                             try
                             {
-                                cand.add(new Derivation(item.edge, tempMask,
+                                cand.add(new Derivation(item.edge, tempMask, null,
                                         fieldSet));
                             }
                             catch(NullPointerException npe) {}
@@ -643,7 +660,7 @@ public class Hypergraph<Widget> {
                 {
                     try
                     {
-                        cand.add(new Derivation(item.edge, tempMask, null));
+                        cand.add(new Derivation(item.edge, tempMask, null, null));
                     }
                     catch(NullPointerException npe) {}
                 }
@@ -674,17 +691,17 @@ public class Hypergraph<Widget> {
             if(dest.get(1).node != endNode)
             {
                 d = (Derivation) dest.get(1).derivations.get(mask[1]);             
-                if (d.typeSet.contains(childEvent))
+                if (d.eventTypeSet.contains(childEvent))
                 {
                     return true;
                 }
-                addAll(d.typeSet, (Stack<Integer>) eventStack); // copy the events from the EventsNode
+                addAll(d.eventTypeSet, (Stack<Integer>) eventStack); // copy the events from the EventsNode
             }
         }
         else // EventsNode. Just copy the events from it's only child, i.e. a TrackNode
         {
             addAll(
-                    ((Derivation) dest.get(0).derivations.get(mask[0])).typeSet,
+                    ((Derivation) dest.get(0).derivations.get(mask[0])).eventTypeSet,
                     (Stack<Integer>)eventStack);
         }        
        
@@ -721,20 +738,20 @@ public class Hypergraph<Widget> {
             if(dest.get(i).derivations.isEmpty())
                 return true;
             d = (Derivation) dest.get(i).derivations.get(mask[i]);
-            if(d.typeSet != null)
+            if(d.eventTypeSet != null)
             {                
-                if (d.typeSet.contains(currentEventType))
+                if (d.eventTypeSet.contains(currentEventType))
                 {
                     return true;
                 }
-                eventTypeSet.addAll(d.typeSet);
+                eventTypeSet.addAll(d.eventTypeSet);
             }
         }
         
         int childEventType = -1;
         if(dest.get(0).node instanceof FieldsNode)
         {
-            childEventType = ex.events[((FieldsNode)dest.get(0).node).getEvent()].getEventTypeIndex() ;            
+            childEventType = ex.events[((FieldsNode)dest.get(0).node).getEvent()].getEventTypeIndex();
         }
         else if (dest.get(0).node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
         {
@@ -758,6 +775,7 @@ public class Hypergraph<Widget> {
     private boolean hyperpathContainsField(int currentField, ArrayList<NodeInfo> dest,
                                       int[] mask, Collection<Integer> fieldSet)
     {
+
         Derivation d;
         for(int i = 0; i < mask.length; i++)
         {
@@ -766,13 +784,13 @@ public class Hypergraph<Widget> {
             if(dest.get(i).derivations.isEmpty())
                 return true;
             d = (Derivation) dest.get(i).derivations.get(mask[i]);
-            if(d.typeSet != null)
+            if(d.fieldSet != null)
             {
-                if (d.typeSet.contains(currentField))
+                if (d.fieldSet.contains(currentField))
                 {
                     return true;
                 }
-                fieldSet.addAll(d.typeSet);
+                fieldSet.addAll(d.fieldSet);
             }
         }
 
@@ -781,18 +799,18 @@ public class Hypergraph<Widget> {
         {
             childField = ((FieldsNode)dest.get(0).node).getField();
         }
-        else if (dest.get(0).node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
+        else if (dest.get(0).node instanceof WordNode)
         {
             childField = ((WordNode)dest.get(0).node).getField();
         }
         // allow consequent nodes with the same event type
         //TO-DO: FIX it, it's really ugly!!!
-        if(allowConsecutiveEvents)
-        {
-            if(childField > -1 && childField != currentField)
-                fieldSet.add(childField);
-        }
-        else
+//        if(allowConsecutiveEvents)
+//        {
+//            if(childField > -1 && childField != currentField)
+//                fieldSet.add(childField);
+//        }
+//        else
         {
             if(childField > -1)
                 fieldSet.add(childField);
@@ -1026,13 +1044,14 @@ public class Hypergraph<Widget> {
                   widget = (Widget) ((HyperedgeInfoLM)derivation.edge.info).
                           chooseLM(widget, derivation.words.get(0));
 //                  System.out.println(derivation.weight);
+                  System.out.println(derivation.edge);
               }
               return;
           }
         
          // choose intermediate non-terminal nodes
           widget = (Widget)derivation.edge.info.choose(widget);
-            
+          System.out.println(derivation.edge);
 //          if(setPosterior) derivation.edge.info.setPosterior(1.0);
           logWeight += derivation.weight.toLogDouble();
           for(Derivation d : derivation.derArray)
