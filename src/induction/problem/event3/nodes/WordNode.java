@@ -12,6 +12,12 @@ public class WordNode extends Node{
         this.event = event;
         this.field = field;
     }
+
+    public int getField()
+    {
+        return field;
+    }
+
     @Override
     public String toString() {
         return debug(this.getClass().getSimpleName(), i, c, event, field);

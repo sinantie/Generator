@@ -17,6 +17,10 @@ public class FieldsNode extends Node{
     {
         return event;
     }
+    public int getField()
+    {
+        return f0;
+    }
     @Override
     public String toString() {
         return debug(this.getClass().getSimpleName(), i, j, c, event, f0, efs);

@@ -1,6 +1,8 @@
 package induction.problem;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.uci.ics.jung.graph.DelegateTree;
+import edu.uci.ics.jung.graph.Forest;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
@@ -15,6 +17,7 @@ import induction.Options.InitType;
 import induction.RoarkNgramWrapper;
 import induction.SrilmNgramWrapper;
 import induction.Utils;
+import induction.problem.event3.nodes.Node;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -698,6 +701,24 @@ public abstract class AModel<Widget extends AWidget,
         }
 
         return testPerformance.getAccuracy();
+    }
+
+    public Forest testSemParseVisualise(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+//        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        Params counts = newParams();
+        Example ex = examples.get(0);
+        Forest forest = new DelegateTree<String, Node>();
+        InferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+                                    
+        return forest;
     }
     
     class InitParams extends MyCallable

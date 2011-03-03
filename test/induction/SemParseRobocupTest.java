@@ -40,14 +40,14 @@ public class SemParseRobocupTest
     @Before
     public void setUp() 
     {
-//         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
-         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
+         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
+//         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
                     + "-excludeLists robocupLists/robocupAllUnreachable "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_salience/fold1/stage1.params.obj "
+                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_no_generic/fold1/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 2 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -reorderType eventType "
+                    + "-ngramWrapper kylm -reorderType eventTypeAndField "
                     + "-maxPhraseLength 5 -useGoldStandardOnly "
                     + "-modelUnkWord -newFieldPerWord 0,-1 -allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
@@ -75,5 +75,7 @@ public class SemParseRobocupTest
         System.out.println("run");
 //        assertEquals(model.testSemParse(name, lopts), 1.0, 0);
         model.testSemParse(name, lopts);
+
+        
     }
 }

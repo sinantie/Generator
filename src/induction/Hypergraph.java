@@ -1,5 +1,6 @@
 package induction;
 
+import induction.problem.event3.nodes.WordNode;
 import induction.Options.ModelType;
 import java.util.*;
 import fig.basic.*;
@@ -130,7 +131,7 @@ public class Hypergraph<Widget> {
         ArrayList<Integer> words;
         BigDouble weight;
         int[] mask;
-        Collection<Integer> eventTypeSet;
+        Collection<Integer> typeSet;
 
         public Derivation(Hyperedge edge, int[] mask, Collection<Integer> eventTypeSet)
         {
@@ -138,7 +139,7 @@ public class Hypergraph<Widget> {
             this.edge = edge;
             derArray = new ArrayList<Derivation>(edge.dest.size());            
             this.mask = mask;
-            this.eventTypeSet = eventTypeSet;
+            this.typeSet = eventTypeSet;
             getSucc(mask);
         }
 
@@ -248,12 +249,12 @@ public class Hypergraph<Widget> {
                 out += wordIndexer.getObject(words.get(i)) + " ";
             }
             out += "(" + weight + ")";
-            if(eventTypeSet == null)
+            if(typeSet == null)
                 return out;
             out += " [";
-            for(Integer e : eventTypeSet)
+            for(Integer e : typeSet)
                 out += e + ",";
-            return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
+            return typeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
         }
     }
 
@@ -482,11 +483,20 @@ public class Hypergraph<Widget> {
                 // don't allow repetition of same event types or events
                 if (v.node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
                 {
-                    if(reorderType == ReorderType.eventType)
+                    if(reorderType == ReorderType.eventType || reorderType == ReorderType.eventTypeAndField)
                         kBest(v, ((EventsNode)v.node).getEventType());
                     // event re-ordering
                     else if(reorderType == ReorderType.event)
                         kBest(v, UNKNOWN_EVENT);
+                }
+                // don't allow repetition of same fields
+                else if(v.node instanceof FieldsNode)
+                {
+                    if(reorderType == ReorderType.eventTypeAndField)
+                        kBest(v, ((FieldsNode)v.node).getField());
+                    else
+                        kBest(v, IGNORE_REORDERING); // don't mind about field order
+
                 }
                 else
                 {
@@ -504,7 +514,7 @@ public class Hypergraph<Widget> {
         return new HyperpathResult(chooser.widget, chooser.logWeight);
     }
   
-    private void kBest(NodeInfo v, int currentEventType)
+    private void kBest(NodeInfo v, int currentType)
     {
         Queue<Derivation> cand = new PriorityQueue<Derivation>(); // a priority queue of candidates
         List<Derivation> buf = new ArrayList<Derivation>();
@@ -522,14 +532,14 @@ public class Hypergraph<Widget> {
             {
                 mask = new int[v.edges.get(i).dest.size()];
             }
-            // check whether the current derivation is of an event (type)
+            // check whether the current derivation is of an event (type) OR field
             // that has already been included in the antedecendant derivations
-            if(currentEventType != IGNORE_REORDERING)
+            if(currentType != IGNORE_REORDERING)
             {
-                if(reorderType == ReorderType.eventType)
+                if(reorderType == ReorderType.eventType || reorderType == ReorderType.eventTypeAndField)
                 {
                     Collection<Integer> eventTypeSet = new HashSet<Integer>();
-                    if(!hyperpathContainsEventType(currentEventType, v.edges.get(i).dest, mask, eventTypeSet))
+                    if(!hyperpathContainsEventType(currentType, v.edges.get(i).dest, mask, eventTypeSet))
                     {
                         cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet));
                     }
@@ -542,7 +552,14 @@ public class Hypergraph<Widget> {
                         cand.add(new Derivation(v.edges.get(i), mask, eventsStack));
                     }
                 }
-                
+                else if(reorderType == ReorderType.eventTypeAndField)
+                {
+                    Collection<Integer> fieldSet = new HashSet<Integer>();
+                    if(!hyperpathContainsField(currentType, v.edges.get(i).dest, mask, fieldSet))
+                    {
+                        cand.add(new Derivation(v.edges.get(i), mask, fieldSet));
+                    }
+                }
             }
             else
             {
@@ -555,7 +572,7 @@ public class Hypergraph<Widget> {
         {
             item = cand.poll();
             buf.add(item);
-            pushSucc(item, cand, currentEventType);
+            pushSucc(item, cand, currentType);
         }
         // sort buf to D(v) in descending order
 //        Collections.sort(buf, Collections.reverseOrder());
@@ -565,7 +582,7 @@ public class Hypergraph<Widget> {
 //        this.logZ += ((Derivation)v.derivations.get(0)).weight.toLogDouble();
     }
 
-    private void pushSucc(Derivation item, Queue<Derivation> cand, int currentEventType)
+    private void pushSucc(Derivation item, Queue<Derivation> cand, int currentType)
     {
         int[] mask = Arrays.copyOf(item.mask, item.mask.length);
         for(int i = 0; i < mask.length; i++) // for i in |e| do
@@ -577,12 +594,12 @@ public class Hypergraph<Widget> {
             {
                 // check whether the current derivation is of an event type
                 // that has already been included in the antedecendant derivations
-                if(currentEventType != IGNORE_REORDERING)
+                if(currentType != IGNORE_REORDERING)
                 {                    
-                    if(reorderType == ReorderType.eventType)
+                    if(reorderType == ReorderType.eventType || reorderType == ReorderType.eventTypeAndField)
                     {
                         Collection<Integer> eventTypeSet = new HashSet<Integer>();
-                        if(!hyperpathContainsEventType(currentEventType, item.edge.dest,
+                        if(!hyperpathContainsEventType(currentType, item.edge.dest,
                                 tempMask, eventTypeSet))
                         {
                             try
@@ -606,7 +623,21 @@ public class Hypergraph<Widget> {
                             }
                             catch(NullPointerException npe) {}
                         }
-                    }                    
+                    }
+                    else if(reorderType == ReorderType.eventTypeAndField)
+                    {
+                        Collection<Integer> fieldSet = new HashSet<Integer>();
+                        if(!hyperpathContainsEventType(currentType, item.edge.dest,
+                                tempMask, fieldSet))
+                        {
+                            try
+                            {
+                                cand.add(new Derivation(item.edge, tempMask,
+                                        fieldSet));
+                            }
+                            catch(NullPointerException npe) {}
+                        }
+                    }
                 }
                 else
                 {
@@ -643,17 +674,17 @@ public class Hypergraph<Widget> {
             if(dest.get(1).node != endNode)
             {
                 d = (Derivation) dest.get(1).derivations.get(mask[1]);             
-                if (d.eventTypeSet.contains(childEvent))
+                if (d.typeSet.contains(childEvent))
                 {
                     return true;
                 }
-                addAll(d.eventTypeSet, (Stack<Integer>) eventStack); // copy the events from the EventsNode
+                addAll(d.typeSet, (Stack<Integer>) eventStack); // copy the events from the EventsNode
             }
         }
         else // EventsNode. Just copy the events from it's only child, i.e. a TrackNode
         {
             addAll(
-                    ((Derivation) dest.get(0).derivations.get(mask[0])).eventTypeSet,
+                    ((Derivation) dest.get(0).derivations.get(mask[0])).typeSet,
                     (Stack<Integer>)eventStack);
         }        
        
@@ -690,13 +721,13 @@ public class Hypergraph<Widget> {
             if(dest.get(i).derivations.isEmpty())
                 return true;
             d = (Derivation) dest.get(i).derivations.get(mask[i]);
-            if(d.eventTypeSet != null)
+            if(d.typeSet != null)
             {                
-                if (d.eventTypeSet.contains(currentEventType))
+                if (d.typeSet.contains(currentEventType))
                 {
                     return true;
                 }
-                eventTypeSet.addAll(d.eventTypeSet);
+                eventTypeSet.addAll(d.typeSet);
             }
         }
         
@@ -720,6 +751,51 @@ public class Hypergraph<Widget> {
         {
             if(childEventType > -1)
                 eventTypeSet.add(childEventType);
+        }
+        return false;
+    }
+
+    private boolean hyperpathContainsField(int currentField, ArrayList<NodeInfo> dest,
+                                      int[] mask, Collection<Integer> fieldSet)
+    {
+        Derivation d;
+        for(int i = 0; i < mask.length; i++)
+        {
+            // in case we have blocked the path from this node and on, due to not allowing
+            // repetition of event types, just ignore the derivation
+            if(dest.get(i).derivations.isEmpty())
+                return true;
+            d = (Derivation) dest.get(i).derivations.get(mask[i]);
+            if(d.typeSet != null)
+            {
+                if (d.typeSet.contains(currentField))
+                {
+                    return true;
+                }
+                fieldSet.addAll(d.typeSet);
+            }
+        }
+
+        int childField = -1;
+        if(dest.get(0).node instanceof FieldsNode)
+        {
+            childField = ((FieldsNode)dest.get(0).node).getField();
+        }
+        else if (dest.get(0).node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
+        {
+            childField = ((WordNode)dest.get(0).node).getField();
+        }
+        // allow consequent nodes with the same event type
+        //TO-DO: FIX it, it's really ugly!!!
+        if(allowConsecutiveEvents)
+        {
+            if(childField > -1 && childField != currentField)
+                fieldSet.add(childField);
+        }
+        else
+        {
+            if(childField > -1)
+                fieldSet.add(childField);
         }
         return false;
     }
