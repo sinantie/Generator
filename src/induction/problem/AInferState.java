@@ -103,6 +103,7 @@ public abstract class AInferState<Widget extends AWidget,
         }
     }
 
+    public abstract void doInference();
     public abstract int getComplexity();
     public abstract void updateCounts();
 }

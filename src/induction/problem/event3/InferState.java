@@ -35,16 +35,16 @@ import java.util.ArrayList;
  */
 public class InferState extends Event3InferState
 {    
-    public InferState(Event3Model model, Example ex, Params params, Params counts, InferSpec ispec, NgramModel ngramModel)
+    public InferState(Event3Model model, Example ex, Params params, Params counts,
+            InferSpec ispec)
     {
-        super(model, ex, params, counts, ispec, ngramModel);
+        super(model, ex, params, counts, ispec);
     }
 
     @Override
     protected void initInferState(AModel model)
     {
         super.initInferState(model);
-//        N = words.length;
         words = ex.text;
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)

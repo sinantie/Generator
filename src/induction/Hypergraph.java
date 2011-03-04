@@ -1,5 +1,6 @@
 package induction;
 
+import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.nodes.WordNode;
 import induction.Options.ModelType;
 import java.util.*;
@@ -209,17 +210,6 @@ public class Hypergraph<Widget> {
         {
             Derivation d = (Derivation)o;
             return this.weight.compareTo(d.weight);
-//            double w = this.weight.toLogDouble();
-//            double other = d.weight.toLogDouble();
-//            if(w > other)
-//            {
-//                return -1;
-//            }
-//            else if(w < other)
-//            {
-//                return 1;
-//            }
-//            return 0;
         }
       
         private double getLMProb(List<Integer> ngram)
@@ -271,12 +261,13 @@ public class Hypergraph<Widget> {
   public  int K, M, NUM, ELIDED_SYMBOL, START_SYMBOL, END_SYMBOL;
   public Options.ReorderType reorderType;
   private enum Reorder {eventType, event, field, ignore};
-  public  NgramModel ngramModel;
-  public  Indexer<String> wordIndexer;
+  public NgramModel ngramModel;
+  public Indexer<String> wordIndexer;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
+  private Graph graph;
   // Start and end nodes
   private final Object startNode = addNodeAndReturnIt("START", NodeType.sum); // use sum or prod versions
   public final Object endNode = addNodeAndReturnIt("END", NodeType.sum);
@@ -286,7 +277,7 @@ public class Hypergraph<Widget> {
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
 
   public  void setupForGeneration(boolean debug, ModelType modelType, boolean allowEmptyNodes,
-                                        int K, int M, Options.ReorderType reorderType,
+                                        int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, int NUM,
                                         int ELIDED_SYMBOL, int START_SYMBOL,
                                         int END_SYMBOL, boolean numbersAsSymbol,
@@ -298,6 +289,7 @@ public class Hypergraph<Widget> {
         this.modelType = modelType;
         this.K = K;
         this.M = M;
+        this.ngramModel = ngramModel;
         this.reorderType = reorderType;
         this.allowConsecutiveEvents = allowConsecutiveEvents;
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
@@ -308,6 +300,31 @@ public class Hypergraph<Widget> {
         this.numbersAsSymbol = numbersAsSymbol;
         this.wordIndexer = wordIndexer;
         this.ex = ex;
+  }
+
+  public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
+                                        int K, Options.ReorderType reorderType,
+                                        boolean allowConsecutiveEvents, int NUM,
+                                        int ELIDED_SYMBOL, boolean numbersAsSymbol,
+                                        Indexer<String> wordIndexer, Example ex, Graph graph)
+  {
+        this.debug = debug;
+        // Need this because the pc sets might be inconsistent with the types
+        this.allowEmptyNodes = allowEmptyNodes;
+        this.modelType = modelType;
+        this.K = K;
+        this.M = 2;
+        this.reorderType = reorderType;
+        this.allowConsecutiveEvents = allowConsecutiveEvents;
+        /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+        this.NUM = NUM;
+        this.ELIDED_SYMBOL = ELIDED_SYMBOL;
+        this.numbersAsSymbol = numbersAsSymbol;
+        this.wordIndexer = wordIndexer;
+        this.ex = ex;
+        this.graph = graph;
+        if(graph != null)
+            graph.addVertex(startNode);
   }
 
   // Things we're going to compute
@@ -349,7 +366,7 @@ public class Hypergraph<Widget> {
   }*/
 
   // Add edges
-  public void addEdge(Object source) { addEdge(source, endNode, endNode, nullHyperedgeInfo); }
+  public void addEdge(Object source) { addEdge(source, endNode, endNode, nullHyperedgeInfo);}
   public void addEdge(Object source, AHyperedgeInfo<Widget> info) { addEdge(source, endNode, endNode, info); }
   public void addEdge(Object source, Object dest1) { addEdge(source, dest1, endNode, nullHyperedgeInfo); }
   public void addEdge(Object source, Object dest1, AHyperedgeInfo<Widget> info) { addEdge(source, dest1, endNode, info); }
@@ -361,6 +378,23 @@ public class Hypergraph<Widget> {
     assert source != dest1 && source != dest2; // Catch obvious loops
     getNodeInfoOrFail(source).edges.add(new Hyperedge(getNodeInfoOrFail(dest1),
             getNodeInfoOrFail(dest2), info));
+
+    if(graph != null)
+    {
+        Double weight = new Double(((HyperedgeInfo)info).getWeight());
+        if(!graph.containsVertex(source))
+            graph.addVertex(source);
+        if(!graph.containsVertex(dest1))
+            graph.addVertex(dest1);
+//        if(dest1 != endNode)
+            graph.addEdge(new DummyEdge(weight), source, dest1);
+
+        if(!graph.containsVertex(dest2))
+            graph.addVertex(dest2);
+        if(dest2 != endNode)
+            graph.addEdge(new DummyEdge(weight), source, dest2);
+    }
+
   }
   public void addEdge(Object source, ArrayList dest, AHyperedgeInfo<Widget> info) {
     assert source != invalidNode;
@@ -384,8 +418,38 @@ public class Hypergraph<Widget> {
         list.add(getNodeInfoOrFail(o));
     }
     getNodeInfoOrFail(source).edges.add(new Hyperedge(list, info));
-  }
 
+    if(graph != null)
+//    if(false)
+    {
+        Double weight = new Double(((HyperedgeInfo)info).getWeight());
+        Object dest1 = dest.get(0);
+        if(!graph.containsVertex(source))
+            graph.addVertex(source);
+        if(!graph.containsVertex(dest1))
+            graph.addVertex(dest1);
+        graph.addEdge(new DummyEdge(weight), source, dest1);
+        if(dest.size() > 1)
+        {
+            Object dest2 = dest.get(1);
+            if(!graph.containsVertex(dest2))
+                graph.addVertex(dest2);
+            graph.addEdge(new DummyEdge(weight), source, dest2);
+        }        
+    }
+  }
+  class DummyEdge{
+      double weight;
+      public DummyEdge(double weight){this.weight = weight;}
+
+        @Override
+        public String toString()
+        {
+//            return String.valueOf(weight);
+            return "";
+        }
+
+  }
   // Helpers
   private boolean addNode(Object node, NodeType nodeType) { // Return whether a new node was added
     NodeInfo info = nodes.get(node);
@@ -506,7 +570,6 @@ public class Hypergraph<Widget> {
                     }
                     else
                         kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about field order
-
                 }
                 else
                 {
@@ -1043,15 +1106,14 @@ public class Hypergraph<Widget> {
               {
                   widget = (Widget) ((HyperedgeInfoLM)derivation.edge.info).
                           chooseLM(widget, derivation.words.get(0));
-//                  System.out.println(derivation.weight);
-                  System.out.println(derivation.edge);
+                  System.out.println(derivation.edge);                
               }
               return;
           }
         
          // choose intermediate non-terminal nodes
           widget = (Widget)derivation.edge.info.choose(widget);
-          System.out.println(derivation.edge);
+          System.out.println(derivation.edge);       
 //          if(setPosterior) derivation.edge.info.setPosterior(1.0);
           logWeight += derivation.weight.toLogDouble();
           for(Derivation d : derivation.derArray)

@@ -1,7 +1,9 @@
 package induction.problem.event3;
 
+import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.graph.Graph;
 import induction.Hypergraph;
-import induction.NgramModel;
+import induction.Options;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
@@ -18,10 +20,19 @@ import induction.problem.event3.params.Params;
  */
 public class SemParseInferState extends GenInferState
 {
+    Graph graph;
+
     public SemParseInferState(Event3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec, NgramModel ngramModel)
+            Params counts, InferSpec ispec)
     {
-        super(model, ex, params, counts, ispec, ngramModel);
+        super(model, ex, params, counts, ispec, null);
+    }
+
+    public SemParseInferState(Event3Model model, Example ex, Params params,
+            Params counts, InferSpec ispec, Graph graph)
+    {
+        super(model, ex, params, counts, ispec, null);
+        this.graph = graph;
     }
 
     @Override
@@ -35,6 +46,54 @@ public class SemParseInferState extends GenInferState
             nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
         }
         labels = ex.labels;
+    }
+
+@Override
+    protected void createHypergraph(Hypergraph<Widget> hypergraph)
+    {
+        // setup hypergraph preliminaries
+        hypergraph.setupForSemParse(opts.debug, opts.modelType, true, opts.kBest,
+                opts.reorderType, opts.allowConsecutiveEvents,
+                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+                Event3Model.getWordIndex("<num>"),
+                Event3Model.getWordIndex("ELIDED_SYMBOL"),
+                opts.ngramWrapper != Options.NgramWrapper.roark,
+                ((Event3Model)model).getWordIndexer(), ex, graph);
+
+        if(opts.fullPredRandomBaseline)
+        {
+            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+                           new Hypergraph.HyperedgeInfo<Widget>()
+            {
+                public double getWeight()
+                {
+                    return 1;
+                }
+                public void setPosterior(double prob)
+                { }
+                public Widget choose(Widget widget)
+                {
+                    return widget;
+                }
+            });
+        } // if
+        else
+        {            
+            this.hypergraph.addEdge(hypergraph.sumStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+                           new Hypergraph.HyperedgeInfo<Widget>()
+            {
+                public double getWeight()
+                {
+                    return 1;
+                }
+                public void setPosterior(double prob)
+                { }
+                public Widget choose(Widget widget)
+                {
+                    return widget;
+                }
+            });
+        } // else
     }
 
     @Override

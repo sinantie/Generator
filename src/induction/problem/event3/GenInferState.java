@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.uci.ics.jung.graph.Forest;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
@@ -31,12 +32,13 @@ import java.util.Arrays;
 public class GenInferState extends InferState
 {
     public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
-    
+    private NgramModel ngramModel;
 
     public GenInferState(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
-        super(model, ex, params, counts, ispec, ngramModel);
+        super(model, ex, params, counts, ispec);        
+        this.ngramModel = ngramModel;        
     }
 
     @Override
@@ -79,7 +81,7 @@ public class GenInferState extends InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, opts.ngramSize,
+        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 Event3Model.getWordIndex("<num>"),

@@ -3,7 +3,6 @@ package induction.problem;
 import fig.basic.StopWatchSet;
 import induction.Hypergraph;
 import induction.Hypergraph.HyperpathResult;
-import induction.NgramModel;
 import induction.Options;
 
 /**
@@ -21,17 +20,18 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
     //protected final double logZ, elogZ, entropy, logVZ;    
 
     public AHypergraphInferState(AModel model, Example ex, Params params,
-                                 Params counts, InferSpec ispec, NgramModel ngramModel)
+                                 Params counts, InferSpec ispec)
     {
         super(ex, params, counts, ispec);
         this.opts = model.opts;
-        this.model = model;
+        this.model = model;               
+        
+    }
+
+    public void doInference()
+    {
         initInferState(model);
         StopWatchSet.begin("createHypergraph");
-        if(ngramModel != null)
-        {
-            hypergraph.ngramModel = ngramModel;
-        }
         createHypergraph(hypergraph);
         StopWatchSet.end();
 

@@ -11,14 +11,12 @@
 
 package induction.utils;
 
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
-import edu.uci.ics.jung.algorithms.layout.HypergraphLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout2;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
 import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.Hypergraph;
-import edu.uci.ics.jung.graph.SetHypergraph;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
@@ -27,7 +25,6 @@ import edu.uci.ics.jung.visualization.control.PluggableGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.renderers.BasicHypergraphRenderer;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import fig.exec.Execution;
 import induction.LearnOptions;
@@ -39,10 +36,8 @@ import induction.problem.event3.nodes.Node;
 import induction.problem.event3.nodes.TrackNode;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 
 /**
  *
@@ -59,7 +54,7 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
     /** Creates new form VisualiseHypergraph */
     public VisualiseHypergraph() {
         initComponents();
-        setSize(700, 700);
+        setSize(1000, 1000);
         setUp();
         setUpView(model.testSemParseVisualise(name, lopts));
     }
@@ -70,10 +65,10 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
 //         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
                     + "-excludeLists robocupLists/robocupAllUnreachable "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_salience/fold1/stage1.params.obj "
+                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_no_generic/fold1/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 2 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -reorderType eventType "
+                    + "-ngramWrapper kylm -reorderType eventTypeAndField "
                     + "-maxPhraseLength 5 -useGoldStandardOnly "
                     + "-modelUnkWord -newFieldPerWord 0,-1 -allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
@@ -88,12 +83,12 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
         name = "stage1";
     }
 
-    private void setUpView(Forest graph)
+    private void setUpView(Graph graph)
     {                 
-        layout = new TreeLayout(graph);
+        layout = new SpringLayout2(graph);
         //layout.setSize(new Dimension(700,700));
         vv = new VisualizationViewer(layout);
-        //vv.setPreferredSize(new Dimension(750,750));
+        vv.setPreferredSize(new Dimension(900,900));
         vv.setBackground( Color.white );
         // Tell the renderer to use our own customized label rendering
         vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
@@ -115,7 +110,7 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
 //        DirectedSparseGraph<Node, HyperEdge> graph  =
 //                new DirectedSparseGraph<Node, HyperEdge>();
         DelegateTree graph  =
-                new DelegateTree<Node, Node>();
+                new DelegateTree<HyperEdge, Node>();
         EventsNode ev0 = new EventsNode(0, 5);
         TrackNode tr1 = new TrackNode(0, 1, 0, 0, true, true);
         EventsNode ev1 = new EventsNode(1, 0);

@@ -1,8 +1,8 @@
 package induction.problem;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import edu.uci.ics.jung.graph.DelegateTree;
-import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
@@ -68,6 +68,8 @@ public abstract class AModel<Widget extends AWidget,
 
     protected abstract InferState newInferState(Example ex, Params params,
                                                 Params counts, InferSpec ispec);
+    protected abstract InferState newInferState(Example ex, Params params,
+                                                Params counts, InferSpec ispec, Graph graph);
 
     @Override
     public void logStats()
@@ -347,12 +349,29 @@ public abstract class AModel<Widget extends AWidget,
 
     private InferState createInferState(Example ex, double stepSize,
             Params counts, double temperature, LearnOptions lopts, int iter,
+            FullStatFig complexity, Graph graph)
+    {
+        InferState currentInferState = newInferState(ex, params, counts,
+        new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
+                      false, lopts.mixParamsCounts, lopts.useVarUpdates,
+                      stepSize, iter), graph);
+        currentInferState.doInference();
+        synchronized(complexity)
+        {
+            complexity.add(currentInferState.getComplexity());
+        }
+        return currentInferState;
+    }
+
+    private InferState createInferState(Example ex, double stepSize,
+            Params counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity)
     {
         InferState currentInferState = newInferState(ex, params, counts,
         new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter));
+        currentInferState.doInference();
         synchronized(complexity)
         {
             complexity.add(currentInferState.getComplexity());
@@ -703,7 +722,7 @@ public abstract class AModel<Widget extends AWidget,
         return testPerformance.getAccuracy();
     }
 
-    public Forest testSemParseVisualise(String name, LearnOptions lopts)
+    public Graph testSemParseVisualise(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
 //        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
@@ -712,15 +731,15 @@ public abstract class AModel<Widget extends AWidget,
         testPerformance = newPerformance();
         Params counts = newParams();
         Example ex = examples.get(0);
-        Forest forest = new DelegateTree<String, Node>();
+        Graph graph = new DirectedSparseGraph<String, String>();
         InferState inferState =  createInferState(ex, 1, counts, temperature,
-                lopts, 0, complexity);
+                lopts, 0, complexity, graph);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));
                                     
-        return forest;
+        return graph;
     }
-    
+
     class InitParams extends MyCallable
     {
         private Example ex;

@@ -7,7 +7,6 @@ import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
-import induction.NgramModel;
 import induction.Utils;
 import induction.problem.AHypergraphInferState;
 import induction.problem.AModel;
@@ -28,9 +27,9 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     protected int L, N, wildcard_pc;
 
     public Event3InferState(Event3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec, NgramModel ngramModel)
+            Params counts, InferSpec ispec)
     {
-        super(model, ex, params, counts, ispec, ngramModel);
+        super(model, ex, params, counts, ispec);
 
     }
 

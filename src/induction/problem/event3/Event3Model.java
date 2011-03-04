@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
@@ -995,9 +996,15 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, null);
-            default : return new InferState(this, ex, params, counts, ispec, null);
+            case semParse : return new SemParseInferState(this, ex, params, counts, ispec);
+            default : return new InferState(this, ex, params, counts, ispec);
         }
+    }
+
+    protected Event3InferState newInferState(Example ex, Params params, Params counts,
+                                       InferSpec ispec, Graph graph)
+    {
+        return new SemParseInferState(this, ex, params, counts, ispec, graph);
     }
 
     @Override
