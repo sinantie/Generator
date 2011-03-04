@@ -47,9 +47,9 @@ public class SemParseRobocupTest
                     + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_no_generic/fold1/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 2 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -reorderType eventTypeAndField "
-                    + "-maxPhraseLength 5 -useGoldStandardOnly "
-                    + "-modelUnkWord -newFieldPerWord 0,-1 -allowConsecutiveEvents";
+                    + "-ngramWrapper kylm -reorderType eventType "
+                    + "-maxPhraseLength 6 -useGoldStandardOnly "
+                    + "-modelUnkWord -allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
