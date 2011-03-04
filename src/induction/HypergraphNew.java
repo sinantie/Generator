@@ -1,5 +1,7 @@
 package induction;
 
+import induction.problem.event3.Event;
+import java.util.Map.Entry;
 import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.nodes.WordNode;
 import induction.Options.ModelType;
@@ -46,7 +48,7 @@ import static fig.basic.LogInfo.*;
  *   fetchSampleHyperpath(widget): call choose on each hyperedge in the best one
  *   fetchPosteriorHyperpath(widget): call choose on each hyperedge with a weight (TODO: combine it with fetchPosteriors)
  */
-public class Hypergraph<Widget> {
+public class HypergraphNew<Widget> {
   public enum NodeType { prod, sum }; // Each node represents either a product or a sum over its children
 
   public interface AHyperedgeInfo<Widget> {
@@ -132,17 +134,16 @@ public class Hypergraph<Widget> {
         ArrayList<Integer> words;
         BigDouble weight;
         int[] mask;
-        Collection<Integer> eventTypeSet, fieldSet;
+//        Collection<Integer> eventTypeSet, fieldSet;
+        HashMap<Integer, Collection<Integer>> eventTypeSet;
 
-        public Derivation(Hyperedge edge, int[] mask, Collection<Integer> eventTypeSet,
-                Collection<Integer> fieldSet)
+        public Derivation(Hyperedge edge, int[] mask, HashMap<Integer, Collection<Integer>> eventTypeSet)
         {
             words = new ArrayList<Integer>(2*M - 1);
             this.edge = edge;
             derArray = new ArrayList<Derivation>(edge.dest.size());            
             this.mask = mask;
             this.eventTypeSet = eventTypeSet;
-            this.fieldSet = fieldSet;
             getSucc(mask);
         }
 
@@ -245,9 +246,12 @@ public class Hypergraph<Widget> {
             if(eventTypeSet == null)
                 return out;
             out += " [";
-            for(Integer e : eventTypeSet)
+            for(Entry<Integer, Collection<Integer>> e : eventTypeSet.entrySet())
                 out += e + ",";
             return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
+//            for(Integer e : eventTypeSet)
+//                out += e + ",";
+//            return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
         }
     }
 
@@ -514,7 +518,7 @@ public class Hypergraph<Widget> {
 
   //////////////////////////////////////////////////////////// 
 
-  public Hypergraph() { }
+  public HypergraphNew() { }
 
   public void computePosteriors(boolean viterbi) {
     computeTopologicalOrdering();
@@ -553,10 +557,10 @@ public class Hypergraph<Widget> {
                 {
                     if(reorderType == ReorderType.eventType ||
                             reorderType == ReorderType.eventTypeAndField)
-                        kBest(v, ((EventsNode)v.node).getEventType(), Reorder.eventType);
+                        kBest(v, ((EventsNode)v.node).getEventType(), IGNORE_REORDERING, Reorder.eventType);
                     // event re-ordering
                     else if(reorderType == ReorderType.event)
-                        kBest(v, UNKNOWN_EVENT, Reorder.event);
+                        kBest(v, UNKNOWN_EVENT, IGNORE_REORDERING, Reorder.event);
                 }
                 // don't allow repetition of same fields
                 else if(v.node instanceof FieldsNode)
@@ -564,16 +568,17 @@ public class Hypergraph<Widget> {
                     if(reorderType == ReorderType.eventTypeAndField)
                     {
                         // we don't want to perform reordering on none_f
+                        Event ev = ex.events[((FieldsNode)v.node).getEvent()];
                         int field = ((FieldsNode)v.node).getField();
-                        int none_f = ex.events[((FieldsNode)v.node).getEvent()].getF();
-                        kBest(v, field == none_f ? IGNORE_REORDERING : field, Reorder.field);
+                        int none_f = ev.getF();
+                        kBest(v,  ev.getEventTypeIndex(), field == none_f ? IGNORE_REORDERING : field, Reorder.field);
                     }
                     else
-                        kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about field order
+                        kBest(v, IGNORE_REORDERING, IGNORE_REORDERING, Reorder.ignore); // don't mind about field order
                 }
                 else
                 {
-                    kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order
+                    kBest(v, IGNORE_REORDERING, IGNORE_REORDERING, Reorder.ignore); // don't mind about order
                 }
             }            
         }
@@ -593,7 +598,7 @@ public class Hypergraph<Widget> {
      * for re-ordering
      * @param reorder the type of reordering to perform - event, eventType or field
      */
-    private void kBest(NodeInfo v, int currentEventType, Reorder reorder)
+    private void kBest(NodeInfo v, int currentEventType, int currentField, Reorder reorder)
     {
         Queue<Derivation> cand = new PriorityQueue<Derivation>(); // a priority queue of candidates
         List<Derivation> buf = new ArrayList<Derivation>();
@@ -617,11 +622,12 @@ public class Hypergraph<Widget> {
             {
                 if(reorder == Reorder.eventType)
                 {
-                    Collection<Integer> eventTypeSet = new HashSet<Integer>();
+                    HashMap<Integer, Collection<Integer>> eventTypeSet =
+                            new HashMap<Integer, Collection<Integer>>();
                     if(!hyperpathContainsEventType(currentEventType,
                             v.edges.get(i).dest, mask, eventTypeSet))
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet, null));
+                        cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet));
                     }
                 }
                 else if(reorder == Reorder.event)
@@ -634,24 +640,32 @@ public class Hypergraph<Widget> {
                 }
                 else if(reorder == Reorder.field)
                 {
-                    Collection<Integer> fieldSet = new HashSet<Integer>();
-                    if(!hyperpathContainsField(currentEventType,
-                            v.edges.get(i).dest, mask, fieldSet))
+                    if(currentField == IGNORE_REORDERING) // don't do reordering for none_f
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, null, fieldSet));
+                        cand.add(new Derivation(v.edges.get(i), mask, null));
+                    }
+                    else
+                    {
+                        HashMap<Integer, Collection<Integer>> eventTypeSet =
+                            new HashMap<Integer, Collection<Integer>>();
+                        if(!hyperpathContainsField(currentEventType,
+                                v.edges.get(i).dest, mask, eventTypeSet))
+                        {
+                            cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet));
+                        }
                     }
                 }
             }
             else
             {
-                cand.add(new Derivation(v.edges.get(i), mask, null, null));
+                cand.add(new Derivation(v.edges.get(i), mask, null));
             }
         } // for
         while(cand.size() > 0 && buf.size() < K)
         {
             item = cand.poll();
             buf.add(item);
-            pushSucc(item, cand, currentEventType, reorder);
+            pushSucc(item, cand, currentEventType, currentField, reorder);
         }
         // sort buf to D(v) in descending order
 //        Collections.sort(buf, Collections.reverseOrder());
@@ -661,7 +675,7 @@ public class Hypergraph<Widget> {
 //        this.logZ += ((Derivation)v.derivations.get(0)).weight.toLogDouble();
     }
 
-    private void pushSucc(Derivation item, Queue<Derivation> cand, int currentEventType,
+    private void pushSucc(Derivation item, Queue<Derivation> cand, int currentEventType, int currentField,
             Reorder reorder)
     {
         int[] mask = Arrays.copyOf(item.mask, item.mask.length);
@@ -678,14 +692,15 @@ public class Hypergraph<Widget> {
                 {                    
                     if(reorder == Reorder.eventType)
                     {
-                        Collection<Integer> eventTypeSet = new HashSet<Integer>();
+                        HashMap<Integer, Collection<Integer>> eventTypeSet =
+                            new HashMap<Integer, Collection<Integer>>();
                         if(!hyperpathContainsEventType(currentEventType, item.edge.dest,
                                 tempMask, eventTypeSet))
                         {
                             try
                             {
                                 cand.add(new Derivation(item.edge, tempMask,
-                                        eventTypeSet, null));
+                                        eventTypeSet));
                             }
                             catch(NullPointerException npe) {}
                         }
@@ -706,16 +721,23 @@ public class Hypergraph<Widget> {
                     }
                     else if(reorder == Reorder.field)
                     {
-                        Collection<Integer> fieldSet = new HashSet<Integer>();
-                        if(!hyperpathContainsField(currentEventType, item.edge.dest,
-                                tempMask, fieldSet))
+                        if(currentField == IGNORE_REORDERING) // don't do reordering for none_f
                         {
-                            try
+                            cand.add(new Derivation(item.edge, tempMask, null));
+                        }
+                        else
+                        {
+                            Collection<Integer> fieldSet = new HashSet<Integer>();
+                            if(!hyperpathContainsField(currentEventType, item.edge.dest,
+                                    tempMask, fieldSet))
                             {
-                                cand.add(new Derivation(item.edge, tempMask, null,
-                                        fieldSet));
+                                try
+                                {
+                                    cand.add(new Derivation(item.edge, tempMask, null,
+                                            fieldSet));
+                                }
+                                catch(NullPointerException npe) {}
                             }
-                            catch(NullPointerException npe) {}
                         }
                     }
                 }
@@ -723,7 +745,7 @@ public class Hypergraph<Widget> {
                 {
                     try
                     {
-                        cand.add(new Derivation(item.edge, tempMask, null, null));
+                        cand.add(new Derivation(item.edge, tempMask, null));
                     }
                     catch(NullPointerException npe) {}
                 }
@@ -791,7 +813,7 @@ public class Hypergraph<Widget> {
     }
 
     private boolean hyperpathContainsEventType(int currentEventType, ArrayList<NodeInfo> dest,
-                                      int[] mask, Collection<Integer> eventTypeSet)
+                                      int[] mask, HashMap<Integer,Collection<Integer>> eventTypeSet)
     {
         Derivation d;        
         for(int i = 0; i < mask.length; i++)
@@ -803,11 +825,16 @@ public class Hypergraph<Widget> {
             d = (Derivation) dest.get(i).derivations.get(mask[i]);
             if(d.eventTypeSet != null)
             {                
-                if (d.eventTypeSet.contains(currentEventType))
+                if (d.eventTypeSet.containsKey(currentEventType)) // check if it contains the eventType
                 {
                     return true;
                 }
                 eventTypeSet.addAll(d.eventTypeSet);
+//                if (d.eventTypeSet.contains(currentEventType))
+//                {
+//                    return true;
+//                }
+//                eventTypeSet.addAll(d.eventTypeSet);
             }
         }
         
@@ -836,7 +863,7 @@ public class Hypergraph<Widget> {
     }
 
     private boolean hyperpathContainsField(int currentField, ArrayList<NodeInfo> dest,
-                                      int[] mask, Collection<Integer> fieldSet)
+                                      int[] mask, HashMap<Integer, Collection<Integer>> fieldSet)
     {
 
         Derivation d;
