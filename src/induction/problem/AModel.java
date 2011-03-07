@@ -702,7 +702,7 @@ public abstract class AModel<Widget extends AWidget,
     public double testSemParse(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-//        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();

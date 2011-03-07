@@ -24,7 +24,7 @@ public class LMPreprocessor
     int ngramSize;
     BufferedOutputStream bos;
     SimpleTokenizer tokenizer;
-    enum SourceType {PATH, LIST};
+    public enum SourceType {PATH, LIST};
     SourceType type;
 
     public LMPreprocessor(String targetFile, String sourceDir, int ngramSize, 
@@ -101,7 +101,7 @@ public class LMPreprocessor
         }
     }
 
-    private void processFile(String path)
+    protected void processFile(String path)
     {       
         try
         {
@@ -163,8 +163,8 @@ public class LMPreprocessor
 
     public static void main(String[] args)
     {
-        String source = "robocupLists/robocupFold4PathsTrain";
-        String target = "robocupLM/robocup-fold4-3-gram.sentences";
+        String source = "robocupLists/robocupAllPathsTrain";
+        String target = "robocupLM/robocup-all-3-gram.sentences";
         String fileExtension = "text";
         boolean tokeniseOnly = false;
         int ngramSize = 3;

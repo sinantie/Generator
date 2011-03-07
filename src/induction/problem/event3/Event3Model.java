@@ -94,7 +94,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         return Utils.set(new int[n], x); // Helper
     }
 
-    private static String processWord(String word)
+    public static String processWord(String word)
     {
         if(Options.stemAll)
         {
@@ -996,7 +996,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            case semParse : return new SemParseInferState(this, ex, params, counts, ispec);
+            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
             default : return new InferState(this, ex, params, counts, ispec);
         }
     }

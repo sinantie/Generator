@@ -214,13 +214,13 @@ public class Hypergraph<Widget> {
       
         private double getLMProb(List<Integer> ngram)
         {
-            if(modelType == ModelType.semParse)
-                return 1.0; // we currently don't support LM for semantic parsing
+//            if(modelType == ModelType.semParse)
+//                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
             {
-                temp = wordIndexer.getObject(ngram.get(i));
+                temp = vocabulary.getObject(ngram.get(i));
                 // ngram model needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
                 ngramStr[i] = numbersAsSymbol &&
@@ -239,7 +239,7 @@ public class Hypergraph<Widget> {
             String out = "";
             for(int i = 0; i < words.size(); i++)
             {
-                out += wordIndexer.getObject(words.get(i)) + " ";
+                out += vocabulary.getObject(words.get(i)) + " ";
             }
             out += "(" + weight + ")";
             if(eventTypeSet == null)
@@ -262,7 +262,7 @@ public class Hypergraph<Widget> {
   public Options.ReorderType reorderType;
   private enum Reorder {eventType, event, field, ignore};
   public NgramModel ngramModel;
-  public Indexer<String> wordIndexer;
+  public Indexer<String> vocabulary;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
@@ -298,7 +298,7 @@ public class Hypergraph<Widget> {
         this.START_SYMBOL = START_SYMBOL;
         this.END_SYMBOL = END_SYMBOL;
         this.numbersAsSymbol = numbersAsSymbol;
-        this.wordIndexer = wordIndexer;
+        this.vocabulary = wordIndexer;
         this.ex = ex;
   }
 
@@ -320,7 +320,7 @@ public class Hypergraph<Widget> {
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
         this.numbersAsSymbol = numbersAsSymbol;
-        this.wordIndexer = wordIndexer;
+        this.vocabulary = wordIndexer;
         this.ex = ex;
         this.graph = graph;
         if(graph != null)

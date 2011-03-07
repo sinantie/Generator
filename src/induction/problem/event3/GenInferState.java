@@ -1,6 +1,6 @@
 package induction.problem.event3;
 
-import edu.uci.ics.jung.graph.Forest;
+import fig.basic.Indexer;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
@@ -31,8 +31,9 @@ import java.util.Arrays;
  */
 public class GenInferState extends InferState
 {
-    public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
-    private NgramModel ngramModel;
+    //public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
+    protected NgramModel ngramModel;
+    protected Indexer<String> vocabulary;
 
     public GenInferState(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
@@ -52,6 +53,7 @@ public class GenInferState extends InferState
             segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
         N = ex.N();
+        this.vocabulary = ((Event3Model)model).getWordIndexer();
     }
         
     protected int[] newMatrixOne()
@@ -77,19 +79,18 @@ public class GenInferState extends InferState
                                ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
     }
     
-    @Override
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
         hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-                Event3Model.getWordIndex("<num>"),
-                Event3Model.getWordIndex("ELIDED_SYMBOL"),
-                Event3Model.getWordIndex("<s>"),
-                Event3Model.getWordIndex("</s>"),
+                vocabulary.getIndex("<num>"),
+                vocabulary.getIndex("ELIDED_SYMBOL"),
+                vocabulary.getIndex("<s>"),
+                vocabulary.getIndex("</s>"),
                 opts.ngramWrapper != Options.NgramWrapper.roark,
-                ((Event3Model)model).getWordIndexer(), ex);
+                vocabulary, ex);
 //        for(int i = 0; i < hypergraph.wordIndexer.size(); i++)
 //        {
 //            System.out.println(String.format("%d -> %s", i, hypergraph.wordIndexer.getObject(i)));
@@ -135,7 +136,7 @@ public class GenInferState extends InferState
                 {
                     if(rank > 0)
                         return null;
-                    return new Pair(1.0, Event3Model.getWordIndex("<s>"));
+                    return new Pair(1.0, vocabulary.getIndex("<s>"));
                 }
                 public void setPosterior(double prob)
                 { }
@@ -153,7 +154,7 @@ public class GenInferState extends InferState
                 {
                     if(rank > 0)
                         return null;
-                    return new Pair(1.0, Event3Model.getWordIndex("</s>"));
+                    return new Pair(1.0, vocabulary.getIndex("</s>"));
                 }
                 public void setPosterior(double prob)
                 { }
@@ -187,7 +188,7 @@ public class GenInferState extends InferState
             });
         } // else
     }    
-   
+       
     @Override
     protected Object genNumFieldValue(final int i, final int c, final int event, final int field)
     {
@@ -206,7 +207,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
-                                        Parameters.M_ROUNDUP), Event3Model.getWordIndex("<num>"));
+                                        Parameters.M_ROUNDUP), vocabulary.getIndex("<num>"));
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -229,7 +230,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
-                                        Parameters.M_ROUNDDOWN), Event3Model.getWordIndex("<num>"));
+                                        Parameters.M_ROUNDDOWN), vocabulary.getIndex("<num>"));
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -253,7 +254,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
-                                        Parameters.M_ROUNDCLOSE), Event3Model.getWordIndex("<num>"));
+                                        Parameters.M_ROUNDCLOSE), vocabulary.getIndex("<num>"));
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -277,7 +278,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
-                                        Parameters.M_IDENTITY), Event3Model.getWordIndex("<num>"));
+                                        Parameters.M_IDENTITY), vocabulary.getIndex("<num>"));
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -308,7 +309,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices, Parameters.M_NOISEUP),
-                                    Event3Model.getWordIndex("<num>"));
+                                    vocabulary.getIndex("<num>"));
 //                    return new Pair(get(fparams.methodChoices, Parameters.M_NOISEUP) * 0.5 *
 //                                    Math.pow(get(fparams.rightNoiseChoices,
 //                                    Parameters.S_CONTINUE), NOISE_MINUS_ONE) *
@@ -344,7 +345,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices, Parameters.M_NOISEDOWN),
-                                    Event3Model.getWordIndex("<num>"));
+                                    vocabulary.getIndex("<num>"));
 //                    return new Pair(get(fparams.methodChoices, Parameters.M_NOISEDOWN) *
 //                                    Math.pow(get(fparams.leftNoiseChoices,
 //                                    Parameters.S_CONTINUE), MINUS_NOISE_MINUS_ONE) *

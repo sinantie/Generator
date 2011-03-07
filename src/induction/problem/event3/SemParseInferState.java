@@ -1,9 +1,9 @@
 package induction.problem.event3;
 
-import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
+import fig.basic.Indexer;
 import induction.Hypergraph;
-import induction.Options;
+import induction.NgramModel;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
@@ -13,6 +13,8 @@ import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.Params;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -23,9 +25,9 @@ public class SemParseInferState extends GenInferState
     Graph graph;
 
     public SemParseInferState(Event3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec)
+            Params counts, InferSpec ispec, NgramModel ngramModel)
     {
-        super(model, ex, params, counts, ispec, null);
+        super(model, ex, params, counts, ispec, ngramModel);
     }
 
     public SemParseInferState(Event3Model model, Example ex, Params params,
@@ -46,55 +48,73 @@ public class SemParseInferState extends GenInferState
             nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
         }
         labels = ex.labels;
-    }
-
-@Override
-    protected void createHypergraph(Hypergraph<Widget> hypergraph)
-    {
-        // setup hypergraph preliminaries
-        hypergraph.setupForSemParse(opts.debug, opts.modelType, true, opts.kBest,
-                opts.reorderType, opts.allowConsecutiveEvents,
-                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-                Event3Model.getWordIndex("<num>"),
-                Event3Model.getWordIndex("ELIDED_SYMBOL"),
-                opts.ngramWrapper != Options.NgramWrapper.roark,
-                ((Event3Model)model).getWordIndexer(), ex, graph);
-
-        if(opts.fullPredRandomBaseline)
+        // map all field values to an Indexer
+        vocabulary = new Indexer<String>();
+        for(Event e : ex.events)
         {
-            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
-                           new Hypergraph.HyperedgeInfo<Widget>()
+            for(Field f : e.getFields())
             {
-                public double getWeight()
+                if (f instanceof NumField)
+                    vocabulary.add("<num>");
+                else
                 {
-                    return 1;
+                    for(int i = 0; i < f.getV(); i++)
+                    {
+                        vocabulary.add(Event3Model.processWord(f.valueToString(i)));
+                    }
                 }
-                public void setPosterior(double prob)
-                { }
-                public Widget choose(Widget widget)
-                {
-                    return widget;
-                }
-            });
-        } // if
-        else
-        {            
-            this.hypergraph.addEdge(hypergraph.sumStartNode(), genEvents(0, ((Event3Model)model).none_t()),
-                           new Hypergraph.HyperedgeInfo<Widget>()
-            {
-                public double getWeight()
-                {
-                    return 1;
-                }
-                public void setPosterior(double prob)
-                { }
-                public Widget choose(Widget widget)
-                {
-                    return widget;
-                }
-            });
-        } // else
+            }
+        }
+        vocabulary.add("(none)");
     }
+
+//    @Override
+//    protected void createHypergraph(Hypergraph<Widget> hypergraph)
+//    {
+//        // setup hypergraph preliminaries
+//        hypergraph.setupForSemParse(opts.debug, opts.modelType, true, opts.kBest,
+//                opts.reorderType, opts.allowConsecutiveEvents,
+//                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+//                vocabulary.getIndex("<num>"),
+//                vocabulary.getIndex("ELIDED_SYMBOL"),
+//                opts.ngramWrapper != Options.NgramWrapper.roark,
+//                ((Event3Model)model).getWordIndexer(), ex, graph);
+//
+//        if(opts.fullPredRandomBaseline)
+//        {
+//            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+//                           new Hypergraph.HyperedgeInfo<Widget>()
+//            {
+//                public double getWeight()
+//                {
+//                    return 1;
+//                }
+//                public void setPosterior(double prob)
+//                { }
+//                public Widget choose(Widget widget)
+//                {
+//                    return widget;
+//                }
+//            });
+//        } // if
+//        else
+//        {
+//            this.hypergraph.addEdge(hypergraph.sumStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+//                           new Hypergraph.HyperedgeInfo<Widget>()
+//            {
+//                public double getWeight()
+//                {
+//                    return 1;
+//                }
+//                public void setPosterior(double prob)
+//                { }
+//                public Widget choose(Widget widget)
+//                {
+//                    return widget;
+//                }
+//            });
+//        } // else
+//    }
 
     @Override
     protected Widget newWidget()
@@ -127,6 +147,7 @@ public class SemParseInferState extends GenInferState
             {
 //                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
                 Pair p = getAtRank(fparams.valueEmissions[w], rank);
+                p.value = vocabulary.getIndex(ex.events[event].getFields()[field].valueToString((Integer)p.label));
 //                p.value *=
 //                        (w == Event3Model.getWordIndex("<unk>")? 0.1 : 1.0);
                 return p;
@@ -169,7 +190,8 @@ public class SemParseInferState extends GenInferState
 //                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, w);
 //                        p.label = null;
 //                        return p;
-                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), null);
+//                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), null);
+                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), vocabulary.getIndex("(none)"));
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
                     {
