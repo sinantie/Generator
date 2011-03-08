@@ -146,8 +146,10 @@ public class SemParseInferState extends GenInferState
             public Pair getWeightLM(int rank)
             {
 //                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
-                Pair p = getAtRank(fparams.valueEmissions[w], rank);
-                p.value = vocabulary.getIndex(ex.events[event].getFields()[field].valueToString((Integer)p.label));
+                int length = fparams.valueEmissions[w].getCounts().length;
+                Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
+                    getAtRank(fparams.valueEmissions[w], length-1);
+                p.label = vocabulary.getIndex(ex.events[event].getFields()[field].valueToString((Integer)p.label));
 //                p.value *=
 //                        (w == Event3Model.getWordIndex("<unk>")? 0.1 : 1.0);
                 return p;
@@ -157,7 +159,7 @@ public class SemParseInferState extends GenInferState
             public GenWidget chooseLM(GenWidget widget, int word)
             {
 //                System.out.println("word " + word);
-                widget.text[i] = word;
+                widget.text[i] = ex.events[event].getFields()[field].parseValue(-1, vocabulary.getObject(word));                
                 return widget;
             }
             });
@@ -175,6 +177,7 @@ public class SemParseInferState extends GenInferState
         final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
         final int w = words[i];
 
+
         if(hypergraph.addSumNode(node))
         {
             if(field == eventTypeParams.none_f)
@@ -187,11 +190,12 @@ public class SemParseInferState extends GenInferState
                     public GenWidget choose(GenWidget widget) { return widget; }
                     public Pair getWeightLM(int rank)
                     {
-//                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, w);
+                        Pair p = getAtRank(eventTypeParams.noneFieldEmissions, rank);
+                        p.label = vocabulary.getIndex("(none)");
 //                        p.label = null;
-//                        return p;
+                        return p;
 //                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), null);
-                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), vocabulary.getIndex("(none)"));
+//                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), vocabulary.getIndex("(none)"));
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
                     {
@@ -227,19 +231,19 @@ public class SemParseInferState extends GenInferState
 //                    public GenWidget choose(GenWidget widget) { return widget; }
 //                    public Pair getWeightLM(int rank)
 //                    {
-////                        Pair p =  getAtRank(params.genericEmissions, w);
-////                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-////                        p.label = null;
-////                        return p;
-//                        double value = get(params.genericEmissions, w)*
-//                                       get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-//                        return new Pair(value,  Event3Model.getWordIndex("<s>"));
+//                        Pair p =  getAtRank(params.genericEmissions, rank);
+//                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+//                        p.label = vocabulary.getIndex("(none)");
+////                        double value = get(params.genericEmissions, w)*
+////                                       get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+//                        return p;
+////                        return new Pair(value, vocabulary.getIndex("(none)"));
 //                    }
 //                    public GenWidget chooseLM(GenWidget widget, int word)
 //                    {
 ////                        System.out.println("generic");
 //                        widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
-//                        widget.text[i] = 1;
+//                        widget.text[i] = -1;
 //                        return widget;
 //                    }
 //                });

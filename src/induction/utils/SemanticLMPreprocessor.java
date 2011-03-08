@@ -58,7 +58,9 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                                 textOut += tokens[0] + " ";
                             if(!tokens[0].contains("none")) // add value
                             {   // prediction might be noisy, so get the correct field value from map
-                                textOut += fieldsMap.get(tokens[0].trim()) + " ";
+//                                textOut += fieldsMap.get(tokens[0].trim()) + " ";
+                                int index3 = tokens[1].trim().indexOf("_");
+                                textOut += tokens[1].trim().substring(0, index3) + " ";
                             }
                             else // add the (none) token as many times as the number of words
                             {
@@ -101,9 +103,9 @@ public class SemanticLMPreprocessor extends LMPreprocessor
     public static void main(String[] args)
     {
         String source = "results/output/robocup/"
-                + "model_3_percy_NO_NULL_semPar_values_unk_no_generic/fold4/"
+                + "model_3_percy_NO_NULL_semPar_values_unk_no_generic_newField_gold/fold4/"
                 + "stage1.train.full-pred.9";
-        String target = "robocupLM/robocup-semantic-fold4-3-gram.sentences";
+        String target = "robocupLM/robocup-semantic-fold4-noisy-3-gram.sentences";
         String fileExtension = "9";
         boolean tokeniseOnly = false;
         int ngramSize = 3;

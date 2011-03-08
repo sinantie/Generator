@@ -40,16 +40,17 @@ public class SemParseRobocupTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
-//         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
+//         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
+         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
                     + "-excludeLists robocupLists/robocupAllUnreachable "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_no_generic/all/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 15 "
-                    + "-ngramModelFile robocupLM/srilm-abs-robocup-semantic-fold1-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -reorderType eventTypeAndField "
-                    + "-maxPhraseLength 5 -useGoldStandardOnly "
-                    + "-allowConsecutiveEvents";
+                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_no_generic_newField"
+                    + "/fold1/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -kBest 15 -ngramSize 2 "
+                    + "-ngramModelFile robocupLM/srilm-abs-robocup-semantic-fold1-noisy-3-gram.model.arpa "
+                    + "-ngramWrapper srilm -reorderType eventTypeAndField "
+                    + "-maxPhraseLength 5 -useGoldStandardOnly -newFieldPerWord 0,-1 "
+                    + "-modelUnkWord -allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
@@ -74,7 +75,7 @@ public class SemParseRobocupTest
     {
         System.out.println("run");
 //        assertEquals(model.testSemParse(name, lopts), 1.0, 0);
-        model.testSemParse(name, lopts);
+        System.out.println(model.testSemParse(name, lopts));
 
         
     }

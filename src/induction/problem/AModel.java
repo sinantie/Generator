@@ -702,7 +702,10 @@ public abstract class AModel<Widget extends AWidget,
     public double testSemParse(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        if(opts.ngramWrapper == opts.ngramWrapper.kylm)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        else if(opts.ngramWrapper == opts.ngramWrapper.srilm)
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
@@ -713,7 +716,8 @@ public abstract class AModel<Widget extends AWidget,
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+
             }catch(Exception e){System.out.println(i+ " " + e.getMessage());
             e.printStackTrace();}
             i++;
