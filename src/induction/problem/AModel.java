@@ -699,7 +699,7 @@ public abstract class AModel<Widget extends AWidget,
      * for a single example without the thread mechanism
      * @return the accuracy of the semantic parsing
      */
-    public double testSemParse(String name, LearnOptions lopts)
+    public String testSemParse(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
         if(opts.ngramWrapper == opts.ngramWrapper.kylm)
@@ -716,14 +716,14 @@ public abstract class AModel<Widget extends AWidget,
         InferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
-//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
 
             }catch(Exception e){System.out.println(i+ " " + e.getMessage());
             e.printStackTrace();}
             i++;
         }
 
-        return testPerformance.getAccuracy();
+        return testPerformance.output();
     }
 
     public Graph testSemParseVisualise(String name, LearnOptions lopts)

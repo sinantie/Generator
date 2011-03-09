@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package induction;
 
 import fig.exec.Execution;
@@ -18,13 +13,13 @@ import org.junit.Test;
  *
  * @author konstas
  */
-public class SemParseRobocupTest
+public class SemParseWeatherTest
 {
     LearnOptions lopts;
     String name;
     Event3Model model;
 
-    public SemParseRobocupTest() {
+    public SemParseWeatherTest() {
     }
 
     @BeforeClass
@@ -40,9 +35,8 @@ public class SemParseRobocupTest
     @Before
     public void setUp() 
     {
-//         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
-         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
-                    + "-excludeLists robocupLists/robocupAllUnreachable "
+//         String args = "-modelType semParse -testInputLists test/testWeatherGovEvents "
+         String args = "-modelType semParse -testInputLists gaborLists/genDevListPathsGabor "                    
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField"
                     + "/fold1/stage1.params.obj "

@@ -9,7 +9,6 @@ import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
-import induction.NgramModel;
 import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.InferSpec;

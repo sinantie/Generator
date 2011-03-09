@@ -102,10 +102,10 @@ public class SemanticLMPreprocessor extends LMPreprocessor
 
     public static void main(String[] args)
     {
-        String source = "results/output/robocup/"
-                + "model_3_percy_NO_NULL_semPar_values_unk_no_generic_newField_gold/fold4/"
+        String source = "results/output/robocup/randomFolds/"
+                + "model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField_random/fold4/"
                 + "stage1.train.full-pred.9";
-        String target = "robocupLM/robocup-semantic-fold4-noisy-3-gram.sentences";
+        String target = "robocupLM/randomFolds/robocup-semantic-fold4-noisy-3-gram.sentences";
         String fileExtension = "9";
         boolean tokeniseOnly = false;
         int ngramSize = 3;

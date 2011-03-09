@@ -4,4 +4,4 @@ java -Xmx1800m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -testInputLists $1 -inputFileExt events -execDir $2 -stagedParamsFile ${3}/stage1.params.obj \
 -disallowConsecutiveRepeatFields -kBest $4 -ngramModelFile $5 -ngramWrapper srilm \
 -outputExampleFreq 100 -ngramSize 2 -reorderType eventTypeAndField -modelUnkWord -allowConsecutiveEvents \
--maxPhraseLength 5 -useGoldStandardOnly -newFieldPerWord 0,-1
+-maxPhraseLength 5 -newFieldPerWord 0,-1 -oneEventPerExample 0,-1 -excludeLists robocupLists/robocupAllUnreachable
