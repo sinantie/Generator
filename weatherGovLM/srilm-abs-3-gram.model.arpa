@@ -1,0 +1,2327 @@
+[n]
+3
+
+[smoother]
+kylm.model.ngram.smoother.MKNSmoother
+
+[closed]
+true
+
+[max_length]
+91
+
+[vocab_cutoff]
+0
+
+[start_symbol]
+<s>
+
+[terminal_symbol]
+</s>
+
+[unknown_symbol]
+<unk>
+
+\data\
+ngram 1=170
+ngram 2=638
+ngram 3=1483
+
+\1-grams:
+-1.974507	%	-1.582766
+-1.26828	,	-2.290355
+-0.9909279	.	-2.574821
+-2.772551	10am	-0.7971187
+-2.931992	10pm	-0.6622351
+-3.146948	11am	-0.4943902
+-3.509416	11pm	-0.2601125
+-3.277467	1am	-0.4022192
+-3.246175	1pm	-0.4235688
+-4.185578	2am	-0.01385196
+-3.688712	2pm	-0.1710121
+-3.114896	3am	-0.5182294
+-3.61222	3pm	-0.2067654
+-3.500983	4am	-0.2787998
+-3.286292	4pm	-0.4103298
+-4.496827	5am	0.01992622
+-4.371888	5pm	-0.02016949
+-3.623147	6pm	-0.2625036
+-5.518016	7am	0.0189308
+-4.973948	7pm	0.02904854
+-3.75086	8am	-0.1444144
+-4.156288	8pm	-0.01998328
+-2.961714	9am	-0.6379825
+-3.609531	9pm	-0.2080835
+-1.473731	</s>
+-0.914731	<num>	-2.59762
+-99	<s>	-2.107599
+-1.265454	a	-2.257481
+-2.716613	accumulation	-0.9208525
+-2.192295	after	-1.464354
+-4.457318	afternoon	-0.008946784
+-4.356648	all	-0.06649865
+-3.850563	also	-0.1895654
+-2.424244	amounts	-1.176341
+-2.521286	an	-1.10615
+-1.498318	and	-2.075807
+-3.540293	areas	-0.315989
+-1.641596	around	-1.876521
+-1.697979	as	-1.830727
+-3.235847	at	-0.4620773
+-4.287567	be	-0.0826092
+-2.06531	becoming	-1.533387
+-2.22932	before	-1.431651
+-1.565151	between	-1.987974
+-4.457318	blowing	-0.05624803
+-4.540293	blustery	-0.02246189
+-2.328947	breezy	-1.263705
+-3.789662	by	-0.2467362
+-2.256753	calm	-1.295705
+-1.638748	chance	-1.949785
+-3.814725	chill	-0.2043765
+-2.651138	clear	-0.9654641
+-4.457318	clearing	-0.03165365
+-2.84777	clouds	-0.7935894
+-1.675469	cloudy	-1.846233
+-4.973948	cold	0.006341673
+-2.710481	could	-0.9410105
+-5.040895	day	0.03153734
+-3.625921	decreasing	-0.2829292
+-5.216986	definite	-0.009810531
+-3.026654	drizzle	-0.6236405
+-4.250844	during	-0.08636815
+-4.672918	dust	0.01281434
+-3.905232	early	-0.1284228
+-2.386077	east	-1.153973
+-5.341925	ending	0.03909048
+-4.313896	evening	-0.05165027
+-3.053378	except	-0.6499465
+-3.053378	expected	-0.6035534
+-4.103043	falling	-0.1148068
+-3.199953	feet	-0.5010929
+-4.287567	flurries	-0.03246565
+-2.935953	fog	-0.6965301
+-5.216986	for	-0.01238092
+-3.133304	freezing	-0.5907093
+-4.642955	frost	-0.03435081
+-4.457318	gradual	-0.05570894
+-2.980827	gradually	-0.7039188
+-2.728436	gust	-0.9120246
+-2.094033	gusts	-1.504439
+-4.614926	hail	0.00726876
+-3.084246	half	-0.6030603
+-4.864804	heavy	-0.02182621
+-1.575735	high	-2.008504
+-3.053378	higher	-0.6486925
+-3.682326	ice	-0.2581557
+-3.037291	in	-0.6643152
+-2.438473	inch	-1.16128
+-3.558975	inches	-0.316993
+-2.553756	increasing	-1.077553
+-1.972091	is	-1.578071
+-3.52458	isolated	-0.3322702
+-2.763286	less	-0.8895516
+-3.34629	level	-0.3857895
+-3.056368	light	-0.5721852
+-2.466092	likely	-1.059991
+-3.053378	little	-0.6496549
+-1.775056	low	-1.808789
+-4.012866	lowering	-0.1378721
+-2.599986	mainly	-1.023397
+-4.642955	mid	-0.03713192
+-2.681692	midnight	-0.8770903
+-4.588597	mixed	-0.02157737
+-4.642955	morning	-0.01307137
+-1.713025	mostly	-1.877713
+-1.358299	mph	-2.168721
+-1.778563	near	-1.765417
+-2.406922	new	-1.21393
+-3.053378	no	-0.6507732
+-2.503286	noon	-1.039236
+-2.64732	north	-0.9141669
+-3.073972	northeast	-0.5529327
+-2.396949	northwest	-1.074378
+-3.732686	occasional	-0.231757
+-1.544219	of	-2.00424
+-3.614926	one	-0.2889793
+-2.808322	or	-0.8554189
+-2.975191	otherwise	-0.6881382
+-5.341925	overnight	0.01638361
+-2.284513	partly	-1.319741
+-3.057118	patchy	-0.6517972
+-2.329509	percent	-1.277147
+-3.736261	periods	-0.2230039
+-2.391722	possible	-1.183326
+-2.937662	possibly	-0.7210554
+-1.973824	precipitation	-1.626491
+-4.518016	produce	-0.05142491
+-2.747901	quarter	-0.8793147
+-4.642955	quarters	-0.02455712
+-2.137443	rain	-1.371462
+-2.542814	rainfall	-1.086287
+-5.040895	remainder	-0.002655273
+-3.75086	rising	-0.227229
+-3.505179	scattered	-0.3468865
+-4.341925	severe	-0.0245786
+-1.96681	showers	-1.538934
+-3.365728	sleet	-0.3482222
+-2.542125	slight	-1.078464
+-4.614926	small	-0.03949801
+-2.325031	snow	-1.195605
+-3.874563	some	-0.1729117
+-1.917642	south	-1.602585
+-2.229767	southeast	-1.233187
+-2.224654	southwest	-1.238089
+-4.356648	sprinkles	-0.01064739
+-3.961714	steady	-0.1547847
+-4.12885	storms	-0.1103038
+-2.09118	sunny	-1.49193
+-3.568626	temperature	-0.3088266
+-2.610874	tenth	-1.001421
+-2.763286	than	-0.8113217
+-3.754588	the	-0.2416126
+-2.433619	then	-1.17624
+-4.642955	three	-0.03713192
+-4.642955	through	-0.03713192
+-4.216986	thunder	-0.08809798
+-2.94689	thunderstorm	-0.6629288
+-2.60846	thunderstorms	-0.9473877
+-5.120076	times	0.03404048
+-2.275972	to	-1.255346
+-3.814725	values	-0.1860088
+-3.484592	variable	-0.3441132
+-5.518016	very	-0.004714521
+-2.113525	west	-1.34421
+-4.216986	widespread	-0.09225045
+-1.471775	wind	-1.996431
+-2.728436	winds	-0.9199721
+-3.009486	windy	-0.6607108
+-1.340711	with	-2.234276
+-4.864804	zero	0.02411332
+
+\2-grams:
+-0.01031306	% .	-1.430557
+-2.984612	, and	-0.07930442
+-3.090416	, becoming	-0.06699497
+-3.191086	, clear	0.9338105
+-3.075693	, cloudy	1.731079
+-1.787146	, except	0
+-3.191086	, freezing	0.4495589
+-2.707716	, increasing	0.1209241
+-1.333754	, mainly	0
+-1.96175	, mostly	1.365065
+-2.295135	, partly	1.012511
+-3.322365	, possibly	-0.03384158
+-3.406686	, snow	-0.02256917
+-3.598572	, sunny	1.493336
+-1.167565	, then	0.0001671314
+-0.07470963	, with	-0.03973413
+-0.4838859	. </s>
+-2.860718	. areas	0.1372425
+-3.550447	. blustery	0
+-1.339102	. breezy	0
+-1.4611	. calm	-0.7622833
+-0.9846615	. chance	0.3225495
+-1.477598	. cloudy	0.7429407
+-1.599519	. east	-0.3349897
+-2.248276	. high	-0.09333366
+-2.399449	. increasing	-0.1429804
+-2.100847	. light	-0.07973367
+-2.063532	. little	0
+-1.94271	. low	0.9307289
+-1.0491	. mostly	-0.5981336
+-1.417076	. new	0
+-1.75475	. north	-0.09839219
+-2.732291	. northeast	0.0828861
+-1.647643	. northwest	-0.1963976
+-1.985345	. otherwise	0
+-2.226056	. partly	0.800224
+-2.5459	. patchy	0.2814743
+-2.356444	. snow	-0.4010152
+-2.884718	. some	0
+-1.1495	. south	-0.6554358
+-1.776122	. southeast	-0.2291977
+-1.605445	. southwest	-0.2436498
+-4.05105	. steady	0.139662
+-4.528171	. sunny
+-3.249417	. temperature	-0.004326694
+-4.130231	. the	-0.005022684
+-4.528171	. very
+-1.295175	. west	-0.3498813
+-3.227141	. widespread	0
+-2.824879	. wind	-0.2024817
+-1.73859	. winds	0
+-2.020315	. windy	0.0005344748
+-0.9522131	10am ,	-0.2368724
+-0.1362733	10am .	-0.7672772
+-1.551247	10am and	-0.08476955
+-1.481304	10pm ,	-0.04296514
+-0.1046092	10pm .	-0.6677114
+-2.370606	10pm and	-0.009951456
+-0.6007007	11am ,	-0.2599859
+-0.3576626	11am .	-0.3661152
+-1.299671	11am and	-0.06679805
+-0.7576296	11pm ,	-0.111468
+-0.4338224	11pm .	-0.2023461
+-1.968483	11pm and	-0.007374033
+-2.11059	1am ,	0.0203595
+-0.1889032	1am .	-0.410908
+-1.633469	1am and	-0.03454638
+-0.79448	1pm ,	-0.1506522
+-0.3058645	1pm .	-0.358284
+-1.41178	1pm and	-0.04986183
+-1.178154	2am ,	-0.004183445
+-0.8929187	2am .	-0.007970653
+-1.722222	2am and	-0.009951456
+-0.5676288	2pm ,	-0.1420521
+-0.8793826	2pm .	-0.03079819
+-1.305351	2pm and	-0.03382745
+-0.7387548	3am ,	-0.208005
+-0.2454611	3am .	-0.3925798
+-2.52763	3am and
+-0.8011926	3pm ,	-0.08653472
+-0.4797694	3pm .	-0.1423288
+-2.216166	3pm and
+-1.73009	4am ,	0.01542732
+-0.2698365	4am .	-0.2336445
+-1.530627	4pm ,	-0.006563146
+-0.19217	4pm .	-0.382624
+-1.975432	5am ,
+-0.9754318	5am .	-0.03655797
+-0.845098	5pm .	-0.02288353
+-0.3159837	6pm ,	-0.2559954
+-1.929419	7am ,
+-1.39794	7pm .	0.005210815
+-0.9924468	8am ,	-0.03857828
+-0.6624532	8am .	-0.07930143
+-1.007687	8am and	-0.06561824
+-1.485316	8pm ,	0.0128499
+-0.7393492	8pm .	-0.05555068
+-2.029384	8pm and
+-0.8877151	9am ,	-0.1958985
+-0.2875475	9am .	-0.5151407
+-0.7752267	9am and	-0.2695549
+-0.712334	9pm ,	-0.1096001
+-0.5691239	9pm .	-0.1243441
+-1.477121	9pm and	-0.02731724
+-1.060684	<num> %	0
+-0.5612246	<num> .	-1.980345
+-0.6960304	<num> and	-1.355072
+-2.87584	<num> by	0
+-4.127072	<num> during	0.07120462
+-3.180948	<num> early	-0.0156092
+-2.28613	<num> feet	0
+-4.604194	<num> inch
+-2.645152	<num> inches	0
+-0.4444761	<num> mph	0
+-3.361156	<num> of	-0.03555713
+-1.415687	<num> percent	0
+-1.562604	<num> to	-0.7128795
+-99	<s> <s>	0
+-0.4960559	<s> a	-1.53054
+-2.394354	<s> areas	0.1422633
+-2.018183	<s> clear	0.6327804
+-1.771105	<s> cloudy	1.358151
+-3.746537	<s> definite	0
+-3.503499	<s> flurries	0.05203369
+-2.414099	<s> freezing	0.3257586
+-1.57117	<s> increasing	-0.3872943
+-2.058562	<s> isolated	0.002386212
+-0.5751762	<s> mostly	0.3261566
+-2.291692	<s> occasional	0.01214889
+-0.9138684	<s> partly	0.09458888
+-1.760886	<s> patchy	0.1182266
+-2.265811	<s> periods	0
+-1.352523	<s> rain	0.5792024
+-2.074439	<s> scattered	0.02142161
+-1.220521	<s> showers	-0.4848381
+-2.058562	<s> snow	-0.1026519
+-1.17951	<s> sunny	0.5254074
+-1.064125	a <num>	-1.274497
+-4.254596	a calm
+-1.053336	a chance	0.6604329
+-2.061472	a east	0.1135116
+-2.121058	a half	-0.2103407
+-0.5306484	a high	-1.385574
+-0.5457932	a low	-0.1139764
+-3.300354	a north	0.5410485
+-3.037112	a northwest	0.7275214
+-2.121058	a quarter	-0.3201026
+-1.278705	a slight	0
+-1.298668	a south	-0.2563099
+-2.08287	a southeast	0.216624
+-2.265592	a southwest	0.4617333
+-2.729552	a steady	0.009143367
+-2.710528	a temperature	0.008638665
+-1.347454	a tenth	0
+-1.68347	a thunderstorm	0
+-1.515816	a west	0.1032239
+-0.3908806	accumulation expected	0
+-0.3214931	accumulation of	-0.6772332
+-0.9481683	after 10am	-0.02712876
+-1.066158	after 10pm	0.1575862
+-1.648015	after 11am	0.04973567
+-1.709152	after 11pm	0.01995064
+-1.243976	after 1am	0.0556736
+-1.786318	after 1pm	0.1413468
+-2.212286	after 2am	-0.005260702
+-2.099582	after 2pm	-0.02069987
+-1.23541	after 3am	-0.03728968
+-1.656878	after 3pm	-0.02316338
+-1.420934	after 4am	0.03490308
+-1.844309	after 4pm	0.3083437
+-2.865499	after 5am	0.03333513
+-3.34262	after 5pm
+-3.04159	after 8am	0.09632083
+-2.166529	after 8pm	0.01601982
+-1.103321	after 9am	-0.1715535
+-1.804801	after 9pm	-0.01294215
+-0.7219636	after midnight	-0.1135157
+-0.6737684	after noon	-0.2435133
+-0.9193055	afternoon .	-0.01239386
+-1.340224	all rain	0.06823891
+-0.9722469	all snow	-0.04409283
+-0.4481575	also possible	0.385371
+-0.3469696	amounts between	-0.8786619
+-0.5725996	amounts of	-0.6908867
+-0.6575773	amounts possible	-0.5506623
+-0.03528352	an inch	0.07688904
+-3.3242	and 10am	0.02629614
+-2.962472	and 11am	0.4498386
+-4.02317	and 11pm
+-2.861802	and 1pm	0.3904079
+-3.42111	and 2am	0.009612842
+-2.877042	and 2pm	0.1542245
+-3.369958	and 3am	0.06742173
+-2.909227	and 3pm	0.2268013
+-3.210257	and 4am	0.3175093
+-1.9109	and 4pm	0.07628989
+-4.02317	and 5am
+-3.12008	and 9am	0.02072493
+-0.1150069	and <num>	-1.556264
+-4.02317	and a
+-3.42111	and areas	0.3083704
+-3.479102	and cold	0
+-2.531808	and freezing	0.3688645
+-1.889631	and half	-0.2087383
+-3.282807	and midnight	0.9168349
+-2.171912	and noon	0.4619274
+-1.452044	and possibly	-0.03196359
+-1.366593	and quarter	-0.3195186
+-1.873951	and sleet	0.001925945
+-1.487243	and snow	-0.4273264
+-4.02317	and then
+-3.148109	and three	0
+-1.331205	and thunderstorms	0.06961942
+-1.989746	and variable	0
+-0.2751294	areas of	-0.3219178
+-0.006383416	around <num>	-1.525051
+-3.580212	around a	0.02896443
+-2.466269	around an	0.9906214
+-0.3070095	as <num>	-1.173047
+-0.3109757	as high	-1.400672
+-2.287704	as low	-0.1467634
+-3.172311	as zero	0
+-0.1625124	at <num>	-0.3192953
+-2.042181	at times	0
+-1.606381	be heavy	-0.0002920013
+-0.8282301	be severe	0
+-2.304015	becoming all	0
+-0.647157	becoming calm	-0.762576
+-2.42399	becoming clear	0.9360902
+-3.289292	becoming cloudy	1.794748
+-0.9383978	becoming east	-0.4904111
+-2.12296	becoming light	-0.0746613
+-1.14732	becoming mostly	-0.3815823
+-1.379023	becoming north	-0.163146
+-2.175348	becoming northeast	0.02668366
+-1.508734	becoming northwest	-0.2759108
+-1.672991	becoming partly	0.2870983
+-0.6592029	becoming south	-0.6835275
+-1.164353	becoming southeast	-0.4490151
+-1.402801	becoming southwest	-0.3256797
+-1.593227	becoming sunny	1.24025
+-1.037248	becoming west	-0.4759196
+-0.8499433	before 10am	0.155096
+-1.017033	before 10pm	0.2182989
+-1.104307	before 11am	0.04334304
+-1.5474	before 11pm	0.1110241
+-1.668579	before 1am	0.278406
+-1.201558	before 1pm	0.05853379
+-2.763	before 2am	0.01208746
+-1.837246	before 2pm	0.008911192
+-1.250163	before 3am	0.2283719
+-2.039896	before 3pm	0.2028492
+-2.24637	before 4am	0.2814919
+-3.006038	before 4pm	0.002771669
+-1.412198	before 6pm	0
+-3.307068	before 7am
+-1.668579	before 8am	-0.01678057
+-2.763	before 8pm	-0.003285336
+-1.287952	before 9am	0.09647754
+-1.68902	before 9pm	0.09358345
+-3.130977	before ending	0
+-0.8937682	before midnight	0.3333639
+-0.7359416	before noon	-0.007181704
+-2.70164	between 10am	-0.07194111
+-3.655882	between 10pm	-0.008365183
+-2.752792	between 11am	-0.05337266
+-3.655882	between 11pm	-0.005524043
+-3.178761	between 1am	-0.01974406
+-2.935723	between 1pm	-0.03399096
+-3.655882	between 2am	-0.001907054
+-3.081851	between 2pm	-0.01509167
+-3.956913	between 3am
+-3.956913	between 3pm
+-2.810784	between 8am	-0.02203505
+-3.956913	between 8pm
+-2.084756	between 9am	-0.1959815
+-3.21655	between 9pm	-0.01282049
+-0.04874923	between <num>	-1.89072
+-1.181666	between a	-0.8865283
+-3.354852	between midnight	-0.01794143
+-1.860002	between noon	-0.3443989
+-1.134905	blowing dust	0
+-1.281033	blowing snow	0.08683479
+-0.993088	blustery ,	0.7546948
+-0.02298536	breezy ,	-0.4865479
+-2.138303	by 10am
+-2.138303	by 10pm
+-2.138303	by 2pm
+-1.263241	by 3am	0.3276251
+-1.962211	by 3pm	0.1670864
+-1.536243	by 4am	0.3144352
+-1.18406	by 4pm	0.4024427
+-1.263241	by 5am	0.01143329
+-1.007969	by 5pm	0.002221458
+-1.594235	by 7pm	0
+-1.439333	by 8pm	0.062265
+-1.962211	by 9am	0.05254665
+-2.138303	by 9pm
+-1.837273	by midnight	0.6522567
+-1.962211	by noon	0.02916733
+-0.46258	calm .	-0.6629583
+-0.213549	calm wind	-1.116241
+-3.583029	chance for	0
+-0.00487672	chance of	-1.2643
+-0.4254309	chill values	0
+-0.04693604	clear ,	-0.1883074
+-0.9193055	clearing ,	0.7455031
+-0.07169323	clouds ,	-0.01643264
+-0.006899134	cloudy ,	-0.8789052
+-3.847758	cloudy .
+-3.30369	cloudy and	-0.01758464
+-2.643638	cloudy during	0.01072387
+-3.671666	cloudy overnight	0
+-2.972697	cloudy through	0
+-1.39794	cold ,	0.7834984
+-1.630488	could be	0
+-0.07135591	could gust	0
+-1.860937	could produce	0
+-1.462398	day .	0.01280902
+-0.3174204	decreasing to	-0.1363938
+-1.633469	definite drizzle	0.06153059
+-0.9097545	drizzle .	-0.1462928
+-0.2890712	drizzle after	-0.307864
+-0.817345	drizzle before	-0.008762524
+-0.7435521	during the	-0.02749351
+-1.414973	dust .	0.02290069
+-1.414973	dust after	0.08571697
+-1.959041	dust before
+-0.6736642	early .	-0.02406593
+-0.9208187	early evening	0.004364811
+-1.189578	east .	-0.04052767
+-1.639547	east around	1.692012
+-1.316076	east between	0.712134
+-1.122631	east northeast	0.2742778
+-0.7315496	east southeast	0.7613323
+-0.2623621	east wind	-0.02624542
+-1.755875	ending .
+-0.79588	evening ,	-0.04514205
+-0.1099714	except higher	0
+-0.1099714	expected .	-0.4513449
+-0.6264194	falling to	-0.1042275
+-0.3547931	feet .	-0.3465944
+-1.51114	feet after	0.04714326
+-1.404685	feet in	-0.04260586
+-0.9602329	feet lowering	0
+-1.010538	feet rising	0.1026623
+-1.5272	flurries .	0.03897297
+-1.606381	flurries after	0.01328392
+-0.9074113	flurries before	0.1103209
+-1.297318	fog .	-0.09732752
+-0.4430766	fog after	-0.1614429
+-0.3862171	fog before	0.05612594
+-1.758407	for drizzle	0.06406292
+-1.934498	for flurries
+-2.212853	freezing drizzle	0.04940644
+-1.283434	freezing fog	0.6640645
+-0.1626668	freezing rain	0.1454141
+-1.359361	frost after	-0.003406761
+-1.359361	frost before	-0.01078654
+-0.9193055	gradual clearing	0
+-0.0947616	gradually becoming	-0.6591168
+-0.05551733	gust as	-0.6295118
+-0.01353002	gusts as	-1.221926
+-1.060698	hail .	0.0147044
+-1.675778	half and	-0.0368329
+-0.4402499	half inch	0.1307715
+-0.4173007	half of	-0.3715138
+-1.549003	heavy at	-0.008777864
+-1.549003	heavy rain	0.04014426
+-0.4318799	high as	-1.306152
+-0.2071719	high near	0.0001949072
+-0.1099714	higher amounts	-0.5424253
+-0.3475793	ice accumulation	0.6722493
+-1.526452	in the	-0.01904626
+-0.1225109	in thunderstorms	-0.4328225
+-0.6442646	inch ,	-0.6431823
+-0.1498617	inch possible	-0.5240458
+-0.2839966	inches possible	0.2303025
+-0.3319202	increasing clouds	0
+-0.3455888	increasing to	-0.6572572
+-0.01267254	is <num>	-1.590033
+-2.255152	is also	0.09857719
+-0.2678266	isolated showers	0.1335662
+-0.05985005	less than	0
+-0.1946965	level <num>	-0.4398906
+-1.229868	light .	0.1534353
+-0.5388669	light and	-0.3545523
+-1.381959	light east	0.636836
+-1.282256	light north	0.2893284
+-2.095169	light northeast	0.3092045
+-1.669201	light northwest	0.7658997
+-2.572291	light snow
+-0.8647204	light south	0.6078935
+-1.551101	light southeast	0.6076152
+-2.396199	light southwest	0.7886438
+-1.441957	light west	0.9149364
+-0.9542425	light wind	-0.1342003
+-0.525637	likely ,	0.6381421
+-0.5335279	likely .	-0.6671273
+-1.606023	likely after	0.250753
+-0.7788691	likely and	-0.5181345
+-0.9247817	likely before	0.4973177
+-1.497683	likely between	-0.1633616
+-0.1099714	little or	-0.3590201
+-0.009220704	low around	0.0133307
+-2.211685	low as	0.1436764
+-0.559308	lowering to	0.2961976
+-0.2106451	mainly after	0.01498455
+-0.5752831	mainly before	0.364476
+-1.562055	mainly between	-0.1128221
+-1.08636	mid morning	0
+-0.9806948	midnight ,	-0.2613079
+-0.1065337	midnight .	-0.8236601
+-2.284431	midnight and	-0.01487843
+-1.036723	mixed with	-0.04419678
+-1.08636	morning ,	-0.006563146
+-1.026766	mostly clear	0.07370776
+-0.1702872	mostly cloudy	0.1593704
+-0.6625295	mostly sunny	0.2669473
+-0.738253	mph ,	-0.7120063
+-0.1717637	mph .	-1.781985
+-0.9925613	mph becoming	-0.4792089
+-2.270141	mph decreasing	0
+-1.505658	mph increasing	-0.5454786
+-0.006596409	near <num>	-1.684115
+-1.895423	new ice	0.1768038
+-2.360309	new precipitation	-0.02923576
+-0.1632586	new rainfall	0
+-0.6265773	new snow	-0.4915092
+-0.8628027	no ice	0.05133055
+-0.1934949	no snow	-0.4097859
+-1.089595	noon ,	-0.2881801
+-0.135087	noon .	-0.975942
+-0.951726	noon and	-0.396594
+-1.627208	north .	0.1664092
+-2.014153	north around	1.79641
+-1.66197	north between	0.8896422
+-0.9802268	north northeast	0.3269841
+-0.5837956	north northwest	0.6560135
+-0.3179057	north wind	0.230927
+-1.053559	northeast .	0.1429876
+-1.127345	northeast around	1.714875
+-1.081587	northeast between	0.8413376
+-0.2788136	northeast wind	0.474981
+-1.104469	northwest .	-0.08147401
+-2.846801	northwest <num>	0.001836598
+-2.846801	northwest around	1.8257
+-1.776763	northwest between	0.866834
+-0.07392929	northwest wind	-0.1901096
+-0.4939151	occasional rain	0.2806858
+-0.9852768	occasional showers	0.003165528
+-1.973334	of <num>	-0.3308367
+-0.9922286	of an	0.01041138
+-2.538322	of around	-0.123987
+-2.916957	of blowing	0
+-1.831527	of drizzle	0.2452482
+-3.102594	of flurries	0.0300883
+-2.15158	of fog	0.3837458
+-2.009172	of freezing	0.2659099
+-1.222925	of less	0
+-3.977655	of light
+-0.4341457	of precipitation	-0.02687693
+-0.8076869	of rain	-0.5164281
+-0.6575087	of showers	-0.7123346
+-1.456517	of snow	-0.4176494
+-2.816287	of sprinkles	0
+-2.546291	of the	-0.03015364
+-0.3117539	one inch	0.2443073
+-0.5541962	or drizzle	0.1966885
+-1.031317	or freezing	0.2849881
+-0.3109719	or no	0
+-0.09366247	otherwise ,	-0.7166958
+-1.755875	overnight ,	0.7935403
+-0.1530749	partly cloudy	0.6625142
+-0.6010938	partly sunny	0.7127379
+-0.125327	patchy fog	0.1078814
+-2.094588	patchy freezing	0.007982568
+-1.696648	patchy frost	0
+-0.02301436	percent chance	0.6648508
+-0.3781125	periods of	-0.03354441
+-0.1441467	possible .	-0.8212491
+-1.721383	possible after	0.2729474
+-0.6881083	possible in	-0.04090476
+-0.09585944	possibly a	-0.7260654
+-1.737567	possibly mixed	0
+-2.776338	precipitation amounts	0.1052571
+-0.01097985	precipitation is	-0.08830154
+-1.575188	produce heavy	-0.0002920013
+-1.070038	produce small	0
+-0.6944761	quarter and	-0.4125074
+-0.1714378	quarter of	-0.7594696
+-1.08636	quarters of	0.009487823
+-1.153706	rain ,	-0.4469096
+-0.9406562	rain .	-0.5880027
+-0.7238655	rain after	0.06576568
+-0.6504263	rain and	-0.8302965
+-1.134238	rain before	0.5492581
+-2.354108	rain between	-0.05430759
+-0.863384	rain likely	0.4552662
+-1.050127	rain or	-0.3611661
+-1.176703	rain showers	1.164269
+-0.03700233	rainfall amounts	-0.5417538
+-1.462398	remainder of	-0.0140037
+-0.386659	rising to	0.2398998
+-1.458928	scattered flurries	0.02500881
+-1.110474	scattered rain	0.07712971
+-0.4298568	scattered showers	0.3535382
+-1.211144	scattered snow	0.03733836
+-1.79472	scattered thunderstorms	0.07943407
+-0.819544	severe .	-0.05149255
+-1.019137	showers ,	0.6466082
+-0.6070974	showers .	-1.011801
+-1.017893	showers after	0.6121179
+-0.8162652	showers and	-0.843594
+-0.7647656	showers before	0.06122321
+-1.362683	showers between	-0.46517
+-0.7668519	showers likely	0.1002637
+-1.613746	sleet ,	-0.006923214
+-1.451018	sleet .	0.0147044
+-1.178017	sleet accumulation	0.210132
+-2.354108	sleet after
+-0.5582284	sleet before	0.08569157
+-0.696097	sleet between	-0.1834847
+-1.479047	sleet likely	0.1306562
+-0.03694609	slight chance	0.8635346
+-1.060698	small hail	0
+-1.557758	snow ,	-0.1764815
+-0.8674648	snow .	-0.5051038
+-0.4750124	snow accumulation	0.05308753
+-1.792524	snow after	0.422247
+-1.49561	snow and	-0.2061386
+-1.096844	snow before	-0.02098429
+-2.91474	snow between	-0.007137878
+-2.81783	snow could	-0.002446435
+-1.044043	snow level	0
+-1.402856	snow likely	0.7445903
+-0.7147105	snow showers	0.06521368
+-0.7180439	some of	-0.1099142
+-0.80618	some thunder	0
+-1.382834	south .	-0.2209119
+-1.516013	south around	1.442135
+-1.223828	south between	0.3836946
+-0.7323511	south southeast	0.3784221
+-0.8643596	south southwest	0.5027378
+-0.2786148	south wind	-0.434002
+-1.281334	southeast .	-0.07130802
+-3.130548	southeast <num>	0.004368934
+-1.599069	southeast around	1.629865
+-0.9970093	southeast between	0.4388499
+-0.1075702	southeast wind	-0.3080214
+-1.118417	southwest .	-0.2014701
+-3.311542	southwest <num>
+-1.813231	southwest around	1.697616
+-1.555667	southwest between	0.7490233
+-0.07563493	southwest wind	-0.343074
+-1.118375	sprinkles .	0.01707113
+-1.692406	sprinkles after	0.08112776
+-1.449368	sprinkles before	0.04358426
+-1.516315	sprinkles between	-0.009203304
+-0.5228788	steady temperature	-0.05357642
+-0.6462637	storms could	-0.09728383
+-0.01344276	sunny ,	-0.4730946
+-0.6817436	temperature around	1.681017
+-0.8669782	temperature falling	0.00998421
+-0.7537463	temperature rising	0.09500937
+-0.2935441	tenth and	-0.7870139
+-0.4005051	tenth of	-0.6710607
+-2.81458	than <num>
+-0.1257159	than a	-0.7738158
+-0.9114905	than one	0
+-1.091591	the afternoon	0
+-1.675167	the day	0
+-0.9761971	the early	-0.01583857
+-1.976197	the evening	0.06803388
+-1.675167	the remainder	0
+-1.754348	the snow	-0.01207569
+-0.7631223	the storms	0
+-0.3995316	then a	-0.7915016
+-3.113442	then areas
+-2.072049	then becoming	-0.054174
+-2.937351	then cloudy	-0.007594324
+-2.636321	then falling	0.1018734
+-2.636321	then freezing	0.490043
+-2.052744	then gradual	0
+-0.5762527	then gradually	0
+-2.937351	then isolated	0.3292967
+-2.460229	then occasional	0.2144247
+-0.9719922	then rain	0.5196989
+-2.135718	then scattered	0.258687
+-0.9847197	then showers	0.05656904
+-2.937351	then sleet	0.006970169
+-1.527981	then snow	0.07072876
+-1.08636	three quarters	0
+-1.08636	through mid	0
+-0.7160034	thunder is	-0.0903339
+-1.784379	thunderstorm ,	-0.01652127
+-0.817456	thunderstorm .	-0.2040239
+-0.6932991	thunderstorm after	0.06099173
+-0.3487475	thunderstorm before	-0.3185909
+-1.054681	thunderstorms ,	-0.2377587
+-0.4045333	thunderstorms .	-0.4534519
+-0.7080309	thunderstorms after	-0.2384429
+-1.520944	thunderstorms also	0.07028754
+-1.025451	thunderstorms before	0.1537217
+-2.475187	thunderstorms between	-0.009074805
+-0.9838251	thunderstorms likely	0.2444438
+-1.539076	times .	0.001970015
+-0.1979931	to <num>	-0.9796131
+-1.534097	to around	1.621896
+-0.5373566	to between	0.1093673
+-2.78533	to near	1.806531
+-0.5909032	values as	-0.1471941
+-0.9112383	values between	0.8960764
+-0.2498775	variable wind	-0.3414264
+-1.929419	very windy
+-1.414311	west .	-0.05972615
+-3.418633	west <num>
+-1.868404	west around	1.68283
+-1.694357	west between	0.7615219
+-1.049417	west northwest	0.6375783
+-0.8623302	west southwest	0.6641589
+-0.1739845	west wind	-0.3514126
+-0.7160034	widespread fog	0.1733653
+-1.401149	wind .	-0.5536957
+-1.051031	wind <num>	-1.09729
+-0.8449818	wind around	0.5334696
+-1.7719	wind at	-0.007054865
+-1.053874	wind becoming	-0.7121347
+-0.2135963	wind between	-0.9429606
+-2.346217	wind chill	0
+-0.05551733	winds could	-0.1012748
+-0.1005308	windy ,	0.1164459
+-0.08793408	with a	-1.689042
+-3.401573	with freezing	0.4753198
+-0.7557414	with gusts	0
+-3.702603	with snow	0.002092605
+-2.74836	with thunderstorms	-0.1077555
+-1.293731	zero .	0.01034423
+
+\3-grams:
+-0.01031306	<num> % .
+-0.3374243	10am , then
+-0.8074914	10pm , then
+-0.3117539	11am , then
+-0.5544426	11pm , then
+-1.633469	1am , then
+-0.4670209	1pm , then
+-1.113943	2am , then
+-0.4841262	2pm , then
+-0.3739879	3am , then
+-0.6264194	3pm , then
+-1.464887	4am , then
+-1.08636	4pm , then
+-0.3159837	6pm , then
+-0.8320682	8am , then
+-1.39794	8pm , then
+-0.3910886	9am , then
+-0.559308	9pm , then
+-0.993088	blustery , with
+-0.02298536	breezy , with
+-0.04693604	clear , with
+-0.9193055	clearing , with
+-0.07169323	clouds , with
+-1.310163	cloudy , then
+-0.02727007	cloudy , with
+-1.39794	cold , with
+-0.79588	evening , then
+-0.1099714	inch , except
+-1.718941	likely , becoming
+-0.1143339	likely , mainly
+-2.0463	likely , possibly
+-1.803262	likely , then
+-2.472269	likely , with
+-0.31037	midnight , then
+-1.08636	morning , then
+-0.01353002	mph , with
+-0.2839966	noon , then
+-1.57579	otherwise , clear
+-1.460397	otherwise , cloudy
+-1.09242	otherwise , increasing
+-0.3464533	otherwise , mostly
+-0.6798393	otherwise , partly
+-1.983275	otherwise , sunny
+-1.755875	overnight , with
+-1.351763	rain , and
+-1.759248	rain , becoming
+-2.236369	rain , freezing
+-0.2556086	rain , mainly
+-1.935339	rain , possibly
+-1.567363	rain , snow
+-1.634309	rain , then
+-2.238046	showers , freezing
+-0.2432892	showers , mainly
+-0.7609249	showers , then
+-1.229446	showers , with
+-1.21146	sleet , mainly
+-1.267172	snow , and
+-1.71433	snow , becoming
+-1.182851	snow , freezing
+-0.680906	snow , mainly
+-1.71433	snow , possibly
+-3.264188	sunny , then
+-0.01360533	sunny , with
+-1.08636	thunderstorm , mainly
+-0.4450317	thunderstorms , mainly
+-0.8899683	thunderstorms , then
+-0.1005308	windy , with
+-0.2507344	% . </s>
+-1.098216	% . little
+-0.4740986	% . new
+-1.866878	10am . areas
+-1.108471	10am . cloudy
+-1.370871	10am . high
+-1.10345	10am . increasing
+-0.3635412	10am . mostly
+-1.083928	10am . otherwise
+-1.326966	10am . partly
+-1.279541	10am . patchy
+-1.627996	10am . snow
+-2.343999	10am . steady
+-1.915735	10pm . areas
+-1.5954	10pm . cloudy
+-1.915735	10pm . increasing
+-1.542155	10pm . low
+-0.3136755	10pm . mostly
+-1.012645	10pm . otherwise
+-1.076315	10pm . partly
+-2.054038	10pm . patchy
+-1.178977	10pm . snow
+-0.8317341	11am . cloudy
+-1.697036	11am . high
+-0.4157496	11am . mostly
+-1.420829	11am . otherwise
+-1.651278	11am . snow
+-1.697036	11am . some
+-0.8610505	11pm . cloudy
+-1.338172	11pm . low
+-0.7439371	11pm . mostly
+-1.4843	11pm . otherwise
+-2.007179	11pm . partly
+-1.530057	11pm . patchy
+-2.007179	11pm . snow
+-1.58121	11pm . some
+-1.320493	1am . areas
+-1.797614	1am . cloudy
+-2.223583	1am . increasing
+-0.7976137	1am . low
+-0.6836704	1am . mostly
+-0.7369159	1am . otherwise
+-1.58676	1am . partly
+-1.554576	1am . patchy
+-0.6663586	1pm . cloudy
+-0.4435868	1pm . mostly
+-1.794388	1pm . otherwise
+-1.940516	1pm . patchy
+-1.940516	1pm . the
+-2.162365	1pm . widespread
+-1.687975	2am . cloudy
+-0.9890046	2am . mostly
+-1.591065	2am . otherwise
+-1.840942	2pm . cloudy
+-0.8709053	2pm . mostly
+-1.363821	2pm . otherwise
+-2.042181	3am . breezy
+-1.56506	3am . cloudy
+-2.042181	3am . increasing
+-0.8546609	3am . low
+-0.5031055	3am . mostly
+-0.7368302	3am . otherwise
+-1.699759	3am . south
+-1.965358	3pm . breezy
+-1.597382	3pm . cloudy
+-1.328536	3pm . increasing
+-0.5448527	3pm . mostly
+-1.401087	3pm . partly
+-2.09108	4am . areas
+-1.337753	4am . cloudy
+-1.869232	4am . east
+-0.4038489	4am . mostly
+-1.121044	4am . otherwise
+-2.09108	4am . partly
+-2.09108	4am . south
+-1.740363	4pm . breezy
+-0.2046467	4pm . mostly
+-1.694605	4pm . west
+-1.098067	5am . east
+-1.797037	5am . increasing
+-1.672098	5am . otherwise
+-1.061807	5pm . breezy
+-1.250863	5pm . west
+-1.464887	7pm . breezy
+-1.157608	8am . cloudy
+-1.759668	8am . mostly
+-0.7384785	8am . otherwise
+-1.884607	8am . partly
+-1.617	8pm . breezy
+-0.8388491	8pm . cloudy
+-1.537819	8pm . windy
+-1.334176	9am . cloudy
+-2.194514	9am . high
+-0.2807005	9am . mostly
+-0.8471843	9am . otherwise
+-1.842332	9am . partly
+-2.194514	9am . patchy
+-0.6317819	9pm . cloudy
+-1.932812	9pm . low
+-1.011993	9pm . mostly
+-1.932812	9pm . partly
+-3.068537	<num> . blustery
+-0.863276	<num> . breezy
+-0.9831153	<num> . calm
+-1.125355	<num> . east
+-1.61975	<num> . light
+-1.27284	<num> . north
+-2.250381	<num> . northeast
+-1.166878	<num> . northwest
+-0.6693192	<num> . south
+-1.294597	<num> . southeast
+-1.124315	<num> . southwest
+-0.8165792	<num> . west
+-2.34297	<num> . wind
+-1.551411	<num> . windy
+-1.435935	afternoon . high
+-1.076913	afternoon . mostly
+-0.07976694	calm . </s>
+-1.314101	calm . chance
+-2.694313	calm . new
+-2.217191	calm . winds
+-1.763428	day . breezy
+-1.946125	drizzle . areas
+-1.645095	drizzle . cloudy
+-1.578148	drizzle . increasing
+-0.4989666	drizzle . mostly
+-1.39794	dust . mostly
+-1.022173	early . calm
+-1.265211	early . east
+-1.867271	early . south
+-1.867271	early . southwest
+-1.742332	early . west
+-1.198264	early . windy
+-0.3997841	east . </s>
+-1.071882	east . chance
+-1.549003	east . new
+-1.645913	east . winds
+-0.1205277	expected . </s>
+-2.398519	expected . little
+-1.761697	expected . new
+-0.6208094	feet . cloudy
+-1.016626	feet . high
+-1.588017	feet . low
+-0.6000258	feet . mostly
+-1.638489	flurries . cloudy
+-1.763428	flurries . mostly
+-1.031408	fog . low
+-1.291046	fog . otherwise
+-1.128318	fog . temperature
+-1.361728	hail . cloudy
+-1.310575	hail . mostly
+-0.9839132	light . </s>
+-1.724276	light . chance
+-1.025306	light . winds
+-2.465878	likely . areas
+-0.6207803	likely . cloudy
+-2.097902	likely . low
+-0.3005351	likely . mostly
+-1.330216	likely . snow
+-1.988757	likely . some
+-2.164848	likely . widespread
+-2.234581	midnight . areas
+-0.6983379	midnight . cloudy
+-1.155399	midnight . increasing
+-1.256857	midnight . low
+-0.3712577	midnight . mostly
+-1.080766	midnight . otherwise
+-1.632521	midnight . partly
+-1.961579	midnight . some
+-2.53561	midnight . south
+-2.137671	midnight . temperature
+-0.2157806	mph . </s>
+-0.4909393	mph . chance
+-3.295215	mph . little
+-2.1522	mph . new
+-1.277347	mph . winds
+-1.841985	noon . areas
+-0.4548689	noon . cloudy
+-1.016409	noon . high
+-1.62349	noon . increasing
+-0.4162249	noon . mostly
+-2.557988	noon . otherwise
+-1.478807	noon . partly
+-2.478807	noon . some
+-2.654898	noon . widespread
+-1.085521	north . </s>
+-1.31597	north . chance
+-1.202027	north . winds
+-0.846974	northeast . </s>
+-0.967548	northeast . chance
+-1.666518	northeast . new
+-1.763428	northeast . winds
+-0.4596158	northwest . </s>
+-0.7704057	northwest . chance
+-2.112828	northwest . new
+-1.28892	northwest . winds
+-0.04405617	possible . </s>
+-2.645029	possible . areas
+-2.343999	possible . cloudy
+-2.565848	possible . low
+-2.065245	possible . mostly
+-2.498901	possible . new
+-1.265996	rain . cloudy
+-1.390935	rain . high
+-2.265996	rain . increasing
+-0.4255766	rain . low
+-0.5893028	rain . mostly
+-1.754113	rain . snow
+-1.868056	rain . some
+-1.788875	rain . temperature
+-1.393575	severe . cloudy
+-0.9542425	severe . low
+-0.7536956	showers . cloudy
+-1.879052	showers . high
+-1.971806	showers . low
+-0.2367395	showers . mostly
+-1.141737	showers . partly
+-1.302799	showers . patchy
+-2.180082	showers . snow
+-2.038753	showers . some
+-1.662758	sleet . cloudy
+-1.150874	sleet . mostly
+-1.017316	snow . cloudy
+-1.283018	snow . high
+-1.002838	snow . low
+-0.6034769	snow . mostly
+-0.6546295	snow . snow
+-1.833926	snow . some
+-0.4022614	south . </s>
+-0.6904541	south . chance
+-1.159223	south . winds
+-0.4274952	southeast . </s>
+-0.8315955	southeast . chance
+-2.102662	southeast . new
+-1.433656	southeast . winds
+-0.361095	southwest . </s>
+-0.8959114	southwest . chance
+-1.037789	southwest . winds
+-1.359361	sprinkles . cloudy
+-1.359361	sprinkles . mostly
+-1.256689	thunderstorm . cloudy
+-1.208385	thunderstorm . high
+-0.7089871	thunderstorm . low
+-1.231866	thunderstorm . mostly
+-1.03998	thunderstorm . widespread
+-0.1758429	thunderstorms . </s>
+-1.37331	thunderstorms . cloudy
+-2.339452	thunderstorms . increasing
+-1.579784	thunderstorms . low
+-1.217236	thunderstorms . mostly
+-2.46439	thunderstorms . partly
+-1.987269	thunderstorms . some
+-1.539076	times . cloudy
+-0.6139592	west . </s>
+-0.6761071	west . chance
+-1.966142	west . new
+-1.049688	west . winds
+-0.1408242	wind . </s>
+-0.9275756	wind . chance
+-1.549003	zero . northwest
+-1.645913	zero . west
+-0.1266864	after 10am .
+-1.25042	and 10am ,
+-0.7459666	before 10am ,
+-0.2253796	before 10am .
+-0.7533277	between 10am and
+-0.1597008	after 10pm .
+-1.255273	before 10pm ,
+-0.1903317	before 10pm .
+-1.633469	between 10pm and
+-0.4308761	after 11am .
+-1.104942	and 11am ,
+-1.326791	and 11am .
+-0.5231761	before 11am ,
+-0.4469797	before 11am .
+-0.79588	between 11am and
+-0.4703353	after 11pm .
+-0.6456065	before 11pm ,
+-0.7357831	before 11pm .
+-1.633469	between 11pm and
+-0.2225403	after 1am .
+-1.80448	before 1am ,
+-0.4822609	before 1am .
+-1.176091	between 1am and
+-0.5228788	after 1pm .
+-0.9722469	and 1pm ,
+-1.340224	and 1pm .
+-0.8002656	before 1pm ,
+-0.3498785	before 1pm .
+-0.9542425	between 1pm and
+-0.8586708	after 2am .
+-1.342423	and 2am ,
+-1.39794	before 2am ,
+-1.633469	between 2am and
+-0.763428	after 2pm .
+-0.8943161	and 2pm ,
+-1.690196	and 2pm .
+-0.5925978	before 2pm ,
+-1.08636	between 2pm and
+-0.2191259	after 3am .
+-1.344883	and 3am ,
+-0.5332372	before 3am ,
+-0.5446168	before 3am .
+-1.08636	by 3am .
+-0.4364741	after 3pm .
+-0.9453791	and 3pm ,
+-1.588832	and 3pm .
+-0.8203922	before 3pm ,
+-1.466656	before 3pm .
+-1.755875	by 3pm .
+-0.3023283	after 4am .
+-1.479527	and 4am ,
+-1.354589	and 4am .
+-0.9386107	before 4am .
+-1.342423	by 4am .
+-0.5642715	after 4pm .
+-1.551247	and 4pm ,
+-0.2359762	and 4pm .
+-1.633469	before 4pm ,
+-1.01424	by 4pm .
+-1.462398	after 5am .
+-1.08636	by 5am .
+-0.8586708	by 5pm .
+-0.3159837	before 6pm ,
+-1.39794	by 7pm .
+-1.633469	after 8am .
+-0.9441422	before 8am ,
+-0.6356882	before 8am .
+-0.845098	between 8am and
+-0.819544	after 8pm .
+-1.39794	before 8pm ,
+-1.25042	by 8pm .
+-0.1714777	after 9am .
+-1.060698	and 9am ,
+-0.5851153	before 9am ,
+-0.5271233	before 9am .
+-0.327873	between 9am and
+-1.755875	by 9am ,
+-0.5358993	after 9pm .
+-0.5934938	before 9pm ,
+-1.098644	before 9pm .
+-1.21146	between 9pm and
+-2.338324	a <num> of
+-0.02487829	a <num> percent
+-3.037586	and <num> .
+-2.934923	and <num> early
+-0.005343257	and <num> mph
+-0.1366195	around <num> .
+-2.172128	around <num> by
+-3.402577	around <num> during
+-0.5987782	around <num> mph
+-2.399096	as <num> .
+-2.286392	as <num> early
+-0.0148826	as <num> mph
+-0.1593481	at <num> mph
+-0.004483906	between <num> and
+-0.01031306	is <num> %
+-0.1946965	level <num> feet
+-0.006794274	near <num> .
+-3.268929	near <num> by
+-1.633469	northwest <num> to
+-0.2628503	of <num> to
+-1.755875	southeast <num> to
+-1.316669	to <num> feet
+-1.135779	to <num> inches
+-0.09482038	to <num> mph
+-2.073631	to <num> of
+-0.03514747	wind <num> to
+-0.4960559	<s> <s> a
+-2.394354	<s> <s> areas
+-2.018183	<s> <s> clear
+-1.771105	<s> <s> cloudy
+-3.746537	<s> <s> definite
+-3.503499	<s> <s> flurries
+-2.414099	<s> <s> freezing
+-1.57117	<s> <s> increasing
+-2.058562	<s> <s> isolated
+-0.5751762	<s> <s> mostly
+-2.291692	<s> <s> occasional
+-0.9138684	<s> <s> partly
+-1.760886	<s> <s> patchy
+-2.265811	<s> <s> periods
+-1.352523	<s> <s> rain
+-2.074439	<s> <s> scattered
+-1.220521	<s> <s> showers
+-2.058562	<s> <s> snow
+-1.17951	<s> <s> sunny
+-0.3731313	<s> a <num>
+-0.4879196	<s> a chance
+-0.6409929	<s> a slight
+-1.633469	around a <num>
+-1.957448	between a half
+-0.69897	between a quarter
+-0.1759316	between a tenth
+-0.0883145	possibly a thunderstorm
+-1.979624	than a <num>
+-0.6471858	than a half
+-0.2081593	than a tenth
+-0.1723171	then a chance
+-0.7242398	then a slight
+-1.901608	with a east
+-0.3707851	with a high
+-0.3859299	with a low
+-3.140491	with a north
+-2.877249	with a northwest
+-1.138805	with a south
+-1.923007	with a southeast
+-2.105728	with a southwest
+-2.569688	with a steady
+-2.550665	with a temperature
+-1.355953	with a west
+-0.4714626	ice accumulation expected
+-0.9402318	ice accumulation of
+-0.819544	sleet accumulation of
+-0.4213165	snow accumulation expected
+-0.31037	snow accumulation of
+-1.554035	drizzle after 10pm
+-1.239641	drizzle after 1am
+-0.2883326	drizzle after 9am
+-0.9588141	drizzle after midnight
+-1.39794	dust after noon
+-1.01424	feet after midnight
+-1.539076	flurries after 3am
+-0.6895933	fog after 10pm
+-1.70243	fog after 11pm
+-0.8391077	fog after 1am
+-2.003461	fog after 2am
+-1.748188	fog after 2pm
+-2.100371	fog after 3am
+-1.380211	fog after 4am
+-2.100371	fog after 5am
+-2.225309	fog after 9am
+-0.6493521	fog after midnight
+-1.342423	frost after 4am
+-1.079181	likely after 10am
+-1.357935	likely after 1pm
+-1.079181	likely after 3am
+-1.512837	likely after midnight
+-1.579784	likely after noon
+-1.186647	mainly after 10am
+-0.9205946	mainly after 10pm
+-1.880477	mainly after 11am
+-1.403356	mainly after 11pm
+-1.186647	mainly after 1am
+-1.438828	mainly after 1pm
+-2.110926	mainly after 2am
+-2.633805	mainly after 2pm
+-0.9495583	mainly after 3am
+-1.38665	mainly after 3pm
+-1.046468	mainly after 4am
+-1.457714	mainly after 4pm
+-2.508866	mainly after 8am
+-1.648528	mainly after 8pm
+-1.809896	mainly after 9pm
+-0.9586379	mainly after midnight
+-0.9870746	mainly after noon
+-1.869232	possible after 10pm
+-1.23241	possible after 11am
+-1.647383	possible after 11pm
+-1.744293	possible after 9am
+-1.501255	possible after midnight
+-0.9149892	possible after noon
+-0.4854391	rain after 10am
+-2.002755	rain after 10pm
+-1.930204	rain after 11am
+-2.442088	rain after 1am
+-2.141058	rain after 1pm
+-2.199049	rain after 2pm
+-1.58175	rain after 3am
+-1.58175	rain after 3pm
+-2.089905	rain after 4pm
+-1.567026	rain after 9am
+-0.8136987	rain after midnight
+-0.6016679	rain after noon
+-1.761928	showers after 10am
+-0.9984999	showers after 10pm
+-1.659266	showers after 11am
+-1.824076	showers after 11pm
+-1.381717	showers after 1am
+-1.938019	showers after 1pm
+-1.791891	showers after 2am
+-1.659266	showers after 2pm
+-1.174591	showers after 3am
+-2.335959	showers after 3pm
+-1.540079	showers after 4am
+-1.938019	showers after 4pm
+-1.733899	showers after 9am
+-1.247823	showers after 9pm
+-0.6015593	showers after midnight
+-0.8552337	showers after noon
+-1.140272	snow after 10am
+-1.39015	snow after 10pm
+-1.344392	snow after 11am
+-1.303	snow after 11pm
+-1.867271	snow after 9am
+-1.645422	snow after midnight
+-1.742332	snow after noon
+-1.633469	sprinkles after midnight
+-1.945715	thunderstorm after 10am
+-2.070653	thunderstorm after 11am
+-1.132801	thunderstorm after 1am
+-1.016296	thunderstorm after midnight
+-0.4649893	thunderstorm after noon
+-1.238046	thunderstorms after 11am
+-1.635986	thunderstorms after 3pm
+-0.8956234	thunderstorms after midnight
+-0.3260013	thunderstorms after noon
+-0.9193055	the afternoon .
+-1.340224	becoming all rain
+-0.9722469	becoming all snow
+-0.7160034	is also possible
+-0.6139592	thunderstorms also possible
+-0.1099714	higher amounts possible
+-1.176091	precipitation amounts of
+-0.236958	rainfall amounts between
+-0.4693789	rainfall amounts of
+-0.6264194	around an inch
+-0.03617624	of an inch
+-1.311754	, and freezing
+-0.8803901	, and sleet
+-1.531479	10am and 11am
+-1.054358	10am and 1pm
+-1.832509	10am and 2pm
+-1.464532	10am and 4pm
+-1.531479	10am and noon
+-1.633469	10pm and 4am
+-1.823909	11am and 2pm
+-1	11am and 4pm
+-1.346787	11am and noon
+-1.758407	11pm and 4am
+-1.352183	1am and 2am
+-1.778151	1am and 3am
+-1.778151	1am and 4am
+-1.235069	1pm and 2pm
+-1.431364	1pm and 3pm
+-1.577492	1pm and 4pm
+-1.633469	2am and 4am
+-1.148508	2pm and 3pm
+-1.78533	2pm and 4pm
+-1.447158	8am and 11am
+-1.690196	8am and 4pm
+-1.088136	8am and 9am
+-1.690196	8am and noon
+-1.501059	9am and 10am
+-1.421878	9am and 11am
+-0.4006887	9am and noon
+-1.21146	9pm and midnight
+-0.004483906	<num> and <num>
+-1.39794	cloudy and cold
+-1.08636	half and three
+-0.2498775	light and variable
+-2.279515	likely and areas
+-0.1534917	likely and possibly
+-1.467361	midnight and 3am
+-1.621176	noon and 1pm
+-1.475048	noon and 2pm
+-1.843025	noon and 3pm
+-0.2728714	noon and 4pm
+-0.2088838	quarter and half
+-0.7849907	rain and possibly
+-0.8018586	rain and sleet
+-0.2702532	rain and snow
+-1.90309	rain and thunderstorms
+-0.9736711	showers and possibly
+-2.152967	showers and sleet
+-0.1208862	showers and thunderstorms
+-1.658011	snow and areas
+-0.7118868	snow and freezing
+-0.7640648	snow and sleet
+-0.07380117	tenth and quarter
+-0.4481575	. areas of
+-0.4573772	<s> areas of
+-1.342423	and areas of
+-0.5496719	east around <num>
+-0.006583908	low around <num>
+-1.060698	north around <num>
+-0.6139592	northeast around <num>
+-1.633469	northwest around <num>
+-1.746245	of around a
+-0.6323015	of around an
+-0.2246417	south around <num>
+-0.4227636	southeast around <num>
+-0.5642715	southwest around <num>
+-0.5228788	temperature around <num>
+-0.4099489	to around <num>
+-0.5271395	west around <num>
+-0.02220181	wind around <num>
+-0.05551733	gust as high
+-0.01353002	gusts as high
+-0.01101531	high as <num>
+-0.5894185	low as <num>
+-1.420506	low as zero
+-0.5358993	values as low
+-1.539076	heavy at times
+-0.1593481	wind at <num>
+-1.606381	could be heavy
+-0.8282301	could be severe
+-0.8320682	, becoming all
+-2.45586	gradually becoming clear
+-0.3138875	gradually becoming mostly
+-0.8395591	gradually becoming partly
+-0.7597945	gradually becoming sunny
+-0.3754551	mph becoming calm
+-1.0682	mph becoming east
+-1.851258	mph becoming light
+-1.422829	mph becoming north
+-2.152288	mph becoming northeast
+-1.296054	mph becoming northwest
+-0.8189327	mph becoming south
+-1.469405	mph becoming southeast
+-1.336349	mph becoming southwest
+-0.995024	mph becoming west
+-0.9777236	then becoming clear
+-1.801632	then becoming cloudy
+-0.7224399	wind becoming east
+-1.228231	wind becoming north
+-2.076762	wind becoming northeast
+-1.951823	wind becoming northwest
+-0.4251607	wind becoming south
+-0.8622122	wind becoming southeast
+-1.387552	wind becoming southwest
+-0.987642	wind becoming west
+-0.9153244	drizzle before 10am
+-1.11697	drizzle before 1am
+-1.50515	drizzle before 1pm
+-1.760422	drizzle before 9am
+-0.7691964	drizzle before 9pm
+-1.982271	drizzle before ending
+-1.982271	drizzle before midnight
+-1.244165	flurries before 1am
+-1.171614	flurries before midnight
+-1.808436	flurries before noon
+-0.7077278	fog before 10am
+-1.485879	fog before 11am
+-1.398729	fog before 1am
+-1.896054	fog before 1pm
+-0.7499255	fog before 3am
+-1.197084	fog before 8am
+-0.7917616	fog before 9am
+-1.838062	fog before midnight
+-1.963	fog before noon
+-1.342423	frost before 8am
+-1.704722	likely before 10am
+-2.181844	likely before 10pm
+-1.261025	likely before 11am
+-1.959995	likely before 11pm
+-1.959995	likely before 1pm
+-2.056905	likely before 2am
+-2.056905	likely before 3am
+-1.015512	likely before 6pm
+-2.181844	likely before 8pm
+-0.8394209	likely before 9am
+-2.181844	likely before 9pm
+-1.617572	likely before midnight
+-0.598267	likely before noon
+-1.115943	mainly before 10am
+-0.8558718	mainly before 10pm
+-0.7695902	mainly before 11am
+-1.383549	mainly before 11pm
+-1.559641	mainly before 1am
+-1.352515	mainly before 1pm
+-1.610793	mainly before 3am
+-1.735732	mainly before 4am
+-1.638822	mainly before 8am
+-1.584464	mainly before 9am
+-2.337792	mainly before 9pm
+-1.383549	mainly before midnight
+-0.9172861	mainly before noon
+-2.124667	rain before 10am
+-1.496278	rain before 10pm
+-1.093259	rain before 11am
+-1.823637	rain before 11pm
+-0.787208	rain before 1pm
+-1.823637	rain before 3am
+-1.948576	rain before 3pm
+-0.6698223	rain before 6pm
+-2.124667	rain before 8am
+-2.249606	rain before 8pm
+-1.948576	rain before 9am
+-1.772485	rain before 9pm
+-1.158525	rain before midnight
+-1.221577	rain before noon
+-0.6913905	showers before 10am
+-0.7274067	showers before 10pm
+-1.921839	showers before 11am
+-1.572505	showers before 11pm
+-1.921839	showers before 1am
+-1.319779	showers before 1pm
+-1.131099	showers before 3am
+-2.675167	showers before 3pm
+-2.110896	showers before 4am
+-1.720925	showers before 8am
+-1.70513	showers before 9am
+-1.976197	showers before 9pm
+-1.720925	showers before midnight
+-0.6045136	showers before noon
+-1.688716	sleet before 10am
+-1.767898	sleet before 11am
+-1.236419	sleet before 1pm
+-1.864808	sleet before 2am
+-0.7947698	sleet before 2pm
+-1.051894	sleet before 3pm
+-1.989746	sleet before 4pm
+-1.989746	sleet before 8pm
+-1.864808	sleet before 9am
+-1.262748	sleet before noon
+-0.7832189	snow before 10am
+-1.731387	snow before 10pm
+-0.7259923	snow before 11am
+-1.078175	snow before 11pm
+-1.272749	snow before 1pm
+-1.555296	snow before 2pm
+-1.054694	snow before noon
+-1.640978	sprinkles before 3pm
+-1.640978	sprinkles before midnight
+-1.346202	thunderstorm before 11am
+-0.2109475	thunderstorm before midnight
+-1.329812	thunderstorm before noon
+-1.62454	thunderstorms before 10am
+-1.573387	thunderstorms before 10pm
+-1.82866	thunderstorms before 11pm
+-1.272357	thunderstorms before 1pm
+-1.682532	thunderstorms before 9pm
+-0.9043806	thunderstorms before midnight
+-0.598211	thunderstorms before noon
+-0.05726265	amounts between a
+-0.3441236	east between <num>
+-1.611015	likely between 10am
+-1.912045	likely between 11am
+-0.5829861	likely between 9am
+-1.912045	likely between 9pm
+-1.912045	likely between midnight
+-1.435367	mainly between 10am
+-1.736397	mainly between 11pm
+-1.861335	mainly between 1am
+-1.639486	mainly between 8am
+-0.8333065	mainly between 9am
+-0.7533277	north between <num>
+-0.5797836	northeast between <num>
+-0.6603406	northwest between <num>
+-1.324511	rain between 1am
+-1.676694	rain between 9am
+-1.375664	rain between 9pm
+-1.801632	rain between midnight
+-1.406092	showers between 10am
+-2.207724	showers between 10pm
+-1.342423	showers between 11am
+-2.207724	showers between 1pm
+-1.323117	showers between 8am
+-1.207724	showers between 9am
+-2.207724	showers between midnight
+-0.3424227	showers between noon
+-1.635149	sleet between 10am
+-1.459057	sleet between 11am
+-1.182851	sleet between 1pm
+-1.81124	sleet between 2am
+-1.237208	sleet between 2pm
+-1.134546	sleet between 9am
+-1.033089	sleet between noon
+-1.758407	snow between 1pm
+-0.1289415	south between <num>
+-0.1497623	southeast between <num>
+-0.3933443	southwest between <num>
+-1.462398	sprinkles between noon
+-1.541579	thunderstorms between 9am
+-0.0637806	to between <num>
+-0.7846821	values between <num>
+-0.4124447	west between <num>
+-0.005290579	wind between <num>
+-1.134905	of blowing dust
+-1.281033	of blowing snow
+-0.993088	. blustery ,
+-0.02298536	. breezy ,
+-1.263241	<num> by 3am
+-1.962211	<num> by 3pm
+-1.536243	<num> by 4am
+-1.18406	<num> by 4pm
+-1.263241	<num> by 5am
+-1.007969	<num> by 5pm
+-1.594235	<num> by 7pm
+-1.439333	<num> by 8pm
+-1.962211	<num> by 9am
+-1.837273	<num> by midnight
+-1.962211	<num> by noon
+-0.03018645	. calm wind
+-0.05217801	becoming calm .
+-0.01031306	. chance of
+-2.922596	a chance for
+-0.02277522	a chance of
+-0.02301436	percent chance of
+-0.03694609	slight chance of
+-0.4254309	wind chill values
+-0.9193055	, clear ,
+-0.2516496	<s> clear ,
+-0.9363309	becoming clear ,
+-0.05620252	mostly clear ,
+-0.9193055	gradual clearing ,
+-0.07169323	increasing clouds ,
+-0.819544	, cloudy ,
+-0.03441757	. cloudy ,
+-2.780857	. cloudy during
+-2.236789	. cloudy through
+-0.1666497	<s> cloudy ,
+-1.959041	<s> cloudy during
+-1.755875	becoming cloudy ,
+-0.009564824	mostly cloudy ,
+-3.104585	mostly cloudy and
+-2.648653	mostly cloudy during
+-0.02866351	partly cloudy ,
+-2.731266	partly cloudy during
+-1.755875	then cloudy overnight
+-1.39794	and cold ,
+-1.539076	snow could be
+-0.8593385	storms could be
+-1.03543	storms could produce
+-0.05551733	winds could gust
+-1.462398	the day .
+-0.3174204	mph decreasing to
+-1.633469	<s> definite drizzle
+-1.633469	definite drizzle before
+-1.755875	for drizzle before
+-1.758407	freezing drizzle .
+-0.7218591	of drizzle .
+-0.6059551	of drizzle after
+-0.7167796	of drizzle before
+-1.658445	or drizzle .
+-0.2300157	or drizzle after
+-1.23744	or drizzle before
+-1.462398	<num> during the
+-0.79588	cloudy during the
+-1.414973	blowing dust .
+-1.414973	blowing dust after
+-0.6201164	<num> early .
+-0.819544	the early evening
+-1.04023	. east northeast
+-0.847433	. east southeast
+-0.1689318	. east wind
+-1.283301	a east southeast
+-0.2218488	a east wind
+-0.655283	becoming east .
+-1.105252	becoming east around
+-0.7817812	becoming east between
+-1.262038	becoming east northeast
+-0.5445848	becoming east southeast
+-1.821732	light east northeast
+-1.453755	light east southeast
+-0.9371253	light east wind
+-1.755875	before ending .
+-0.819544	early evening ,
+-1.755875	the evening ,
+-0.1099714	, except higher
+-0.1099714	accumulation expected .
+-0.6603406	temperature falling to
+-1.462398	then falling to
+-0.3547931	<num> feet .
+-1.51114	<num> feet after
+-1.404685	<num> feet in
+-0.9602329	<num> feet lowering
+-1.010538	<num> feet rising
+-1.544068	<s> flurries .
+-1.765917	<s> flurries before
+-1.563481	of flurries after
+-1.221058	of flurries before
+-1.143735	scattered flurries before
+-1.82823	freezing fog .
+-1.159223	freezing fog after
+-1.026598	freezing fog before
+-0.7810369	of fog after
+-0.550588	of fog before
+-1.820142	patchy fog .
+-0.4237838	patchy fog after
+-0.4206253	patchy fog before
+-0.7739953	widespread fog .
+-1.539912	widespread fog before
+-1.758407	chance for drizzle
+-0.9193055	, freezing rain
+-0.4703353	<s> freezing rain
+-0.5693362	and freezing rain
+-1.946943	of freezing drizzle
+-1.086605	of freezing fog
+-0.3586716	of freezing rain
+-0.4002812	or freezing rain
+-1.462398	patchy freezing fog
+-1.462398	then freezing rain
+-1.176091	with freezing rain
+-1.359361	patchy frost after
+-1.359361	patchy frost before
+-0.9193055	then gradual clearing
+-0.0947616	then gradually becoming
+-0.05551733	could gust as
+-0.01353002	with gusts as
+-1.060698	small hail .
+-1.467361	a half and
+-0.231833	a half inch
+-0.2088838	and half of
+-1.539076	be heavy at
+-1.539076	produce heavy rain
+-0.1586474	. high near
+-0.006834299	a high near
+-0.01101531	as high as
+-0.1099714	except higher amounts
+-0.763428	new ice accumulation
+-0.4201321	no ice accumulation
+-0.9193055	feet in the
+-0.1099714	possible in thunderstorms
+-0.5673755	an inch ,
+-0.1859864	an inch possible
+-0.2177899	half inch possible
+-0.3117539	one inch possible
+-0.2839966	<num> inches possible
+-0.5314789	, increasing clouds
+-0.2107292	. increasing clouds
+-0.1073685	<s> increasing clouds
+-0.07380117	mph increasing to
+-0.01031306	precipitation is <num>
+-0.7160034	thunder is also
+-0.269872	<s> isolated showers
+-1.755875	then isolated showers
+-0.05985005	of less than
+-0.1946965	snow level <num>
+-0.5125016	. light and
+-1.355594	. light east
+-1.255891	. light north
+-2.068804	. light northeast
+-1.642835	. light northwest
+-0.8383551	. light south
+-1.524736	. light southeast
+-2.369834	. light southwest
+-1.415592	. light west
+-0.9278772	. light wind
+-0.6828832	becoming light .
+-1.122728	rain likely ,
+-0.4740628	rain likely .
+-1.229938	rain likely after
+-1.530968	rain likely and
+-0.6456065	rain likely before
+-1.08381	rain likely between
+-0.4802036	showers likely ,
+-0.5764182	showers likely .
+-0.5741081	showers likely and
+-1.752509	showers likely before
+-2.451479	showers likely between
+-1.18327	sleet likely .
+-1.660391	sleet likely between
+-0.6546723	snow likely ,
+-0.9557023	snow likely .
+-1.696065	snow likely after
+-1.997095	snow likely and
+-1.059243	snow likely before
+-0.4451995	thunderstorms likely ,
+-1.645913	thunderstorms likely .
+-1.770852	thunderstorms likely after
+-0.867762	thunderstorms likely before
+-0.1099714	. little or
+-0.08571211	. low around
+-0.007074866	a low around
+-0.5358993	as low as
+-0.559308	feet lowering to
+-0.2106451	, mainly after
+-0.5752831	, mainly before
+-1.562055	, mainly between
+-1.08636	through mid morning
+-0.07961446	after midnight .
+-1.553883	and midnight ,
+-1.407755	and midnight .
+-0.6404245	before midnight ,
+-0.2776155	before midnight .
+-1.342423	between midnight and
+-1.633469	by midnight .
+-1.036723	possibly mixed with
+-1.08636	mid morning ,
+-1.093422	, mostly clear
+-0.340094	, mostly cloudy
+-0.7828464	, mostly sunny
+-0.01251697	. mostly cloudy
+-2.837799	. mostly sunny
+-0.7184725	<s> mostly clear
+-0.3935503	<s> mostly cloudy
+-0.4230609	<s> mostly sunny
+-1.988262	becoming mostly clear
+-0.152571	becoming mostly sunny
+-0.738253	<num> mph ,
+-0.1717637	<num> mph .
+-0.9925613	<num> mph becoming
+-2.270141	<num> mph decreasing
+-1.505658	<num> mph increasing
+-0.006599392	high near <num>
+-1.462398	to near <num>
+-1.895423	. new ice
+-2.360309	. new precipitation
+-0.1632586	. new rainfall
+-0.6265773	. new snow
+-0.8628027	or no ice
+-0.1934949	or no snow
+-0.07190567	after noon .
+-0.4579379	and noon ,
+-0.9472936	and noon .
+-1.097148	before noon ,
+-0.1324557	before noon .
+-0.2232363	between noon and
+-1.755875	by noon ,
+-1.262708	. north northeast
+-0.5708379	. north northwest
+-0.2562993	. north wind
+-1.570543	a north northwest
+-1.123385	a north wind
+-1.023833	becoming north .
+-1.410777	becoming north around
+-1.058595	becoming north between
+-0.6464143	becoming north northeast
+-0.8087173	becoming north northwest
+-1.41288	light north northeast
+-0.8108203	light north wind
+-0.3699576	. northeast wind
+-0.9735476	becoming northeast .
+-1.31597	becoming northeast around
+-1.361728	becoming northeast between
+-1.381341	east northeast .
+-1.544068	east northeast around
+-1.263241	east northeast between
+-0.3499323	east northeast wind
+-1.462398	light northeast wind
+-1.085596	north northeast .
+-0.9886863	north northeast around
+-1.027604	north northeast between
+-0.6242694	north northeast wind
+-0.04555731	. northwest wind
+-0.7846821	a northwest wind
+-0.3609819	becoming northwest .
+-1.940765	becoming northwest <num>
+-1.127852	becoming northwest between
+-1.060698	light northwest wind
+-1.061423	north northwest .
+-1.663484	north northwest between
+-0.211579	north northwest wind
+-1.524704	west northwest .
+-2.326336	west northwest around
+-1.803457	west northwest between
+-0.1609926	west northwest wind
+-0.5008591	<s> occasional rain
+-1.035276	<s> occasional showers
+-1.549003	then occasional rain
+-1.549003	then occasional showers
+-0.763428	<num> of an
+-0.6250882	accumulation of <num>
+-1.190077	accumulation of around
+-0.2979823	accumulation of less
+-0.09235336	amounts of less
+-1.192155	areas of blowing
+-1.708785	areas of drizzle
+-0.4267782	areas of fog
+-1.091485	areas of freezing
+-1.747253	chance of drizzle
+-3.008912	chance of flurries
+-1.986346	chance of freezing
+-0.3404643	chance of precipitation
+-0.7304636	chance of rain
+-0.5648675	chance of showers
+-1.362836	chance of snow
+-2.722605	chance of sprinkles
+-0.2088838	half of an
+-0.4155749	periods of rain
+-1.419505	periods of showers
+-0.07380117	quarter of an
+-1.08636	quarters of an
+-1.462398	remainder of the
+-0.6462637	some of the
+-0.09235336	tenth of an
+-0.3117539	than one inch
+-0.1099714	little or no
+-0.263597	rain or drizzle
+-0.7407182	rain or freezing
+-0.09366247	. otherwise ,
+-1.755875	cloudy overnight ,
+-0.3755081	, partly cloudy
+-0.9987574	, partly sunny
+-0.1585152	. partly cloudy
+-1.910014	. partly sunny
+-0.1907679	<s> partly cloudy
+-0.5262491	<s> partly sunny
+-0.3719612	becoming partly cloudy
+-0.2821447	. patchy fog
+-1.857332	. patchy freezing
+-0.17375	<s> patchy fog
+-1.568202	<s> patchy frost
+-0.02301436	<num> percent chance
+-0.3781125	<s> periods of
+-0.8145805	also possible .
+-0.6842467	also possible after
+-0.1099714	amounts possible in
+-0.03834499	inch possible .
+-0.2839966	inches possible .
+-1.036723	, possibly mixed
+-0.0883145	and possibly a
+-1.176091	new precipitation amounts
+-0.01031306	of precipitation is
+-1.575188	could produce heavy
+-1.070038	could produce small
+-0.2088838	a quarter and
+-0.07380117	and quarter of
+-1.08636	three quarters of
+-0.9671734	<s> rain ,
+-0.7922418	<s> rain .
+-1.887992	<s> rain after
+-0.8908972	<s> rain and
+-1.702356	<s> rain before
+-0.3994415	<s> rain likely
+-1.917955	<s> rain or
+-1.702356	<s> rain showers
+-1.293731	all rain after
+-1.222083	freezing rain ,
+-1.271771	freezing rain .
+-0.9514361	freezing rain after
+-0.9978935	freezing rain and
+-0.8507659	freezing rain before
+-1.559836	freezing rain between
+-0.6141939	freezing rain likely
+-1.539076	heavy rain .
+-0.6532125	occasional rain ,
+-1.717671	occasional rain .
+-1.0187	occasional rain after
+-1.717671	occasional rain and
+-1.814581	occasional rain before
+-1.398079	of rain ,
+-0.9791151	of rain .
+-0.6124644	of rain after
+-0.5630229	of rain and
+-1.090155	of rain before
+-2.716838	of rain between
+-0.9472142	of rain or
+-1.046283	of rain showers
+-1.817345	scattered rain and
+-0.8631024	scattered rain showers
+-1.74527	then rain ,
+-1.417911	then rain .
+-0.8490195	then rain after
+-1.014892	then rain and
+-0.7971017	then rain likely
+-0.7562654	then rain or
+-2.171239	then rain showers
+-0.03700233	new rainfall amounts
+-1.462398	the remainder of
+-0.5963076	feet rising to
+-0.5745056	temperature rising to
+-1.437507	<s> scattered flurries
+-1.120086	<s> scattered rain
+-0.4510795	<s> scattered showers
+-1.25042	<s> scattered snow
+-1.773299	<s> scattered thunderstorms
+-1.79472	then scattered rain
+-1.125714	then scattered showers
+-1.669782	then scattered snow
+-0.819544	be severe .
+-2.003173	<s> showers ,
+-1.687903	<s> showers .
+-0.6542197	<s> showers and
+-0.1947372	<s> showers likely
+-0.6930612	isolated showers .
+-0.5411035	isolated showers after
+-1.717195	isolated showers and
+-1.416165	isolated showers before
+-0.8342672	occasional showers and
+-0.8473011	of showers ,
+-0.4984105	of showers .
+-0.9489807	of showers after
+-0.8227118	of showers and
+-0.7495486	of showers before
+-1.206926	of showers between
+-1.551973	rain showers ,
+-1.085317	rain showers .
+-1.419347	rain showers after
+-1.743858	rain showers and
+-0.3497957	rain showers before
+-1.618919	rain showers between
+-1.419347	rain showers likely
+-1.208385	scattered showers ,
+-1.02474	scattered showers .
+-1.373195	scattered showers after
+-0.8743545	scattered showers and
+-0.8743545	scattered showers before
+-1.542446	snow showers ,
+-0.5150083	snow showers .
+-1.023361	snow showers after
+-0.5966783	snow showers before
+-1.347872	snow showers between
+-1.155986	snow showers likely
+-1.526538	then showers ,
+-1.86233	then showers .
+-1.007013	then showers and
+-0.3203351	then showers likely
+-1.61182	and sleet ,
+-1.449093	and sleet .
+-1.176091	and sleet accumulation
+-0.5563025	and sleet before
+-0.6941711	and sleet between
+-1.539269	and sleet likely
+-1.755875	then sleet likely
+-0.03694609	a slight chance
+-1.060698	produce small hail
+-1.113943	, snow ,
+-0.1946965	. snow level
+-1.144933	<s> snow ,
+-0.8356308	<s> snow .
+-1.860937	<s> snow and
+-0.615424	<s> snow likely
+-1.128543	<s> snow showers
+-0.9542425	all snow after
+-1.785838	and snow ,
+-0.522033	and snow .
+-2.232996	and snow after
+-0.923366	and snow before
+-2.454845	and snow between
+-1.363764	and snow likely
+-0.4926334	and snow showers
+-1.55145	blowing snow .
+-1.773299	blowing snow after
+-1.773299	blowing snow before
+-0.1196617	new snow accumulation
+-1.435632	new snow and
+-0.1300996	no snow accumulation
+-1.50515	of snow ,
+-0.9658808	of snow .
+-1.50515	of snow after
+-1.127732	of snow and
+-0.7187262	of snow before
+-0.4358235	of snow showers
+-0.9193055	scattered snow showers
+-1.539076	the snow could
+-1.347773	then snow ,
+-0.7457134	then snow .
+-1.389166	then snow and
+-1.544068	then snow likely
+-1.486076	then snow showers
+-1.638489	with snow ,
+-0.7180439	. some of
+-0.80618	. some thunder
+-0.7954198	. south southeast
+-0.9795256	. south southwest
+-0.1539881	. south wind
+-0.5130945	a south southeast
+-0.6318662	a south southwest
+-0.4251632	a south wind
+-0.6331387	becoming south .
+-0.7663169	becoming south around
+-0.4741323	becoming south between
+-1.236489	becoming south southeast
+-1.050179	becoming south southwest
+-1	light south southeast
+-1.653213	light south southwest
+-0.5801054	light south wind
+-0.06019625	. southeast wind
+-0.1946965	a southeast wind
+-0.7290425	becoming southeast .
+-1.091591	becoming southeast around
+-0.3564083	becoming southeast between
+-1.033424	east southeast .
+-2.369216	east southeast <num>
+-1.255273	east southeast around
+-0.7127982	east southeast between
+-0.3765151	east southeast wind
+-0.9542425	light southeast wind
+-1.590546	south southeast .
+-1.945261	south southeast around
+-1.843804	south southeast between
+-0.07050482	south southeast wind
+-0.04153417	. southwest wind
+-0.269872	a southwest wind
+-0.4548449	becoming southwest .
+-1.021189	becoming southwest around
+-0.8606102	becoming southwest between
+-1.755875	light southwest wind
+-1.138727	south southwest .
+-1.993267	south southwest around
+-1.70927	south southwest between
+-0.1142149	south southwest wind
+-1.039928	west southwest .
+-1.802285	west southwest around
+-1.39211	west southwest between
+-0.1768255	west southwest wind
+-1.118375	of sprinkles .
+-1.692406	of sprinkles after
+-1.449368	of sprinkles before
+-1.516315	of sprinkles between
+-1.462398	. steady temperature
+-0.544993	a steady temperature
+-0.6462637	the storms could
+-1.293731	, sunny ,
+-0.04681545	<s> sunny ,
+-0.327873	becoming sunny ,
+-0.02519224	mostly sunny ,
+-0.07432874	partly sunny ,
+-0.7340837	. temperature rising
+-0.7044791	a temperature falling
+-0.9963657	a temperature rising
+-0.5228788	steady temperature around
+-0.2935441	a tenth and
+-0.4005051	a tenth of
+-0.1257159	less than a
+-0.9114905	less than one
+-1.539076	. the snow
+-0.8346326	during the early
+-1.834633	during the evening
+-1.533603	during the remainder
+-0.9193055	in the afternoon
+-1.568202	of the day
+-0.6561569	of the storms
+-0.3997841	, then a
+-2.071882	, then becoming
+-2.937183	, then cloudy
+-2.636153	, then falling
+-2.636153	, then freezing
+-2.052577	, then gradual
+-0.5760854	, then gradually
+-2.937183	, then isolated
+-2.460062	, then occasional
+-0.9718249	, then rain
+-2.135551	, then scattered
+-0.9845524	, then showers
+-2.937183	, then sleet
+-1.527814	, then snow
+-1.08636	and three quarters
+-1.08636	cloudy through mid
+-0.7160034	some thunder is
+-1.784379	a thunderstorm ,
+-0.817456	a thunderstorm .
+-0.6932991	a thunderstorm after
+-0.3487475	a thunderstorm before
+-0.8627954	and thunderstorms ,
+-0.9680308	and thunderstorms .
+-0.5223764	and thunderstorms after
+-0.8335658	and thunderstorms before
+-2.283301	and thunderstorms between
+-0.7919396	and thunderstorms likely
+-0.1099714	in thunderstorms .
+-1.462398	scattered thunderstorms after
+-0.6139592	with thunderstorms also
+-1.539076	at times .
+-0.03194502	<num> to <num>
+-0.3174204	decreasing to between
+-0.6264194	falling to around
+-0.07380117	increasing to between
+-0.559308	lowering to <num>
+-0.69897	rising to <num>
+-0.7066568	rising to around
+-1.676694	rising to near
+-0.5909032	chill values as
+-0.9112383	chill values between
+-0.2498775	and variable wind
+-0.9571573	. west northwest
+-0.8380147	. west southwest
+-0.1560447	. west wind
+-1.478498	a west northwest
+-1.262898	a west southwest
+-0.1074299	a west wind
+-0.5422213	becoming west .
+-0.9963143	becoming west around
+-0.8222668	becoming west between
+-1.370451	becoming west northwest
+-0.7336293	becoming west southwest
+-1.812913	light west northwest
+-1.812913	light west southwest
+-0.9283068	light west wind
+-0.7160034	. widespread fog
+-0.4254309	. wind chill
+-0.7569867	calm wind .
+-0.1201646	calm wind becoming
+-1.879071	east wind .
+-1.08851	east wind <num>
+-0.5837429	east wind around
+-1.211415	east wind at
+-0.3108692	east wind between
+-0.4805956	light wind becoming
+-1.478476	north wind .
+-0.816309	north wind <num>
+-0.8937212	north wind around
+-1.536468	north wind at
+-0.3124534	north wind between
+-1.563481	northeast wind .
+-1.007179	northeast wind <num>
+-0.6864939	northeast wind around
+-1.208093	northeast wind at
+-0.5116857	northeast wind between
+-2.14939	northwest wind .
+-1.422391	northwest wind <num>
+-0.7961367	northwest wind around
+-1.591749	northwest wind at
+-0.1518097	northwest wind between
+-1.797297	south wind .
+-1.223673	south wind <num>
+-0.8109667	south wind around
+-2.607162	south wind at
+-0.1364046	south wind between
+-1.798299	southeast wind .
+-0.9151196	southeast wind <num>
+-0.8703283	southeast wind around
+-1.850477	southeast wind at
+-0.1775932	southeast wind between
+-2.557627	southwest wind .
+-1.022333	southwest wind <num>
+-0.8032792	southwest wind around
+-2.177416	southwest wind at
+-0.1593402	southwest wind between
+-0.2498775	variable wind .
+-2.204238	west wind .
+-0.8279785	west wind <num>
+-0.9542425	west wind around
+-1.720868	west wind at
+-0.1736207	west wind between
+-0.05551733	. winds could
+-0.1006702	. windy ,
+-0.08770432	, with a
+-0.7555116	, with gusts
+-2.748131	, with thunderstorms
+-1.18799	mixed with freezing
+-1.48902	mixed with snow
+-1.293731	as zero .
+
+\end\
