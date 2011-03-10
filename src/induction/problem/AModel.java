@@ -635,6 +635,7 @@ public abstract class AModel<Widget extends AWidget,
                 lopts, 0, complexity);
 //        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
         testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 

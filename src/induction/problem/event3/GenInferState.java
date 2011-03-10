@@ -187,16 +187,15 @@ public class GenInferState extends InferState
                 }
             });
         } // else
-    }    
-       
+    }            
+
     @Override
-    protected Object genNumFieldValue(final int i, final int c, final int event, final int field)
+    protected Object genNumFieldValue(final int i, final int c, final int event, final int field, final int v)
     {
         NumFieldValueNode node = new NumFieldValueNode(i, c, event, field);
         if (hypergraph.addSumNode(node))
         {
-            // Consider generating nums(i) from v
-            final int v = getValue(event, field);
+            // Consider generating nums(i) from v            
             final NumFieldParams fparams = getNumFieldParams(event, field);
 
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {

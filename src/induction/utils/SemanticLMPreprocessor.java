@@ -11,14 +11,16 @@ import java.util.HashMap;
  */
 public class SemanticLMPreprocessor extends LMPreprocessor
 {
-    private final boolean includeEvents, includeFieldNames;
+    private final boolean includeEvents, includeFieldNames, noise, useCorrectPredictionsOnly;
     public SemanticLMPreprocessor(String targetFile, String sourceDir, int ngramSize,
                           SourceType type, String fileExtension, boolean includeEvents,
-                          boolean includeValues)
+                          boolean includeValues, boolean noise, boolean useCorrectPredictionsOnly)
     {
         super(targetFile, sourceDir, ngramSize, type, fileExtension);
         this.includeEvents = includeEvents;
         this.includeFieldNames = includeValues;
+        this.noise = noise;
+        this.useCorrectPredictionsOnly = useCorrectPredictionsOnly;
     }
 
     /**
@@ -37,41 +39,55 @@ public class SemanticLMPreprocessor extends LMPreprocessor
             for(String line : Utils.readLines(path))
             {
                 // parse only the correctly aligned lines
-                if(!line.contains("*"))
+                if(!useCorrectPredictionsOnly || !line.contains("*"))
                 {
                     textOut = HEADER;
                     String []chunks = line.split("\t");
+                    int pos = 2;
                     if(chunks[1].contains("Pred")) // deal with the predicted chunk 
                     {
-                        String chunk = chunks[2].replaceAll("\\[TRACK0\\]", "").trim(); // preprocess a bit
-                        int index1 = chunk.indexOf(":"), index2 = chunk.indexOf("[");
-                        String event = chunk.substring(0, index1).trim();
-                        HashMap<String, String> fieldsMap = fieldsToMap(chunk.substring(index1+1, index2));
-                        if(includeEvents)
-                            textOut += event + " ";
-                        String []fields = chunk.substring(index2+1,
-                                chunk.lastIndexOf("]")).split("\\]");
-                        for(String field : fields)
+                        while(pos < chunks.length && !chunks[pos].contains("True"))
                         {
-                            String[] tokens = field.split("\\["); // fields and values                            
-                            if(includeFieldNames)
-                                textOut += tokens[0] + " ";
-                            if(!tokens[0].contains("none")) // add value
-                            {   // prediction might be noisy, so get the correct field value from map
-//                                textOut += fieldsMap.get(tokens[0].trim()) + " ";
-                                int index3 = tokens[1].trim().indexOf("_");
-                                textOut += tokens[1].trim().substring(0, index3) + " ";
-                            }
-                            else // add the (none) token as many times as the number of words
+                            String chunk = chunks[pos].replaceAll("[\\*]?\\[TRACK0\\]", "").trim(); // preprocess a bit
+                            int index1 = chunk.indexOf(":"), index2 = chunk.indexOf("[");
+                            if(index1 == -1) // none event
                             {
-                                for(int i = includeFieldNames ? 1 : 0; i < tokens[1].split(" ").length; i++)
-                                {
-                                    textOut += "(none) ";
-                                }
+                                pos++;
+                                continue;
                             }
-
-                        }
-                    }
+                                
+                            String event = chunk.substring(0, index1).trim();
+                            HashMap<String, String> fieldsMap = fieldsToMap(chunk.substring(index1+1, index2));
+                            if(includeEvents)
+                                textOut += event + " ";
+                            String []fields = chunk.substring(index2+1,
+                                    chunk.lastIndexOf("]")).split("\\]");
+                            for(String field : fields)
+                            {
+                                String[] tokens = field.split("\\["); // fields and values
+                                if(includeFieldNames)
+                                    textOut += tokens[0] + " ";
+                                if(!tokens[0].contains("none")) // add value
+                                {   // prediction might be noisy, so get the correct field value from map
+                                    if(!noise)
+                                        textOut += fieldsMap.get(tokens[0].trim()) + " ";
+                                    else
+                                    {
+                                        int index3 = tokens[1].trim().indexOf("_");
+                                        textOut += tokens[1].trim().substring(0, index3) + " ";
+                                    }
+                                }
+                                else // add the (none) token as many times as the number of words
+                                {
+                                    for(int i = includeFieldNames ? 1 : 0; i < tokens[1].split(" ").length; i++)
+                                    {
+                                        textOut += "(none) ";
+                                    }
+                                } // else
+                            } // for
+                            pos++;
+                        } // while                        
+                    } // if
                     bos.write((textOut.trim().toLowerCase() + " </s>\n").getBytes());
                     counter++;
                 }
@@ -95,25 +111,34 @@ public class SemanticLMPreprocessor extends LMPreprocessor
         for(String s: in.split(","))
         {
             String[] token = s.split("=");
-            map.put(token[0], token[1]);
+            map.put(token[0], isNumber(token[1]) ? "<num>" : token[1]);
         }
         return map;
     }
 
+    private boolean isNumber(String s)
+    {
+        return s.matches("-\\p{Digit}+|" + // negative numbers
+                             "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
+                             (s.matches("\\p{Digit}+"));
+    }
     public static void main(String[] args)
     {
-        String source = "results/output/robocup/randomFolds/"
-                + "model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField_random/fold4/"
-                + "stage1.train.full-pred.9";
-        String target = "robocupLM/randomFolds/robocup-semantic-fold4-noisy-3-gram.sentences";
-        String fileExtension = "9";
+        String source = "results/output/weatherGov/alignments/"
+                + "model_3_gabor_dev_no_generic/0.exec/"
+                + "stage1.train.full-pred.14";
+        String target = "weatherGovLM/dev/weather-semantic-dev-noisy-3-gram.sentences";
+        String fileExtension = "14";
         boolean tokeniseOnly = false;
         int ngramSize = 3;
         boolean includeEvents = false;
         boolean includeFieldNames = false;
+        boolean noise = false;
+        boolean useCorrectPredictionsOnly = false;
         LMPreprocessor lmp = new SemanticLMPreprocessor(target, source, ngramSize,
                                               SourceType.PATH, fileExtension, 
-                                              includeEvents, includeFieldNames);
+                                              includeEvents, includeFieldNames, noise,
+                                              useCorrectPredictionsOnly);
         lmp.execute(tokeniseOnly);
     }
 }

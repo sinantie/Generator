@@ -151,34 +151,28 @@ public class Example extends WordExample<Widget>
                         model.eventTypeToString(events[e].getEventTypeIndex())).
                         append("(").append(events[e].id).append(  ")[");
                 }
-//                if (widget.fields == null)
-//                {
-//                    for(int k = i; k < j; k++)
-//                    {
-//                        buf.append(Event3Model.wordToString(widget.text[k])).append(" ");
-//                    }
-//                    buf.deleteCharAt(buf.length() - 1);
-//                } // if
-//                else
-//                {
-                    int k = i;
-                    while (k < j) // Segment i...j into fields
+                else
+                    buf.append("(none_e) ");
+                int k = i;
+                while (k < j) // Segment i...j into fields
+                {
+                    int f = widget.fields[c][k];
+                    int l = k+1;
+                    while (l < j && widget.fields[c][l] == f)
                     {
-                        int f = widget.fields[c][k];
-                        int l = k+1;
-                        while (l < j && widget.fields[c][l] == f)
-                        {
-                            l += 1;
-                        }
-                        if (k != i)
-                        {
-                            buf.append(" ");
-                        }
-                        if (f != -1)
-                        {
-                            buf.append(events[e].fieldToString(f)).append("[");
-                        }
-                        for(int m = k; m < l; m++)
+                        l += 1;
+                    }
+                    if (k != i)
+                    {
+                        buf.append(" ");
+                    }
+                    if (f != -1)
+                    {
+                        buf.append(events[e].fieldToString(f)).append("[");
+                    }
+                    for(int m = k; m < l; m++)
+                    {
+                        if (e != Parameters.none_e)
                         {
                             // widget.text[m] is the value of the field
                             String str = (widget.nums[m] > -1 ? widget.nums[m] :
@@ -194,14 +188,15 @@ public class Example extends WordExample<Widget>
                             }
                             buf.append(str).append(" ");
                         }
-                        buf.deleteCharAt(buf.length() - 1);
-                        if (f != -1)
-                        {
-                            buf.append("] ");
-                        }
-                        k = l;
+
+                    } // for
+                    buf.deleteCharAt(buf.length() - 1);
+                    if (f != -1)
+                    {
+                        buf.append("] ");
                     }
-//                } // else
+                    k = l;
+                }
                 if (e != Parameters.none_e)
                 {
                     buf.append("] ");

@@ -13,8 +13,6 @@ import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.Params;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -60,7 +58,7 @@ public class SemParseInferState extends GenInferState
                 {
                     for(int i = 0; i < f.getV(); i++)
                     {
-                        vocabulary.add(Event3Model.processWord(f.valueToString(i)));
+                        vocabulary.add(Event3Model.processWord(f.valueToString(i)).toLowerCase());
                     }
                 }
             }
@@ -130,6 +128,12 @@ public class SemParseInferState extends GenInferState
     }
 
     @Override
+    protected Object genNumFieldValue(final int i, final int c, int event, int field)
+    {
+        return genNumFieldValue(i, c, event, field, nums[i]);
+    }
+
+    @Override
     protected CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
     {
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
@@ -145,7 +149,6 @@ public class SemParseInferState extends GenInferState
             }
             public Pair getWeightLM(int rank)
             {
-//                return getAtRank(fparams.valueEmissions[w], rank); // p(v | w)
                 int length = fparams.valueEmissions[w].getCounts().length;
                 Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
                     getAtRank(fparams.valueEmissions[w], length-1);
@@ -158,7 +161,6 @@ public class SemParseInferState extends GenInferState
             public GenWidget choose(GenWidget widget) { return widget; }
             public GenWidget chooseLM(GenWidget widget, int word)
             {
-//                System.out.println("word " + word);
                 widget.text[i] = ex.events[event].getFields()[field].parseValue(-1, vocabulary.getObject(word));                
                 return widget;
             }
@@ -192,14 +194,10 @@ public class SemParseInferState extends GenInferState
                     {
                         Pair p = getAtRank(eventTypeParams.noneFieldEmissions, rank);
                         p.label = vocabulary.getIndex("(none)");
-//                        p.label = null;
                         return p;
-//                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), null);
-//                        return new Pair(get(eventTypeParams.noneFieldEmissions, w), vocabulary.getIndex("(none)"));
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
                     {
-//                        System.out.println("null");
                         widget.text[i] = -1;
                         return widget;
                     }
@@ -234,10 +232,7 @@ public class SemParseInferState extends GenInferState
 //                        Pair p =  getAtRank(params.genericEmissions, rank);
 //                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
 //                        p.label = vocabulary.getIndex("(none)");
-////                        double value = get(params.genericEmissions, w)*
-////                                       get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
 //                        return p;
-////                        return new Pair(value, vocabulary.getIndex("(none)"));
 //                    }
 //                    public GenWidget chooseLM(GenWidget widget, int word)
 //                    {
@@ -251,6 +246,34 @@ public class SemParseInferState extends GenInferState
         }
         return node;
     }
+
+    @Override
+    protected WordNode genNoneWord(final int i, final int c)
+    {
+        WordNode node = new WordNode(i, c, ((Event3Model)model).none_t(), -1);
+        if(hypergraph.addSumNode(node))
+        {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                public double getWeight() { return 1.0; }
+                public Pair getWeightLM(int rank)
+                {
+//                    return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
+                    Pair p = getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
+                    p.label = vocabulary.getIndex("(none)");
+                    return p;
+                }
+                public void setPosterior(double prob) { }
+                public GenWidget choose(GenWidget widget) { return widget; }
+                public GenWidget chooseLM(GenWidget widget, int word)
+                {
+                    widget.text[i] = -1;
+                    return widget;
+                }
+            });
+        }
+        return node;
+    }
+
 }
 
-//TO-DO: missing genNumFieldValueNode, genNoneWord
+//TO-DO: missing genNoneWord

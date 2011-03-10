@@ -119,18 +119,22 @@ public class SemParsePerformance extends Performance
         {
             // ugly, but it means to get the index of the type of the predicted event
             // at the i'th position of widget.events[0]
-            curEvent = ex.events[widget.events[0][i]].getEventTypeIndex();
-            curField = widget.fields[0][i];
-            curValue = widget.text[i];
-            if(!map.containsKey(curEvent))
+            int eventIndex = widget.events[0][i];
+            if(eventIndex > -1)
             {
-                MRToken mr = new MRToken(model, curEvent);
-                mr.parseMrToken(curEvent, curField, curValue);
-                map.put(curEvent, mr);
-            }
-            else
-            {   
-                map.get(curEvent).parseMrToken(curEvent, curField, curValue);
+                curEvent = ex.events[eventIndex].getEventTypeIndex();
+                curField = widget.fields[0][i];
+                curValue = widget.nums[i] > -1 ? widget.nums[i] : widget.text[i];
+                if(!map.containsKey(curEvent))
+                {
+                    MRToken mr = new MRToken(model, curEvent);
+                    mr.parseMrToken(curEvent, curField, curValue);
+                    map.put(curEvent, mr);
+                }
+                else
+                {
+                    map.get(curEvent).parseMrToken(curEvent, curField, curValue);
+                }
             }
         }
         return map.values();

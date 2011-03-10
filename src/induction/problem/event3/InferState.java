@@ -135,8 +135,12 @@ public class InferState extends Event3InferState
         });
     }
 
-    
     protected Object genNumFieldValue(final int i, final int c, int event, int field)
+    {
+        return genNumFieldValue(i, c, event, field, getValue(event, field));
+    }
+    
+    protected Object genNumFieldValue(final int i, final int c, int event, int field, int numValue)
     {
         if (nums[i] == Constants.NaN)
             return hypergraph.invalidNode; // Can't generate if not a number
@@ -146,7 +150,7 @@ public class InferState extends Event3InferState
             if (hypergraph.addSumNode(node))
             {
                 // Consider generating nums(i) from v
-                final int v = getValue(event, field);
+                final int v = numValue;
                 final NumFieldParams fparams = getNumFieldParams(event, field);
                 final NumFieldParams fcounts = getNumFieldCounts(event, field);
 

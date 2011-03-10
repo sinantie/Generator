@@ -1106,14 +1106,14 @@ public class Hypergraph<Widget> {
               {
                   widget = (Widget) ((HyperedgeInfoLM)derivation.edge.info).
                           chooseLM(widget, derivation.words.get(0));
-//                  System.out.println(derivation.edge);
+                  System.out.println(derivation.edge);
               }
               return;
           }
         
          // choose intermediate non-terminal nodes
           widget = (Widget)derivation.edge.info.choose(widget);
-//          System.out.println(derivation.edge);
+          System.out.println(derivation.edge);
 //          if(setPosterior) derivation.edge.info.setPosterior(1.0);
           logWeight += derivation.weight.toLogDouble();
           for(Derivation d : derivation.derArray)
