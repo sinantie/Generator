@@ -43,9 +43,9 @@ public class GenerationWeatherTest
     {
          String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/model_3_gabor_mapVecs/1.exec/stage1.params.obj "
+                    + "results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
-                    + "-ngramModelFile data/gabor-srilm-abs-3-gram.model.arpa "
+                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
                     + "eventType -allowNoneEvent -maxPhraseLength 5";
         /*initialisation procedure from Generation class*/

@@ -35,16 +35,17 @@ public class SemParseWeatherTest
     @Before
     public void setUp() 
     {
-//         String args = "-modelType semParse -testInputLists test/testWeatherGovEvents "
-         String args = "-modelType semParse -testInputLists gaborLists/genDevListPathsGabor "                    
+         String args = "-modelType semParse -testInputLists test/testWeatherGovEvents "
+//         String args = "-modelType semParse -testInputLists gaborLists/genDevListPathsGabor "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField"
-                    + "/fold1/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 15 -ngramSize 2 "
-                    + "-ngramModelFile robocupLM/srilm-abs-robocup-semantic-fold1-noisy-3-gram.model.arpa "
+                    + "results/output/weatherGov/alignments/model_3_gabor_dev_no_generic"
+                    + "/0.exec/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -kBest 10 -ngramSize 3 "
+                    + "-ngramModelFile weatherGovLM/dev/srilm-abs-weather-semantic-dev-noisy-3-gram.model.arpa "
+//                    + "-ngramModelFile robocupLM/srilm-abs-robocup-semantic-fold1-noisy-3-gram.model.arpa "
                     + "-ngramWrapper srilm -reorderType eventTypeAndField "
                     + "-maxPhraseLength 5 -newFieldPerWord 0,-1 "
-                    + "-modelUnkWord -allowConsecutiveEvents -oneEventPerExample 0,-1";
+                    + "-modelUnkWord -allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
