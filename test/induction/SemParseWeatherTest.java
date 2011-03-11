@@ -71,7 +71,5 @@ public class SemParseWeatherTest
         System.out.println("run");
 //        assertEquals(model.testSemParse(name, lopts), 1.0, 0);
         System.out.println(model.testSemParse(name, lopts));
-
-        
     }
 }

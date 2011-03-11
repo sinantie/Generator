@@ -43,10 +43,11 @@ public class StagedInductionWeatherTest
     {
          String args = "-modelType event3 -Options.stage1.numIters 1 -testInputLists "
                 + "test/testWeatherGovEvents -inputFileExt events "
+//                + "gaborLists/genEvalListPathsGabor -inputFileExt events "
                 + "-Options.stage1.smoothing 0.1 -initNoise 0 -initType staged "
                 + "-stagedParamsFile results/output/weatherGov/alignments/"
                 + "model_3_gabor/1.exec/stage1.params.obj -dontCrossPunctuation "
-                + "-disallowConsecutiveRepeatFields -allowNoneEvent";
+                + "-disallowConsecutiveRepeatFields -allowNoneEvent -useGoldStandardOnly";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
