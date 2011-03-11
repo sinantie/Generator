@@ -312,8 +312,10 @@ public class Example extends WordExample<Widget>
                     {
                         for(int c = 0; c < C; c++)
                         {                            
+//                            if (model.eventTypeAllowedOnTrack[c].contains(
+//                                    events[e].getEventTypeIndex()))
                             if (model.eventTypeAllowedOnTrack[c].contains(
-                                    events[e].getEventTypeIndex()))
+                                    trueWidget.eventTypeIndices[e]))
                             {
                                 trueEvents[c].add(e);
                             }
@@ -347,7 +349,8 @@ public class Example extends WordExample<Widget>
     private void renderWidget(Widget widget, boolean printUnused, int n,
                               HashSet<Integer>[] trueEvents, StringBuffer buf)
     {
-        boolean[] used = new boolean[events.length];
+//        boolean[] used = new boolean[events.length];
+        boolean[] used = new boolean[widget.eventTypeIndices.length];
         for(int c = 0; c < widget.events.length; c++)
         {
             int i = 0;

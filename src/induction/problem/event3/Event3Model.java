@@ -685,7 +685,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             Iterator<Event> it = events.iterator();
             while(it.hasNext())
             {
-                if(!goldEvents.contains(it.next().id))
+                Event e = it.next();
+                if(!goldEvents.contains(e.id))
                     it.remove();
             }
         }
@@ -781,16 +782,17 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                         trueMrTokens = readMrTokens(Utils.readLines(alignPath), eventsAsList,
                                         excludedEventTypes, excludedFields);
                     }
-                    if(opts.useGoldStandardOnly)
-                    {
-
-                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
-                    }
                     int[] eventTypeIndices = new int[events.length];
                     for(int i = 0; i < eventTypeIndices.length && events[i] != null; i++)
                     {
                        eventTypeIndices[i] = events[i].getEventTypeIndex();
                     }
+                    if(opts.useGoldStandardOnly)
+                    {
+
+                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
+                    }
+                    
                     if (opts.oneExamplePerLine) // if (one example per line WITH gold-standard)
                     {
                         int[][] subTrueEvents;
