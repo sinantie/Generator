@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  *
@@ -20,7 +21,7 @@ public class GenWidget extends Widget
                      int [][] numMethods,
                      int [] text,
                      HashSet<Integer>[] eventTypeAllowedOnTrack,
-                     int[] eventTypeIndices)
+                     Map<Integer, Integer> eventTypeIndices)
     {
         super(events, fields, gens, numMethods, null,
               eventTypeAllowedOnTrack, eventTypeIndices);

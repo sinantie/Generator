@@ -24,6 +24,7 @@ import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  *
@@ -69,10 +70,16 @@ public class GenInferState extends InferState
     @Override
     protected Widget newWidget()
     {       
-        int[] eventTypeIndices = new int[ex.events.length];
-        for(int i = 0; i < eventTypeIndices.length; i++)
+//        int[] eventTypeIndices = new int[ex.events.length];
+//        for(int i = 0; i < eventTypeIndices.length; i++)
+//        {
+//           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+//        }
+        HashMap<Integer, Integer> eventTypeIndices =
+                            new HashMap<Integer, Integer>(ex.events.size());
+        for(Event e : ex.events.values())
         {
-           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+            eventTypeIndices.put(e.id, e.getEventTypeIndex());
         }
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                                newMatrixOne(),

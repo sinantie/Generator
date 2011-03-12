@@ -1,9 +1,9 @@
 package induction.problem.event3;
 
 import induction.problem.event3.params.Parameters;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  *
@@ -20,7 +20,7 @@ public class SemParseWidget extends GenWidget
                      int [][] numMethods,
                      int [] values,
                      HashSet<Integer>[] eventTypeAllowedOnTrack,
-                     int[] eventTypeIndices)
+                     Map<Integer, Integer> eventTypeIndices)
     {
         super(events, fields, gens, numMethods, values,
               eventTypeAllowedOnTrack, eventTypeIndices);

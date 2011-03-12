@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -417,7 +416,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     @Override
     protected String exampleToString(Example ex)
     {
-        return ex.name + ": " + ex.events[0] + "..." + " ||| " +
+        return ex.name + ": " + ex.events.get(0) + "..." + " ||| " +
                 Utils.mkString(InductionUtils.getObject(wordIndexer,
                                                         ex.text), " ");
     }
@@ -481,11 +480,12 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         return tokens.toArray(out);
     }
 
-    public Event[] readEvents(String[] eventLines, HashSet<String> excludedEventTypes,
+    public Map<Integer, Event> readEvents(String[] eventLines, HashSet<String> excludedEventTypes,
                                HashSet<String> excludedFields)
     {
         final HashSet<Integer> seenEventTypes = new HashSet<Integer>();
-        ArrayList<Event> events = new ArrayList<Event>(eventLines.length);
+//        ArrayList<Event> events = new ArrayList<Event>(eventLines.length);
+        Map<Integer, Event> events = new HashMap<Integer, Event>(eventLines.length);
         ArrayList<Field> fields;
         ArrayList<Integer> values;
         // Format: <fieldtype><field>:<value>\t...
@@ -560,11 +560,13 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                 } // else
 
                 // Create the event with its values
-                events.add(new Event(id, currentEventType, values));
+//                events.add(new Event(id, currentEventType, values));
+                events.put(id, new Event(id, currentEventType, values));
             } // if
         } // for
-        Event[] e = new Event[events.size()];
-        return events.toArray(e);
+//        Event[] e = new Event[events.size()];
+//        return events.toArray(e);
+        return events;
     }
 
     /**
@@ -577,7 +579,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
      * @param excludedFields
      * @return
      */
-    public Collection<MRToken> readMrTokens(String[] eventLines, List<Event> events,
+    public Collection<MRToken> readMrTokens(String[] eventLines, Map<Integer, Event> events,
                                HashSet<String> excludedEventTypes,
                                HashSet<String> excludedFields)
     {
@@ -616,17 +618,22 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         } // for
         if(opts.useGoldStandardOnly)
         {
-            Iterator<Event> it = events.iterator();
-            while(it.hasNext())
+            for(Integer id : goldEvents)
             {
-                if(!goldEvents.contains(it.next().id))
-                    it.remove();
+                if(!events.containsKey(id))
+                    events.remove(id);
             }
+//            Iterator<Event> it = events.iterator();
+//            while(it.hasNext())
+//            {
+//                if(!goldEvents.contains(it.next().id))
+//                    it.remove();
+//            }
         }
         return mrList;
     }
 
-    private int[][] readTrueEvents(String alignPath, int N, List<Event> events,
+    private int[][] readTrueEvents(String alignPath, int N, Map<Integer, Event> events,
                                    ArrayList<Integer> lineToStartText)
     {
         int maxTracks = 0, eventId = 0, lineIndex = 0;
@@ -681,14 +688,19 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 
         /*ugly way to use gold standard events only as input to the model*/
         if(opts.useGoldStandardOnly)
-        {                        
-            Iterator<Event> it = events.iterator();
-            while(it.hasNext())
+        {
+            for(Integer id : goldEvents)
             {
-                Event e = it.next();
-                if(!goldEvents.contains(e.id))
-                    it.remove();
+                if(!events.containsKey(id))
+                    events.remove(id);
             }
+//            Iterator<Event> it = events.iterator();
+//            while(it.hasNext())
+//            {
+//                Event e = it.next();
+//                if(!goldEvents.contains(e.id))
+//                    it.remove();
+//            }
         }
         return trueEvents;
     }
@@ -713,7 +725,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
 
             //Read events                        
-            Event[] events = readEvents(Utils.readLines(path),
+            Map<Integer, Event> events = readEvents(Utils.readLines(path),
                                         excludedEventTypes, excludedFields);
 
             // Read text
@@ -769,29 +781,31 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     // assumes alignment per MR token (event, fields and values)
                     int[][] trueEvents = null;
                     Collection<MRToken> trueMrTokens = null;
-                    List<Event> eventsAsList = new ArrayList<Event>(events.length);
-                    eventsAsList.addAll(Arrays.asList(events));
+//                    List<Event> eventsAsList = new ArrayList<Event>(events.length);
+//                    eventsAsList.addAll(Arrays.asList(events));
 
                     if(opts.modelType != ModelType.semParse)
                     {
                         trueEvents = readTrueEvents(alignPath, text.length,
-                            eventsAsList, lineToStartText);
+                            events, lineToStartText);
                     }
                     else
                     {
-                        trueMrTokens = readMrTokens(Utils.readLines(alignPath), eventsAsList,
+                        trueMrTokens = readMrTokens(Utils.readLines(alignPath), events,
                                         excludedEventTypes, excludedFields);
                     }
-                    int[] eventTypeIndices = new int[events.length];
-                    for(int i = 0; i < eventTypeIndices.length && events[i] != null; i++)
+                    // lightweight map with id's of events and eventy type indices
+                    HashMap<Integer, Integer> eventTypeIndices =
+                            new HashMap<Integer, Integer>(events.size());
+                    for(Event e : events.values())
                     {
-                       eventTypeIndices[i] = events[i].getEventTypeIndex();
+                        eventTypeIndices.put(e.id, e.getEventTypeIndex());
                     }
-                    if(opts.useGoldStandardOnly)
-                    {
-
-                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
-                    }
+//                    if(opts.useGoldStandardOnly)
+//                    {
+//
+//                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
+//                    }
                     
                     if (opts.oneExamplePerLine) // if (one example per line WITH gold-standard)
                     {

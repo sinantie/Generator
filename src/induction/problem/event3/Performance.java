@@ -70,7 +70,7 @@ public class Performance extends APerformance<Widget>
                 while(it.hasNext())
                 {
                     Integer e = it.next();
-                    int eventTypeIndex = trueWidget.eventTypeIndices[e];
+                    int eventTypeIndex = trueWidget.eventTypeIndices.get(e);
                     if(predHit.contains(e))
                     {
                         it.remove();
@@ -94,7 +94,7 @@ public class Performance extends APerformance<Widget>
                 {
                     for(Integer e : predHit)
                     {
-                        final int pt = predWidget.eventTypeIndices[e];
+                        final int pt = predWidget.eventTypeIndices.get(e);
                         counts[T()][pt]++;
                     }
                 }
@@ -102,7 +102,7 @@ public class Performance extends APerformance<Widget>
                 {
                     for(Integer e : trueHit)
                     {
-                        final int tt = trueWidget.eventTypeIndices[e];
+                        final int tt = trueWidget.eventTypeIndices.get(e);
                         counts[tt][T()]++;
                     }
                 }
@@ -110,10 +110,10 @@ public class Performance extends APerformance<Widget>
                 {
                     for(Integer e : trueHit)
                     {
-                        final int tt = trueWidget.eventTypeIndices[e];
+                        final int tt = trueWidget.eventTypeIndices.get(e);
                         for(Integer f : predHit)
                         {
-                            final int pt = predWidget.eventTypeIndices[f];
+                            final int pt = predWidget.eventTypeIndices.get(f);
                             counts[tt][pt]++; // Note that tt = pt is possible and it is still wrong
                         }
                     }

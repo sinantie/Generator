@@ -295,7 +295,7 @@ public class ExportScenariosToWebExp2
                     + "</th><th colspan=\"2\">Fields - Values</th></tr>\n";
             for(Integer id : scn.getEventIndices(system))
             {
-                events += eventToHtml(scn.getEvents()[id]);
+                events += eventToHtml(scn.getEvents().get(id));
             }
             events += "</table>\n";            
             // write text

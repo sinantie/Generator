@@ -3,6 +3,7 @@ package induction.utils;
 import induction.problem.event3.Event;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -12,7 +13,7 @@ import java.util.TreeSet;
  */
 public class Scenario
 {
-    private Event[] events;
+    private Map<Integer, Event> events;
     private Set<String> eventTypeNames;
     private String path;
     /**
@@ -33,17 +34,17 @@ public class Scenario
         this.eventTypeNames = new HashSet<String>();
     }
 
-    public Scenario(String path, Event[] events)
+    public Scenario(String path, Map<Integer, Event> events)
     {
         this(path);
         this.events = events;
-        for(Event event : events)
+        for(Event event : events.values())
         {
             eventTypeNames.add(event.getEventTypeName());
         }
     }
     
-    public Event[] getEvents()
+    public Map<Integer, Event> getEvents()
     {
         return events;
     }

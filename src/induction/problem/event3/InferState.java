@@ -27,6 +27,8 @@ import induction.problem.event3.nodes.SymFieldValueNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  *
@@ -55,15 +57,16 @@ public class InferState extends Event3InferState
         // Override bestWidget
         if (opts.fullPredRandomBaseline)
         {
-            if (ex.events.length > 0)
+            if (!ex.events.isEmpty())
             {
+                Integer[] ids = ex.events.keySet().toArray(new Integer[0]);
                 // Just match each line in the text to a single randomly chosen event
                 for(int l = 0; l < ex.startIndices.length - 1; l++)
                 {
-                    final int e = opts.fullPredRandom.nextInt(ex.events.length);
+                    final int e = opts.fullPredRandom.nextInt(ids.length);
                     for(int i = ex.startIndices[l]; i < ex.startIndices[l+1]; i++)
                     {
-                        bestWidget.events[0][i] = e; // Assume one track
+                        bestWidget.events[0][i] = ids[e]; // Assume one track
                     } // for
                 } // for
             } // if
@@ -73,10 +76,16 @@ public class InferState extends Event3InferState
     @Override
     protected Widget newWidget()
     {
-        int[] eventTypeIndices = new int[ex.events.length];
-        for(int i = 0; i < eventTypeIndices.length && ex.events[i] != null; i++)
+//        int[] eventTypeIndices = new int[ex.events.length];
+//        for(int i = 0; i < eventTypeIndices.length && ex.events[i] != null; i++)
+//        {
+//           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+//        }
+        HashMap<Integer, Integer> eventTypeIndices =
+                            new HashMap<Integer, Integer>(ex.events.size());
+        for(Event e : ex.events.values())
         {
-           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+            eventTypeIndices.put(e.id, e.getEventTypeIndex());
         }
         return new Widget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                                ex.startIndices, ((Event3Model)model).eventTypeAllowedOnTrack,
@@ -840,10 +849,12 @@ public class InferState extends Event3InferState
               } // else
           } // if
           // (2) Choose an event type t and event e for track c
-          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
+//          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
+          for(Integer id : ex.events.keySet())
           {
-              final int eventId = e;
-              final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
+              final int eventId = id;
+//              final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
+              final int eventTypeIndex = ex.events.get(id).getEventTypeIndex();
               if (allowReal && 
 //                      (!opts.disallowConsecutiveRepeatFields || eventTypeIndex != t0) && // Can't repeat events
                       (!trueInfer || ex.getTrueWidget() == null ||
@@ -870,7 +881,7 @@ public class InferState extends Event3InferState
                                update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
                                if (ex.getTrueWidget() != null && i == 0) // HACK
                                {
-                                   ex.getTrueWidget().setEventPosterior(eventId, ex.events.length, prob);
+                                   ex.getTrueWidget().setEventPosterior(eventId, ex.events.size(), prob);
                                }
                           }
                           public Widget choose(Widget widget) {

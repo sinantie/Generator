@@ -4,6 +4,7 @@ import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.wordproblem.WordExample;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.TreeSet;
 
 /**
@@ -14,7 +15,7 @@ public class Example extends WordExample<Widget>
 {
     private Event3Model model;
     protected String name;
-    public Event[] events;
+    public Map<Integer, Event> events;
     protected int[] text, labels, startIndices;
     private Widget trueWidget;
     protected int[] eventTypeCounts = null;
@@ -22,7 +23,7 @@ public class Example extends WordExample<Widget>
     private final int C, N;
     protected boolean[] isPunctuationArray;
 
-    public Example(Event3Model model, String name, Event[] events, int[] text,
+    public Example(Event3Model model, String name, Map<Integer, Event> events, int[] text,
                    int[] labels, int[] startIndices, int N, Widget trueWidget)
     {
         this.model = model;

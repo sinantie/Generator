@@ -5,6 +5,7 @@ import induction.Utils;
 import induction.problem.AWidget;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 
 /**
  * A widget is a segmentation of text into events
@@ -18,12 +19,12 @@ public class Widget implements AWidget
     protected HashSet<Integer>[] eventTypeAllowedOnTrack;
     public String performance = ""; // HACK: store on the trueWidget how we did
     private double[] eventPosterior = null;
-    protected int[] eventTypeIndices;
+    protected Map<Integer, Integer> eventTypeIndices;
 
     public Widget(int [][]events, int[][] fields, int[][] gens,
                   int [][] numMethods,
                   int[] startIndices,
-                  HashSet<Integer>[] eventTypeAllowedOnTrack, int[] eventTypeIndices)
+                  HashSet<Integer>[] eventTypeAllowedOnTrack, Map<Integer, Integer> eventTypeIndices)
                 // These are auxiliary information needed for evaluation)
     {
         this.events = events;
@@ -102,7 +103,7 @@ public class Widget implements AWidget
             for(Integer e : foreachEvent(k))
             {
                 if(Parameters.isRealEvent(e) &&
-                        eventTypeAllowedOnTrack[c].contains(eventTypeIndices[e]))
+                        eventTypeAllowedOnTrack[c].contains(eventTypeIndices.get(e)))
                 {
                     exists = true;
                 }

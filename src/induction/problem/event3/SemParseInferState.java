@@ -13,6 +13,7 @@ import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.Params;
+import java.util.HashMap;
 
 /**
  *
@@ -48,7 +49,7 @@ public class SemParseInferState extends GenInferState
         labels = ex.labels;
         // map all field values to an Indexer
         vocabulary = new Indexer<String>();
-        for(Event e : ex.events)
+        for(Event e : ex.events.values())
         {
             for(Field f : e.getFields())
             {
@@ -117,10 +118,16 @@ public class SemParseInferState extends GenInferState
     @Override
     protected Widget newWidget()
     {
-        int[] eventTypeIndices = new int[ex.events.length];
-        for(int i = 0; i < eventTypeIndices.length; i++)
+//        int[] eventTypeIndices = new int[ex.events.length];
+//        for(int i = 0; i < eventTypeIndices.length; i++)
+//        {
+//           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+//        }
+        HashMap<Integer, Integer> eventTypeIndices =
+                            new HashMap<Integer, Integer>(ex.events.size());
+        for(Event e : ex.events.values())
         {
-           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+            eventTypeIndices.put(e.id, e.getEventTypeIndex());
         }
         return new SemParseWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                                newMatrixOne(),
@@ -152,7 +159,8 @@ public class SemParseInferState extends GenInferState
                 int length = fparams.valueEmissions[w].getCounts().length;
                 Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
                     getAtRank(fparams.valueEmissions[w], length-1);
-                p.label = vocabulary.getIndex(ex.events[event].getFields()[field].valueToString((Integer)p.label));
+                p.label = vocabulary.getIndex(ex.events[event].getFields()[field].
+                        valueToString((Integer)p.label));
 //                p.value *=
 //                        (w == Event3Model.getWordIndex("<unk>")? 0.1 : 1.0);
                 return p;
