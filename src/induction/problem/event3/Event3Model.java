@@ -946,7 +946,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         for(Example ex: examples)
         {
             ex.computeEventTypeCounts();
-            ex.computeTrackEvents();
+//            ex.computeTrackEvents();
         }
         LogInfo.end_track();
 

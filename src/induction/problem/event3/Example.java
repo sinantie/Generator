@@ -140,7 +140,7 @@ public class Example extends WordExample<Widget>
             while (i < n) // Segment into entries
             {
                 int e = widget.events[c][i];
-
+                Event ev = events.get(e);
                 int j = i + 1;
                 while (j < n && widget.events[c][j] == e)
                 {
@@ -149,8 +149,8 @@ public class Example extends WordExample<Widget>
                 if (e != Parameters.none_e)
                 {
                     buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : 
-                        model.eventTypeToString(events[e].getEventTypeIndex())).
-                        append("(").append(events[e].id).append(  ")[");
+                        model.eventTypeToString(ev.getEventTypeIndex())).
+                        append("(").append(ev.id).append(  ")[");
                 }
                 else
                     buf.append("(none_e) ");
@@ -169,7 +169,7 @@ public class Example extends WordExample<Widget>
                     }
                     if (f != -1)
                     {
-                        buf.append(events[e].fieldToString(f)).append("[");
+                        buf.append(ev.fieldToString(f)).append("[");
                     }
                     for(int m = k; m < l; m++)
                     {
@@ -177,8 +177,8 @@ public class Example extends WordExample<Widget>
                         {
                             // widget.text[m] is the value of the field
                             String str = (widget.nums[m] > -1 ? widget.nums[m] :
-                                f < events[e].F ?
-                                events[e].getFields()[f].valueToString(widget.text[m]) : "") + "";
+                                f < ev.F ?
+                                ev.getFields()[f].valueToString(widget.text[m]) : "") + "";
                             if (widget.gens != null && widget.gens[c][m] != -1)
                             {
                                 str += "_" + Parameters.short_gstr[widget.gens[c][m]];
@@ -217,7 +217,7 @@ public class Example extends WordExample<Widget>
             while (i < n) // Segment into entries
             {
                 int e = widget.events[c][i];
-
+                Event ev = events.get(e);
                 int j = i + 1;
                 while (j < n && widget.events[c][j] == e)
                 {
@@ -226,8 +226,8 @@ public class Example extends WordExample<Widget>
                 if (e != Parameters.none_e)
                 {
                     buf.append((e == Parameters.unreachable_e) ? "(unreachable)" :
-                        model.eventTypeToString(events[e].getEventTypeIndex())).
-                        append("(").append(events[e].id).append(  ")[");
+                        model.eventTypeToString(ev.getEventTypeIndex())).
+                        append("(").append(ev.id).append(  ")[");
                 }
                 if (widget.fields == null)
                 {
@@ -254,7 +254,7 @@ public class Example extends WordExample<Widget>
                         }
                         if (f != -1)
                         {
-                            buf.append(events[e].fieldToString(f)).append("[");
+                            buf.append(ev.fieldToString(f)).append("[");
                         }
                         for(int m = k; m < l; m++)
                         {
@@ -316,7 +316,7 @@ public class Example extends WordExample<Widget>
 //                            if (model.eventTypeAllowedOnTrack[c].contains(
 //                                    events[e].getEventTypeIndex()))
                             if (model.eventTypeAllowedOnTrack[c].contains(
-                                    trueWidget.eventTypeIndices[e]))
+                                    trueWidget.eventTypeIndices.get(e)))
                             {
                                 trueEvents[c].add(e);
                             }
@@ -333,7 +333,7 @@ public class Example extends WordExample<Widget>
             buf.append("\t- True:");
             renderWidget(trueWidget, false, n, trueEvents, buf);
             buf.append("\t").append(trueWidget.performance).append(" (").
-                    append(events.length).append(" possible events)");
+                    append(events.size()).append(" possible events)");
             /*if (trueWidget.eventPosterior != null)
                 buf.append("\t" + trueWidget.eventPosteriorStr(events));*/
         }
@@ -350,14 +350,14 @@ public class Example extends WordExample<Widget>
     private void renderWidget(Widget widget, boolean printUnused, int n,
                               HashSet<Integer>[] trueEvents, StringBuffer buf)
     {
-//        boolean[] used = new boolean[events.length];
-        boolean[] used = new boolean[widget.eventTypeIndices.length];
+        boolean[] used = new boolean[events.size()];
         for(int c = 0; c < widget.events.length; c++)
         {
             int i = 0;
             while (i < n) // Segment into entries
             {
                 int e = widget.events[c][i];
+                Event ev = events.get(e);
                 if (Parameters.isRealEvent(e))
                 {
                     used[e] = true;
@@ -372,7 +372,8 @@ public class Example extends WordExample<Widget>
                         append(c).append("] ");
                 if (e != Parameters.none_e)
                 {
-                    buf.append((e == Parameters.unreachable_e) ? "(unreachable)" : events[e]).append( "[");
+                    buf.append((e == Parameters.unreachable_e) ? 
+                        "(unreachable)" : ev).append( "[");
                 }
                 if (widget.fields == null || !Parameters.isRealEvent(e))
                 {
@@ -399,7 +400,7 @@ public class Example extends WordExample<Widget>
                         }
                         if (f != -1)
                         {
-                            buf.append(events[e].fieldToString(f)).append("[");
+                            buf.append(ev.fieldToString(f)).append("[");
                         }
                         for(int m = k; m < l; m++)
                         {
@@ -435,10 +436,10 @@ public class Example extends WordExample<Widget>
         // Print out unused events
         if (printUnused)
         {
-            for(int e = 0; e < events.length; e++)
+            for(int e = 0; e < events.size(); e++)
             {
                 if (!used[e])
-                    buf.append(Utils.fmts("\t%s[]", events[e]));
+                    buf.append(Utils.fmts("\t%s[]", events.get(e)));
             } // for
         } // if
     }
@@ -447,30 +448,31 @@ public class Example extends WordExample<Widget>
     void computeEventTypeCounts()
     {
         eventTypeCounts = new int[model.getT()];
-//        for(Event event : events)
-        for(int i = 0; i < events.length && events[i] != null; i++)
+        for(Event event : events.values())
+//        for(int i = 0; i < events.length && events[i] != null; i++)
         {
-            eventTypeCounts[events[i].getEventTypeIndex()]++;
+            eventTypeCounts[event.getEventTypeIndex()]++;
         }
     }
 
     // Set up trackEvents: for each track
-    void computeTrackEvents()
-    {
-        trackEvents = new int[C][events.length];
-        for(int c = 0; c < C; c++)
-        {
-            for(int e = 0; e < events.length && events[e] != null; e++)
-            {
-                if(model.eventTypeAllowedOnTrack[c].contains(
-                        events[e].getEventTypeIndex()))
-                {
-//                    trackEvents[c][e] = e; // not sure
-                    trackEvents[c][e] = events[e].id; // id instead of index in the array
-                }
-            } // for
-        } // for
-    }
+//    void computeTrackEvents()
+//    {
+//        trackEvents = new int[C][events.size()];
+//        for(int c = 0; c < C; c++)
+//        {
+////            for(int e = 0; e < events.length && events[e] != null; e++)
+//            for(Event ev : events.values())
+//            {
+//                if(model.eventTypeAllowedOnTrack[c].contains(
+//                        ev.getEventTypeIndex()))
+//                {
+////                    trackEvents[c][e] = e; // not sure
+//                    trackEvents[c][e] = ev.id; // id instead of index in the array
+//                }
+//            } // for
+//        } // for
+//    }
 
     @Override
     public Widget getTrueWidget()

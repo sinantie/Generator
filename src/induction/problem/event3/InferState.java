@@ -28,7 +28,6 @@ import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  *
@@ -339,7 +338,7 @@ public class InferState extends Event3InferState
     protected  Object genStrFieldValue(int i, int c, int event, int field)
     {
         final ArrayList<Integer> valueWords, valueLabels;
-        Field tempField = ex.events[event].fields[field];
+        Field tempField = ex.events.get(event).getFields()[field];
         if (tempField instanceof StrField) // nonsense!!
         {
             StrField.ArrayPair ap = ((StrField)tempField).indexer.
@@ -399,7 +398,7 @@ public class InferState extends Event3InferState
 
     protected Object genFieldValue(int i, int c, int event, int field)
     {
-        Field tempField = ex.events[event].fields[field];
+        Field tempField = ex.events.get(event).getFields()[field];
         if(tempField instanceof NumField) return genNumFieldValue(i, c, event, field);
         else if(tempField instanceof CatField) return genCatFieldValueNode(i, c, event, field);
         else if(tempField instanceof SymField) return genSymFieldValue(i, c, event, field);
@@ -411,7 +410,7 @@ public class InferState extends Event3InferState
     protected WordNode genWord(final int i, final int c, int event, final int field)
     {
         WordNode node = new WordNode(i, c, event, field);
-        final int eventTypeIndex = ex.events[event].getEventTypeIndex();
+        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
         final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
         final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
         final int w = words[i];
@@ -526,10 +525,13 @@ public class InferState extends Event3InferState
     }
     
     // Generate segmentation of i...end into fields; previous field is f0
-    protected Object genFields(final int i, final int end, int c, final int event, final int f0, int efs)
+    protected Object genFields(final int i, final int end, int c, final int event,
+            final int f0, int efs)
     {
-        final EventTypeParams eventTypeParams = params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
+        final EventTypeParams eventTypeParams = params.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
         if(i == end)
         {
             // Make sure we've used all the fields we agreed to see
@@ -547,10 +549,12 @@ public class InferState extends Event3InferState
                                 if (prevIndepFields())
                                     return 1.0;
                                 else
-                                    return get(eventTypeParams.fieldChoices[f0], eventTypeParams.boundary_f);
+                                    return get(eventTypeParams.fieldChoices[f0],
+                                            eventTypeParams.boundary_f);
                             }
                             public void setPosterior(double prob) {
-                                update(eventTypeCounts.fieldChoices[f0], eventTypeParams.boundary_f, prob);
+                                update(eventTypeCounts.fieldChoices[f0],
+                                        eventTypeParams.boundary_f, prob);
                             }
                             public Widget choose(Widget widget) {
 //                                System.out.println(String.format("FieldsNode i=%d, end=%d, e=%s, f0=%s", i,
@@ -575,17 +579,20 @@ public class InferState extends Event3InferState
             {
                 if(oneFieldPerEvent())
                 {
-                    selectJ(end, i, end, c, event, f0, efs, eventTypeParams, eventTypeCounts, node);
+                    selectJ(end, i, end, c, event, f0, efs, eventTypeParams,
+                            eventTypeCounts, node);
                 }
                 else if(newFieldPerWord())
                 {
-                    selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams, eventTypeCounts, node);
+                    selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams,
+                            eventTypeCounts, node);
                 }
                 else
                 {
                     for(int k = i+1; k < end+1; k++)
                     {
-                        selectJ(k, i, end, c, event, f0, efs, eventTypeParams, eventTypeCounts, node);
+                        selectJ(k, i, end, c, event, f0, efs, eventTypeParams,
+                                eventTypeCounts, node);
                     }
                 }
             } // if
@@ -600,14 +607,15 @@ public class InferState extends Event3InferState
                          final EventTypeParams eventTypeCounts, FieldsNode node)
     {
         // Choose a new field to talk about (including none field, but not boundary)
-        for(int f = 0; f < ex.events[event].F + 1; f++)
+        for(int f = 0; f < ex.events.get(event).F + 1; f++)
         {
             final int fIter = f;
             if(f == eventTypeParams.none_f || // If not none, then...
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
-               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
+//               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
+               j-i <= ex.events.get(event).getFields()[f].maxLength)))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :
@@ -645,16 +653,18 @@ public class InferState extends Event3InferState
     // nodes (see note in Hypergraph)
     protected Object selectNoEvents(int i, int c)
     {
-        if (ex.events.length == 0)
+        if (ex.events.isEmpty())
             return hypergraph.endNode;
         else
         {
             SelectNoEventsNode node = new SelectNoEventsNode(i, c);
             if (hypergraph.addProdNode(node))
             {
-                for(int e = 0; e < ex.events.length && ex.events[e] != null; e++)
+//                for(int e = 0; e < ex.events.length && ex.events[e] != null; e++)
+                for(final Event e: ex.events.values())
                 {
-                    final int eventTypeIndex = ex.events[e].getEventTypeIndex();
+//                    final int eventTypeIndex = ex.events[e].getEventTypeIndex();
+                    final int eventTypeIndex = e.getEventTypeIndex();
                     final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
                     final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
@@ -717,8 +727,10 @@ public class InferState extends Event3InferState
     // Generate the event, but make field sets respect efs
     protected Object genEFSEvent(int i, int j, int c, int event, int efs)
     {
-        final EventTypeParams eventTypeParams = params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
+        final EventTypeParams eventTypeParams = params.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
         if (opts.useEventSalienceModel)
         {
             EventNode node = new EventNode(i, j, c, event);
@@ -753,9 +765,11 @@ public class InferState extends Event3InferState
     // Generate event e from i to j; incorporate salience if necessary
     protected Object genEvent(int i, int j, int c, int event)
     {
-        final EventTypeParams eventTypeParams = params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        if (useFieldSets(ex.events[event].getEventTypeIndex()))
+        final EventTypeParams eventTypeParams = params.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        if (useFieldSets(ex.events.get(event).getEventTypeIndex()))
         {
             EventNode node = new EventNode(i, j, c, event);
             if(hypergraph.addSumNode(node))
@@ -817,7 +831,7 @@ public class InferState extends Event3InferState
                                if (ex.getTrueWidget() != null && i == 0) // HACK
                                {
                                    ex.getTrueWidget().setEventPosterior(
-                                           Parameters.none_e, ex.events.length, prob);
+                                           Parameters.none_e, ex.events.size(), prob);
                                }
                           }
                           public Widget choose(Widget widget) {
@@ -850,11 +864,12 @@ public class InferState extends Event3InferState
           } // if
           // (2) Choose an event type t and event e for track c
 //          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
-          for(Integer id : ex.events.keySet())
+          for(final Event e : ex.events.values())
           {
-              final int eventId = id;
+              final int eventId = e.id;
+              final int eventTypeIndex = e.getEventTypeIndex();
 //              final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
-              final int eventTypeIndex = ex.events.get(id).getEventTypeIndex();
+//              final int eventTypeIndex = ex.events.get(eventId).getEventTypeIndex();
               if (allowReal && 
 //                      (!opts.disallowConsecutiveRepeatFields || eventTypeIndex != t0) && // Can't repeat events
                       (!trueInfer || ex.getTrueWidget() == null ||

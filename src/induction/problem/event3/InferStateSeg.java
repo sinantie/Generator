@@ -12,6 +12,7 @@ import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.NoneEventNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.WordNode;
+import java.util.HashMap;
 
 /**
  *
@@ -41,12 +42,12 @@ public class InferStateSeg extends Event3InferState
         // Override bestWidget
         if (opts.fullPredRandomBaseline)
         {
-            if (ex.events.length > 0)
+            if (!ex.events.isEmpty())
             {
                 // Just match each line in the text to a single randomly chosen event
                 for(int l = 0; l < ex.startIndices.length - 1; l++)
                 {
-                    final int e = opts.fullPredRandom.nextInt(ex.events.length);
+                    final int e = opts.fullPredRandom.nextInt(ex.events.size());
                     for(int i = ex.startIndices[l]; i < ex.startIndices[l+1]; i++)
                     {
                         bestWidget.events[0][i] = e; // Assume one track
@@ -59,10 +60,11 @@ public class InferStateSeg extends Event3InferState
     @Override
     protected Widget newWidget()
     {
-        int[] eventTypeIndices = new int[ex.events.length];
-        for(int i = 0; i < eventTypeIndices.length && ex.events[i] != null; i++)
+         HashMap<Integer, Integer> eventTypeIndices =
+                            new HashMap<Integer, Integer>(ex.events.size());
+        for(Event e : ex.events.values())
         {
-           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
+            eventTypeIndices.put(e.id, e.getEventTypeIndex());
         }
         return new Widget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                                ex.startIndices, ((Event3Model)model).eventTypeAllowedOnTrack,
@@ -131,16 +133,17 @@ public class InferStateSeg extends Event3InferState
      */
     protected Object selectNoEvents(int c)
     {
-        if (ex.events.length == 0)
+        if (ex.events.isEmpty())
             return hypergraph.endNode;
         else
         {
             SelectNoEventsNode node = new SelectNoEventsNode(0, c);
             if (hypergraph.addProdNode(node))
             {
-                for(int e = 0; e < ex.events.length && ex.events[e] != null; e++)
+//                for(int e = 0; e < ex.events.length && ex.events[e] != null; e++)
+                for(final Event e : ex.events.values())
                 {
-                    final int eventTypeIndex = ex.events[e].getEventTypeIndex();
+                    final int eventTypeIndex = e.getEventTypeIndex();
                     final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
                     final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
@@ -192,8 +195,10 @@ public class InferStateSeg extends Event3InferState
      */
     protected Object genEFSEvent(int seqNo, int event, int efs)
     {
-        final EventTypeParams eventTypeParams = params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
+        final EventTypeParams eventTypeParams = params.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
         if (opts.useEventSalienceModel)
         {
             EventNode node = new EventNode(0, 0, seqNo, event);
@@ -235,9 +240,11 @@ public class InferStateSeg extends Event3InferState
      */
     protected Object genEvent(int seqNo, int event)
     {
-        final EventTypeParams eventTypeParams = params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        if (useFieldSets(ex.events[event].getEventTypeIndex()))
+        final EventTypeParams eventTypeParams = params.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        if (useFieldSets(ex.events.get(event).getEventTypeIndex()))
         {
             EventNode node = new EventNode(seqNo, 0, 0, event);
             if(hypergraph.addSumNode(node))
@@ -324,10 +331,11 @@ public class InferStateSeg extends Event3InferState
               // (2) Choose an event type t and event e for track c
               int l=2;
     //          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
-              for(int e = 0; e < l && ex.events[e] != null; e++)
+//              for(int e = 0; e < l && ex.events[e] != null; e++)
+              for(final Event ev: ex.events.values())
               {
-                  final int eventId = e;
-                  final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
+                  final int eventId = ev.id;
+                  final int eventTypeIndex = ev.getEventTypeIndex();
                   final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
                   // Check whether we are in the end of our sequence and generate
                   // the final end node (we don't want to get stuck in infinite recursion).

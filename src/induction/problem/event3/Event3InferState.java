@@ -64,15 +64,15 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     // FUTURE: speed up these lookups
     protected int getValue(int event, int field)
     {
-        return ex.events[event].values.get(field);
+        return ex.events.get(event).getValues().get(field);
     }
     protected EventTypeParams getEventTypeParams(int event)
     {
-        return params.eventTypeParams[ex.events[event].getEventTypeIndex()];
+        return params.eventTypeParams[ex.events.get(event).getEventTypeIndex()];
     }
     protected EventTypeParams getEventTypeCounts(int event)
     {
-        return counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
+        return counts.eventTypeParams[ex.events.get(event).getEventTypeIndex()];
     }
     protected NumFieldParams getNumFieldParams(int event, int field)
     {

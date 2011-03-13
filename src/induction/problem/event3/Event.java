@@ -15,9 +15,9 @@ import java.util.List;
 public class Event
 {
     private EventType eventType;
-    Field[] fields;
+    private Field[] fields;
     int id, F;
-    List<Integer> values;
+    private List<Integer> values;
 
     public Event(int id, EventType eventType, List<Integer> values)
     {

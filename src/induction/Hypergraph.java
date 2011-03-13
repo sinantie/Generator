@@ -565,7 +565,7 @@ public class Hypergraph<Widget> {
                     {
                         // we don't want to perform reordering on none_f
                         int field = ((FieldsNode)v.node).getField();
-                        int none_f = ex.events[((FieldsNode)v.node).getEvent()].getF();
+                        int none_f = ex.events.get(((FieldsNode)v.node).getEvent()).getF();
                         kBest(v, field == none_f ? IGNORE_REORDERING : field, Reorder.field);
                     }
                     else
@@ -814,7 +814,8 @@ public class Hypergraph<Widget> {
         int childEventType = -1;
         if(dest.get(0).node instanceof FieldsNode)
         {
-            childEventType = ex.events[((FieldsNode)dest.get(0).node).getEvent()].getEventTypeIndex();
+            childEventType = ex.events.get(
+                    ((FieldsNode)dest.get(0).node).getEvent()).getEventTypeIndex();
         }
         else if (dest.get(0).node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
         {

@@ -122,7 +122,7 @@ public class SemParsePerformance extends Performance
             int eventIndex = widget.events[0][i];
             if(eventIndex > -1)
             {
-                curEvent = ex.events[eventIndex].getEventTypeIndex();
+                curEvent = ex.events.get(eventIndex).getEventTypeIndex();
                 curField = widget.fields[0][i];
                 curValue = widget.nums[i] > -1 ? widget.nums[i] : widget.text[i];
                 if(!map.containsKey(curEvent))

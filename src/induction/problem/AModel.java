@@ -17,7 +17,6 @@ import induction.Options.InitType;
 import induction.RoarkNgramWrapper;
 import induction.SrilmNgramWrapper;
 import induction.Utils;
-import induction.problem.event3.nodes.Node;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -630,32 +629,32 @@ public abstract class AModel<Widget extends AWidget,
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
         Params counts = newParams();
-//        Example ex = examples.get(0);
-//        InferState inferState =  createInferState(ex, 1, counts, temperature,
-//                lopts, 0, complexity);
-////        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
-//        testPerformance.add(ex, inferState.bestWidget);
+        Example ex = examples.get(0);
+        InferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        testPerformance.add(ex, inferState.bestWidget);
 //        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-        int i = 0;
-        for(Example ex: examples)
-        {
-            try
-            {
-            InferState inferState =  createInferState(ex, 1, counts, temperature,
-                    lopts, 0, complexity);
-            testPerformance.add(ex, inferState.bestWidget);
-            System.out.println(widgetToFullString(ex, inferState.bestWidget));
-
-            }
-            catch(Exception e)
-            {
-                System.out.println(i+ " " + e.getMessage());
-                e.printStackTrace();
-            }
-            i++;
-        }
-        return "";
-//        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+//        int i = 0;
+//        for(Example ex: examples)
+//        {
+//            try
+//            {
+//            InferState inferState =  createInferState(ex, 1, counts, temperature,
+//                    lopts, 0, complexity);
+//            testPerformance.add(ex, inferState.bestWidget);
+//            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//
+//            }
+//            catch(Exception e)
+//            {
+//                System.out.println(i+ " " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//            i++;
+//        }
+//        return "";
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 
     /**

@@ -429,7 +429,7 @@ public class GenInferState extends InferState
     protected WordNode genWord(final int i, final int c, int event, final int field)
     {
         WordNode node = new WordNode(i, c, event, field);
-        final int eventTypeIndex = ex.events[event].getEventTypeIndex();
+        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
         final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
         final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
 
@@ -578,8 +578,10 @@ public class GenInferState extends InferState
     @Override
     protected Object genFields(final int i, final int end, int c, final int event, final int f0, int efs)
     {
-        final EventTypeParams eventTypeParams = params.eventTypeParams[ex.events[event].getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[ex.events[event].getEventTypeIndex()];
+        final EventTypeParams eventTypeParams = params.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()];
 //        if(i == end)
 //        {
 //            // Make sure we've used all the fields we agreed to see
@@ -657,14 +659,14 @@ public class GenInferState extends InferState
                          final EventTypeParams eventTypeCounts, FieldsNode node)
     {
         // Choose a new field to talk about (including none field, but not boundary)
-        for(int f = 0; f < ex.events[event].F + 1; f++)
+        for(int f = 0; f < ex.events.get(event).F + 1; f++)
         {
             final int fIter = f;
             if(f == eventTypeParams.none_f || // If not none, then...
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
-               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
+               j-i <= ex.events.get(event).getFields()[f].maxLength)))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :
@@ -728,16 +730,16 @@ public class GenInferState extends InferState
     @Override
     protected Object selectNoEvents(int i, int c)
     {
-        if (ex.events.length == 0)
+        if (ex.events.isEmpty())
             return hypergraph.endNode;
         else
         {
             SelectNoEventsNode node = new SelectNoEventsNode(i, c);
             if (hypergraph.addProdNode(node))
             {
-                for(int e = 0; e < ex.events.length && ex.events[e] != null; e++)
+                for(final Event ev: ex.events.values())
                 {
-                    final int eventTypeIndex = ex.events[e].getEventTypeIndex();
+                    final int eventTypeIndex = ev.getEventTypeIndex();
                     final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                         public double getWeight() {

@@ -159,7 +159,7 @@ public class SemParseInferState extends GenInferState
                 int length = fparams.valueEmissions[w].getCounts().length;
                 Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
                     getAtRank(fparams.valueEmissions[w], length-1);
-                p.label = vocabulary.getIndex(ex.events[event].getFields()[field].
+                p.label = vocabulary.getIndex(ex.events.get(event).getFields()[field].
                         valueToString((Integer)p.label));
 //                p.value *=
 //                        (w == Event3Model.getWordIndex("<unk>")? 0.1 : 1.0);
@@ -169,7 +169,8 @@ public class SemParseInferState extends GenInferState
             public GenWidget choose(GenWidget widget) { return widget; }
             public GenWidget chooseLM(GenWidget widget, int word)
             {
-                widget.text[i] = ex.events[event].getFields()[field].parseValue(-1, vocabulary.getObject(word));                
+                widget.text[i] = ex.events.get(event).getFields()[field].
+                        parseValue(-1, vocabulary.getObject(word));
                 return widget;
             }
             });
@@ -182,7 +183,7 @@ public class SemParseInferState extends GenInferState
     protected WordNode genWord(final int i, final int c, int event, final int field)
     {
         WordNode node = new WordNode(i, c, event, field);
-        final int eventTypeIndex = ex.events[event].getEventTypeIndex();
+        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
         final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
         final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
         final int w = words[i];
@@ -283,5 +284,3 @@ public class SemParseInferState extends GenInferState
     }
 
 }
-
-//TO-DO: missing genNoneWord
