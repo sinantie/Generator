@@ -3,7 +3,9 @@ package induction.problem.event3;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.wordproblem.WordExample;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -350,7 +352,8 @@ public class Example extends WordExample<Widget>
     private void renderWidget(Widget widget, boolean printUnused, int n,
                               HashSet<Integer>[] trueEvents, StringBuffer buf)
     {
-        boolean[] used = new boolean[events.size()];
+//        boolean[] used = new boolean[events.size()];
+        List<Integer> used = new ArrayList<Integer>(events.size());
         for(int c = 0; c < widget.events.length; c++)
         {
             int i = 0;
@@ -360,7 +363,8 @@ public class Example extends WordExample<Widget>
                 Event ev = events.get(e);
                 if (Parameters.isRealEvent(e))
                 {
-                    used[e] = true;
+//                    used[e] = true;
+                    used.add(e);
                 }
                 int j = i + 1;
                 while (j < n && widget.events[c][j] == e)
@@ -436,10 +440,11 @@ public class Example extends WordExample<Widget>
         // Print out unused events
         if (printUnused)
         {
-            for(int e = 0; e < events.size(); e++)
+            for(Event ev : events.values())
             {
-                if (!used[e])
-                    buf.append(Utils.fmts("\t%s[]", events.get(e)));
+                if (!used.contains(ev.id))
+//                    buf.append(Utils.fmts("\t%s[]", events.get(e)));
+                    buf.append(Utils.fmts("\t%s[]", ev));
             } // for
         } // if
     }

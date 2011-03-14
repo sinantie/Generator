@@ -19,15 +19,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.UIManager;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 
 /**
  *
  * @author sinantie
  */
 public class SemanticAnnotation extends javax.swing.JFrame {
-    private String inputFile = "results/output/weatherGov/alignments/gold_staged/0.exec/f1-pred.0";
+    private String inputFile = "results/output/weatherGov/alignments/gold_staged/1.exec/f1-pred.0";
     private List<Annotation> annotations;
     private Annotation currentAnnotation;
+    protected UndoManager undoManager = new UndoManager();
     /** Creates new form SemanticAnnotation */
     public SemanticAnnotation() {
         initComponents();
@@ -35,6 +39,13 @@ public class SemanticAnnotation extends javax.swing.JFrame {
         spinner.setValue(0);
         selectButton.doClick();
         splitPane.setDividerLocation(0.5);
+        outText.getDocument().addUndoableEditListener(
+        new UndoableEditListener() {
+          public void undoableEditHappened(UndoableEditEvent e) {
+            undoManager.addEdit(e.getEdit());
+            
+          }
+        });
     }
 
     private void showAnnotation()
@@ -52,6 +63,7 @@ public class SemanticAnnotation extends javax.swing.JFrame {
         {
             outText.setText(readEventsFile(currentAnnotation.key + ".events", currentAnnotation.eventIds));
         }
+        keyField.setText(currentAnnotation.key);
     }
 
     private void advanceAnnotation()
@@ -81,8 +93,7 @@ public class SemanticAnnotation extends javax.swing.JFrame {
         annotations = new ArrayList<Annotation>(lines.length);
         for(String line : lines)
         {
-            annotations.add(preProcess(line));
-            break;
+            annotations.add(preProcess(line));           
         }
     }
 
@@ -163,15 +174,31 @@ public class SemanticAnnotation extends javax.swing.JFrame {
         outText = new javax.swing.JTextPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         refText = new javax.swing.JTextPane();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        keyField = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         trueText = new javax.swing.JTextPane();
+        jLabel2 = new javax.swing.JLabel();
         spinner = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         selectButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
+        undoItem = new javax.swing.JMenuItem();
+        redoItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        panel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                panelComponentResized(evt);
+            }
+        });
 
         outText.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane1.setViewportView(outText);
@@ -183,41 +210,75 @@ public class SemanticAnnotation extends javax.swing.JFrame {
 
         splitPane.setLeftComponent(jScrollPane2);
 
+        jLabel3.setText("Reference Text");
+
+        jLabel4.setText("Output Text");
+
+        jLabel5.setText("Annotation Key:");
+
+        keyField.setEditable(false);
+
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 824, Short.MAX_VALUE)
+            .addGroup(panelLayout.createSequentialGroup()
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 642, Short.MAX_VALUE)
+                        .addComponent(jLabel4))
+                    .addGroup(panelLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(4, 4, 4)
+                        .addComponent(keyField, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(161, 161, 161)))
+                .addContainerGap())
             .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(splitPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE))
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 397, Short.MAX_VALUE)
+            .addGroup(panelLayout.createSequentialGroup()
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(keyField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addContainerGap(341, Short.MAX_VALUE))
             .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(panelLayout.createSequentialGroup()
-                    .addComponent(splitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGap(65, 65, 65)
+                    .addComponent(splitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(22, Short.MAX_VALUE)))
         );
 
         trueText.setBackground(new java.awt.Color(255, 255, 255));
         jScrollPane3.setViewportView(trueText);
 
+        jLabel2.setText("True Text");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 824, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel2)
+                .addContainerGap(765, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 131, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel2)
+                .addContainerGap(114, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addContainerGap(23, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap()))
         );
 
@@ -238,6 +299,21 @@ public class SemanticAnnotation extends javax.swing.JFrame {
                 saveButtonActionPerformed(evt);
             }
         });
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+
+        undoItem.setText("Undo");
+        jMenu2.add(undoItem);
+
+        redoItem.setText("Redo");
+        jMenu2.add(redoItem);
+
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -287,6 +363,11 @@ public class SemanticAnnotation extends javax.swing.JFrame {
         save();
     }//GEN-LAST:event_saveButtonActionPerformed
 
+    private void panelComponentResized(java.awt.event.ComponentEvent evt)//GEN-FIRST:event_panelComponentResized
+    {//GEN-HEADEREND:event_panelComponentResized
+        splitPane.setDividerLocation(0.5);
+    }//GEN-LAST:event_panelComponentResized
+
     /**
     * @param args the command line arguments
     */
@@ -306,18 +387,28 @@ public class SemanticAnnotation extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTextField keyField;
     private javax.swing.JTextPane outText;
     private javax.swing.JPanel panel;
+    private javax.swing.JMenuItem redoItem;
     private javax.swing.JTextPane refText;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton selectButton;
     private javax.swing.JSpinner spinner;
     private javax.swing.JSplitPane splitPane;
     private javax.swing.JTextPane trueText;
+    private javax.swing.JMenuItem undoItem;
     // End of variables declaration//GEN-END:variables
 
     class Annotation

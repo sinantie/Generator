@@ -137,7 +137,10 @@ public class SemParseInferState extends GenInferState
     @Override
     protected Object genNumFieldValue(final int i, final int c, int event, int field)
     {
-        return genNumFieldValue(i, c, event, field, nums[i]);
+        if (nums[i] == Constants.NaN)
+            return hypergraph.invalidNode; // Can't generate if not a number
+        else
+            return genNumFieldValue(i, c, event, field, nums[i]);
     }
 
     @Override
@@ -229,7 +232,7 @@ public class SemParseInferState extends GenInferState
                 }
                 });
                 // G_FIELD_GENERIC: generate based on event type  
-
+//
 //                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
 //                    public double getWeight() {
 //                        return 1.0;

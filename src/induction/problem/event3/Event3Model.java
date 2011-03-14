@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -618,17 +619,13 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         } // for
         if(opts.useGoldStandardOnly)
         {
-            for(Integer id : goldEvents)
+            Iterator<Event> it = events.values().iterator();
+            while(it.hasNext())
             {
-                if(!events.containsKey(id))
-                    events.remove(id);
+                Event e = it.next();
+                if(!goldEvents.contains(e.id))
+                    it.remove();
             }
-//            Iterator<Event> it = events.iterator();
-//            while(it.hasNext())
-//            {
-//                if(!goldEvents.contains(it.next().id))
-//                    it.remove();
-//            }
         }
         return mrList;
     }
@@ -689,18 +686,13 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         /*ugly way to use gold standard events only as input to the model*/
         if(opts.useGoldStandardOnly)
         {
-            for(Integer id : goldEvents)
+            Iterator<Event> it = events.values().iterator();
+            while(it.hasNext())
             {
-                if(!events.containsKey(id))
-                    events.remove(id);
+                Event e = it.next();
+                if(!goldEvents.contains(e.id))
+                    it.remove();
             }
-//            Iterator<Event> it = events.iterator();
-//            while(it.hasNext())
-//            {
-//                Event e = it.next();
-//                if(!goldEvents.contains(e.id))
-//                    it.remove();
-//            }
         }
         return trueEvents;
     }
@@ -910,7 +902,10 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         {
             readWordRoles();
         }
+        try
+        {
         super.readExamples();
+        }catch(Exception e){e.printStackTrace();}
         if(opts.initType != InitType.staged)
         {
             eventTypes = new EventType[eventTypesBuffer.size()];

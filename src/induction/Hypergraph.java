@@ -167,10 +167,17 @@ public class Hypergraph<Widget> {
                 BigDouble[] weightArray = new BigDouble[kBestMask.length + 2];
                 for(int i = 0; i < kBestMask.length; i++)
                 {
+                    try{
                     d = (Derivation) edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
+                    }
+                    catch(Exception e)
+                    {
+                        System.out.println(edge.dest);
+                        e.printStackTrace();
+                    }
                 }
                 weightArray[weightArray.length - 2] = edge.weight;  // edge weight
                 weightArray[weightArray.length - 1] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
@@ -214,8 +221,8 @@ public class Hypergraph<Widget> {
       
         private double getLMProb(List<Integer> ngram)
         {
-//            if(modelType == ModelType.semParse)
-//                return 1.0; // we currently don't support LM for semantic parsing
+            if(modelType == ModelType.semParse)
+                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
@@ -600,16 +607,21 @@ public class Hypergraph<Widget> {
         Derivation item;
         int[] mask;
         for(int i = 0; i < v.edges.size(); i++) // for each incoming edge
-        {                        
+        {
+            Hyperedge edge = v.edges.get(i);
+            // check whether the path has been blocked
+            // (semParse: interface case NumFieldValueNode is not spanning integers, block the whole hyperpath)
+            if(edge.dest.get(0).derivations != null && edge.dest.get(0).derivations.isEmpty())
+                continue;
             // mask is set to 0s, i.e. get the 1-best derivation of
             // the antedecendants of v
-            if(v.edges.get(i).dest.size() == 1 || v.edges.get(i).dest.get(1) == endNodeInfo)
+            if(edge.dest.size() == 1 || edge.dest.get(1) == endNodeInfo)
             {
-                mask = new int[1]; // for leaf nodes or nodes with one antecedent
+                mask = new int[1]; // for leaf nodes or nodes with one antecedent                
             }
             else
             {
-                mask = new int[v.edges.get(i).dest.size()];
+                mask = new int[edge.dest.size()];
             }
             // check whether the current derivation is of an event (type) OR field
             // that has already been included in the antedecendant derivations
@@ -619,15 +631,15 @@ public class Hypergraph<Widget> {
                 {
                     Collection<Integer> eventTypeSet = new HashSet<Integer>();
                     if(!hyperpathContainsEventType(currentEventType,
-                            v.edges.get(i).dest, mask, eventTypeSet))
+                            edge.dest, mask, eventTypeSet))
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, eventTypeSet, null));
+                        cand.add(new Derivation(edge, mask, eventTypeSet, null));
                     }
                 }
                 else if(reorder == Reorder.event)
                 {
                     Collection<Integer> eventsStack = new Stack<Integer>();
-                    if(!hyperpathContainsEvent(v.edges.get(i).dest, mask, eventsStack))
+                    if(!hyperpathContainsEvent(edge.dest, mask, eventsStack))
                     {
                         cand.add(new Derivation(v.edges.get(i), mask, eventsStack, null));
                     }
@@ -636,15 +648,15 @@ public class Hypergraph<Widget> {
                 {
                     Collection<Integer> fieldSet = new HashSet<Integer>();
                     if(!hyperpathContainsField(currentEventType,
-                            v.edges.get(i).dest, mask, fieldSet))
+                            edge.dest, mask, fieldSet))
                     {
-                        cand.add(new Derivation(v.edges.get(i), mask, null, fieldSet));
+                        cand.add(new Derivation(edge, mask, null, fieldSet));
                     }
                 }
             }
             else
             {
-                cand.add(new Derivation(v.edges.get(i), mask, null, null));
+                cand.add(new Derivation(edge, mask, null, null));
             }
         } // for
         while(cand.size() > 0 && buf.size() < K)
