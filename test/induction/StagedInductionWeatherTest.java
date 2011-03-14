@@ -47,7 +47,7 @@ public class StagedInductionWeatherTest
                 + "-Options.stage1.smoothing 0.1 -initNoise 0 -initType staged "
                 + "-stagedParamsFile results/output/weatherGov/alignments/"
                 + "model_3_gabor/1.exec/stage1.params.obj -dontCrossPunctuation "
-                + "-disallowConsecutiveRepeatFields -allowNoneEvent -useGoldStandardOnly";
+                + "-disallowConsecutiveRepeatFields -allowNoneEvent";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
