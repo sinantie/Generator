@@ -65,6 +65,6 @@ public class Event
             out[i] = fieldToString(i) + "=" + fields[i].valueToString(values.get(i));
         }
 //        return model.eventTypeStr(eventTypeIndex) + ":" + Utils.mkString(out, ",");
-        return eventType + ":" + Utils.mkString(out, ",");
+        return eventType +"("+ id +"):" + Utils.mkString(out, ",");
     }
 }
