@@ -2,6 +2,7 @@ package induction.problem.event3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 /**
  *
@@ -11,7 +12,8 @@ public class MRToken
 {
     private Event3Model model;
     private int event;
-    private HashMap<Integer, ArrayList<Integer>> fields;
+    private HashMap<Integer, ArrayList<MRField>> fields;
+    public enum Type {cat, num};
 
     /**
      * Constructor used for Gold-standard MRs
@@ -20,7 +22,7 @@ public class MRToken
     public MRToken(int event)
     {
         this.event = event;
-        this.fields = new HashMap<Integer, ArrayList<Integer>>();
+        this.fields = new HashMap<Integer, ArrayList<MRField>>();
     }
 
     /**
@@ -38,15 +40,15 @@ public class MRToken
     private void addField(int fieldId)
     {
         if(!fields.containsKey(fieldId))
-            fields.put(fieldId, new ArrayList<Integer>());
+            fields.put(fieldId, new ArrayList<MRField>());
     }
 
-    private void addValue(int fieldId, int value)
+    private void addValue(int fieldId, Type type, int value)
     {
-        fields.get(fieldId).add(value);
+        fields.get(fieldId).add(new MRField(type, value));
     }
 
-    public void parseMrToken(int curEvent, int curField, int curValue)
+    public void parseMrToken(int curEvent, int curField, Type type, int curValue)
     {
 //        if(curField < ex.events[curEvent].F)
         if(curField < model.getFieldsMap().get(curEvent).get("none_f"))
@@ -54,15 +56,15 @@ public class MRToken
             addField(curField);
             if(curValue > -1)
             {
-                addValue(curField, curValue);
+                addValue(curField, type, curValue);
             }
         }
     }
 
-    public void parseMrToken(int curField, int curValue)
+    public void parseMrToken(int curField, Type type, int curValue)
     {
         addField(curField);
-        addValue(curField, curValue);
+        addValue(curField, type, curValue);
     }
 
     @Override
@@ -79,14 +81,14 @@ public class MRToken
             if(!mr.fields.containsKey(fieldId))
                 return false;
             // normally not a list
-            ArrayList<Integer> thisValues = fields.get(fieldId);
-            ArrayList<Integer> mrValues = mr.fields.get(fieldId);
+            ArrayList<MRField> thisFields = fields.get(fieldId);
+            ArrayList<MRField> mrFields = mr.fields.get(fieldId);
             // change that, very naive
-            if(thisValues.size() != mrValues.size())
+            if(thisFields.size() != mrFields.size())
                 return false;
-            for(Integer value : thisValues)
+            for(MRField field : thisFields)
             {
-                if(!mrValues.contains(value))
+                if(!mrFields.contains(field))
                 {
                     return false;
                 }
@@ -102,5 +104,62 @@ public class MRToken
         hash = 79 * hash + this.event;
         hash = 79 * hash + (this.fields != null ? this.fields.hashCode() : 0);
         return hash;
+    }
+
+    @Override
+    public String toString()
+    {
+        String out = event + "[";
+        for(Entry<Integer, ArrayList<MRField>> entry : fields.entrySet())
+        {
+            out += entry.getKey() + entry.getValue().toString();
+
+        }
+        return out + "]";
+    }
+
+
+    class MRField
+    {
+        Type type;
+        int value;
+
+        public MRField(Type type, int value)
+        {
+            this.type = type;
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            assert obj instanceof MRField;
+            MRField f = (MRField) obj;
+            if(type == Type.num)
+                return Math.abs(value - f.value) < 5;
+            return value == f.value;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = 7;
+            hash = 19 * hash + (this.type != null ? this.type.hashCode() : 0);
+            hash = 19 * hash + this.value;
+            return hash;
+        }
+
+        @Override
+        public String toString()
+        {
+            String out = "";
+            if(type == Type.cat)
+                out += "@" + value;
+            else if(type == Type.num)
+                out += "#" + value;
+            return out;
+        }
+
+
     }
 }

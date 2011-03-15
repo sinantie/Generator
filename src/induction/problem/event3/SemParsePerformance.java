@@ -114,7 +114,7 @@ public class SemParsePerformance extends Performance
         // we can only parse a single MR per sentence at the moment
         HashMap<Integer, MRToken> map = new HashMap<Integer, MRToken>();
         int curEvent, curField, curValue;
-
+        MRToken.Type curType;
         for(int i = 0; i < widget.events[0].length; i++)
         {
             // ugly, but it means to get the index of the type of the predicted event
@@ -124,16 +124,26 @@ public class SemParsePerformance extends Performance
             {
                 curEvent = ex.events.get(eventIndex).getEventTypeIndex();
                 curField = widget.fields[0][i];
-                curValue = widget.nums[i] > -1 ? widget.nums[i] : widget.text[i];
+                if(widget.nums[i] > -1)
+                {
+                    curValue = widget.nums[i];
+                    curType = MRToken.Type.num;
+                }
+                else
+                {
+                    curValue = widget.text[i];
+                    curType = MRToken.Type.cat;
+                }
+//                curValue = widget.nums[i] > -1 ? widget.nums[i] : widget.text[i];
                 if(!map.containsKey(curEvent))
                 {
                     MRToken mr = new MRToken(model, curEvent);
-                    mr.parseMrToken(curEvent, curField, curValue);
+                    mr.parseMrToken(curEvent, curField, curType, curValue);
                     map.put(curEvent, mr);
                 }
                 else
                 {
-                    map.get(curEvent).parseMrToken(curEvent, curField, curValue);
+                    map.get(curEvent).parseMrToken(curEvent, curField, curType, curValue);
                 }
             }
         }

@@ -606,6 +606,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     // if the field is of numeric type, then parse the value as integer,
                     // else get the correct value index from the corresponding field
                     mr.parseMrToken(fieldIndex,
+                            token.tchar == '#' ? MRToken.Type.num : MRToken.Type.cat, 
                             token.tchar == '#' ? Integer.parseInt(token.value) :
                             currentEventType.getFields()[fieldIndex].
                             parseValue(token.role, token.value));
