@@ -28,12 +28,13 @@ import javax.swing.undo.UndoManager;
  * @author sinantie
  */
 public class SemanticAnnotation extends javax.swing.JFrame {
-    private String inputFile = "results/output/weatherGov/alignments/gold_staged/evalGabor/f1-pred.0";
+    private String inputFile;
     private List<Annotation> annotations;
     private Annotation currentAnnotation;
     protected UndoManager undoManager = new UndoManager();
     /** Creates new form SemanticAnnotation */
-    public SemanticAnnotation() {
+    public SemanticAnnotation(String inputFile) {
+        this.inputFile = inputFile;
         initComponents();
         readInputFile();
         spinner.setValue(0);
@@ -371,7 +372,7 @@ public class SemanticAnnotation extends javax.swing.JFrame {
     /**
     * @param args the command line arguments
     */
-    public static void main(String args[]) {
+    public static void main(final String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -380,7 +381,9 @@ public class SemanticAnnotation extends javax.swing.JFrame {
                         UIManager.getSystemLookAndFeelClassName());
                 }
                 catch(Exception e){}
-                new SemanticAnnotation().setVisible(true);
+                String inputFile = args.length > 0 ? args[1] :
+                    "results/output/weatherGov/alignments/gold_staged/evalGabor/f1-pred.0";
+                new SemanticAnnotation(inputFile).setVisible(true);
             }
         });
     }
