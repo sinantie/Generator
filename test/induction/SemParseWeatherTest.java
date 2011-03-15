@@ -38,13 +38,12 @@ public class SemParseWeatherTest
          String args = "-modelType semParse -testInputLists test/testWeatherGovEvents "
 //         String args = "-modelType semParse -testInputLists gaborLists/genDevListPathsGabor "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/weatherGov/alignments/model_3_gabor_dev_no_generic"
+                    + "results/output/weatherGov/alignments/model_3_gabor_dev_noWind"
                     + "/0.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 10 -ngramSize 2 "
-                    + "-ngramModelFile weatherGovLM/dev/srilm-abs-weather-semantic-dev-noisy-3-gram.model.arpa "
-//                    + "-ngramModelFile robocupLM/srilm-abs-robocup-semantic-fold1-noisy-3-gram.model.arpa "
+                    + "-disallowConsecutiveRepeatFields -kBest 10 -ngramSize 3 "
+                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-weather-semantic-noisy-3-gram.model.arpa "
                     + "-ngramWrapper srilm -reorderType eventTypeAndField "
-                    + "-maxPhraseLength 5 -newFieldPerWord 0,-1 "
+                    + "-maxPhraseLength 3 -newFieldPerWord 0,-1 -excludedFields windSpeed.mode-bucket-0-20-2 "
                     + "-modelUnkWord";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
