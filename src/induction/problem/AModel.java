@@ -263,6 +263,7 @@ public abstract class AModel<Widget extends AWidget,
                 if(needMoreExamples() && !excludeLists.contains(line))
                 {
 //                    addPath(pathName(path, line));
+                    System.out.println("here");
                     addPath(line);
                 }
             } // for

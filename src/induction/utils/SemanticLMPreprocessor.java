@@ -111,7 +111,8 @@ public class SemanticLMPreprocessor extends LMPreprocessor
         for(String s: in.split(","))
         {
             String[] token = s.split("=");
-            map.put(token[0], isNumber(token[1]) ? "<num>" : token[1]);
+            if(token.length == 2)
+                map.put(token[0], isNumber(token[1]) ? "<num>" : token[1]);
         }
         return map;
     }
@@ -125,10 +126,10 @@ public class SemanticLMPreprocessor extends LMPreprocessor
     public static void main(String[] args)
     {
         String source = "results/output/weatherGov/alignments/"
-                + "model_3_gabor_dev_no_generic/0.exec/"
-                + "stage1.train.full-pred.14";
-        String target = "weatherGovLM/dev/weather-semantic-dev-noisy-3-gram.sentences";
-        String fileExtension = "14";
+                + "gold_staged/trainGabor/"
+                + "stage1.test.full-pred.0";
+        String target = "weatherGovLM/weather-semantic-noisy-3-gram.sentences";
+        String fileExtension = "0";
         boolean tokeniseOnly = false;
         int ngramSize = 3;
         boolean includeEvents = false;

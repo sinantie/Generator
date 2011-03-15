@@ -708,7 +708,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             path.replaceAll("\\."+ opts.inputFileExt,".salign");
         final boolean alignPathExists = new File(alignPath).exists();
         final boolean textPathExists = new File(textPath).exists();
-
+        System.out.println(textPath);
         if (!opts.useOnlyLabeledExamples || alignPathExists)
         {
             final HashSet<String> excludedFields = new HashSet<String>();

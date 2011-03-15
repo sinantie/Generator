@@ -72,6 +72,8 @@ public class MRToken
         MRToken mr = (MRToken)obj;
         if(this.event != mr.event)
             return false;
+        if(this.fields.size() != mr.fields.size())
+            return false;
         for(Integer fieldId : this.fields.keySet())
         {
             if(!mr.fields.containsKey(fieldId))
