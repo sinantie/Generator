@@ -1,4 +1,4 @@
 #!/bin/bash
-
-./run_model_3.sh gaborLists/trainListPathsGabor \
-results/output/weatherGov/alignments/model_3_gabor_vecs 15 2
+#genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
+./run_model_3.sh gaborLists/genDevListPathsGabor \
+results/output/weatherGov/alignments/model_3_gabor_dev_noWind 15 2
