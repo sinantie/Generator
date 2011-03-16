@@ -33,14 +33,17 @@ public class Parameters
   public static final String[] noiseToString = {"continue", "stop"};
 
   public static final int NUMBER_OF_METRICS_GEN = 7,
-                          NUMBER_OF_METRICS_SEM_PAR = 3,
+                          NUMBER_OF_METRICS_SEM_PAR = 6,
                           PRECISION_METRIC = 0,
                           RECALL_METRIC = 1,
                           F_MEASURE_METRIC = 2,
                           BLEU_METRIC = 3,
                           METEOR_METRIC = 4,
                           TER_METRIC = 5,
-                          BLEU_METRIC_MODIFIED = 6;
+                          BLEU_METRIC_MODIFIED = 6,
+                          EVENT_MATCH_PRECISION_METRIC = 3,
+                          EVENT_MATCH_RECALL_METRIC = 4,
+                          EVENT_MATCH_F_MEASURE_METRIC = 5;
 
   // Histogram bins over numeric values
   public static final int H_MIN = 0,

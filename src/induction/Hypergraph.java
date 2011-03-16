@@ -1,5 +1,6 @@
 package induction;
 
+import edu.stanford.nlp.tagger.maxent.ReadDataTagged;
 import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.nodes.WordNode;
 import induction.Options.ModelType;
@@ -221,8 +222,8 @@ public class Hypergraph<Widget> {
       
         private double getLMProb(List<Integer> ngram)
         {
-            if(modelType == ModelType.semParse)
-                return 1.0; // we currently don't support LM for semantic parsing
+//            if(modelType == ModelType.semParse)
+//                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
@@ -555,12 +556,22 @@ public class Hypergraph<Widget> {
             v = topologicalOrdering.get(i);
             if(v != endNodeInfo)
             {
+                if(reorderType == ReorderType.ignore)
+                {
+                    kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order
+                }
                 // don't allow repetition of same event types or events
-                if (v.node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
+                else if(v.node instanceof EventsNode) // TrackNode and EventsNode store the eventType directly
                 {
                     if(reorderType == ReorderType.eventType ||
                             reorderType == ReorderType.eventTypeAndField)
-                        kBest(v, ((EventsNode)v.node).getEventType(), Reorder.eventType);
+                    {
+                        int eventType = ((EventsNode)v.node).getEventType();
+                        if(eventType != ex.model.none_t())
+                            kBest(v, eventType, Reorder.eventType);
+                        else
+                            kBest(v, IGNORE_REORDERING, Reorder.ignore);
+                    }
                     // event re-ordering
                     else if(reorderType == ReorderType.event)
                         kBest(v, UNKNOWN_EVENT, Reorder.event);

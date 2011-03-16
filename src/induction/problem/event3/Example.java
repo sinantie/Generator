@@ -15,7 +15,7 @@ import java.util.TreeSet;
  */
 public class Example extends WordExample<Widget>
 {
-    private Event3Model model;
+    public Event3Model model;
     protected String name;
     public Map<Integer, Event> events;
     protected int[] text, labels, startIndices;

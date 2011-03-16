@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -539,5 +540,114 @@ public class Utils
             return true;
         }
         return false;
+    }
+
+    /**
+     * computes word error rate of current hypothesis against transcription
+     * @param lineTrans the current hypothesis
+     * @param trueTrans the transciption
+     * @return word error rate for current hypothesis against transcription
+     */
+    public static float computeWER(String lineTrans, String trueTrans)
+    {
+        int ld = 0;
+
+        StringTokenizer transTok = new StringTokenizer(lineTrans.toUpperCase());
+        String[] transArray = new String[transTok.countTokens()];
+        for(int i = 0; i < transArray.length; i++)
+        {
+            transArray[i] = transTok.nextToken();
+        }
+
+        StringTokenizer trueTok = new StringTokenizer(trueTrans.toUpperCase());
+        String[] trueArray = new String[trueTok.countTokens()];
+        for(int i = 0; i < trueArray.length; i++)
+        {
+            trueArray[i] = trueTok.nextToken();
+        }
+
+//        if(trueTrans.equals(Constants.TRANS_SIL) && !lineTrans.equals(""))
+//        {
+//            return 1.0f;
+//        }
+//        if(trueTrans.equals(Constants.TRANS_SIL))
+//        {
+//            trueArray = new String[1];
+//            trueArray[0] = " ";
+//        }
+        if(transArray.length == 0)
+        {
+            transArray = new String[1];
+            transArray[0] = " ";
+        }
+
+        // compute levenshtein distance
+        ld = levenshteinDistance(trueArray, transArray);
+
+        return (float) ld / (float) trueArray.length;
+    }
+
+    /**
+     * computes the levenshtein distance (number of insertions, deletions,
+     * alterations) between two strings
+     * @param s the first string to be compared
+     * @param t the second string to be compared
+     * @return the levenshtein distance
+     */
+    private static int levenshteinDistance(String[] s, String[] t)
+    {
+        int m = s.length, n = t.length, cost = 0;
+        int d[][] = new int[m][t.length];
+
+        for (int i = 0; i < m; i++)
+        {
+            d[i][0] = i;
+        }
+        for (int j = 0; j < n; j++)
+        {
+            d[0][j] = j;
+        }
+        for (int i = 1; i < m; i++)
+        {
+            for (int j = 1; j < n; j++)
+            {
+                if (s[i].equals(t[j]))
+                {
+                    cost = 0;
+                }
+                else
+                {
+                   cost = 1;
+                }
+                d[i][j] = minimum(   d[i - 1][j] + 1,     // deletion
+                                     d[i][j - 1] + 1,     // insertion
+                                     d[i - 1][j - 1] + cost   // substitution
+                                 );
+            }
+        }
+        return d[s.length - 1][t.length - 1];
+    }
+
+    /**
+     * returns the minimum among three integers
+     * @param a first integer
+     * @param a second integer
+     * @param a third integer
+     * @return the minimum integer
+     */
+    private static int minimum (int a, int b, int c)
+    {
+        int min;
+
+        min = a;
+        if (b < min)
+        {
+          min = b;
+        }
+        if (c < min)
+        {
+          min = c;
+        }
+        return min;
     }
 }

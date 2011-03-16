@@ -9,7 +9,7 @@ public class Options {
   public enum InputFormat { raw, tag, mrg, seg };
   public enum AlignmentModel { m1, m2, hmm };
   public enum NgramWrapper {kylm, srilm, roark};
-  public enum ReorderType {event, eventType, eventTypeAndField};
+  public enum ReorderType {event, eventType, eventTypeAndField, ignore};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();

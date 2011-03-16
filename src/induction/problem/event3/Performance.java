@@ -141,8 +141,16 @@ public class Performance extends APerformance<Widget>
     protected void addResult(EvalResult subResult, boolean trueProbability,
                            boolean predictedProbability)
     {
+        addResult(result, subResult, trueProbability, predictedProbability);
+//        subResult.add(trueProbability, predictedProbability);
+//        result.add(trueProbability, predictedProbability);
+    }
+
+    protected void addResult(EvalResult totalResult, EvalResult subResult, boolean trueProbability,
+                           boolean predictedProbability)
+    {
         subResult.add(trueProbability, predictedProbability);
-        result.add(trueProbability, predictedProbability);
+        totalResult.add(trueProbability, predictedProbability);
     }
 
     /**

@@ -36,7 +36,24 @@ public class MRToken
         this(event);
         this.model = model;
     }
-   
+
+    public int getEvent()
+    {
+        return event;
+    }
+
+    public boolean isEmpty()
+    {
+        for(Integer fieldId : fields.keySet())
+        {
+            if(fieldId != model.getFieldsMap().get(event).get("none_f"))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void addField(int fieldId)
     {
         if(!fields.containsKey(fieldId))
@@ -136,7 +153,7 @@ public class MRToken
             assert obj instanceof MRField;
             MRField f = (MRField) obj;
             if(type == Type.num)
-                return Math.abs(value - f.value) < 5;
+                return Math.abs(value - f.value) < 10;
             return value == f.value;
         }
 
