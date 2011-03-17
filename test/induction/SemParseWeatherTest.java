@@ -38,18 +38,18 @@ public class SemParseWeatherTest
          String args = "-modelType semParse -testInputLists test/testWeatherGovEvents "
 //         String args = "-modelType semParse -testInputLists gaborLists/semParseWeatherEval200 "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/weatherGov/alignments/model_3_gabor_dev_some_times"
+                    + "results/output/weatherGov/alignments/model_3_gabor_mapVecs"
                     + "/0.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 10 -ngramSize 3 "
-                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-weather-semantic-dev-some-times-noisy-3-gram.model.arpa "
+                    + "-disallowConsecutiveRepeatFields -kBest 10 -ngramSize 2 "
+                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-weather-semantic-3-gram.model.arpa "
                     + "-ngramWrapper srilm -reorderType eventTypeAndField "
                     + "-maxPhraseLength 5 -newFieldPerWord 0,-1 "
-                    + "-modelUnkWord -allowConsecutiveEvents -allowNoneEvent "
-
-                    + " -excludedFields temperature.time windChill.time "
-                    + "windSpeed.time windDir.time gust.time "
-                    + "precipPotential.time thunderChance.time "
-                    + "snowChance.time freezingRainChance.time sleetChance.time";
+                    + "-modelUnkWord -allowConsecutiveEvents";
+//
+//                    + " -excludedFields temperature.time windChill.time "
+//                    + "windSpeed.time windDir.time gust.time "
+//                    + "precipPotential.time thunderChance.time "
+//                    + "snowChance.time freezingRainChance.time sleetChance.time";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
