@@ -3,5 +3,5 @@ java -Xmx3800m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist
 -inputFileExt events -numThreads $4 -initNoise 0 -indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 \
 -newFieldPerWord 0,5 -disallowConsecutiveRepeatFields -dontCrossPunctuation -Options.stage1.smoothing 0.1 \
 -outputFullPred -modelUnkWord -allowNoneEvent \
--excludedFields temperature.time,windChill.time,windSpeed.time,windDir.time,gust.time,precipPotential.time,\
-thunderChance.time,snowChance.time,freezingRainChance.time,sleetChance.time 
+-excludedFields temperature.time windChill.time windSpeed.time windDir.time gust.time precipPotential.time \
+thunderChance.time snowChance.time freezingRainChance.time sleetChance.time 
