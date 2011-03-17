@@ -59,7 +59,7 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                             String event = chunk.substring(0, index1).trim();
                             HashMap<String, String> fieldsMap = fieldsToMap(chunk.substring(index1+1, index2));
                             if(includeEvents)
-                                textOut += event + " ";
+                                textOut += event.substring(0, event.indexOf("(")) + " ";
                             String []fields = chunk.substring(index2+1,
                                     chunk.lastIndexOf("]")).split("\\]");
                             for(String field : fields)
@@ -128,12 +128,12 @@ public class SemanticLMPreprocessor extends LMPreprocessor
         String source = "results/output/weatherGov/alignments/"
                 + "/gold_staged/trainGabor_some_times/"
                 + "stage1.test.full-pred.0";
-        String target = "weatherGovLM/weather-semantic-some-times-3-gram.sentences";
+        String target = "weatherGovLM/weather-semantic-full-some-times-3-gram.sentences";
         String fileExtension = "0";
         boolean tokeniseOnly = false;
         int ngramSize = 3;
-        boolean includeEvents = false;
-        boolean includeFieldNames = false;
+        boolean includeEvents = true;
+        boolean includeFieldNames = true;
         boolean noise = false;
         boolean useCorrectPredictionsOnly = false;
         LMPreprocessor lmp = new SemanticLMPreprocessor(target, source, ngramSize,

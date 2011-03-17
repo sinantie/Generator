@@ -222,8 +222,8 @@ public class Hypergraph<Widget> {
       
         private double getLMProb(List<Integer> ngram)
         {
-//            if(modelType == ModelType.semParse)
-//                return 1.0; // we currently don't support LM for semantic parsing
+            if(modelType == ModelType.semParse)
+                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)

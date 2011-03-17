@@ -118,11 +118,6 @@ public class SemParseInferState extends GenInferState
     @Override
     protected Widget newWidget()
     {
-//        int[] eventTypeIndices = new int[ex.events.length];
-//        for(int i = 0; i < eventTypeIndices.length; i++)
-//        {
-//           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
-//        }
         HashMap<Integer, Integer> eventTypeIndices =
                             new HashMap<Integer, Integer>(ex.events.size());
         for(Event e : ex.events.values())
@@ -163,7 +158,7 @@ public class SemParseInferState extends GenInferState
                 Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
                     getAtRank(fparams.valueEmissions[w], length-1);
                 p.label = vocabulary.getIndex(ex.events.get(event).getFields()[field].
-                        valueToString((Integer)p.label));
+                        valueToString((Integer)p.label).toLowerCase());
 //                p.value *=
 //                        (w == Event3Model.getWordIndex("<unk>")? 0.1 : 1.0);
                 return p;
