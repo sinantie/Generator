@@ -675,14 +675,51 @@ public class GenInferState extends InferState
                 if(j == end)
                 {
                     hypergraph.addEdge(node, genField(i, j, c, event, f),
-                                       new Hypergraph.HyperedgeInfo<Widget>() {
-                        public double getWeight() { // final field-phrase before boundary
+                                       new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                        public double getWeight() { // final field-phrase before boundary                            
                                 return get(eventTypeParams.fieldChoices[f0], fIter) *
                                        get(eventTypeParams.fieldChoices[fIter],
                                            eventTypeParams.boundary_f);
                         }
                         public void setPosterior(double prob) { }
-                        public Widget choose(Widget widget) {
+                        public GenWidget choose(GenWidget widget) {
+                            for(int k = i; k < j; k++)
+                            {
+                                widget.fields[c][k] = fIter;
+                            }
+                            return widget;
+                        }
+
+                        @Override
+                        public Pair getWeightLM(int rank)
+                        {
+                            return new Pair(getWeight(),
+                                    fIter < ex.events.get(event).F ?
+                                        vocabulary.getIndex(ex.events.get(event).
+                                        getFields()[fIter].name.toLowerCase()) :
+                                        vocabulary.getIndex("none_f"));
+                        }
+
+                        @Override
+                        public GenWidget chooseLM(GenWidget widget, int word)
+                        {
+                            return widget;
+                        }
+                    });
+                }
+                else
+                {
+                    hypergraph.addEdge(node, genField(i, j, c, event, f),
+                                       genFields(j, end, c, event, remember_f, new_efs),
+                                       new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                        public double getWeight() {
+                            if (prevIndepFields()) // f0 == boundary_f under indepFields, so use that
+                                return get(eventTypeParams.fieldChoices[eventTypeParams.boundary_f], fIter);
+                            else
+                                return get(eventTypeParams.fieldChoices[f0], fIter);
+                        }
+                        public void setPosterior(double prob) { }
+                        public GenWidget choose(GenWidget widget) {
 //                            System.out.println(String.format("event=%s, i=%d, j=%d, f0=%s, f=%s",
 //                                  ex.events[event].toString(), i, j,
 //                                  model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
@@ -693,29 +730,20 @@ public class GenInferState extends InferState
                             }
                             return widget;
                         }
-                    });
-                }
-                else
-                {
-                    hypergraph.addEdge(node, genField(i, j, c, event, f),
-                                       genFields(j, end, c, event, remember_f, new_efs),
-                                       new Hypergraph.HyperedgeInfo<Widget>() {
-                        public double getWeight() {
-                            if (prevIndepFields()) // f0 == boundary_f under indepFields, so use that
-                                return get(eventTypeParams.fieldChoices[eventTypeParams.boundary_f], fIter);
-                            else
-                                return get(eventTypeParams.fieldChoices[f0], fIter);
+
+                        @Override
+                        public Pair getWeightLM(int rank)
+                        {
+                            return new Pair(getWeight(), 
+                                    fIter < ex.events.get(event).F ?
+                                        vocabulary.getIndex(ex.events.get(event).
+                                        getFields()[fIter].name.toLowerCase()) :
+                                        vocabulary.getIndex("none_f"));
                         }
-                        public void setPosterior(double prob) { }
-                        public Widget choose(Widget widget) {
-//                            System.out.println(String.format("event=%s, i=%d, j=%d, f0=%s, f=%s",
-//                                  ex.events[event].toString(), i, j,
-//                                  model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
-//                                  model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
-                            for(int k = i; k < j; k++)
-                            {
-                                widget.fields[c][k] = fIter;
-                            }
+
+                        @Override
+                        public GenWidget chooseLM(GenWidget widget, int word)
+                        {
                             return widget;
                         }
                     });

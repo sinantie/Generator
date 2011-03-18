@@ -52,6 +52,8 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                             int index1 = chunk.indexOf(":"), index2 = chunk.indexOf("[");
                             if(index1 == -1) // none event
                             {
+                                if(includeEvents)
+                                    textOut += "none_e ";
                                 pos++;
                                 continue;
                             }
@@ -66,7 +68,7 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                             {
                                 String[] tokens = field.split("\\["); // fields and values
                                 if(includeFieldNames)
-                                    textOut += tokens[0] + " ";
+                                    textOut += tokens[0].contains("none") ? "none_f " : tokens[0] + " ";
                                 if(!tokens[0].contains("none")) // add value
                                 {   // prediction might be noisy, so get the correct field value from map
                                     if(!noise)
@@ -77,9 +79,9 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                                         textOut += tokens[1].trim().substring(0, index3) + " ";
                                     }
                                 }
-                                else // add the (none) token as many times as the number of words
+                                else if(!includeFieldNames)// add the (none) token as many times as the number of words
                                 {
-                                    for(int i = includeFieldNames ? 1 : 0; i < tokens[1].split(" ").length; i++)
+                                    for(int i = 0; i < tokens[1].split(" ").length; i++)
                                     {
                                         textOut += "(none) ";
                                     }
@@ -128,7 +130,7 @@ public class SemanticLMPreprocessor extends LMPreprocessor
         String source = "results/output/weatherGov/alignments/"
                 + "/gold_staged/trainGabor_some_times/"
                 + "stage1.test.full-pred.0";
-        String target = "weatherGovLM/weather-semantic-full-some-times-3-gram.sentences";
+        String target = "weatherGovLM/weather-semantic-full-some-times-5-gram.sentences";
         String fileExtension = "0";
         boolean tokeniseOnly = false;
         int ngramSize = 3;

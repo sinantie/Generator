@@ -8,11 +8,13 @@ import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.event3.nodes.CatFieldValueNode;
+import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.Params;
+import induction.problem.event3.params.TrackParams;
 import java.util.HashMap;
 
 /**
@@ -200,7 +202,8 @@ public class SemParseInferState extends GenInferState
                     public Pair getWeightLM(int rank)
                     {
                         Pair p = getAtRank(eventTypeParams.noneFieldEmissions, rank);
-                        p.label = vocabulary.getIndex("(none)");
+//                        p.label = vocabulary.getIndex("(none)");
+                        p.label = null;
                         return p;
                     }
                     public GenWidget chooseLM(GenWidget widget, int word)
@@ -266,7 +269,8 @@ public class SemParseInferState extends GenInferState
                 {
 //                    return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
                     Pair p = getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
-                    p.label = vocabulary.getIndex("(none)");
+//                    p.label = vocabulary.getIndex("(none)");
+                    p.label = null;
                     return p;
                 }
                 public void setPosterior(double prob) { }
@@ -281,4 +285,96 @@ public class SemParseInferState extends GenInferState
         return node;
     }
 
+    // Generate track c in i...j (t0 is previous event type for track 0);
+    // allowNone and allowReal specify what event types we can use
+    TrackNode genTrack(final int i, final int j, final int t0, final int c,
+                       boolean allowNone, boolean allowReal)
+    {
+        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+        final TrackParams cparams = params.trackParams[c];
+        // WARNING: allowNone/allowReal might not result in any valid nodes
+        if(hypergraph.addSumNode(node))
+        {
+            // (1) Choose the none event
+          if (allowNone && (!trueInfer || ex.getTrueWidget() == null ||
+              ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
+          {
+              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
+              Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
+              hypergraph.addEdge(node,
+                  genNoneEvent(i, j, c), recurseNode,
+                  new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                    public double getWeight() {
+                          return get(cparams.getEventTypeChoices()[t0], ((Event3Model)model).none_t());
+                    }
+                    public void setPosterior(double prob) {}
+                    public GenWidget choose(GenWidget widget) {
+                      for(int k = i; k < j; k++)
+                      {
+                          widget.events[c][k] = Parameters.none_e;
+                      }
+                      return widget;
+                    }
+                    @Override
+                    public Pair getWeightLM(int rank)
+                    {
+                        return new Pair(getWeight(), vocabulary.getIndex("none_e"));
+                    }
+                    @Override
+                    public GenWidget chooseLM(GenWidget widget, int word)
+                    {
+                        return widget;
+                    }
+                  });
+          } // if
+          // (2) Choose an event type t and event e for track c
+          for(final Event e : ex.events.values())
+          {
+              final int eventId = e.id;
+              final int eventTypeIndex = e.getEventTypeIndex();
+              if (allowReal &&
+                      (!trueInfer || ex.getTrueWidget() == null ||
+                      ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
+              {
+                  final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
+                  final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;                  
+                  hypergraph.addEdge(node,
+                  genEvent(i, j, c, eventId), recurseNode,
+                  new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                        public double getWeight()
+                        {
+                          if(prevIndepEventTypes())
+                              return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
+                                      eventTypeIndex) *
+                                      (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
+                          else
+                              return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                      (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
+                        }
+                        public void setPosterior(double prob) {}
+                        public GenWidget choose(GenWidget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.events[c][k] = eventId;
+                          }
+                          return widget;
+                        }
+                        @Override
+                        public Pair getWeightLM(int rank)
+                        {
+                            return new Pair(getWeight(),
+                                    new Integer((Integer)vocabulary.getIndex(
+                                    e.getEventTypeName().toLowerCase())));
+                        }
+                        @Override
+                        public GenWidget chooseLM(GenWidget widget, int word)
+                        {
+                            return widget;
+                        }
+                  });
+              } // if
+          } // for
+        } // if
+        return node;
+    }
 }

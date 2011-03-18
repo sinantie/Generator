@@ -166,6 +166,10 @@ public class Hypergraph<Widget> {
                 Derivation d;                
                 ArrayList<Integer> input = new ArrayList();
                 BigDouble[] weightArray = new BigDouble[kBestMask.length + 2];
+                if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
+                {
+                    input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightLM(0).label));
+                }
                 for(int i = 0; i < kBestMask.length; i++)
                 {
                     try{
@@ -222,8 +226,8 @@ public class Hypergraph<Widget> {
       
         private double getLMProb(List<Integer> ngram)
         {
-            if(modelType == ModelType.semParse)
-                return 1.0; // we currently don't support LM for semantic parsing
+//            if(modelType == ModelType.semParse)
+//                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
