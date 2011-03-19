@@ -230,7 +230,7 @@ public class SemParseInferState extends GenInferState
                 }
                 });
                 // G_FIELD_GENERIC: generate based on event type  
-//
+
 //                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
 //                    public double getWeight() {
 //                        return 1.0;
@@ -241,7 +241,8 @@ public class SemParseInferState extends GenInferState
 //                    {
 //                        Pair p =  getAtRank(params.genericEmissions, rank);
 //                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-//                        p.label = vocabulary.getIndex("(none)");
+////                        p.label = vocabulary.getIndex("(none)");
+//                        p.label = null;
 //                        return p;
 //                    }
 //                    public GenWidget chooseLM(GenWidget widget, int word)

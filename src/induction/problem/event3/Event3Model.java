@@ -609,7 +609,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                             token.tchar == '#' ? MRToken.Type.num : MRToken.Type.cat, 
                             token.tchar == '#' ? Integer.parseInt(token.value) :
                             currentEventType.getFields()[fieldIndex].
-                            parseValue(token.role, token.value));
+                            parseValue(token.role, token.value.toLowerCase()));
                 }
                 else
                 {

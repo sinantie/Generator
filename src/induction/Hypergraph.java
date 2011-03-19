@@ -1,6 +1,5 @@
 package induction;
 
-import edu.stanford.nlp.tagger.maxent.ReadDataTagged;
 import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.nodes.WordNode;
 import induction.Options.ModelType;
@@ -625,7 +624,7 @@ public class Hypergraph<Widget> {
         {
             Hyperedge edge = v.edges.get(i);
             // check whether the path has been blocked
-            // (semParse: interface case NumFieldValueNode is not spanning integers, block the whole hyperpath)
+            // (semParse: in case NumFieldValueNode is not spanning integers, block the whole hyperpath)
             if(edge.dest.get(0).derivations != null && edge.dest.get(0).derivations.isEmpty())
                 continue;
             // mask is set to 0s, i.e. get the 1-best derivation of
