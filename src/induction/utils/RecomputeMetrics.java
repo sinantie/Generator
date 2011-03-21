@@ -289,9 +289,9 @@ public class RecomputeMetrics
         String referenceExamplesPath = "", inputFile = "", refFile = null;
         if(args.length < 1)
         {
-            referenceExamplesPath = "robocupLists/robocupFold1PathsEval";
-            inputFile = "results/output/robocup/generation/all/fold1/NO_NULL_LM2.exec/stage1.tst.xml";
-            refFile = "results/output/robocup/generation/all/fold1/NO_NULL_LM2.exec/stage1.ref.xml";
+            referenceExamplesPath = "gaborLists/genEvalListPathsGabor";
+            inputFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength/7.exec/stage1.tst.xml";
+            refFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength/7.exec/stage1.ref.xml";
         }
         else
         {
