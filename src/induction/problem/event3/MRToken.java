@@ -153,7 +153,7 @@ public class MRToken
             assert obj instanceof MRField;
             MRField f = (MRField) obj;
             if(type == Type.num)
-                return Math.abs(value - f.value) < 10;
+                return Math.abs(value - f.value) <= 10;
             return value == f.value;
         }
 

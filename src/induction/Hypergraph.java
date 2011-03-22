@@ -570,10 +570,10 @@ public class Hypergraph<Widget> {
                             reorderType == ReorderType.eventTypeAndField)
                     {
                         int eventType = ((EventsNode)v.node).getEventType();
-                        if(eventType != ex.model.none_t())
+//                        if(eventType != ex.model.none_t())
                             kBest(v, eventType, Reorder.eventType);
-                        else
-                            kBest(v, IGNORE_REORDERING, Reorder.ignore);
+//                        else
+//                            kBest(v, IGNORE_REORDERING, Reorder.ignore);
                     }
                     // event re-ordering
                     else if(reorderType == ReorderType.event)
