@@ -43,7 +43,8 @@ public class GenerationRobocupTest
     {
          String args = "-modelType generate -testInputLists test/testRobocupEvents "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk/fold1/stage1.params.obj "
+                    + "results/output/robocup/alignments/"
+                    + "model_3_percy_NO_NULL_semPar_values_unk/fold1/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
                     + "-ngramWrapper kylm -reorderType "
