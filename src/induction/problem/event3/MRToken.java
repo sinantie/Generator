@@ -1,6 +1,7 @@
 package induction.problem.event3;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -40,6 +41,24 @@ public class MRToken
     public int getEvent()
     {
         return event;
+    }
+
+    public Collection<Integer> getFieldIds()
+    {
+        return fields.keySet();
+    }
+
+    public Collection<Integer> getValuesOfField(int id)
+    {
+        // a field should have a single value only. However, the generative
+        // model may wrongly emit more than one value for a particular field
+        ArrayList<MRField> mrFields = this.fields.get(id);
+        Collection<Integer> values = new ArrayList<Integer>(1);
+        for(MRField f : mrFields)
+        {
+            values.add(f.value);
+        }
+        return values;
     }
 
     public boolean isEmpty()

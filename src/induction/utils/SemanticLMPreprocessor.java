@@ -60,10 +60,17 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                                 
                             String event = chunk.substring(0, index1).trim();
                             HashMap<String, String> fieldsMap = fieldsToMap(chunk.substring(index1+1, index2));
-                            if(includeEvents)
-                                textOut += event.substring(0, event.indexOf("(")) + " ";
                             String []fields = chunk.substring(index2+1,
                                     chunk.lastIndexOf("]")).split("\\]");
+                            if(includeEvents)
+                            {
+                                if(fields.length == 1 && fields[0].contains("none"))
+                                    fields = new String[0];
+                                else
+                                    textOut += event.substring(0, event.indexOf("(")) + " ";
+
+                            }
+
                             for(String field : fields)
                             {
                                 String[] tokens = field.split("\\["); // fields and values
@@ -128,9 +135,9 @@ public class SemanticLMPreprocessor extends LMPreprocessor
     public static void main(String[] args)
     {
         String source = "results/output/weatherGov/alignments/"
-                + "/gold_staged/trainGabor_no_times/"
+                + "/gold_staged/trainGabor_less_times/"
                 + "stage1.test.full-pred.0";
-        String target = "weatherGovLM/weather-semantic-full-no-times-proc-3-gram.sentences";
+        String target = "weatherGovLM/weather-semantic-full-less-times-proc-3-gram.sentences";
         String fileExtension = "0";
         boolean tokeniseOnly = false;
         int ngramSize = 3;
