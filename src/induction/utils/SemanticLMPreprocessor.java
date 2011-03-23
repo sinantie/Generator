@@ -128,9 +128,9 @@ public class SemanticLMPreprocessor extends LMPreprocessor
     public static void main(String[] args)
     {
         String source = "results/output/weatherGov/alignments/"
-                + "/gold_staged/trainGabor_less_times/"
+                + "/gold_staged/trainGabor_no_times/"
                 + "stage1.test.full-pred.0";
-        String target = "weatherGovLM/weather-semantic-full-less-times-3-gram.sentences";
+        String target = "weatherGovLM/weather-semantic-full-no-times-proc-3-gram.sentences";
         String fileExtension = "0";
         boolean tokeniseOnly = false;
         int ngramSize = 3;

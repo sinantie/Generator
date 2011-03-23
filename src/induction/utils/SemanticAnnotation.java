@@ -381,7 +381,7 @@ public class SemanticAnnotation extends javax.swing.JFrame {
                         UIManager.getSystemLookAndFeelClassName());
                 }
                 catch(Exception e){}
-                String inputFile = args.length > 0 ? args[1] :
+                String inputFile = args.length > 0 ? args[0] :
                     "results/output/weatherGov/alignments/gold_staged/evalGabor/f1-pred.0";
                 new SemanticAnnotation(inputFile).setVisible(true);
             }
