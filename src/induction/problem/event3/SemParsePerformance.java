@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Compute precision, recall and f-measure of the semantic parse of a text
@@ -18,16 +19,17 @@ import java.util.Iterator;
  */
 public class SemParsePerformance extends Performance
 {
-    EvalResult eventsResult, eventsSubResult;
-    EvalResult fieldsResult, fieldsSubResult;
-    EvalResult valuesResult, valuesSubResult;
-
+    EvalResult eventsResult;
+    EvalResult fieldsResult;
+    EvalResult valuesResult;
+   
     public SemParsePerformance(Event3Model model)
     {
         super(model);
         eventsResult = new EvalResult();
         fieldsResult = new EvalResult();
         valuesResult = new EvalResult();
+        
     }
 
     @Override
@@ -39,29 +41,52 @@ public class SemParsePerformance extends Performance
         {
             SemParseWidget predW = (SemParseWidget) predWidget;
             // Compute Event Precision, Recall, F-measure
-            Collection<MRToken> predMrTokens = parseMrTokens(ex, predW);
-            Collection<MRToken> trueMrTokens = ((SemParseWidget) trueWidget).trueMrTokens;
-            
+            Map<Integer, MRToken> predMrTokens = parseMrTokens(ex, predW);
+//            Collection<MRToken> trueMrTokens = ((SemParseWidget) trueWidget).trueMrTokens;
+            Map<Integer, MRToken> trueMrTokens = new HashMap<Integer, MRToken>();
+            for(MRToken mr : ((SemParseWidget) trueWidget).trueMrTokens)
+            {
+                trueMrTokens.put(mr.getEvent(), mr);
+            }
+            EvalResult eventsSubResult = new EvalResult();
+            EvalResult fieldsSubResult = new EvalResult();
+            EvalResult valuesSubResult = new EvalResult();
+            EvalResult exactSubResult = new EvalResult();
+            computeFmeasure(trueMrTokens, predMrTokens, eventsSubResult,
+                    fieldsSubResult, valuesSubResult, exactSubResult);
+
             double evPrecision = eventsSubResult.precision();
             double evRecall = eventsSubResult.recall();
             double evF1 = eventsSubResult.f1();
-            predW.scores[Parameters.EVENT_F_MEASURE_METRIC] = evF1;
-
-            EvalResult exactResult = computeFmeasure(trueMrTokens, predMrTokens);
-            double precision = exactResult.precision();
-            double recall = exactResult.recall();
-            double f1 = exactResult.f1();
+            double fPrecision = fieldsSubResult.precision();
+            double fRecall = fieldsSubResult.recall();
+            double fF1 = fieldsSubResult.f1();
+            double vPrecision = valuesSubResult.precision();
+            double vRecall = valuesSubResult.recall();
+            double vF1 = valuesSubResult.f1();
+            double precision = exactSubResult.precision();
+            double recall = exactSubResult.recall();
+            double f1 = exactSubResult.f1();
             
             predW.scores[Parameters.PRECISION_METRIC] = precision;
             predW.scores[Parameters.RECALL_METRIC] = recall;
             predW.scores[Parameters.F_MEASURE_METRIC] = f1;
-            
-            trueWidget.performance = "\tPrecision : " + precision +
-                                     "\tRecall: " + recall +
+            predW.scores[Parameters.EVENT_F_MEASURE_METRIC] = evF1;
+            predW.scores[Parameters.FIELD_F_MEASURE_METRIC] = fF1;
+            predW.scores[Parameters.VALUE_F_MEASURE_METRIC] = vF1;
+            trueWidget.performance =
+//                                     "\tPrecision : " + precision +
+//                                     "\tRecall: " + recall +
                                      "\tF-measure : " + f1 +
-                                     "\tEvent Match Precision : " + evPrecision +
-                                     "\tEvent Match Recall : " + evRecall +
-                                     "\tEvent Match F-measure : " + evF1;
+//                                     "\tEvent Precision : " + evPrecision +
+//                                     "\tEvent Recall : " + evRecall +
+                                     "\tEvent F-measure : " + evF1 +
+//                                     "\tField Precision : " + fPrecision +
+//                                     "\tField Recall : " + fRecall +
+                                     "\tField F-measure : " + fF1 +
+//                                     "\tValue Precision : " + vPrecision +
+//                                     "\tValue Recall : " + vRecall +
+                                     "\tValue F-measure : " + vF1;
 
         }
     }
@@ -93,48 +118,60 @@ public class SemParsePerformance extends Performance
         return subResult;
     }
 
-//    private EvalResult computeFmeasure(Example ex, SemParseWidget trueWidget,
-//                                       SemParseWidget predWidget)
-    private EvalResult computeFmeasure(Collection<MRToken> trueMrTokens,
-                                       Collection<MRToken> predMrTokens)
-    {
-        EvalResult exactSubResult = new EvalResult();
-        EvalResult fieldsSubtotalResult = new EvalResult();
-        EvalResult valuesSubtotalResult = new EvalResult();
+    private void computeFmeasure(Map<Integer, MRToken> trueMrTokens,
+                               Map<Integer, MRToken> predMrTokens,
+                               EvalResult eventsSubResult, EvalResult fieldsSubResult,
+                               EvalResult valuesSubResult, EvalResult exactSubResult)
+    {                
         // compute event f-measure
         Collection<Integer> predEvents = new ArrayList<Integer>(predMrTokens.size());
-        for(MRToken mr : predMrTokens)
+        for(MRToken mr : predMrTokens.values())
         {
             if(!mr.isEmpty())
                 predEvents.add(mr.getEvent());
         }
         Collection<Integer> trueEvents = new ArrayList<Integer>(trueMrTokens.size());
-        for(MRToken mr : trueMrTokens)
+        for(MRToken mr : trueMrTokens.values())
             trueEvents.add(mr.getEvent());
-        eventsSubResult = computeIndividualFMeasure(trueEvents, predEvents, eventsResult);
 
-        // compute exact F-measure simultaneously with fields' and values' f-measure
-        Iterator<MRToken> predIterator = predMrTokens.iterator();
+        // compute events', fields' and values' f-measure simultaneously
+        Iterator<Integer> predIterator = predEvents.iterator();
         while(predIterator.hasNext())
         {
-            MRToken predMrToken = predIterator.next();
-            if(trueMrTokens.contains(predMrToken))
+            Integer predEvent = predIterator.next();
+            if(trueEvents.contains(predEvent))
             {
+                MRToken predMr = predMrTokens.get(predEvent);
+                Collection<Integer> predFields = predMr.getFieldIds();
+                MRToken trueMr = trueMrTokens.get(predEvent);
+                Collection<Integer> trueFields = trueMr.getFieldIds();
 
-                addResult(exactSubResult, true, true);
-                trueMrTokens.remove(predMrToken);
+                for(Integer id : predFields)
+                {
+                    if(trueFields.contains(id))
+                        valuesSubResult.add(computeIndividualFMeasure(trueMr.getValuesOfField(id),
+                                              predMr.getValuesOfField(id), valuesResult));
+                }
+                fieldsSubResult.add(computeIndividualFMeasure(trueFields, predFields, fieldsResult));
+
+                addResult(eventsResult, eventsSubResult, true, true);
+                trueEvents.remove(predEvent);
             }
             else
             {
-                addResult(exactSubResult, false, true);
+                addResult(eventsResult, eventsSubResult, false, true);
             }
             predIterator.remove();
         }
-        for(int i = 0; i < trueMrTokens.size(); i++)
+        for(int i = 0; i < trueEvents.size(); i++)
         {
-            addResult(exactSubResult, true, false);
+            addResult(eventsResult, eventsSubResult, true, false);
         }
-        return exactSubResult;
+//        eventsSubResult.add(computeIndividualFMeasure(trueEvents, predEvents, eventsResult));
+
+
+        // compute exact F-measure
+        exactSubResult.add(computeIndividualFMeasure(trueMrTokens.values(), predMrTokens.values(), result));
     }
    
     /**
@@ -148,9 +185,18 @@ public class SemParsePerformance extends Performance
         out += "\nTotal Precision: " + result.precision();
         out += "\nTotal Recall: " + result.recall();
         out += "\nTotal F-measure: " + result.f1();
-        out += "\nTotal Event Match Precision: " + eventsResult.precision();
-        out += "\nTotal Event Match Recall: " + eventsResult.recall();
-        out += "\nTotal Event Match F-measure: " + eventsResult.f1();
+
+        out += "\n\nTotal Event Precision: " + eventsResult.precision();
+        out += "\nTotal Event Recall: " + eventsResult.recall();
+        out += "\nTotal Event F-measure: " + eventsResult.f1();
+        
+        out += "\n\nTotal Field Precision: " + fieldsResult.precision();
+        out += "\nTotal Field Recall: " + fieldsResult.recall();
+        out += "\nTotal Field F-measure: " + fieldsResult.f1();
+        
+        out += "\n\nTotal Values Precision: " + valuesResult.precision();
+        out += "\nTotal Values Recall: " + valuesResult.recall();
+        out += "\nTotal Values F-measure: " + valuesResult.f1();
         return out;
     }
 
@@ -167,9 +213,15 @@ public class SemParsePerformance extends Performance
         list.add( "Precision", Utils.fmt(result.precision()) );
         list.add( "Recall", Utils.fmt(result.recall()) );
         list.add( "F-measure", Utils.fmt(getAccuracy()) );
-        list.add( "Event Match Precision", Utils.fmt(eventsResult.precision()) );
-        list.add( "Event Match Recall", Utils.fmt(eventsResult.recall()) );
-        list.add( "Event Match F-measure", Utils.fmt(eventsResult.f1()) );
+        list.add( "Event Precision", Utils.fmt(eventsResult.precision()) );
+        list.add( "Event Recall", Utils.fmt(eventsResult.recall()) );
+        list.add( "Event F-measure", Utils.fmt(eventsResult.f1()) );
+        list.add( "Field Precision", Utils.fmt(fieldsResult.precision()) );
+        list.add( "Field Recall", Utils.fmt(fieldsResult.recall()) );
+        list.add( "Field F-measure", Utils.fmt(fieldsResult.f1()) );
+        list.add( "Value Precision", Utils.fmt(valuesResult.precision()) );
+        list.add( "Value Recall", Utils.fmt(valuesResult.recall()) );
+        list.add( "Value F-measure", Utils.fmt(valuesResult.f1()) );
         return list;
     }
 
@@ -179,7 +231,7 @@ public class SemParsePerformance extends Performance
         Utils.write(path, output());
     }
 
-    private Collection<MRToken> parseMrTokens(Example ex, SemParseWidget widget)
+    private Map<Integer, MRToken> parseMrTokens(Example ex, SemParseWidget widget)
     {
         // we can only parse a single MR per sentence at the moment
         HashMap<Integer, MRToken> map = new HashMap<Integer, MRToken>();
@@ -217,6 +269,6 @@ public class SemParsePerformance extends Performance
                 }
             }
         }
-        return map.values();
+        return map;
     }      
 }

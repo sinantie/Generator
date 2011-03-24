@@ -1,1 +1,1 @@
-ngram-count -order 3 -text weather-semantic-dev-some-times-3-gram.sentences -no-sos -no-eos -lm gabor-srilm-abs-weather-semantic-dev-some-times-noisy-3-gram.model.arpa -addsmooth 1
+ngram-count -order 3 -text weather-semantic-full-no-times-proc-3-gram.sentences -no-sos -no-eos -lm gabor-srilm-abs-weather-semantic-full-no-times-no-none-3-gram.model.arpa -addsmooth 1
