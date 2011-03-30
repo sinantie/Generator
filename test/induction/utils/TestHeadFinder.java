@@ -8,6 +8,7 @@ package induction.utils;
 
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.trees.CollinsHeadFinder;
+import edu.stanford.nlp.trees.ModCollinsHeadFinder;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreePrint;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.junit.Test;
 public class TestHeadFinder
 {
     private static LexicalizedParser parser;
+    private static String[] sent;
 
     public TestHeadFinder() 
     {        
@@ -34,6 +36,7 @@ public class TestHeadFinder
     {
         parser = new LexicalizedParser("lib/models/englishPCFG.ser.gz");
         parser.setOptionFlags(new String[]{"-maxLength", "80", "-retainTmpSubcategories"});
+        sent = "low around 35".split(" ");
     }
 
     @AfterClass
@@ -51,8 +54,7 @@ public class TestHeadFinder
    
     @Test
     public void testParser()
-    {
-        String sent[] = "with a low".split(" ");
+    {        
         Tree parse = (Tree) parser.apply(Arrays.asList(sent));
 
 //        parse.pennPrint();
@@ -72,9 +74,8 @@ public class TestHeadFinder
     @Test
     public void testHeadFinder()
     {
-        String sent[] = "mostly cloudy , with a low around".split(" ");
         Tree tree = (Tree) parser.apply(Arrays.asList(sent));
-        CollinsHeadFinder headFinder = new CollinsHeadFinder();
+        CollinsHeadFinder headFinder = new ModCollinsHeadFinder();
         while (!tree.isLeaf()) {
             Tree head = headFinder.determineHead(tree);
             System.out.println("head "+head);
