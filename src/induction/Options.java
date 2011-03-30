@@ -121,7 +121,7 @@ public class Options {
   @Option public ReorderType reorderType = ReorderType.eventType;
   @Option(gloss="model unknown word (default=false)") public boolean modelUnkWord = false;
 
-  @Option(gloss="allow bigrams on word level (default=false)") public boolean bigramsAtWordLevel = false;
+  @Option(gloss="allow bigrams on word level (default=false)") public boolean binariseAtWordLevel = false;
   @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean posAtSurfaceLevel = false;
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;
 

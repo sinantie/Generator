@@ -478,7 +478,7 @@ public class InferState extends Event3InferState
     protected FieldNode genField(int begin, int end, int c, int event, int field)
     {
         FieldNode node = new FieldNode(begin, end, c, event, field);
-        if(opts.bigramsAtWordLevel) // integrate bigram probabilities between words
+        if(opts.binariseAtWordLevel) // integrate bigram probabilities between words
         {
 //            if(hypergraph.addSumNode(node))
 //            {
@@ -511,7 +511,7 @@ public class InferState extends Event3InferState
         return node;
     }
 
-    protected Object genBinary(int i, int j, int c, int event, int field)
+    protected Object genWords(int i, int j, int c, int event, int field)
     {
         if (i == j)
         {

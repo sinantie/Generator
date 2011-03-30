@@ -223,6 +223,39 @@ public class Hypergraph<Widget> {
             return this.weight.compareTo(d.weight);
         }
       
+        /**
+         * Checks whether two derivations are equivalent, i.e. they have the
+         * same result (sub-generation part) but are produced by (potentially) 
+         * different combinations
+         * @param d
+         * @return if the derivations are equivalent
+         */
+        public boolean isEquivalentTo(Derivation d)
+        {
+
+            return false;
+        }
+
+        private String getSubGeneration(Derivation derivation)
+        {
+            String out = "";
+            if(derivation.derArray == null) // choose terminal nodes
+              {
+                  if(derivation.words.size() > 0)
+                  {
+                     out += vocabulary.getObject(derivation.words.get(0)) + " ";
+//                     System.out.println(out);
+                      return out;
+
+                  }
+              }
+              for(Derivation d : derivation.derArray)
+              {
+                  out += getSubGeneration(d);
+              }
+              return out;
+        }
+
         private double getLMProb(List<Integer> ngram)
         {
 //            if(modelType == ModelType.semParse)
@@ -610,11 +643,11 @@ public class Hypergraph<Widget> {
     /**
      * Implementation of k-best cube pruning algorithm found in Huang and Chiang, 2005
      * @param v the node for which we will create k-best derivations
-     * @param currentEventType the event id, eventType id or field id of the current node. Used
+     * @param currentType the event id, eventType id or field id of the current node. Used
      * for re-ordering
      * @param reorder the type of reordering to perform - event, eventType or field
      */
-    private void kBest(NodeInfo v, int currentEventType, Reorder reorder)
+    private void kBest(NodeInfo v, int currentType, Reorder reorder)
     {
         Queue<Derivation> cand = new PriorityQueue<Derivation>(); // a priority queue of candidates
         List<Derivation> buf = new ArrayList<Derivation>();
@@ -639,12 +672,12 @@ public class Hypergraph<Widget> {
             }
             // check whether the current derivation is of an event (type) OR field
             // that has already been included in the antedecendant derivations
-            if(currentEventType != IGNORE_REORDERING)
+            if(currentType != IGNORE_REORDERING)
             {
                 if(reorder == Reorder.eventType)
                 {
                     Collection<Integer> eventTypeSet = new HashSet<Integer>();
-                    if(!hyperpathContainsEventType(currentEventType,
+                    if(!hyperpathContainsEventType(currentType,
                             edge.dest, mask, eventTypeSet))
                     {
                         cand.add(new Derivation(edge, mask, eventTypeSet, null));
@@ -661,7 +694,7 @@ public class Hypergraph<Widget> {
                 else if(reorder == Reorder.field)
                 {
                     Collection<Integer> fieldSet = new HashSet<Integer>();
-                    if(!hyperpathContainsField(currentEventType,
+                    if(!hyperpathContainsField(currentType,
                             edge.dest, mask, fieldSet))
                     {
                         cand.add(new Derivation(edge, mask, null, fieldSet));
@@ -677,7 +710,7 @@ public class Hypergraph<Widget> {
         {
             item = cand.poll();
             buf.add(item);
-            pushSucc(item, cand, currentEventType, reorder);
+            pushSucc(item, cand, currentType, reorder);
         }
         // sort buf to D(v) in descending order
 //        Collections.sort(buf, Collections.reverseOrder());
