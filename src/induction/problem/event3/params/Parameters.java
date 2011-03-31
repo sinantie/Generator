@@ -34,6 +34,7 @@ public class Parameters
 
   public static final int NUMBER_OF_METRICS_GEN = 7,
                           NUMBER_OF_METRICS_SEM_PAR = 12,
+                          
                           PRECISION_METRIC = 0,
                           RECALL_METRIC = 1,
                           F_MEASURE_METRIC = 2,
@@ -41,6 +42,7 @@ public class Parameters
                           METEOR_METRIC = 4,
                           TER_METRIC = 5,
                           BLEU_METRIC_MODIFIED = 6,
+                          
                           EVENT_PRECISION_METRIC = 3,
                           EVENT_RECALL_METRIC = 4,
                           EVENT_F_MEASURE_METRIC = 5,

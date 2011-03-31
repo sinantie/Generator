@@ -195,7 +195,7 @@ public class GenPerformance extends Performance
     {
         MyList<String> list = new MyList();
         list.add( "BLEU-4", Utils.fmt(bleuScorer.getScore().getScore()) );
-        list.add( "METEOR", Utils.fmt(getAccuracy()) );
+//        list.add( "METEOR", Utils.fmt(getAccuracy()) );
         return list;
     }
 

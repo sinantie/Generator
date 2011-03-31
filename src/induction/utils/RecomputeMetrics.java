@@ -289,9 +289,9 @@ public class RecomputeMetrics
         String referenceExamplesPath = "", inputFile = "", refFile = null;
         if(args.length < 1)
         {
-            referenceExamplesPath = "gaborLists/genEvalListPathsGabor";
-            inputFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength/7.exec/stage1.tst.xml";
-            refFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength/7.exec/stage1.ref.xml";
+            referenceExamplesPath = "gaborLists/genDevListPathsGabor";
+            inputFile = "results/output/weatherGov/generation/dev_15-best_reordered_eventTypes_exact_wordLength/stage1.tst.xml";
+            refFile = "results/output/weatherGov/generation/dev_15-best_reordered_eventTypes_exact_wordLength/stage1.ref.xml";
         }
         else
         {

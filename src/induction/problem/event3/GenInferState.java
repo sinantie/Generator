@@ -550,6 +550,24 @@ public class GenInferState extends InferState
                 }
             }
         }
+        else if(opts.binariseAtWordLevel)
+        {
+            if(hypergraph.addSumNode(node))
+            {
+                hypergraph.addEdge(node,
+                                   genWord(begin, c, event, field),
+                                   genWords(begin + 1, end, c, event, field),
+                                   new Hypergraph.HyperedgeInfo<Widget>() {
+                    public double getWeight() {
+                        return 1.0;
+                    }
+                    public void setPosterior(double prob) { }
+                    public Widget choose(Widget widget) {
+                        return widget;
+                    }
+                });
+            }
+        }
         else
         {
             if(hypergraph.addSumNode(node))
@@ -572,6 +590,20 @@ public class GenInferState extends InferState
             }
         }
         return node;
+    }
+
+    @Override
+    protected Object genWords(int i, int j, int c, int event, int field)
+    {
+        if (i == j)
+        {
+            return hypergraph.endNode;
+        }
+        else
+        {
+
+        }
+        return null;
     }
 
      // Generate segmentation of i...end into fields; previous field is f0

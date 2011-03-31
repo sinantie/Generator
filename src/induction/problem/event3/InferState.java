@@ -478,8 +478,8 @@ public class InferState extends Event3InferState
     protected FieldNode genField(int begin, int end, int c, int event, int field)
     {
         FieldNode node = new FieldNode(begin, end, c, event, field);
-        if(opts.binariseAtWordLevel) // integrate bigram probabilities between words
-        {
+//        if(opts.binariseAtWordLevel) // integrate bigram probabilities between words
+//        {
 //            if(hypergraph.addSumNode(node))
 //            {
 //                hypergraph.addEdge(node,
@@ -497,8 +497,8 @@ public class InferState extends Event3InferState
 //                    }
 //                });
 //            }
-        }
-        else
+//        }
+//        else
         {
             if(hypergraph.addProdNode(node))
             {

@@ -232,26 +232,25 @@ public class Hypergraph<Widget> {
          */
         public boolean isEquivalentTo(Derivation d)
         {
-
-            return false;
+            return this.getSubGeneration().equals(d.getSubGeneration());
         }
 
-        private String getSubGeneration(Derivation derivation)
+        private String getSubGeneration()
         {
             String out = "";
-            if(derivation.derArray == null) // choose terminal nodes
+            if(derArray == null) // choose terminal nodes
               {
-                  if(derivation.words.size() > 0)
+                  if(words.size() > 0)
                   {
-                     out += vocabulary.getObject(derivation.words.get(0)) + " ";
+                     out += vocabulary.getObject(words.get(0)) + " ";
 //                     System.out.println(out);
                       return out;
 
                   }
               }
-              for(Derivation d : derivation.derArray)
+              for(Derivation d : derArray)
               {
-                  out += getSubGeneration(d);
+                  out += d.getSubGeneration();
               }
               return out;
         }
@@ -716,6 +715,7 @@ public class Hypergraph<Widget> {
 //        Collections.sort(buf, Collections.reverseOrder());
         Collections.sort(buf);
         v.derivations = new ArrayList();
+        doHypothesisRecombination(buf);
         v.derivations.addAll(buf);
 //        this.logZ += ((Derivation)v.derivations.get(0)).weight.toLogDouble();
     }
@@ -955,6 +955,28 @@ public class Hypergraph<Widget> {
         {
             if(!destination.contains(i))
                 destination.push(i);
+        }
+    }
+
+    /**
+     * Perform hypothesis recombination on the sorted {@link List} <code>list</code>
+     * of derivations. Checks whether two derivations have the same sub-generation
+     * result and removes the one with the lowest score
+     * @param list List of sorted derivations
+     */
+    private void doHypothesisRecombination(List<Derivation> list)
+    {
+        if(list.size() < 2) return;
+
+//        for (Iterator<Derivation> i = list.listIterator(); i.hasNext(); )
+        for (int i = 0; i < list.size(); i++)
+        {
+            Derivation ref = list.get(i);
+            for (Iterator<Derivation> j = list.listIterator(i + 1); j.hasNext(); )
+            {
+                if(ref.isEquivalentTo(j.next()))
+                    j.remove();
+            }
         }
     }
 
