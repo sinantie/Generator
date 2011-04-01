@@ -475,7 +475,7 @@ public class InferState extends Event3InferState
     }
     
     // Generate field f of event e from begin to end
-    protected FieldNode genField(int begin, int end, int c, int event, int field)
+    protected Object genField(int begin, int end, int c, int event, int field)
     {
         FieldNode node = new FieldNode(begin, end, c, event, field);
 //        if(opts.binariseAtWordLevel) // integrate bigram probabilities between words

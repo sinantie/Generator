@@ -537,7 +537,7 @@ public class GenInferState extends InferState
 
     // Generate field f of event e from begin to end
     @Override
-    protected FieldNode genField(int begin, int end, int c, int event, int field)
+    protected Object genField(int begin, int end, int c, int event, int field)
     {
         FieldNode node = new FieldNode(begin, end, c, event, field);
         if(opts.fullPredRandomBaseline)
@@ -552,11 +552,15 @@ public class GenInferState extends InferState
         }
         else if(opts.binariseAtWordLevel)
         {
+            if (begin == end)
+            {
+                return hypergraph.endNode;
+            }
             if(hypergraph.addSumNode(node))
             {
                 hypergraph.addEdge(node,
                                    genWord(begin, c, event, field),
-                                   genWords(begin + 1, end, c, event, field),
+                                   genField(begin + 1, end, c, event, field),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                         return 1.0;
