@@ -871,7 +871,6 @@ public class InferState extends Event3InferState
 //              final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
 //              final int eventTypeIndex = ex.events.get(eventId).getEventTypeIndex();
               if (allowReal && 
-//                      (!opts.disallowConsecutiveRepeatFields || eventTypeIndex != t0) && // Can't repeat events
                       (!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {

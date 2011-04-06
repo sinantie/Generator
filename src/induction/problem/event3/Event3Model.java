@@ -231,32 +231,44 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         }
     }
 
+    /**
+     * Return the none record
+     * @return
+     */
     public int none_t()
     {
         return getT();
     }
-
+    /**
+     * START and END are regarded as boundary records.
+     * @return
+     */
+    public int boundary_t()
+    {
+        return none_t() + 1;
+    }
     public String eventTypeToString(int eventTypeIndex)
     {
         if (eventTypeIndex == none_t())
         {
             return "(none)";
         }
+        else if(eventTypeIndex == boundary_t())
+        {
+            return "(boundary)";
+        }
         else 
         {
             return eventTypes[eventTypeIndex].name;
         }
     }
-
     public String[] eventTypeStrArray()
     {
-        String[] out = new String[eventTypes.length + 1];
-        int i = 0;
-        for(i = 0; i < eventTypes.length; i++)
+        String[] out = new String[eventTypes.length + 2];
+        for(int i = 0; i < out.length; i++)
         {
             out[i] = eventTypeToString(i);
-        }
-        out[i] = eventTypeToString(i);
+        }        
         return out;
     }
     public EventType[] getEventTypes()
