@@ -122,15 +122,6 @@ public class GenInferState extends InferState
         } // if
         else
         {
-//            ProbVec[] eventTransMatrix = params.trackParams[0].eventTypeChoices;
-//            int length = eventTransMatrix.length;
-//            for(int i = 1; i < length; i++)
-//            {
-//                for(int j = i - 1; j >= 0; j--)
-//                {
-//                    eventTransMatrix[i].set(j, 0);
-//                }
-//            }
             WordNode startSymbol = new WordNode(-1, 0, -1, -1);
             hypergraph.addSumNode(startSymbol);
             WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
@@ -176,7 +167,8 @@ public class GenInferState extends InferState
             {
                 list.add(startSymbol);
             }
-            list.add(genEvents(0, ((Event3Model)model).none_t()));
+//            list.add(genEvents(0, ((Event3Model)model).none_t()));
+            list.add(genEvents(0, ((Event3Model)model).boundary_t()));
 //            list.add(test());
             list.add(endSymbol);
             this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
@@ -594,21 +586,7 @@ public class GenInferState extends InferState
             }
         }
         return node;
-    }
-
-    @Override
-    protected Object genWords(int i, int j, int c, int event, int field)
-    {
-        if (i == j)
-        {
-            return hypergraph.endNode;
-        }
-        else
-        {
-
-        }
-        return null;
-    }
+    }   
 
      // Generate segmentation of i...end into fields; previous field is f0
     @Override
@@ -824,7 +802,7 @@ public class GenInferState extends InferState
     }
 
     @Override
-    protected NoneEventWordsNode genNoneEventWords(final int i, final int j, final int c)
+    protected Object genNoneEventWords(final int i, final int j, final int c)
     {
         NoneEventWordsNode node = new NoneEventWordsNode(i, j, c);
         if(opts.fullPredRandomBaseline)
@@ -839,7 +817,7 @@ public class GenInferState extends InferState
                         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
                         public double getWeight() {
                                 return get(params.trackParams[c].getNoneEventTypeEmissions(), w) *
-                                       getEventTypeGivenWord(((Event3Model)model).none_t(), w);
+                                       getEventTypeGivenWord(params.trackParams[c].none_t, w);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
@@ -848,6 +826,28 @@ public class GenInferState extends InferState
                         }
                         });
                 } // for
+            }
+        }
+        else if(opts.binariseAtWordLevel)
+        {
+            if (i == j)
+            {
+                return hypergraph.endNode;
+            }
+            if(hypergraph.addSumNode(node))
+            {
+                hypergraph.addEdge(node,
+                                   genNoneWord(i, c),
+                                   genNoneEventWords(i + 1, j, c),
+                                   new Hypergraph.HyperedgeInfo<Widget>() {
+                    public double getWeight() {
+                        return 1.0;
+                    }
+                    public void setPosterior(double prob) { }
+                    public Widget choose(Widget widget) {
+                        return widget;
+                    }
+                });
             }
         }
         else

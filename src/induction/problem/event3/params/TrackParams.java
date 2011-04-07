@@ -14,16 +14,19 @@ public class TrackParams extends AParams
     ProbVec[] eventTypeChoices;
     ProbVec noneEventTypeEmissions;
     private int T, W, c;
+    public int none_t, boundary_t;
 
     public TrackParams(Event3Model model, int c)
     {
         super();
         this.model = model;
         this.T = model.getT(); this.W = Event3Model.W(); this.c = c;
+        none_t = model.none_t();
+        boundary_t = model.boundary_t();
         // t_0, t -> choose event of type t given we were in type t_0
-        eventTypeChoices = ProbVec.zeros2(T + 1, T + 1);
+        eventTypeChoices = ProbVec.zeros2(T + 2, T + 2);
 //        addVec(eventTypeChoices);
-        addVec(getLabels(T + 1, "eventTypeChoices["+c+"]", model.eventTypeStrArray()), eventTypeChoices);
+        addVec(getLabels(T + 2, "eventTypeChoices["+c+"]", model.eventTypeStrArray()), eventTypeChoices);
         // w -> generate word w
         noneEventTypeEmissions = ProbVec.zeros(W);
 //        addVec(noneEventTypeEmissions);

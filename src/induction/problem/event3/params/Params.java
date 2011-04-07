@@ -69,25 +69,25 @@ public class Params extends AParams
     public void optimise(double smoothing)
     {
         // Apply targeted smoothing/discounting to individual parameters
-        for(int t = 0; t < T + 1; t++)
+        for(int t = 0; t < T + 2; t++)
         {
             for(int c = 0; c < C; c++)
             {
                 // Select the none event more often
 //                trackParams[c].eventTypeChoices[t].addCount(model.none_t, opts.noneEventTypeSmoothing);
                 // Select the none event more often
-                trackParams[c].getEventTypeChoices()[t].addCount(T,
+                trackParams[c].getEventTypeChoices()[t].addCount(model.none_t(),
                         opts.noneEventTypeSmoothing);
 
                 if (!Double.isNaN(opts.fixedNoneEventTypeProb))
                 {
 //                    trackParams[c].eventTypeChoices[t].setCountToObtainProb(model.none_t, opts.fixedNoneEventTypeProb);
-                    trackParams[c].getEventTypeChoices()[t].setCountToObtainProb(T,
+                    trackParams[c].getEventTypeChoices()[t].setCountToObtainProb(model.none_t(),
                             opts.fixedNoneEventTypeProb);
                 }
             } // for c
 //            if (t != none_t) {
-            if (t != T)
+            if (t < T)
             {
                 for(int f = 0; f < eventTypes[t].getF() + 1; f++)
                 {

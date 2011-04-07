@@ -117,6 +117,7 @@ public class Options {
   @Option(gloss="n-gram size (default=3)") public int ngramSize = 3;
   @Option(gloss="n-gram wrapper (default=srilm)") public NgramWrapper ngramWrapper = NgramWrapper.srilm;
   @Option(gloss="allow none-event (default=false)") public boolean allowNoneEvent = false;
+  @Option(gloss="condition on none-event (default=true)") public boolean conditionNoneEvent = true;
   @Option(gloss="allow consecutive events (default=false)") public boolean allowConsecutiveEvents = false;
   @Option public ReorderType reorderType = ReorderType.eventType;
   @Option(gloss="model unknown word (default=false)") public boolean modelUnkWord = false;

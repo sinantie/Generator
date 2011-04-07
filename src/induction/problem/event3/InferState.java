@@ -127,7 +127,8 @@ public class InferState extends Event3InferState
             } // for
         } // if
 
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+//        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
             public double getWeight()
@@ -510,20 +511,7 @@ public class InferState extends Event3InferState
         }
         return node;
     }
-
-    protected Object genWords(int i, int j, int c, int event, int field)
-    {
-        if (i == j)
-        {
-            return hypergraph.endNode;
-        }
-        else
-        {
-
-        }
-        return null;
-    }
-    
+ 
     // Generate segmentation of i...end into fields; previous field is f0
     protected Object genFields(final int i, final int end, int c, final int event,
             final int f0, int efs)
@@ -684,7 +672,7 @@ public class InferState extends Event3InferState
         } // else
     }
     
-    protected NoneEventWordsNode genNoneEventWords(int i, int j, final int c)
+    protected Object genNoneEventWords(int i, int j, final int c)
     {
         NoneEventWordsNode node = new NoneEventWordsNode(i, j, c);
         if(hypergraph.addProdNode(node))
@@ -695,11 +683,11 @@ public class InferState extends Event3InferState
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                             return get(params.trackParams[c].getNoneEventTypeEmissions(), w) *
-                                   getEventTypeGivenWord(((Event3Model)model).none_t(), w);
+                                   getEventTypeGivenWord(params.trackParams[c].none_t, w);
                     }
                     public void setPosterior(double prob) {
                          update(counts.trackParams[c].getNoneEventTypeEmissions(), w, prob);
-                         updateEventTypeGivenWord(((Event3Model)model).none_t(), w, prob);
+                         updateEventTypeGivenWord(params.trackParams[c].none_t, w, prob);
                     }
                     public Widget choose(Widget widget) {
                         return widget;
@@ -803,12 +791,42 @@ public class InferState extends Event3InferState
     
     // Generate track c in i...j (t0 is previous event type for track 0);
     // allowNone and allowReal specify what event types we can use
-    TrackNode genTrack(final int i, final int j, final int t0, final int c,
+    Object genTrack(final int i, final int j, final int t0, final int c,
                        boolean allowNone, boolean allowReal)
     {
         TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
         final TrackParams cparams = params.trackParams[c];
         final TrackParams ccounts = counts.trackParams[c];
+
+        if(i == j)
+        {
+            if(indepEventTypes())
+                        return hypergraph.endNode;
+            else
+            {
+                if(hypergraph.addSumNode(node))
+                {   // Transition to boundary_t
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
+                        public double getWeight() {
+                            if (prevIndepEventTypes())
+                                return 1.0;
+                            else
+                                return get(cparams.getEventTypeChoices()[t0],
+                                        cparams.boundary_t);
+                        }
+                        public void setPosterior(double prob) {
+                            update(cparams.getEventTypeChoices()[t0],
+                                    cparams.boundary_t, prob);
+                        }
+                        public Widget choose(Widget widget) {
+                            return widget;
+                        }
+                    });
+                } // if
+                return node;
+            } // else
+        }
+                
         // WARNING: allowNone/allowReal might not result in any valid nodes
         if(hypergraph.addSumNode(node))
         {
@@ -816,7 +834,8 @@ public class InferState extends Event3InferState
           if (allowNone && (!trueInfer || ex.getTrueWidget() == null ||
               ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
           {
-              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
+//              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
+              final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not
               Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
               if(opts.useEventTypeDistrib)
               {
@@ -824,10 +843,13 @@ public class InferState extends Event3InferState
                       genNoneEvent(i, j, c), recurseNode,
                       new Hypergraph.HyperedgeInfo<Widget>() {
                           public double getWeight() {
-                                  return get(cparams.getEventTypeChoices()[t0], ((Event3Model)model).none_t());
+                              if(prevIndepEventTypes())
+                                  return get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t);
+                              else
+                                  return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
                           }
                           public void setPosterior(double prob) {
-                               update(ccounts.getEventTypeChoices()[t0], ((Event3Model)model).none_t(), prob);
+                               update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
                                if (ex.getTrueWidget() != null && i == 0) // HACK
                                {
                                    ex.getTrueWidget().setEventPosterior(
@@ -874,7 +896,8 @@ public class InferState extends Event3InferState
                       (!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {
-                  final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
+//                  final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
+                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
                   final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
                   if (opts.useEventTypeDistrib)
                   {
@@ -884,7 +907,8 @@ public class InferState extends Event3InferState
                           public double getWeight()
                           {
                               if(prevIndepEventTypes())
-                                  return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
+//                                  return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
+                                  return get(cparams.getEventTypeChoices()[cparams.boundary_t],
                                           eventTypeIndex) *
                                           (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
                               else
@@ -963,7 +987,14 @@ public class InferState extends Event3InferState
         if (i == N)
         {
 //            System.out.println(String.format("END : [%d]", i));
-            return hypergraph.endNode;
+//            return hypergraph.endNode;            
+            EventsNode node = new EventsNode(N, t0);
+            if(hypergraph.addSumNode(node))
+            {
+                selectEnd(N, node, N, t0);
+                hypergraph.assertNonEmpty(node);
+            }
+            return node;
         }
         else
         {
