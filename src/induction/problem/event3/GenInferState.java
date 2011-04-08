@@ -551,8 +551,8 @@ public class GenInferState extends InferState
             if(hypergraph.addSumNode(node))
             {
                 hypergraph.addEdge(node,
-                                   genWord(begin, c, event, field),
                                    genField(begin + 1, end, c, event, field),
+                                   genWord(begin, c, event, field),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                         return 1.0;
@@ -837,8 +837,8 @@ public class GenInferState extends InferState
             if(hypergraph.addSumNode(node))
             {
                 hypergraph.addEdge(node,
-                                   genNoneWord(i, c),
                                    genNoneEventWords(i + 1, j, c),
+                                   genNoneWord(i, c),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                         return 1.0;

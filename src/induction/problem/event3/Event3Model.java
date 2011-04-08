@@ -733,6 +733,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             Map<Integer, Event> events = readEvents(Utils.readLines(path),
                                         excludedEventTypes, excludedFields);
 
+            wordIndexer.add("(boundary)");
             // Read text
             if(textPathExists)
             {

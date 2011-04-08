@@ -26,6 +26,7 @@ import induction.problem.event3.nodes.StringFieldValueNode;
 import induction.problem.event3.nodes.SymFieldValueNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
+import induction.problem.event3.params.FieldParams;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -476,30 +477,42 @@ public class InferState extends Event3InferState
     }
     
     // Generate field f of event e from begin to end
-    protected Object genField(int begin, int end, int c, int event, int field)
+    protected Object genField(final int begin, final int end, int c, int event, int field)
     {
+        final FieldParams fparams = getFieldParams(event, field);
+        final FieldParams fcounts = getFieldCounts(event, field);
         FieldNode node = new FieldNode(begin, end, c, event, field);
 //        if(opts.binariseAtWordLevel) // integrate bigram probabilities between words
-//        {
-//            if(hypergraph.addSumNode(node))
-//            {
-//                hypergraph.addEdge(node,
-//                                   genWord(begin, c, event, field),
-//                                   genBinary(begin + 1, end, c, event, field),
-//                                   new Hypergraph.HyperedgeInfo<Widget>() {
-//                    public double getWeight() {
-//                            return get(eventTypeParams.fieldChoices[f0], fIter);
-//                    }
-//                    public void setPosterior(double prob) {
-//                        update(eventTypeCounts.fieldChoices[f0], fIter, prob);
-//                    }
-//                    public Widget choose(Widget widget) {
-//                        return widget;
-//                    }
-//                });
-//            }
-//        }
-//        else
+        if(!indepWords())
+        {
+            if (begin == end)
+            {
+                return hypergraph.endNode;
+            }
+            if(hypergraph.addSumNode(node))
+            {
+                hypergraph.addEdge(node,
+                                   genField(begin + 1, end, c, event, field),
+                                   genWord(begin, c, event, field),
+                                   new Hypergraph.HyperedgeInfo<Widget>() {
+                    public double getWeight() {
+                        if (prevIndepWords())
+                            return 1.0;
+                        else
+                            return get(fparams.wordBigramChoices[words[begin]],
+                                begin > 0 ? words[begin] - 1 : Event3Model.getWordIndex("(boundary)"));
+                    }
+                    public void setPosterior(double prob) {
+                        update(fcounts.wordBigramChoices[words[begin]],
+                                begin > 0 ? words[begin] - 1 : Event3Model.getWordIndex("(boundary)"), prob);
+                    }
+                    public Widget choose(Widget widget) {
+                        return widget;
+                    }
+                });
+            }
+        }
+        else
         {
             if(hypergraph.addProdNode(node))
             {
@@ -675,7 +688,30 @@ public class InferState extends Event3InferState
     protected Object genNoneEventWords(int i, int j, final int c)
     {
         NoneEventWordsNode node = new NoneEventWordsNode(i, j, c);
-        if(hypergraph.addProdNode(node))
+//        if(opts.binariseAtWordLevel)
+        if(!indepWords())
+        {
+            if (i == j)
+            {
+                return hypergraph.endNode;
+            }
+            if(hypergraph.addSumNode(node))
+            {
+                hypergraph.addEdge(node,
+                                   genNoneEventWords(i + 1, j, c),
+//                                   genNoneWord(i, c),
+                                   new Hypergraph.HyperedgeInfo<Widget>() {
+                    public double getWeight() {
+                        return 1.0;
+                    }
+                    public void setPosterior(double prob) { }
+                    public Widget choose(Widget widget) {
+                        return widget;
+                    }
+                });
+            }
+        }
+        else if(hypergraph.addProdNode(node))
         {
             for(int k = i; k < j; k++) // Generate each word in this range independently
             {

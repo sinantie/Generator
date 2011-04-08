@@ -12,14 +12,14 @@ public class CatFieldParams extends FieldParams
 {
     static final long serialVersionUID = 5817675789060800073L;
     public ProbVec[] emissions, filters, valueEmissions;
-    private String prefix;
+//    private String prefix;
     private CatField field;
     private int W;
     public CatFieldParams(int W, String prefix, CatField field)
     {
-        super();
+        super(prefix);
         this.W = W;
-        this.prefix = prefix;
+//        this.prefix = prefix;
         this.field = field;
         // v, w -> express value v with word w
         emissions = ProbVec.zeros2(field.getV(), W);
@@ -40,6 +40,7 @@ public class CatFieldParams extends FieldParams
     @Override
     public String output()
     {
+        super.output();
         String out = "";
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), Event3Model.wordsToStringArray());

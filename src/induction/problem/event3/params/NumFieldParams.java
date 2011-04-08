@@ -11,14 +11,14 @@ public class NumFieldParams extends FieldParams implements Serializable
 {
     static final long serialVersionUID = 7731373078762243950L;
     
-    private String prefix;
+//    private String prefix;
     public  ProbVec methodChoices, leftNoiseChoices, rightNoiseChoices;
     private ProbVec[] filters;
 
     public NumFieldParams(String prefix)
     {
-        super();
-        this.prefix = prefix;
+        super(prefix);
+//        this.prefix = prefix;
 
         methodChoices = ProbVec.zeros(Parameters.M); // m -> use method m to generate numbers
 //        addVec(methodChoices);

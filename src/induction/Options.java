@@ -61,6 +61,7 @@ public class Options {
   // corresponding flag to be on
   @Option public Pair<Integer,Integer> indepEventTypes = new Pair(0, 0);
   @Option public Pair<Integer,Integer> indepFields = new Pair(0, 0);
+  @Option public Pair<Integer,Integer> indepWords = new Pair(0, 0);
   @Option(gloss="Each word chooses event type/field independently (word alignment, no segmentation)")
     public Pair<Integer,Integer> newEventTypeFieldPerWord = new Pair(0, 0);
   @Option(gloss="Each word chooses field independently (no segmentation at the field level)")

@@ -13,6 +13,7 @@ import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
 import fig.basic.Pair;
+import induction.problem.event3.params.FieldParams;
 import java.util.Arrays;
 
 /**
@@ -73,6 +74,18 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     protected EventTypeParams getEventTypeCounts(int event)
     {
         return counts.eventTypeParams[ex.events.get(event).getEventTypeIndex()];
+    }
+    protected FieldParams getFieldParams(int event, int field)
+    {
+        FieldParams fp = null;
+        try{
+        fp = (FieldParams)getEventTypeParams(event).fieldParams[field];
+        }catch(Exception e){System.out.println(event + " " + field);}
+        return fp;
+    }
+    protected FieldParams getFieldCounts(int event, int field)
+    {
+        return (FieldParams)getEventTypeCounts(event).fieldParams[field];
     }
     protected NumFieldParams getNumFieldParams(int event, int field)
     {
@@ -144,6 +157,10 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     {
         return iterInRange(opts.indepFields);
     }
+    protected boolean indepWords()
+    {
+        return iterInRange(opts.indepWords);
+    }
     protected boolean newEventTypeFieldPerWord()
     {
         return iterInRange(opts.newEventTypeFieldPerWord);
@@ -179,6 +196,10 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     protected boolean prevIndepFields()
     {
         return prevIterInRange(opts.indepFields);
+    }
+    protected boolean prevIndepWords()
+    {
+        return prevIterInRange(opts.indepWords);
     }
     protected boolean prevGenLabels()
     {
