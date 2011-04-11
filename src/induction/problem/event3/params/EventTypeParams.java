@@ -24,7 +24,7 @@ public class EventTypeParams extends AParams
     protected int[] allowed_fs;
     public int none_f, boundary_f;
 
-    public  ProbVec[] fieldChoices, genChoices, fieldNameEmissions;
+    public  ProbVec[] fieldChoices, genChoices, fieldNameEmissions, noneFieldBigramChoices;
     public AParams[] fieldParams;
     public ProbVec fieldSetChoices, noneFieldEmissions, filters;
 
@@ -91,6 +91,11 @@ public class EventTypeParams extends AParams
 //        addVec(genChoices);
         addVec(getLabels(F, "genChoices " + typeToString + " ",
                           fieldToString), genChoices);
+        
+        noneFieldBigramChoices = ProbVec.zeros2(W, W);
+        addVec(getLabels(W, "noneFieldWordBiC " + typeToString + " ",
+                          Event3Model.wordsToStringArray()), noneFieldBigramChoices);
+
         // f, w -> express field f with word w (G_FIELD_NAME) (not used)
 //        fieldNameEmissions = ProbVec.zeros2(F, W);
 //        addVec(fieldNameEmissions);
@@ -173,6 +178,13 @@ public class EventTypeParams extends AParams
                forEachProb(noneFieldEmissions,
                getLabels(W, "noneFieldE " + typeToString + " ",
                           Event3Model.wordsToStringArray()));
+        i = 0;
+        String[][] labelsNone = getLabels(W, W, "noneFieldWordBiC " + typeToString + " ",
+                          Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
+        for(ProbVec v : noneFieldBigramChoices)
+        {
+            out += forEachProb(v, labelsNone[i++]);
+        }
         String[][] labelsGen = getLabels(F, Parameters.G, "genC " + typeToString + " ",
                           fieldToString, Parameters.generateToString);
 //        String[][] labelsEm = getLabels(F, W, "fieldNameE " + typeToString + " " ,

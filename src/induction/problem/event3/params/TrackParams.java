@@ -11,7 +11,7 @@ import induction.problem.event3.Event3Model;
 public class TrackParams extends AParams
 {
     Event3Model model;
-    ProbVec[] eventTypeChoices;
+    ProbVec[] eventTypeChoices, noneEventTypeBigramChoices;
     ProbVec noneEventTypeEmissions;
     private int T, W, c;
     public int none_t, boundary_t;
@@ -31,6 +31,10 @@ public class TrackParams extends AParams
         noneEventTypeEmissions = ProbVec.zeros(W);
 //        addVec(noneEventTypeEmissions);
         addVec("noneEventTypeEmissions["+c+"]", noneEventTypeEmissions);
+
+        noneEventTypeBigramChoices = ProbVec.zeros2(W, W);
+        addVec(getLabels(W, "noneFieldWordBiC["+c+"] ",
+                          Event3Model.wordsToStringArray()), noneEventTypeBigramChoices);
     }
 
     public ProbVec[] getEventTypeChoices()
@@ -43,11 +47,16 @@ public class TrackParams extends AParams
         return noneEventTypeEmissions;
     }
 
+    public ProbVec[] getNoneEventTypeBigramChoices()
+    {
+        return noneEventTypeBigramChoices;
+    }
+
     @Override
     public String output()
     {
         String out = "";
-        String[][] labels = getLabels(T+1, T+1, "eventTypeC [" + model.cstr(c) + "] ",
+        String[][] labels = getLabels(T+2, T+2, "eventTypeC [" + model.cstr(c) + "] ",
                 model.eventTypeStrArray(), model.eventTypeStrArray());
         int i = 0;
         for(ProbVec v : eventTypeChoices)
@@ -57,6 +66,13 @@ public class TrackParams extends AParams
         out += "\n" + forEachProb(noneEventTypeEmissions,
                 getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ",
                 Event3Model.wordsToStringArray()));
+        i = 0;
+        String[][] labelsNone = getLabels(W, W, "noneEventTypeWordBiC [" + model.cstr(c) + "] ",
+              Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
+        for(ProbVec v : noneEventTypeBigramChoices)
+        {
+            out += forEachProb(v, labelsNone[i++]);
+        }
         return out;
     }
 

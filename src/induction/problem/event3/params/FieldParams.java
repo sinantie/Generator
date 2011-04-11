@@ -39,13 +39,13 @@ public abstract class FieldParams extends AParams implements Serializable
     public String output()
     {
         String out = "";
-        String[][] labels = getLabels(W, W, "wordBi " + prefix + " ",
+        String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
                     Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
         int i = 0;
         for(ProbVec v: wordBigramChoices)
         {
             out += forEachProb(v, labels[i++]);
         }
-        return "";
+        return out;
     }
 }
