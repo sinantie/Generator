@@ -61,6 +61,9 @@ public class Hypergraph<Widget> {
     public induction.problem.Pair getWeightLM(int rank);
     public Widget chooseLM(Widget widget, int word);
   }
+  public interface HyperedgeInfoBigram<Widget> extends AHyperedgeInfo<Widget> {
+    public double getWeightBigram(int word1, int word2);
+  }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
   }
@@ -78,7 +81,7 @@ public class Hypergraph<Widget> {
     final Object node; // Just for visualizing/debugging
     NodeType nodeType; // Can be changed
     int bestEdge;
-    ArrayList derivations;
+    ArrayList<Derivation> derivations;
     final List<Hyperedge> edges = new ArrayList(); // Children
     BigDouble insideScore, outsideScore, maxScore; // Things we compute during inference
         @Override
@@ -172,7 +175,7 @@ public class Hypergraph<Widget> {
                 for(int i = 0; i < kBestMask.length; i++)
                 {
                     try{
-                    d = (Derivation) edge.dest.get(i).derivations.get(kBestMask[i]);
+                    d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
@@ -183,7 +186,25 @@ public class Hypergraph<Widget> {
                         e.printStackTrace();
                     }
                 }
-                weightArray[weightArray.length - 2] = edge.weight;  // edge weight
+                if(edge.info instanceof HyperedgeInfoBigram) // we need to get the word bigram probability of the children derivations
+                {
+                    assert(kBestMask.length == 2);
+                    int firstWordOfChild2 = edge.dest.get(1).derivations.get(kBestMask[1]).words.get(0);
+                    int lastWordOfChild1 = -1;
+                    // check whether we are at a situation with one non-terminal on the right hand side (F -> W)
+                    if(edge.dest.get(0) != endNodeInfo)
+                    {
+                        ArrayList<Integer> wordsOfChild1 = edge.dest.get(0).derivations.get(kBestMask[0]).words;
+                        lastWordOfChild1 = wordsOfChild1.get(wordsOfChild1.size() - 1);
+                    }
+                    weightArray[weightArray.length - 2] = 
+                            BigDouble.fromDouble(((HyperedgeInfoBigram)edge.info).
+                            getWeightBigram(lastWordOfChild1, firstWordOfChild2));
+                }
+                else
+                {
+                    weightArray[weightArray.length - 2] = edge.weight;  // edge weight
+                }
                 weightArray[weightArray.length - 1] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
                 // compute P_LM and +LM item (store in words list) (see Chiang, 2007)
                 if(input.size() >= M)

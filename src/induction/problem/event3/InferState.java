@@ -486,9 +486,7 @@ public class InferState extends Event3InferState
         final AParams aparams = field == none_f ? params.eventTypeParams[eventTypeIndex] :
                                                   getFieldParams(event, field);
         final AParams acounts = field == none_f ? counts.eventTypeParams[eventTypeIndex] :
-                                                  getFieldCounts(event, field);
-        
-        
+                                                  getFieldCounts(event, field);                
         FieldNode node = new FieldNode(begin, end, c, event, field);
 //        if(opts.binariseAtWordLevel) // integrate bigram probabilities between words
         if(!indepWords())
@@ -500,8 +498,8 @@ public class InferState extends Event3InferState
             if(hypergraph.addSumNode(node))
             {
                 hypergraph.addEdge(node,
-                                   genField(begin + 1, end, c, event, field),
                                    genWord(begin, c, event, field),
+                                   genField(begin + 1, end, c, event, field),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                         if (prevIndepWords())
@@ -510,15 +508,17 @@ public class InferState extends Event3InferState
                         {
                             if(field == none_f)
                             {
-                                return get(((EventTypeParams)aparams).noneFieldBigramChoices[words[begin]],
+                                return get(((EventTypeParams)aparams).noneFieldBigramChoices[
                                         begin > 0 ? words[begin] - 1 :
-                                        Event3Model.getWordIndex("(boundary)"));
+                                        Event3Model.getWordIndex("(boundary)")
+                                        ], words[begin]);
                             }
                             else
                             {
-                                return get(((FieldParams)aparams).wordBigramChoices[words[begin]],
-                                    begin > 0 ? words[begin] - 1 :
-                                        Event3Model.getWordIndex("(boundary)"));
+                                return get(((FieldParams)aparams).wordBigramChoices[
+                                        begin > 0 ? words[begin] - 1 :
+                                        Event3Model.getWordIndex("(boundary)")
+                                        ], words[begin]);
                             }
 
                         }
@@ -526,13 +526,17 @@ public class InferState extends Event3InferState
                     public void setPosterior(double prob) {
                         if(field == none_f)
                         {
-                            update(((EventTypeParams)acounts).noneFieldBigramChoices[words[begin]],
-                                begin > 0 ? words[begin] - 1 : Event3Model.getWordIndex("(boundary)"), prob);
+                            update(((EventTypeParams)acounts).noneFieldBigramChoices[
+                                        begin > 0 ? words[begin] - 1 :
+                                        Event3Model.getWordIndex("(boundary)")
+                                        ], words[begin], prob);
                         }
                         else
                         {
-                            update(((FieldParams)acounts).wordBigramChoices[words[begin]],
-                                begin > 0 ? words[begin] - 1 : Event3Model.getWordIndex("(boundary)"), prob);
+                            update(((FieldParams)acounts).wordBigramChoices[
+                                        begin > 0 ? words[begin] - 1 :
+                                        Event3Model.getWordIndex("(boundary)")
+                                        ], words[begin], prob);
                         }
                     }
                     public Widget choose(Widget widget) {
@@ -733,16 +737,19 @@ public class InferState extends Event3InferState
 //                                   genNoneWord(i, c),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
-                        return get(cparams.getNoneEventTypeBigramChoices()[words[i]],
+                        return get(cparams.getNoneEventTypeBigramChoices()[
                                         i > 0 ? words[i] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")) *
+                                        Event3Model.getWordIndex("(boundary)")
+                                        ], words[i]) *
                                 get(params.trackParams[c].getNoneEventTypeEmissions(), words[i]) *
                                    getEventTypeGivenWord(params.trackParams[c].none_t, words[i]);
                     }
                     public void setPosterior(double prob)
                     {
-                        update(ccounts.getNoneEventTypeBigramChoices()[words[i]],
-                                i > 0 ? words[i] - 1 : Event3Model.getWordIndex("(boundary)"), prob);
+                        update(ccounts.getNoneEventTypeBigramChoices()[
+                                        i > 0 ? words[i] - 1 :
+                                        Event3Model.getWordIndex("(boundary)")
+                                        ], words[i], prob);
                         update(counts.trackParams[c].getNoneEventTypeEmissions(), words[i], prob);
                         updateEventTypeGivenWord(params.trackParams[c].none_t, words[i], prob);
                     }

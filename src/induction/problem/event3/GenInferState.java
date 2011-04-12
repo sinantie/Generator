@@ -11,6 +11,7 @@ import induction.Hypergraph;
 import induction.NgramModel;
 import induction.Options;
 import induction.problem.AModel;
+import induction.problem.AParams;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.event3.nodes.CatFieldValueNode;
@@ -22,6 +23,7 @@ import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
+import induction.problem.event3.params.FieldParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -529,8 +531,15 @@ public class GenInferState extends InferState
 
     // Generate field f of event e from begin to end
     @Override
-    protected Object genField(int begin, int end, int c, int event, int field)
+    protected Object genField(final int begin, final int end, int c, int event, final int field)
     {
+        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
+        final int none_f = params.eventTypeParams[eventTypeIndex].none_f;
+
+        final AParams aparams = field == none_f ? params.eventTypeParams[eventTypeIndex] :
+                                                  getFieldParams(event, field);
+        final AParams acounts = field == none_f ? counts.eventTypeParams[eventTypeIndex] :
+                                                  getFieldCounts(event, field);
         FieldNode node = new FieldNode(begin, end, c, event, field);
         if(opts.fullPredRandomBaseline)
         {
@@ -550,18 +559,47 @@ public class GenInferState extends InferState
             }
             if(hypergraph.addSumNode(node))
             {
-                hypergraph.addEdge(node,
-                                   genField(begin + 1, end, c, event, field),
-                                   genWord(begin, c, event, field),
-                                   new Hypergraph.HyperedgeInfo<Widget>() {
-                    public double getWeight() {
-                        return 1.0;
-                    }
-                    public void setPosterior(double prob) { }
-                    public Widget choose(Widget widget) {
-                        return widget;
-                    }
-                });
+                if(indepWords())
+                    hypergraph.addEdge(node,
+                                       genWord(begin, c, event, field),
+                                       genField(begin + 1, end, c, event, field),
+                                       new Hypergraph.HyperedgeInfo<Widget>() {
+                        public double getWeight() {
+                            return 1.0;
+                        }
+                        public void setPosterior(double prob) { }
+                        public Widget choose(Widget widget) {
+                            return widget;
+                        }
+                    });
+                else // note we do right recursion, to ensure deeper nodes are visited first (bottom-up)
+                   hypergraph.addEdge(node,
+                                       genField(begin, end - 1, c, event, field),
+                                       genWord(end - 1, c, event, field),
+                                       new Hypergraph.HyperedgeInfoBigram<Widget>() {
+                        public double getWeightBigram(int word1, int word2) {
+                            if(field == none_f)
+                            {
+                                return get(((EventTypeParams)aparams).noneFieldBigramChoices[
+                                // word1 = -1, in case we are in the beginning of a phrase
+                                        word1 > 0 ? word1 :
+                                        Event3Model.getWordIndex("(boundary)")],
+                                        word2);
+                            }
+                            else
+                            {
+                                return get(((FieldParams)aparams).wordBigramChoices[
+                                // word1 = -1, in case we are in the beginning of a phrase
+                                        word1 > 0 ? word1 :
+                                        Event3Model.getWordIndex("(boundary)")],
+                                        word2);
+                            }
+                        }
+                        public void setPosterior(double prob) { }
+                        public Widget choose(Widget widget) {
+                            return widget;
+                        }
+                    });
             }
         }
         else
@@ -837,8 +875,8 @@ public class GenInferState extends InferState
             if(hypergraph.addSumNode(node))
             {
                 hypergraph.addEdge(node,
-                                   genNoneEventWords(i + 1, j, c),
                                    genNoneWord(i, c),
+                                   genNoneEventWords(i + 1, j, c),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                         return 1.0;
