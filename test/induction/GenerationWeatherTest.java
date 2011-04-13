@@ -43,11 +43,13 @@ public class GenerationWeatherTest
     {
          String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
                     + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 25 "
+                    + "results/output/weatherGov/alignments/"
+                    + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
-                    + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel";
+                    + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
+                    + "-ngramSize 3 -indepWords 0,-1";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
