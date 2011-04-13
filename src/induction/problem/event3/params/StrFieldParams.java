@@ -1,6 +1,5 @@
 package induction.problem.event3.params;
 
-import induction.problem.event3.params.FieldParams;
 import induction.problem.ProbVec;
 import induction.problem.event3.Event3Model;
 
@@ -31,7 +30,7 @@ public class StrFieldParams extends FieldParams
     @Override
     public String output()
     {
-        String out = "";
+        String out = super.output();
         String[][] labels = getLabels(LB, LB, "labelC " + prefix + " ",        
                           Event3Model.labelsToStringArray(),
                           Event3Model.labelsToStringArray());

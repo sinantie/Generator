@@ -228,8 +228,9 @@ public abstract class AParams implements Serializable
         String out = "";
         for(Pair p : v.getProbsSorted())
         {
-            out += p.label + "\t" + Utils.fmt(p.value) + "\t" +
-                    Utils.fmt(v.getOldSum() * p.value) + "\n";
+//            out += p.label + "\t" + Utils.fmt(p.value) + "\t" +
+//                    Utils.fmt(v.getOldSum() * p.value) + "\n";
+            out += p.label + "\t" + Utils.fmt(p.value) + "\n";
         }
         return out;
     }
@@ -239,8 +240,9 @@ public abstract class AParams implements Serializable
         String out = "";
         for(Pair<Integer> p : v.getProbsSorted())
         {
-            out += labels[p.label] + "\t" + Utils.fmt(p.value) + "\t" +
-                    Utils.fmt(v.getOldSum() * p.value) + "\n";
+//            out += labels[p.label] + "\t" + Utils.fmt(p.value) + "\t" +
+//                    Utils.fmt(v.getOldSum() * p.value) + "\n";
+            out += labels[p.label] + "\t" + Utils.fmt(p.value) + "\n";
         }
         return out;
     }

@@ -40,8 +40,7 @@ public class CatFieldParams extends FieldParams
     @Override
     public String output()
     {
-        super.output();
-        String out = "";
+        String out = super.output();
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), Event3Model.wordsToStringArray());
         int i = 0;

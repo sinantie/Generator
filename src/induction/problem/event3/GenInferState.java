@@ -107,7 +107,7 @@ public class GenInferState extends InferState
 
         if(opts.fullPredRandomBaseline)
         {
-            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()   
             {
                 public double getWeight()

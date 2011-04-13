@@ -1071,14 +1071,14 @@ public class InferState extends Event3InferState
         if (i == N)
         {
 //            System.out.println(String.format("END : [%d]", i));
-//            return hypergraph.endNode;            
-            EventsNode node = new EventsNode(N, t0);
-            if(hypergraph.addSumNode(node))
-            {
-                selectEnd(N, node, N, t0);
-                hypergraph.assertNonEmpty(node);
-            }
-            return node;
+            return hypergraph.endNode;
+//            EventsNode node = new EventsNode(N, t0);
+//            if(hypergraph.addSumNode(node))
+//            {
+//                selectEnd(N, node, N, t0);
+//                hypergraph.assertNonEmpty(node);
+//            }
+//            return node;
         }
         else
         {

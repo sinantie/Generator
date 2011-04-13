@@ -40,7 +40,7 @@ public class NumFieldParams extends FieldParams implements Serializable
     @Override
     public String output()
     {
-        String out = "";
+        String out = super.output();
         out += forEachProb(methodChoices,
                getLabels(Parameters.M, "numMethodC " + prefix + " ",
                           Parameters.numMethodsToString)) +

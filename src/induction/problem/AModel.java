@@ -677,7 +677,7 @@ public abstract class AModel<Widget extends AWidget,
             for(Example ex: examples)
             {
                 inferState =  createInferState(ex, 1, counts, temperature,
-                    lopts, 0, complexity);
+                    lopts, iter, complexity);
                 inferState.updateCounts();
 //                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
                 testPerformance.add(ex, inferState.bestWidget);
