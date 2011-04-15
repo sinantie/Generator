@@ -44,7 +44,7 @@ public class GenerationWeatherTest
          String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
-                    + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj "
+                    + "model_3_gabor_control_cond_null/0.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 15 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
