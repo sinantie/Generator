@@ -186,22 +186,22 @@ public class Hypergraph<Widget> {
                         e.printStackTrace();
                     }
                 }
-                if(edge.info instanceof HyperedgeInfoBigram) // we need to get the word bigram probability of the children derivations
-                {
-                    assert(kBestMask.length == 2);
-                    int firstWordOfChild2 = edge.dest.get(1).derivations.get(kBestMask[1]).words.get(0);
-                    int lastWordOfChild1 = -1;
-                    // check whether we are at a situation with one non-terminal on the right hand side (F -> W)
-                    if(edge.dest.get(0) != endNodeInfo)
-                    {
-                        ArrayList<Integer> wordsOfChild1 = edge.dest.get(0).derivations.get(kBestMask[0]).words;
-                        lastWordOfChild1 = wordsOfChild1.get(wordsOfChild1.size() - 1);
-                    }
-                    weightArray[weightArray.length - 2] = 
-                            BigDouble.fromDouble(((HyperedgeInfoBigram)edge.info).
-                            getWeightBigram(lastWordOfChild1, firstWordOfChild2));
-                }
-                else
+//                if(edge.info instanceof HyperedgeInfoBigram) // we need to get the word bigram probability of the children derivations
+//                {
+//                    assert(kBestMask.length == 2);
+//                    int firstWordOfChild2 = edge.dest.get(1).derivations.get(kBestMask[1]).words.get(0);
+//                    int lastWordOfChild1 = -1;
+//                    // check whether we are at a situation with one non-terminal on the right hand side (F -> W)
+//                    if(edge.dest.get(0) != endNodeInfo)
+//                    {
+//                        ArrayList<Integer> wordsOfChild1 = edge.dest.get(0).derivations.get(kBestMask[0]).words;
+//                        lastWordOfChild1 = wordsOfChild1.get(wordsOfChild1.size() - 1);
+//                    }
+//                    weightArray[weightArray.length - 2] =
+//                            BigDouble.fromDouble(((HyperedgeInfoBigram)edge.info).
+//                            getWeightBigram(lastWordOfChild1, firstWordOfChild2));
+//                }
+//                else
                 {
                     weightArray[weightArray.length - 2] = edge.weight;  // edge weight
                 }

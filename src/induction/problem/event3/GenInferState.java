@@ -559,7 +559,7 @@ public class GenInferState extends InferState
             }
             if(hypergraph.addSumNode(node))
             {
-                if(indepWords())
+//                if(indepWords())
                     hypergraph.addEdge(node,
                                        genWord(begin, c, event, field),
                                        genField(begin + 1, end, c, event, field),
@@ -572,34 +572,34 @@ public class GenInferState extends InferState
                             return widget;
                         }
                     });
-                else // note we do right recursion, to ensure deeper nodes are visited first (bottom-up)
-                   hypergraph.addEdge(node,
-                                       genField(begin, end - 1, c, event, field),
-                                       genWord(end - 1, c, event, field),
-                                       new Hypergraph.HyperedgeInfoBigram<Widget>() {
-                        public double getWeightBigram(int word1, int word2) {
-                            if(field == none_f)
-                            {
-                                return get(((EventTypeParams)aparams).noneFieldBigramChoices[
-                                // word1 = -1, in case we are in the beginning of a phrase
-                                        word1 > 0 ? word1 :
-                                        Event3Model.getWordIndex("(boundary)")],
-                                        word2);
-                            }
-                            else
-                            {
-                                return get(((FieldParams)aparams).wordBigramChoices[
-                                // word1 = -1, in case we are in the beginning of a phrase
-                                        word1 > 0 ? word1 :
-                                        Event3Model.getWordIndex("(boundary)")],
-                                        word2);
-                            }
-                        }
-                        public void setPosterior(double prob) { }
-                        public Widget choose(Widget widget) {
-                            return widget;
-                        }
-                    });
+//                else // note we do right recursion, to ensure deeper nodes are visited first (bottom-up)
+//                   hypergraph.addEdge(node,
+//                                       genField(begin, end - 1, c, event, field),
+//                                       genWord(end - 1, c, event, field),
+//                                       new Hypergraph.HyperedgeInfoBigram<Widget>() {
+//                        public double getWeightBigram(int word1, int word2) {
+//                            if(field == none_f)
+//                            {
+//                                return get(((EventTypeParams)aparams).noneFieldBigramChoices[
+//                                // word1 = -1, in case we are in the beginning of a phrase
+//                                        word1 > 0 ? word1 :
+//                                        Event3Model.getWordIndex("(boundary)")],
+//                                        word2);
+//                            }
+//                            else
+//                            {
+//                                return get(((FieldParams)aparams).wordBigramChoices[
+//                                // word1 = -1, in case we are in the beginning of a phrase
+//                                        word1 > 0 ? word1 :
+//                                        Event3Model.getWordIndex("(boundary)")],
+//                                        word2);
+//                            }
+//                        }
+//                        public void setPosterior(double prob) { }
+//                        public Widget choose(Widget widget) {
+//                            return widget;
+//                        }
+//                    });
             }
         }
         else
