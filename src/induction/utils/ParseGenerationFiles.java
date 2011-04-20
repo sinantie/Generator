@@ -114,6 +114,13 @@ public class ParseGenerationFiles
 
     public static void main(String[] args)
     {
+//        args = new String[3];
+//        args[0] = "results/output/weatherGov/generation/"
+//                + "20-best_reordered_eventTypes_exact_wordLength_cond_null/stage1.tst.xml";
+//        args[1] =  "results/output/weatherGov/generation/"
+//                + "20-best_reordered_eventTypes_exact_wordLength_cond_null_bigrams/stage1.tst.xml";
+//        args[2] = "results/output/weatherGov/generation/";
+        
         if(args.length < 3)
         {
             System.out.println("Usage: [inputFile1 inputFile2 outputFile]");
