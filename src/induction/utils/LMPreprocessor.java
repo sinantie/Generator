@@ -14,7 +14,7 @@ import opennlp.tools.tokenize.SimpleTokenizer;
 /**
  * Parses an input list or path of text files and outputs each to a given output file,
  * each text entry per line, with <code>ngramSize</code> <s> at the beginning,
- * and </s> at the end. All instances of numbers are replaced with the keyword
+ * and </s> at the end. All instances of numbers may be replaced with the keyword
  * <num>
  * @author konstas
  */
@@ -26,9 +26,10 @@ public class LMPreprocessor
     SimpleTokenizer tokenizer;
     public enum SourceType {PATH, LIST};
     SourceType type;
+    boolean replaceNumbers;
 
     public LMPreprocessor(String targetFile, String sourceDir, int ngramSize, 
-                          SourceType type, String fileExtension)
+                          SourceType type, String fileExtension, boolean replaceNumbers)
     {
         this.target = targetFile;
         this.source = sourceDir;
@@ -36,6 +37,7 @@ public class LMPreprocessor
         this.tokenizer = new SimpleTokenizer();
         this.type = type;
         this.fileExtension = fileExtension;
+        this.replaceNumbers = replaceNumbers;
     }
 
     public void execute(boolean tokeniseOnly)
@@ -114,10 +116,10 @@ public class LMPreprocessor
 //            for(String s : tokenizer.tokenize(textInOneLine.trim()))
             for(String s : textInOneLine.trim().split(" "))
             {
-                textOut += (s.matches("-\\p{Digit}+|" + // negative numbers
+                textOut += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
                              "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
                              (s.matches("\\p{Digit}+") && // numbers
-                              !(s.contains("am") || s.contains("pm"))) // but not hours!
+                              !(s.contains("am") || s.contains("pm")))) // but not hours!
                        ) ?  "<num> " : s + " ";
             }            
             br.close();
@@ -144,10 +146,10 @@ public class LMPreprocessor
                 for(String s : tokenizer.tokenize(line.substring(HEADER.length(), line.length() - 5))) // ignore <s>'s and </s>
                 {
                     // tokenisation might give numbers not found previously
-                    out += (s.matches("-\\p{Digit}+|" + // negative numbers
+                    out += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
                                  "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
                                  (s.matches("\\p{Digit}+") && // numbers
-                                  !(s.contains("am") || s.contains("pm"))) // but not hours!
+                                  !(s.contains("am") || s.contains("pm")))) // but not hours!
                            ) ?  "<num> " : s + " ";
                 }
                 bos.write((HEADER + out + " </s>\n").getBytes());
@@ -163,13 +165,13 @@ public class LMPreprocessor
 
     public static void main(String[] args)
     {
-        String source = "robocupLists/robocupAllPathsTrain";
-        String target = "robocupLM/robocup-all-3-gram.sentences";
+        String source = "bikesLists/allListText";
+        String target = "bikesLM/bikes-all-3-gram.sentences";
         String fileExtension = "text";
-        boolean tokeniseOnly = false;
+        boolean tokeniseOnly = false, replaceNumbers = false;
         int ngramSize = 3;
         LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
-                                              SourceType.LIST, fileExtension);
+                                              SourceType.LIST, fileExtension, replaceNumbers);
         lmp.execute(tokeniseOnly);
     }
 }

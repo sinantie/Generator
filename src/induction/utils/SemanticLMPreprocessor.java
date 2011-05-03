@@ -14,9 +14,10 @@ public class SemanticLMPreprocessor extends LMPreprocessor
     private final boolean includeEvents, includeFieldNames, noise, useCorrectPredictionsOnly;
     public SemanticLMPreprocessor(String targetFile, String sourceDir, int ngramSize,
                           SourceType type, String fileExtension, boolean includeEvents,
-                          boolean includeValues, boolean noise, boolean useCorrectPredictionsOnly)
+                          boolean includeValues, boolean noise, boolean useCorrectPredictionsOnly,
+                          boolean replaceNumbers)
     {
-        super(targetFile, sourceDir, ngramSize, type, fileExtension);
+        super(targetFile, sourceDir, ngramSize, type, fileExtension, replaceNumbers);
         this.includeEvents = includeEvents;
         this.includeFieldNames = includeValues;
         this.noise = noise;
@@ -145,10 +146,11 @@ public class SemanticLMPreprocessor extends LMPreprocessor
         boolean includeFieldNames = true;
         boolean noise = false;
         boolean useCorrectPredictionsOnly = false;
+        boolean replaceNumbers = true;
         LMPreprocessor lmp = new SemanticLMPreprocessor(target, source, ngramSize,
                                               SourceType.PATH, fileExtension, 
                                               includeEvents, includeFieldNames, noise,
-                                              useCorrectPredictionsOnly);
+                                              useCorrectPredictionsOnly, replaceNumbers);
         lmp.execute(tokeniseOnly);
     }
 }
