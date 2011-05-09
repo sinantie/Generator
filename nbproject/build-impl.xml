@@ -545,6 +545,13 @@ is divided into following sections:
         </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
+            <param location="${project.StanfordParser}" name="call.subproject"/>
+            <param location="${project.StanfordParser}/build.xml" name="call.script"/>
+            <param name="call.target" value="jar"/>
+            <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
+        </antcall>
+        <antcall target="-maybe-call-dep">
+            <param name="call.built.properties" value="${built-jar.properties}"/>
             <param location="${project.kylm}" name="call.subproject"/>
             <param location="${project.kylm}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
@@ -943,6 +950,13 @@ is divided into following sections:
             <param name="call.built.properties" value="${built-clean.properties}"/>
             <param location="${project.RoarkWrapper}" name="call.subproject"/>
             <param location="${project.RoarkWrapper}/build.xml" name="call.script"/>
+            <param name="call.target" value="clean"/>
+            <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
+        </antcall>
+        <antcall target="-maybe-call-dep">
+            <param name="call.built.properties" value="${built-clean.properties}"/>
+            <param location="${project.StanfordParser}" name="call.subproject"/>
+            <param location="${project.StanfordParser}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
         </antcall>
