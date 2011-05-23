@@ -9,7 +9,7 @@ import fig.exec.Execution;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.ModelType;
-import induction.Stemmer;
+import util.Stemmer;
 import induction.Utils;
 import induction.problem.InductionUtils;
 import induction.problem.InferSpec;

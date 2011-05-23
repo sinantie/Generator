@@ -1,5 +1,6 @@
 #!/bin/bash
-java -Xmx1800m -Xms1800m -cp build/classes:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
--Djava.library.path=lib/wrappers/srilm induction.Generation -outputFullPred -create -modelType generate \
--testInputPaths $1 -inputFileExt events -execPoolDir $2 -stagedParamsFile results/output/model_3_percy/1.exec/stage1.params.obj \
--disallowConsecutiveRepeatFields -kBest $3 -ngramModelFile $4 -allowNoneEvent -ngramWrapper $5 -outputExampleFreq 100
+java -Xmx4g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:dist/stanford-postagger-2010-05-26.jar \
+-Djava.library.path=lib/wrappers induction.Generation -outputFullPred -create -modelType generate \
+-testInputLists $1 -inputFileExt events -execDir $2 -stagedParamsFile ${3}/stage1.params.obj \
+-disallowConsecutiveRepeatFields -kBest $4 -ngramModelFile $5 -ngramWrapper $6 -outputExampleFreq 100 \
+-allowConsecutiveEvents -reorderType eventType -allowNoneEvent -maxPhraseLength 5
