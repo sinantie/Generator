@@ -27,6 +27,7 @@ public class CatFieldParams extends FieldParams
         addVec(getLabels(field.getV(), "catE " + prefix + " ",
                     field.valuesToStringArray()), emissions);
 
+// uncomment for semantic parsing
         valueEmissions = ProbVec.zeros2(W, field.getV());
         addVec(getLabels(W, "catVE " + prefix + " ",
                     Event3Model.wordsToStringArray()), valueEmissions);
@@ -51,10 +52,12 @@ public class CatFieldParams extends FieldParams
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
                     Event3Model.wordsToStringArray(), field.valuesToStringArray());
         i = 0;
-        for(ProbVec v: valueEmissions)
-        {
-            out += forEachProb(v, labels[i++]);
-        }
+
+// uncomment for semantic parsing
+//        for(ProbVec v: valueEmissions)
+//        {
+//            out += forEachProb(v, labels[i++]);
+//        }
         labels = getLabels(field.getV(), Parameters.B, "catFilter " + prefix + " ",
                     field.valuesToStringArray(), Parameters.booleanToString);
         i = 0;

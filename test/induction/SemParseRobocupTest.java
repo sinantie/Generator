@@ -40,8 +40,8 @@ public class SemParseRobocupTest
     @Before
     public void setUp() 
     {
-//         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
-         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
+         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
+//         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
                     + "-excludeLists robocupLists/robocupAllUnreachable "
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/robocup/alignments/"

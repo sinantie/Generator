@@ -129,6 +129,9 @@ public class Options {
 
   @Option(gloss="set n for modified BLEU score") public int modifiedBleuScoreSize = 4;
 
+  // Semantic Parsing
+  @Option(gloss="generate semantic parsing parameters (default=false)") public boolean generateSemParParams = false;
+
   @Option public boolean debug = false;
 
   // Generic

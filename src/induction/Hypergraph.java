@@ -174,17 +174,17 @@ public class Hypergraph<Widget> {
                 }
                 for(int i = 0; i < kBestMask.length; i++)
                 {
-                    try{
+//                    try{
                     d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
-                    }
-                    catch(Exception e)
-                    {
-                        System.out.println(edge.dest);
-                        e.printStackTrace();
-                    }
+//                    }
+//                    catch(Exception e)
+//                    {
+//                        System.out.println(edge.dest);
+//                        e.printStackTrace();
+//                    }
                 }
 //                if(edge.info instanceof HyperedgeInfoBigram) // we need to get the word bigram probability of the children derivations
 //                {

@@ -291,6 +291,7 @@ public class InferState extends Event3InferState
                 }
                 public void setPosterior(double prob) {
                     update(fcounts.emissions[v], w, prob);
+                    // uncomment for semantic parsing
                     update(fcounts.valueEmissions[w], v, prob); // values Emissions
                 }
                 public Widget choose(Widget widget) {
