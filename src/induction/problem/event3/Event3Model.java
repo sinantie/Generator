@@ -643,7 +643,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         return mrList;
     }
 
-    private int[][] readTrueEvents(String alignPath, int N, Map<Integer, Event> events,
+    private int[][] readTrueEvents(String[] alignLines, int N, Map<Integer, Event> events,
                                    ArrayList<Integer> lineToStartText)
     {
         int maxTracks = 0, eventId = 0, lineIndex = 0;
@@ -656,7 +656,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
              goldEvents = new HashSet<Integer>();
         }
         ArrayList<Integer> alignedEvents = new ArrayList(); // List of events
-        for(String line : Utils.readLines(alignPath))
+        for(String line : alignLines)
         {
             // Format: <line index> <event id1> ... <event idn>
             alignedEvents.clear();
@@ -711,18 +711,33 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     }
 
     @Override
-    protected void readExamples(String path, int maxExamples)
+    protected void readExamples(String input, int maxExamples)
     {
-        //examples.clear();
-        final String textPath = path.replaceAll("\\."+ opts.inputFileExt,
-                                                ".text");
-        final String alignPath = opts.modelType != ModelType.semParse ? 
-            path.replaceAll("\\."+ opts.inputFileExt,".align") :
-            path.replaceAll("\\."+ opts.inputFileExt,".salign");
-        final boolean alignPathExists = new File(alignPath).exists();
-        final boolean textPathExists = new File(textPath).exists();
+        String eventInput = "", textInput = "", name = "", alignInput = "";
+        boolean alignInputExists = false, textInputExists = false;
+        if(opts.examplesInSingleFile)
+        {
+            String[] res = extractExampleFromString(input);
+            name = res[0];
+            textInput = res[1];
+            eventInput = res[2];
+            alignInput = res[3];
+            alignInputExists = alignInput != null;
+            textInputExists = textInput != null;
+        }
+        else
+        {
+            eventInput = input;
+            name = textInput;
+            textInput = input.replaceAll("\\."+ opts.inputFileExt, ".text");
+            alignInput = opts.modelType != ModelType.semParse ?
+            input.replaceAll("\\."+ opts.inputFileExt, ".align") :
+            input.replaceAll("\\."+ opts.inputFileExt, ".salign");
+            alignInputExists = new File(alignInput).exists();
+            textInputExists = new File(textInput).exists();
+        }
 //        System.out.println(textPath);
-        if (!opts.useOnlyLabeledExamples || alignPathExists)
+        if (!opts.useOnlyLabeledExamples || alignInputExists)
         {
             final HashSet<String> excludedFields = new HashSet<String>();
             excludedFields.addAll(Arrays.asList(opts.excludedFields));
@@ -730,18 +745,21 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
 
             //Read events                        
-            Map<Integer, Event> events = readEvents(Utils.readLines(path),
+            Map<Integer, Event> events = readEvents(opts.examplesInSingleFile ?
+                                            eventInput.split("\n") :
+                                            Utils.readLines(eventInput),
                                         excludedEventTypes, excludedFields);
 
             wordIndexer.add("(boundary)");
             // Read text
-            if(textPathExists)
+            if(textInputExists)
             {
                 final ArrayList<Integer> lineToStartText = new ArrayList<Integer>();
                 int lineIndex = 0, textIndex = 0;
                 ArrayList<String> textStr = new ArrayList();
                 String fullText = "";
-                for(String line : Utils.readLines(textPath))
+                for(String line : opts.examplesInSingleFile ?
+                    textInput.split("\n") : Utils.readLines(textInput))
                 {
                     lineToStartText.add(textIndex);
                     for(String s : line.toLowerCase().split(" "))
@@ -780,7 +798,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                 }
 
                 // Read alignments
-                if (alignPathExists)
+                if (alignInputExists)
                 {
                     // Decide on type of alignments. Correspondences and Generation,
                     // assume alignment on event level only. Semantic Parsing
@@ -792,12 +810,16 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 
                     if(opts.modelType != ModelType.semParse)
                     {
-                        trueEvents = readTrueEvents(alignPath, text.length,
-                            events, lineToStartText);
+                        trueEvents = readTrueEvents(opts.examplesInSingleFile ?
+                                            alignInput.split("\n") :
+                                            Utils.readLines(alignInput),
+                                            text.length, events, lineToStartText);
                     }
                     else
                     {
-                        trueMrTokens = readMrTokens(Utils.readLines(alignPath), events,
+                        trueMrTokens = readMrTokens(opts.examplesInSingleFile ?
+                                            alignInput.split("\n") :
+                                            Utils.readLines(alignInput), events,
                                         excludedEventTypes, excludedFields);
                     }
                     // lightweight map with id's of events and eventy type indices
@@ -827,7 +849,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                                         trueEvents[r], i, j);
                             } // for
                             int[] subStartIndices = {0, j - i};
-                            examples.add(new Example(this, textPath+":" + l,
+                            examples.add(new Example(this, name+":" + l,
                                                events,
                                                Arrays.copyOfRange(text, i, j),
                                                Arrays.copyOfRange(labels, i, j),
@@ -843,19 +865,19 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 //                        examples.add(new Example(this, textPath, events,
 //                            null, null, null, opts.averageTextLength,
 //                            new GenWidget(trueEvents, text)));
-                        examples.add(new Example(this, textPath, events,
+                        examples.add(new Example(this, name, events,
                             null, null, null, text.length,
                             new GenWidget(trueEvents, text)));
                     } // if (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
-                        examples.add(new Example(this, textPath, events,
+                        examples.add(new Example(this, name, events,
                             text, null, null, text.length,
                             new SemParseWidget(trueMrTokens)));
                     }
                     else
                     {
-                        examples.add(new Example(this, textPath, events, text,
+                        examples.add(new Example(this, name, events, text,
                                                        labels, lineStartIndices,
                                                        text.length,
                                            new Widget(trueEvents, null, null, null,
@@ -873,7 +895,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                             int i = lineStartIndices[l];
                             int j = lineStartIndices[l + 1];
                             int[] subStartIndices = {0, j - i};
-                            examples.add(new Example(this, textPath+":" + l,
+                            examples.add(new Example(this, name+":" + l,
                                                events,
                                                Arrays.copyOfRange(text, i, j),
                                                Arrays.copyOfRange(labels, i, j),
@@ -882,7 +904,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     } // if (alignment one example per line - NO gold-standard)
                     else if(opts.modelType == Options.ModelType.generate) // for generation only
                     { 
-                        examples.add(new Example(this, textPath, events,
+                        examples.add(new Example(this, name, events,
                             null, null, null, opts.averageTextLength,
                             new GenWidget(text)));
 //                         examples.add(new Example(this, textPath, events,
@@ -890,12 +912,12 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     } // else (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
-                        examples.add(new Example(this, textPath, events,
+                        examples.add(new Example(this, name, events,
                             text, null, null, text.length, null));
                     }
                     else
                     {
-                        examples.add(new Example(this, textPath, events, text,
+                        examples.add(new Example(this, name, events, text,
                                                        labels, lineStartIndices, 
                                                        text.length, null));
                     } // else (alignment - NO gold-standard)
@@ -903,12 +925,45 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             } // if(textPathExists)
             else // for generation only without gold-standard
             {
-                examples.add(new Example(this, textPath, events, 
+                examples.add(new Example(this, name, events,
                         null, null, null, opts.averageTextLength, null));
             }
         } // if
     }
 
+    /**
+     * Input String has the following format:
+     * Example_xxx (name) \n text (optional) \n events \n align (optional)
+     * @param input
+     * @return an array of Strings with name, text, events and align data in
+     * each position
+     */
+    private String[] extractExampleFromString(String input)
+    {
+        String[] res = new String[4];
+        String ar[] = input.split("\n");
+        res[0] = ar[0]; // name
+        if(!ar[1].startsWith(".id")) // text was found
+            res[1] = ar[1];
+        int i;
+        StringBuilder str = new StringBuilder();
+        for(i = res[1] == null ? 1 : 2; i < ar.length; i++)
+        {
+            if(ar[i].startsWith(".id")) // event line
+                str.append(ar[i]).append("\n");
+            else
+                break;
+        } // for
+        res[2] = str.toString();
+        if(i < ar.length - 1) // didn't reach the end of input, so there is align data
+        {
+            str = new StringBuilder();
+            for(int j = i; i < ar.length; j++)
+                str.append(ar[j]).append("\n");
+            res[3] = str.toString();
+        }
+        return res;
+    }
     @Override
     public void readExamples()
     {

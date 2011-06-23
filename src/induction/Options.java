@@ -57,8 +57,8 @@ public class Options {
   @Option public boolean treatCatAsSym = false;
   @Option public boolean useOnlyLabeledExamples = false;
 
-  // Changes to the model can happen during training, so each of these specifies a starting and ending iteration for the
-  // corresponding flag to be on
+  // Changes to the model can happen during training, so each of these specifies a starting and ending 
+  // iteration for the corresponding flag to be on
   @Option public Pair<Integer,Integer> indepEventTypes = new Pair(0, 0);
   @Option public Pair<Integer,Integer> indepFields = new Pair(0, 0);
   @Option public Pair<Integer,Integer> indepWords = new Pair(0, 0);
@@ -139,6 +139,7 @@ public class Options {
   @Option public int trainEnd = Integer.MAX_VALUE;
   @Option public int testStart = 0;
   @Option public int testEnd = 0;
+  @Option(gloss="all examples are in a single file (default=false)") public boolean examplesInSingleFile = false;
 
   // Learning
   @Option public InitType initType = InitType.random;

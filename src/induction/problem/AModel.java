@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -161,7 +162,6 @@ public abstract class AModel<Widget extends AWidget,
         Utils.begin_track("Reading examples");
         numExamples = 0;
         examples.clear();
-
         if(opts.posAtSurfaceLevel)
         {
             try
@@ -186,7 +186,10 @@ public abstract class AModel<Widget extends AWidget,
             String[] temp = Utils.readLines(opts.excludeLists);
             excludeLists.addAll(Arrays.asList(temp));
         }
-        read(opts.inputPaths, opts.inputLists, excludeLists);
+        if(opts.examplesInSingleFile)
+            readFromSingleFile(opts.inputLists);
+        else
+            read(opts.inputPaths, opts.inputLists, excludeLists);
         if (setTrainTest)
         {
             opts.trainEnd = numExamples;
@@ -199,7 +202,10 @@ public abstract class AModel<Widget extends AWidget,
         {
             opts.testStart = numExamples;
         }
-        read(opts.testInputPaths, opts.testInputLists, excludeLists);
+        if(opts.examplesInSingleFile)
+            readFromSingleFile(opts.testInputLists);
+        else
+            read(opts.testInputPaths, opts.testInputLists, excludeLists);
         if (setTrainTest)
         {
             opts.testEnd = numExamples;
@@ -267,6 +273,34 @@ public abstract class AModel<Widget extends AWidget,
                 }
             } // for
         } // for
+    }
+
+    private void readFromSingleFile(ArrayList<String> inputLists)
+    {
+        for(String file : inputLists)
+        {
+            if(new File(file).exists())
+            {
+                String key = null;
+                StringBuilder str = new StringBuilder();
+                for(String line : Utils.readLines(file))
+                {
+                    if(line.startsWith("Example_"))
+                    {
+                        if(key != null) // only for the first example
+                        {
+                            ++numExamples;
+                            readExamples(str.toString(), maxExamples - numExamples);
+                            str = new StringBuilder();
+                        }
+                        key = line;
+                    } // if                   
+                    str.append(line).append("\n");
+                }  // for
+                ++numExamples;
+                readExamples(str.toString(), maxExamples - numExamples); // don't forget last example
+            } // if
+        }
     }
 
     private String pathName(String path, String f)

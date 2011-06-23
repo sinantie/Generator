@@ -533,13 +533,13 @@ public class GenInferState extends InferState
     @Override
     protected Object genField(final int begin, final int end, int c, int event, final int field)
     {
-        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
-        final int none_f = params.eventTypeParams[eventTypeIndex].none_f;
+//        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
+//        final int none_f = params.eventTypeParams[eventTypeIndex].none_f;
 
-        final AParams aparams = field == none_f ? params.eventTypeParams[eventTypeIndex] :
-                                                  getFieldParams(event, field);
-        final AParams acounts = field == none_f ? counts.eventTypeParams[eventTypeIndex] :
-                                                  getFieldCounts(event, field);
+//        final AParams aparams = field == none_f ? params.eventTypeParams[eventTypeIndex] :
+//                                                  getFieldParams(event, field);
+//        final AParams acounts = field == none_f ? counts.eventTypeParams[eventTypeIndex] :
+//                                                  getFieldCounts(event, field);
         FieldNode node = new FieldNode(begin, end, c, event, field);
         if(opts.fullPredRandomBaseline)
         {
