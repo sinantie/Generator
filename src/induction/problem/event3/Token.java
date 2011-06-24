@@ -17,4 +17,12 @@ public class Token
         this.tchar = tchar;
         this.value = value;
     }
+
+    @Override
+    public String toString()
+    {
+        return tchar + fieldName + ":" + value;
+    }
+
+
 }

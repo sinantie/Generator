@@ -671,8 +671,9 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                 {
                     eventId = Parameters.unreachable_e;
                 }
-                assert ((eventId >= 0 && eventId < events.size())
-                        || eventId == Parameters.unreachable_e);
+                // we need to allow arbitrary ids, so no need for this assertion
+//                assert ((eventId >= 0 && eventId < events.size())
+//                        || eventId == Parameters.unreachable_e);
                 alignedEvents.add(eventId);
                 if(opts.useGoldStandardOnly)
                     goldEvents.add(eventId);
@@ -744,12 +745,15 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             final HashSet<String> excludedEventTypes = new HashSet<String>();
             excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
 
-            //Read events                        
-            Map<Integer, Event> events = readEvents(opts.examplesInSingleFile ?
+            //Read events
+            Map<Integer, Event> events  = null;
+            try{
+                events = readEvents(opts.examplesInSingleFile ?
                                             eventInput.split("\n") :
                                             Utils.readLines(eventInput),
                                         excludedEventTypes, excludedFields);
-
+            }
+            catch(Exception e) {System.out.println("Error in:"+name); e.printStackTrace(); System.exit(0);}
             wordIndexer.add("(boundary)");
             // Read text
             if(textInputExists)
@@ -810,10 +814,14 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 
                     if(opts.modelType != ModelType.semParse)
                     {
+                        try{
                         trueEvents = readTrueEvents(opts.examplesInSingleFile ?
                                             alignInput.split("\n") :
                                             Utils.readLines(alignInput),
                                             text.length, events, lineToStartText);
+                        }
+                        catch(Exception e) {System.out.println("Error in:"+name); e.printStackTrace(); System.exit(0);}
+
                     }
                     else
                     {
@@ -954,13 +962,13 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             else
                 break;
         } // for
-        res[2] = str.toString();
-        if(i < ar.length - 1) // didn't reach the end of input, so there is align data
+        res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+        if(i < ar.length) // didn't reach the end of input, so there is align data
         {
             str = new StringBuilder();
-            for(int j = i; i < ar.length; j++)
+            for(int j = i; j < ar.length; j++)
                 str.append(ar[j]).append("\n");
-            res[3] = str.toString();
+            res[3] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
         }
         return res;
     }

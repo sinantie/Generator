@@ -1,7 +1,7 @@
 Event types
 -----------
 
-1  .type:make @brand
+1  .type:make $brand
 2  .type:model $name
 3  .type:category @category-name
 4  .type:frame $description	(we may have more than one events of this type)
