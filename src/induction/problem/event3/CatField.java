@@ -70,6 +70,6 @@ public class CatField extends Field implements Serializable
     @Override
     public String toString()
     {
-        return Utils.fmts("@%s(%s)", name, getV());
+        return Utils.fmts("@%s(%s)=>%s", name, getV(), indexer);
     }
 }
