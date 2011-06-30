@@ -1,5 +1,13 @@
-Example_2
-give me the flights leaving denver august ninth coming back to boston
-.id:0	.type:flight	@after_day:--	@aircraft_code:--	@airline:--	@approx_arrival_time:--	@approx_departure_time:--	@approx_return_time:--	@arrival_month:--	@arrival_time:--	@before_day:--	@booking_class:--	@class_type:--	@day:--	@day_arrival:--	@day_number:9	@day_number_arrival:--	@day_number_return:--	@day_return:--	@days_from_today:--	@departure_time:--	@direction:--	@during_day:--	@during_day_arrival:--	@economy:--	@engine:--
+Example_3
+what flights from tacoma to orlando on saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tacoma	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
 .id:1	.type:search	@of:--	@typed:lambda	@what:flight
-0 0 1
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_14
+how can i get from boston to atlanta and back in the same day and have the most hours on the ground in atlanta
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:atlanta	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:2	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:6	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+.id:8	.type:search	@of:departure_time	@typed:argmax	@what:flight
+0 0 2 6 8

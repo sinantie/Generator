@@ -935,11 +935,11 @@ public class InferState extends Event3InferState
                           }
                           public void setPosterior(double prob) {
                                update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
-                               if (ex.getTrueWidget() != null && i == 0) // HACK
-                               {
-                                   ex.getTrueWidget().setEventPosterior(
-                                           Parameters.none_e, ex.events.size(), prob);
-                               }
+//                               if (ex.getTrueWidget() != null && i == 0) // HACK
+//                               {
+//                                   ex.getTrueWidget().setEventPosterior(
+//                                           Parameters.none_e, ex.events.size(), prob);
+//                               }
                           }
                           public Widget choose(Widget widget) {
                               for(int k = i; k < j; k++)
@@ -1002,10 +1002,11 @@ public class InferState extends Event3InferState
                           }
                           public void setPosterior(double prob) {
                                update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
-                               if (ex.getTrueWidget() != null && i == 0) // HACK
-                               {
-                                   ex.getTrueWidget().setEventPosterior(eventId, ex.events.size(), prob);
-                               }
+//                               if (ex.getTrueWidget() != null && i == 0) // HACK
+//                               {
+////                                   ex.getTrueWidget().setEventPosterior(eventId, ex.events.size(), prob);
+//                                   ex.getTrueWidget().setEventPosterior(eventTypeIndex, ex.events.size(), prob);
+//                               }
                           }
                           public Widget choose(Widget widget) {
                               for(int k = i; k < j; k++)

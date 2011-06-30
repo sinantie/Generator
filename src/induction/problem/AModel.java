@@ -710,11 +710,20 @@ public abstract class AModel<Widget extends AWidget,
 //            Example ex = examples.get(0);
             for(Example ex: examples)
             {
-                inferState =  createInferState(ex, 1, counts, temperature,
-                    lopts, iter, complexity);
-                inferState.updateCounts();
+                try
+                {
+                    inferState =  createInferState(ex, 1, counts, temperature,
+                        lopts, iter, complexity);
+                    inferState.updateCounts();
 //                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
-                testPerformance.add(ex, inferState.bestWidget);
+                    testPerformance.add(ex, inferState.bestWidget);
+                }
+                catch(Exception e)
+                {
+                    System.out.println(ex.toString());
+                    e.printStackTrace();
+                    System.exit(0);
+                }
             }
             // M step
             params = counts;

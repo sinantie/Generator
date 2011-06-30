@@ -87,6 +87,7 @@ public class GenerationWeatherTest
                             + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
                             + "mostly cloudy , with a low around 56 . south "
                             + "wind between 3 and 6 mph .</seg></p></doc>";
-        assertEquals(model.testGenerate(name, lopts).trim().replaceAll("\\n", ""), targetOutput);
+        String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
+        assertEquals(in, targetOutput);
     }
 }

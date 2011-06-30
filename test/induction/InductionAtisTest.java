@@ -37,7 +37,8 @@ public class InductionAtisTest
     public void setUp() 
     {
          String args = "-modelType event3 -Options.stage1.numIters 15 -inputLists "
-                + "data/atis/train/atis5000.sents.full -examplesInSingleFile -inputFileExt events "
+//                + "data/atis/train/atis5000.sents.full -examplesInSingleFile -inputFileExt events "
+                + "data/atis/test/atis-test.txt -examplesInSingleFile -inputFileExt events "
 //                + "test/testAtisExamples -examplesInSingleFile -inputFileExt events "
                 + "-indepEventTypes 0,-1 -indepFields 0,-1 -newEventTypeFieldPerWord 0,-1 -newFieldPerWord 0,-1 "
                 + "-disallowConsecutiveRepeatFields -indepWords 0,-1 -initNoise 0 "

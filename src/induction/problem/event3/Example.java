@@ -484,4 +484,12 @@ public class Example extends WordExample<Widget>
     {
         return trueWidget;
     }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+
+
 }

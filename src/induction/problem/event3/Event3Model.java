@@ -729,8 +729,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         else
         {
             eventInput = input;
-            name = textInput;
             textInput = input.replaceAll("\\."+ opts.inputFileExt, ".text");
+            name = textInput;
             alignInput = opts.modelType != ModelType.semParse ?
             input.replaceAll("\\."+ opts.inputFileExt, ".align") :
             input.replaceAll("\\."+ opts.inputFileExt, ".salign");
