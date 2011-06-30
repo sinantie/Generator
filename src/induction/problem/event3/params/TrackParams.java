@@ -67,12 +67,13 @@ public class TrackParams extends AParams
                 getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ",
                 Event3Model.wordsToStringArray()));
         i = 0;
-        String[][] labelsNone = getLabels(W, W, "noneEventTypeWordBiC [" + model.cstr(c) + "] ",
-              Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
-        for(ProbVec v : noneEventTypeBigramChoices)
-        {
-            out += forEachProb(v, labelsNone[i++]);
-        }
+        // if too huge parameter set, comment
+//        String[][] labelsNone = getLabels(W, W, "noneEventTypeWordBiC [" + model.cstr(c) + "] ",
+//              Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
+//        for(ProbVec v : noneEventTypeBigramChoices)
+//        {
+//            out += forEachProb(v, labelsNone[i++]);
+//        }
         return out;
     }
 

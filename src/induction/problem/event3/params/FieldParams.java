@@ -42,10 +42,11 @@ public abstract class FieldParams extends AParams implements Serializable
         String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
                     Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
         int i = 0;
-        for(ProbVec v: wordBigramChoices)
-        {
-            out += forEachProb(v, labels[i++]);
-        }
+        // if too huge parameter set, comment
+//        for(ProbVec v: wordBigramChoices)
+//        {
+//            out += forEachProb(v, labels[i++]);
+//        }
         return out;
     }
 }
