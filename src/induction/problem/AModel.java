@@ -727,7 +727,7 @@ public abstract class AModel<Widget extends AWidget,
             }
             // M step
             params = counts;
-            params.saveSum();
+//            params.saveSum();
             params.optimise(lopts.smoothing);
             
             iter++;
