@@ -1,3 +1,8 @@
+Example_1
+what flights go from dallas to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
 Example_3
 what flights from tacoma to orlando on saturday
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tacoma	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
