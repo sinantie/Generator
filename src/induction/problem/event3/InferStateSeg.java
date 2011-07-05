@@ -107,7 +107,7 @@ public class InferStateSeg extends Event3InferState
             } // for
         } // if
 
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t(),
+        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t(),
                             opts.allowNoneEvent),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
@@ -309,10 +309,10 @@ public class InferStateSeg extends Event3InferState
                           genNoneEvent(seqNo), recurseNode,
                           new Hypergraph.HyperedgeInfo<Widget>() {
                               public double getWeight() {
-                                      return get(cparams.getEventTypeChoices()[t0], ((Event3Model)model).none_t());
+                                      return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
                               }
                               public void setPosterior(double prob) {
-                                   update(ccounts.getEventTypeChoices()[t0], ((Event3Model)model).none_t(), prob);
+                                   update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
                               }
                               public Widget choose(Widget widget) {
     //                              for(int k = i; k < j; k++)
@@ -329,14 +329,12 @@ public class InferStateSeg extends Event3InferState
                   } // else
               } // if (none event)
               // (2) Choose an event type t and event e for track c
-              int l=2;
-    //          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
-//              for(int e = 0; e < l && ex.events[e] != null; e++)
-              for(final Event ev: ex.events.values())
+              int l=ex.events.values().size();
+              for(final Event e: ex.events.values())
               {
-                  final int eventId = ev.id;
-                  final int eventTypeIndex = ev.getEventTypeIndex();
-                  final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
+                  final int eventId = e.id;
+                  final int eventTypeIndex = e.getEventTypeIndex();
+                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
                   // Check whether we are in the end of our sequence and generate
                   // the final end node (we don't want to get stuck in infinite recursion).
 //                  final Object recurseNode = (c == 0) ? (seqNo < ex.trackEvents[c].length ?
