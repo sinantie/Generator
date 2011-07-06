@@ -11,7 +11,6 @@ import induction.Hypergraph;
 import induction.NgramModel;
 import induction.Options;
 import induction.problem.AModel;
-import induction.problem.AParams;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.event3.nodes.CatFieldValueNode;
@@ -23,7 +22,6 @@ import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
-import induction.problem.event3.params.FieldParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,8 +39,8 @@ public class GenInferState extends InferState
     public GenInferState(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
-        super(model, ex, params, counts, ispec);        
-        this.ngramModel = ngramModel;        
+        super(model, ex, params, counts, ispec);
+        this.ngramModel = ngramModel;
     }
 
     @Override
@@ -939,19 +937,6 @@ public class GenInferState extends InferState
     protected void selectEnd(int j, EventsNode node, int i, int t0)
     {
         hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
-//                           new Hypergraph.HyperedgeInfo<Widget>()
-//        {
-//            public double getWeight()
-//            {
-//                return 1;
-//            }
-//            public void setPosterior(double prob)
-//            { }
-//            public Widget choose(Widget widget)
-//            {
-//                return widget;
-//            }
-//        });
     }
 
     private Object testOrder()

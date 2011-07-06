@@ -893,6 +893,7 @@ public class InferState extends Event3InferState
                 {   // Transition to boundary_t
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                         public double getWeight() {
+//                            return 1.0;
                             if (prevIndepEventTypes())
                                 return 1.0;
                             else
@@ -900,7 +901,7 @@ public class InferState extends Event3InferState
                                         cparams.boundary_t);
                         }
                         public void setPosterior(double prob) {
-                            update(cparams.getEventTypeChoices()[t0],
+                            update(ccounts.getEventTypeChoices()[t0],
                                     cparams.boundary_t, prob);
                         }
                         public Widget choose(Widget widget) {
@@ -910,7 +911,7 @@ public class InferState extends Event3InferState
                 } // if
                 return node;
             } // else
-        }
+        } // if (i == j)
                 
         // WARNING: allowNone/allowReal might not result in any valid nodes
         if(hypergraph.addSumNode(node))
@@ -1073,14 +1074,14 @@ public class InferState extends Event3InferState
         if (i == N)
         {
 //            System.out.println(String.format("END : [%d]", i));
-            return hypergraph.endNode;
-//            EventsNode node = new EventsNode(N, t0);
-//            if(hypergraph.addSumNode(node))
-//            {
-//                selectEnd(N, node, N, t0);
-//                hypergraph.assertNonEmpty(node);
-//            }
-//            return node;
+//            return hypergraph.endNode;
+            EventsNode node = new EventsNode(N, t0);
+            if(hypergraph.addSumNode(node))
+            {
+                selectEnd(N, node, N, t0);
+                hypergraph.assertNonEmpty(node);
+            }
+            return node;
         }
         else
         {

@@ -73,20 +73,10 @@ public class GenerationAtisTest
     public void testRun()
     {
         System.out.println("run");
-//        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-//                            + "falls_church/2009-02-07-0.text\" genre=\"nw\"><p>"
-//                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
-//                            + "bleu_modified=\"0.8039183415894011\" "
-//                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-//                            + "mostly cloudy , with a low around 53 . southwest "
-//                            + "wind between 9 and 14 mph .</seg></p></doc>";
-        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-                            + "glen_allen/2009-02-08-1.text\" genre=\"nw\"><p>"
-                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
-                            + "bleu_modified=\"0.8039183415894011\" "
-                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-                            + "mostly cloudy , with a low around 56 . south "
-                            + "wind between 3 and 6 mph .</seg></p></doc>";
+        String targetOutput = "<doc docid=\"Example_1\" genre=\"nw\"><p>"
+                + "<seg id=\"1\" bleu=\"0.1743883015602825\" bleu_modified=\"0.1743883015602825\" "
+                + "meteor=\"0.531022469646483\" ter=\"0.7142857142857143\">"
+                + "show me the flights from dallas to</seg></p></doc>";
         String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
         assertEquals(in, targetOutput);
     }

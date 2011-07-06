@@ -1,130 +1,174 @@
 package induction.problem.event3;
 
+import fig.basic.Indexer;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
 import induction.NgramModel;
+import induction.Options;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
+import induction.problem.Pair;
 import induction.problem.event3.nodes.EventNode;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.NoneEventNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.WordNode;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
  *
  * @author konstas
  */
-public class InferStateSeg extends Event3InferState
+public class GenInferStateSeg extends Event3InferState
 {
     protected NgramModel ngramModel;
+    protected Indexer<String> vocabulary;
 
-    public InferStateSeg(Event3Model model, Example ex, Params params,
+    public GenInferStateSeg(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec);
+        this.ngramModel = ngramModel;
     }
 
     @Override
     protected void initInferState(AModel model)
     {
-        super.initInferState(model);
-//        N = words.length;
-        words = ex.text;
-        nums = new int[words.length];
-        for(int w = 0; w < nums.length; w++)
+        wildcard_pc = -1;
+        L = opts.maxPhraseLength;
+        segPenalty = new double[L + 1];
+        for(int l = 0; l < L +1; l++)
         {
-            nums[w] = Constants.str2num(Event3Model.wordToString(words[w])) ;
+            segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
-        labels = ex.labels;
+        this.vocabulary = ((Event3Model)model).getWordIndexer();
+    }
 
-        // Override bestWidget
-        if (opts.fullPredRandomBaseline)
+    protected int[] newMatrixOne()
+    {
+        int[] out = new int[ex.N()]; // CAREFUL WITH N
+        for(int i = 0; i < out.length; i++)
         {
-            if (!ex.events.isEmpty())
-            {
-                // Just match each line in the text to a single randomly chosen event
-                for(int l = 0; l < ex.startIndices.length - 1; l++)
-                {
-                    final int e = opts.fullPredRandom.nextInt(ex.events.size());
-                    for(int i = ex.startIndices[l]; i < ex.startIndices[l+1]; i++)
-                    {
-                        bestWidget.events[0][i] = e; // Assume one track
-                    } // for
-                } // for
-            } // if
-        } // if
+            Arrays.fill(out, -1);
+        }
+        return out;
     }
 
     @Override
     protected Widget newWidget()
     {
-         HashMap<Integer, Integer> eventTypeIndices =
+        HashMap<Integer, Integer> eventTypeIndices =
                             new HashMap<Integer, Integer>(ex.events.size());
         for(Event e : ex.events.values())
         {
             eventTypeIndices.put(e.id, e.getEventTypeIndex());
         }
-        return new Widget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
-                               ex.startIndices, ((Event3Model)model).eventTypeAllowedOnTrack,
-                               eventTypeIndices);
+        return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
+                               newMatrixOne(),
+                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
     }
 
     @Override
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {
-        hypergraph.debug = opts.debug;
-        // Need this because the pc sets might be inconsistent with the types
-        hypergraph.allowEmptyNodes = true;
-
-        if (genLabels() || prevGenLabels())
+        // setup hypergraph preliminaries
+        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+                opts.reorderType, opts.allowConsecutiveEvents,
+                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+                vocabulary.getIndex("<num>"),
+                vocabulary.getIndex("ELIDED_SYMBOL"),
+                vocabulary.getIndex("<s>"),
+                vocabulary.getIndex("</s>"),
+                opts.ngramWrapper != Options.NgramWrapper.roark,
+                vocabulary, ex);
+        if(opts.fullPredRandomBaseline)
         {
-            // Default is to generate the labels from a generic distribution
-            // unless we say otherwise
-            for(int i = 0; i < ex.N(); i++)
-            {
-                final int label = labels[i];
-                hypergraph.addEdge(hypergraph.prodStartNode(),
-                        new Hypergraph.HyperedgeInfo<Widget>()
-                // Default is to generate the labels from a generic distribution
-                // unless we say otherwise
-                {
-                    public double getWeight()
-                    {
-                        return get(params.genericLabelChoices, label);
-                    }
-                    public void setPosterior(double prob)
-                    {
-                        if (genLabels())
-                            update(counts.genericLabelChoices, label, prob);
-                    }
-                    public Widget choose(Widget widget)
-                    {
-                        return widget;
-                    }
-                });
-            } // for
-        } // if
-
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t(),
-                            opts.allowNoneEvent),
+            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0,
+                    ((Event3Model)model).boundary_t(), opts.allowNoneEvent),
                            new Hypergraph.HyperedgeInfo<Widget>()
+            {
+                public double getWeight()
+                {
+                    return 1;
+                }
+                public void setPosterior(double prob)
+                { }
+                public Widget choose(Widget widget)
+                {
+                    return widget;
+                }
+            });
+        } // if
+        else
         {
-            public double getWeight()
+            WordNode startSymbol = new WordNode(-1, 0, -1, -1);
+            hypergraph.addSumNode(startSymbol);
+            WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
+            hypergraph.addSumNode(endSymbol);
+            this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
             {
-                return 1;
-            }
-            public void setPosterior(double prob)
-            { }
-            public Widget choose(Widget widget)
+                public double getWeight()
+                { return 1;}
+                public Pair getWeightLM(int rank)
+                {
+                    if(rank > 0)
+                        return null;
+                    return new Pair(1.0, vocabulary.getIndex("<s>"));
+                }
+                public void setPosterior(double prob)
+                { }
+                 public GenWidget choose(GenWidget widget)
+                { return widget; }
+
+                public GenWidget chooseLM(GenWidget widget, int word)
+                { return widget; }
+            });
+            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
             {
-                return widget;
+                public double getWeight()
+                { return 1;}
+                public Pair getWeightLM(int rank)
+                {
+                    if(rank > 0)
+                        return null;
+                    return new Pair(1.0, vocabulary.getIndex("</s>"));
+                }
+                public void setPosterior(double prob)
+                { }
+                public GenWidget choose(GenWidget widget)
+                { return widget; }
+
+                public GenWidget chooseLM(GenWidget widget, int word)
+                { return widget; }
+            });
+            ArrayList<Object> list = new ArrayList(opts.ngramSize);
+            for(int i = 0; i < opts.ngramSize - 1; i++) // Generate each word in this range using an LM
+            {
+                list.add(startSymbol);
             }
-        });
+            list.add(genEvents(0, ((Event3Model)model).boundary_t(), opts.allowNoneEvent));
+//            list.add(test());
+            list.add(endSymbol);
+            this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
+                           new Hypergraph.HyperedgeInfo<Widget>()
+            {
+                public double getWeight()
+                {
+                    return 1;
+                }
+                public void setPosterior(double prob)
+                { }
+                public Widget choose(Widget widget)
+                {
+                    return widget;
+                }
+            });
+        } // else
     }
 
     /**
@@ -304,7 +348,7 @@ public class InferStateSeg extends Event3InferState
                   // Check whether we are in the end of our sequence and generate
                   // the final end node (we don't want to get stuck in infinite recursion).
     //             final Object recurseNode = (c == 0) ? (seqNo < ex.trackEvents[c].length ?
-                 final Object recurseNode = seqNo < 2 ?
+                  final Object recurseNode = seqNo < ex.events.values().size() ?
                      genEvents(seqNo+1, remember_t, allowNone): genEndNode();
                   if(opts.useEventTypeDistrib)
                   {

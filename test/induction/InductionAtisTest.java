@@ -36,13 +36,13 @@ public class InductionAtisTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 15 -inputLists "
+         String args = "-modelType event3 -Options.stage1.numIters 11 -inputLists "
 //                + "data/atis/train/atis5000.sents.full -examplesInSingleFile -inputFileExt events "
 //                + "data/atis/test/atis-test.txt -examplesInSingleFile -inputFileExt events "
                 + "test/testAtisExamples -examplesInSingleFile -inputFileExt events "
                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                 + "-disallowConsecutiveRepeatFields -indepWords 0,5 -initNoise 0 "
-                + "-dontCrossPunctuation -Options.stage1.smoothing 0.01 -modelUnkWord";
+                + "-dontCrossPunctuation -Options.stage1.smoothing 0.001 -modelUnkWord";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

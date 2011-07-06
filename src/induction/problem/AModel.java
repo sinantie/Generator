@@ -543,7 +543,7 @@ public abstract class AModel<Widget extends AWidget,
             list.clear();
             // M-step
             params = counts;
-            params.saveSum(); // 02/07/09: for printing out posterior mass (see AParams.foreachProb)
+//            params.saveSum(); // 02/07/09: for printing out posterior mass (see AParams.foreachProb)
             if (lopts.useVarUpdates)
             {
                 params.optimiseVar(lopts.smoothing);
@@ -732,6 +732,7 @@ public abstract class AModel<Widget extends AWidget,
             
             iter++;
         }
+        System.out.println(params.output());
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 
