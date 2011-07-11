@@ -28,6 +28,7 @@ public class GenInferStateSeg extends Event3InferState
 {
     protected NgramModel ngramModel;
     protected Indexer<String> vocabulary;
+    private int numberOfEvents;
 
     public GenInferStateSeg(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
@@ -47,6 +48,7 @@ public class GenInferStateSeg extends Event3InferState
             segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
         this.vocabulary = ((Event3Model)model).getWordIndexer();
+        numberOfEvents = ex.events.values().size();
     }
 
     protected int[] newMatrixOne()
@@ -152,7 +154,6 @@ public class GenInferStateSeg extends Event3InferState
                 list.add(startSymbol);
             }
             list.add(genEvents(0, ((Event3Model)model).boundary_t(), opts.allowNoneEvent));
-//            list.add(test());
             list.add(endSymbol);
             this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
                            new Hypergraph.HyperedgeInfo<Widget>()
@@ -329,102 +330,141 @@ public class GenInferStateSeg extends Event3InferState
     }   
 
     /**
-     * Generate sequence of events ignoring segmentation
+     * Generate sequence of events ignoring segmentation. Generate STOP event as well.
      * @param seqNo the sequence number of the event to be generated
      * @param t0 previous eventType
      * @return
      */
-    protected Object genEvents(int seqNo, final int t0, boolean allowNone)
+    protected Object genTrack(int seqNo, final int t0, boolean allowNone)
     {
         EventsNode node = new EventsNode(seqNo, t0);
         final TrackParams cparams = params.trackParams[0];
         final TrackParams ccounts = counts.trackParams[0];
         if(hypergraph.addSumNode(node))
-        {
-            // (1) Choose the none event
-              if (allowNone)
+        {            
+            if (allowNone) // (1) Choose the none event
+            {
+              final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not
+              // Check whether we are in the end of our sequence and generate
+              // the final end node (we don't want to get stuck in infinite recursion).
+              final Object recurseNode = seqNo < ex.events.values().size() ?
+                 genEvents(seqNo+1, remember_t, allowNone): genEndNode();
+              if(opts.useEventTypeDistrib)
               {
-                  final int remember_t = t0; // Don't remember none_t (since t == none_t, skip t)
-                  // Check whether we are in the end of our sequence and generate
-                  // the final end node (we don't want to get stuck in infinite recursion).
-    //             final Object recurseNode = (c == 0) ? (seqNo < ex.trackEvents[c].length ?
-                  final Object recurseNode = seqNo < ex.events.values().size() ?
-                     genEvents(seqNo+1, remember_t, allowNone): genEndNode();
-                  if(opts.useEventTypeDistrib)
-                  {
-                      hypergraph.addEdge(node,
-                          genNoneEvent(seqNo), recurseNode,
-                          new Hypergraph.HyperedgeInfo<Widget>() {
-                              public double getWeight() {
-                                      return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
-                              }
-                              public void setPosterior(double prob) {
-                                   update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
-                              }
-                              public Widget choose(Widget widget) {
-    //                              for(int k = i; k < j; k++)
-    //                              {
-    //                                  widget.events[c][k] = Parameters.none_e;
-    //                              }
-                                  return widget;
-                              }
-                          });
-                  } // if
-                  else
-                  {
-                      hypergraph.addEdge(node, genNoneEvent(seqNo), recurseNode);
-                  } // else
-              } // if (none event)
-              // (2) Choose an event type t and event e for track c
-              int l=ex.events.values().size();
-              for(final Event e: ex.events.values())
-              {
-                  final int eventId = e.id;
-                  final int eventTypeIndex = e.getEventTypeIndex();
-                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
-                  // Check whether we are in the end of our sequence and generate
-                  // the final end node (we don't want to get stuck in infinite recursion).
-//                  final Object recurseNode = (c == 0) ? (seqNo < ex.trackEvents[c].length ?
-                  final Object recurseNode = seqNo < l ?
-                      genEvents(seqNo+1, remember_t, allowNone): genEndNode();
-                  if (opts.useEventTypeDistrib)
-                  {
-                      hypergraph.addEdge(node,
-                      genEvent(seqNo, eventId), recurseNode,
+                  hypergraph.addEdge(node,
+                      genNoneEvent(seqNo), recurseNode,
                       new Hypergraph.HyperedgeInfo<Widget>() {
-                          public double getWeight()
-                          {
-                              if(prevIndepEventTypes())
-                                  return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
-                                          eventTypeIndex) *
-                                          (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
-                              else
-                                  return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
-                                          (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
+                          public double getWeight() {
+                                  return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
                           }
                           public void setPosterior(double prob) {
-                               update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
+                               update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
                           }
                           public Widget choose(Widget widget) {
 //                              for(int k = i; k < j; k++)
 //                              {
-//                                  widget.events[c][k] = eventId;
-////                                  System.out.println(String.format("TrackNode i=%d, j=%d, t0=%s, e=%s",
-////                                        i, j,
-////                                        model.eventTypeToString(t0),
-////                                        model.eventTypeToString(eIter)));
+//                                  widget.events[c][k] = Parameters.none_e;
 //                              }
                               return widget;
                           }
                       });
-                  } // if
-                  else
-                  {
-                      hypergraph.addEdge(node, genEvent(seqNo, eventId), recurseNode);
-                  } // else
-              } // for
+              } // if
+              else
+              {
+                  hypergraph.addEdge(node, genNoneEvent(seqNo), recurseNode);
+              } // else
+            } // if (none event)
+            // (2) Choose an event type t and event e for track c
+            for(final Event e: ex.events.values())
+            {
+              final int eventId = e.id;
+              final int eventTypeIndex = e.getEventTypeIndex();
+              final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
+              // Check whether we are in the end of our sequence and generate
+              // the final end node (we don't want to get stuck in infinite recursion).
+              final Object recurseNode = seqNo < ex.events.values().size() ?
+                  genEvents(seqNo+1, remember_t, allowNone): genEndNode();
+              if (opts.useEventTypeDistrib)
+              {
+                  hypergraph.addEdge(node,
+                  genEvent(seqNo, eventId), recurseNode,
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight()
+                      {
+                          if(prevIndepEventTypes())
+                              return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
+                                      eventTypeIndex) *
+                                      (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
+                          else
+                              return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                      (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
+                      }
+                      public void setPosterior(double prob) {
+                           update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
+                      }
+                      public Widget choose(Widget widget) {
+            //                              for(int k = i; k < j; k++)
+            //                              {
+            //                                  widget.events[c][k] = eventId;
+            ////                                  System.out.println(String.format("TrackNode i=%d, j=%d, t0=%s, e=%s",
+            ////                                        i, j,
+            ////                                        model.eventTypeToString(t0),
+            ////                                        model.eventTypeToString(eIter)));
+            //                              }
+                          return widget;
+                      }
+                  });
+              } // if
+              else
+              {
+                  hypergraph.addEdge(node, genEvent(seqNo, eventId), recurseNode);
+              } // else
+            } // for
             hypergraph.assertNonEmpty(node);
         }
         return node;
-    }   
+    }
+
+    protected Object genEvents(int seqNo, final int t0)
+    {
+
+        if (seqNo == numberOfEvents)
+        {
+//            System.out.println(String.format("END : [%d]", i));
+//            return hypergraph.endNode;
+            EventsNode node = new EventsNode(N, t0);
+            if(hypergraph.addSumNode(node))
+            {
+                selectEnd(N, node, N, t0);
+                hypergraph.assertNonEmpty(node);
+            }
+            return node;
+        }
+        else
+        {
+//            System.out.println(String.format("Father : [%d]", i));
+            EventsNode node = new EventsNode(seqNo, t0);
+            if(hypergraph.addSumNode(node))
+            {
+                if (oneEventPerExample())
+                    selectEnd(N, node, i, t0);
+                else if (newEventTypeFieldPerWord())
+                    selectEnd(i+1, node, i, t0);
+                else // Allow everything
+                {
+                    for(int k = i+1; k < end(i, Integer.MAX_VALUE)+1; k++)
+                    {
+                        selectEnd(k, node, i, t0);
+                    }
+                }
+                hypergraph.assertNonEmpty(node);
+            }
+            return node;
+        }
+    }
+
+    protected void selectEnd(int j, EventsNode node, int i, int t0)
+    {
+        hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
+    }
 }

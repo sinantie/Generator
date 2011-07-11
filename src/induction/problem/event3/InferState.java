@@ -23,6 +23,7 @@ import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.PCEventsNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
+import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.StringFieldValueNode;
 import induction.problem.event3.nodes.SymFieldValueNode;
 import induction.problem.event3.nodes.TrackNode;
@@ -873,46 +874,52 @@ public class InferState extends Event3InferState
             return genEFSEvent(i, j, c, event, eventTypeParams.getDontcare_efs());
         }
     }
-    
+
+    StopNode genStopNode(int i, final int t0, final TrackParams cparams, final TrackParams ccounts)
+    {
+        StopNode node = new StopNode(i, t0);
+        if(hypergraph.addSumNode(node))
+        {   // Transition to boundary_t
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
+                public double getWeight() {
+//                            return 1.0;
+                    if (prevIndepEventTypes())
+                        return 1.0;
+                    else
+                        return get(cparams.getEventTypeChoices()[t0],
+                                cparams.boundary_t);
+                }
+                public void setPosterior(double prob) {
+                    update(ccounts.getEventTypeChoices()[t0],
+                            cparams.boundary_t, prob);
+                }
+                public Widget choose(Widget widget) {
+                    return widget;
+                }
+            });
+        } // if
+        return node;
+    }
+
     // Generate track c in i...j (t0 is previous event type for track 0);
     // allowNone and allowReal specify what event types we can use
     Object genTrack(final int i, final int j, final int t0, final int c,
                        boolean allowNone, boolean allowReal)
     {
-        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+        
         final TrackParams cparams = params.trackParams[c];
         final TrackParams ccounts = counts.trackParams[c];
 
         if(i == j)
         {
             if(indepEventTypes())
-                        return hypergraph.endNode;
+                return hypergraph.endNode;
             else
-            {
-                if(hypergraph.addSumNode(node))
-                {   // Transition to boundary_t
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                        public double getWeight() {
-//                            return 1.0;
-                            if (prevIndepEventTypes())
-                                return 1.0;
-                            else
-                                return get(cparams.getEventTypeChoices()[t0],
-                                        cparams.boundary_t);
-                        }
-                        public void setPosterior(double prob) {
-                            update(ccounts.getEventTypeChoices()[t0],
-                                    cparams.boundary_t, prob);
-                        }
-                        public Widget choose(Widget widget) {
-                            return widget;
-                        }
-                    });
-                } // if
-                return node;
+            {                
+                return genStopNode(i, t0, cparams, ccounts);
             } // else
         } // if (i == j)
-                
+        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
         // WARNING: allowNone/allowReal might not result in any valid nodes
         if(hypergraph.addSumNode(node))
         {

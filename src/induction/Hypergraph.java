@@ -878,8 +878,10 @@ public class Hypergraph<Widget> {
         {
             // in case we have blocked the path from this node and on, due to not allowing
             // repetition of event types, just ignore the derivation
+            try{
             if(dest.get(i).derivations.isEmpty())
                 return true;
+            }catch(Exception e){System.out.println("error here "+dest.get(i));}
             d = (Derivation) dest.get(i).derivations.get(mask[i]);
             if(d.eventTypeSet != null)
             {                

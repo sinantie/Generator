@@ -77,10 +77,8 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
     }
     protected FieldParams getFieldParams(int event, int field)
     {
-        FieldParams fp = null;
-        try{
-        fp = (FieldParams)getEventTypeParams(event).fieldParams[field];
-        }catch(Exception e){System.out.println(event + " " + field);}
+        FieldParams fp = null;        
+        fp = (FieldParams)getEventTypeParams(event).fieldParams[field];        
         return fp;
     }
     protected FieldParams getFieldCounts(int event, int field)

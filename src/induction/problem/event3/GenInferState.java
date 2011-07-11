@@ -20,8 +20,10 @@ import induction.problem.event3.nodes.FieldsNode;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
+import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
+import induction.problem.event3.params.TrackParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,7 +47,7 @@ public class GenInferState extends InferState
 
     @Override
     protected void initInferState(AModel model)
-    {   
+    {
         wildcard_pc = -1;
         L = opts.maxPhraseLength;
         segPenalty = new double[L + 1];
@@ -59,7 +61,7 @@ public class GenInferState extends InferState
         
     protected int[] newMatrixOne()
     {
-        int[] out = new int[ex.N()];
+        int[] out = new int[N];
         for(int i = 0; i < out.length; i++)
         {
             Arrays.fill(out, -1);
@@ -125,7 +127,7 @@ public class GenInferState extends InferState
             WordNode startSymbol = new WordNode(-1, 0, -1, -1);
             hypergraph.addSumNode(startSymbol);
             WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
-            hypergraph.addSumNode(endSymbol);
+//            hypergraph.addSumNode(endSymbol);
             this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
             {
                 public double getWeight()
@@ -144,33 +146,32 @@ public class GenInferState extends InferState
                 public GenWidget chooseLM(GenWidget widget, int word)
                 { return widget; }
             });
-            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
-            {
-                public double getWeight()
-                { return 1;}
-                public Pair getWeightLM(int rank)
-                {
-                    if(rank > 0)
-                        return null;
-                    return new Pair(1.0, vocabulary.getIndex("</s>"));
-                }
-                public void setPosterior(double prob)
-                { }
-                public GenWidget choose(GenWidget widget)
-                { return widget; }
-
-                public GenWidget chooseLM(GenWidget widget, int word)
-                { return widget; }
-            });
+//            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
+//            {
+//                public double getWeight()
+//                { return 1;}
+//                public Pair getWeightLM(int rank)
+//                {
+//                    if(rank > 0)
+//                        return null;
+//                    return new Pair(1.0, vocabulary.getIndex("</s>"));
+//                }
+//                public void setPosterior(double prob)
+//                { }
+//                public GenWidget choose(GenWidget widget)
+//                { return widget; }
+//
+//                public GenWidget chooseLM(GenWidget widget, int word)
+//                { return widget; }
+//            });
             ArrayList<Object> list = new ArrayList(opts.ngramSize);
             for(int i = 0; i < opts.ngramSize - 1; i++) // Generate each word in this range using an LM
             {
                 list.add(startSymbol);
             }
-//            list.add(genEvents(0, ((Event3Model)model).none_t()));
             list.add(genEvents(0, ((Event3Model)model).boundary_t()));
 //            list.add(test());
-            list.add(endSymbol);
+//            list.add(endSymbol);
             this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
                            new Hypergraph.HyperedgeInfo<Widget>()
             {
@@ -930,6 +931,43 @@ public class GenInferState extends InferState
                 }
             });
         }
+        return node;
+    }
+
+    @Override
+    StopNode genStopNode(int i, final int t0, final TrackParams cparams, final TrackParams ccounts)
+    {
+        StopNode node = new StopNode(i, t0);
+        if(hypergraph.addSumNode(node))
+        {   // Transition to boundary_t
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<Widget>() {
+                public double getWeight() {
+                    if (prevIndepEventTypes())
+                        return 1.0;
+                    else
+                        return get(cparams.getEventTypeChoices()[t0],
+                                cparams.boundary_t);
+                }
+                public void setPosterior(double prob) {}
+                public Widget choose(Widget widget) {
+                    return widget;
+                }
+
+                @Override
+                public Pair getWeightLM(int rank)
+                {
+                    if(rank > 0)
+                        return null;
+                    return new Pair(getWeight(), vocabulary.getIndex("</s>"));
+                }
+
+                @Override
+                public Widget chooseLM(Widget widget, int word)
+                {
+                    return widget;
+                }
+            });
+        } // if
         return node;
     }
 
