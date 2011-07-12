@@ -91,7 +91,7 @@ public class GenInferStateSeg extends Event3InferState
         if(opts.fullPredRandomBaseline)
         {
             this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0,
-                    ((Event3Model)model).boundary_t(), opts.allowNoneEvent),
+                    ((Event3Model)model).boundary_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()
             {
                 public double getWeight()
@@ -153,7 +153,7 @@ public class GenInferStateSeg extends Event3InferState
             {
                 list.add(startSymbol);
             }
-            list.add(genEvents(0, ((Event3Model)model).boundary_t(), opts.allowNoneEvent));
+            list.add(genEvents(0, ((Event3Model)model).boundary_t()));
             list.add(endSymbol);
             this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
                            new Hypergraph.HyperedgeInfo<Widget>()
@@ -348,7 +348,8 @@ public class GenInferStateSeg extends Event3InferState
               // Check whether we are in the end of our sequence and generate
               // the final end node (we don't want to get stuck in infinite recursion).
               final Object recurseNode = seqNo < ex.events.values().size() ?
-                 genEvents(seqNo+1, remember_t, allowNone): genEndNode();
+//                 genEvents(seqNo+1, remember_t, allowNone): genEndNode();
+                 genEvents(seqNo+1, remember_t): genEndNode();
               if(opts.useEventTypeDistrib)
               {
                   hypergraph.addEdge(node,
@@ -383,7 +384,8 @@ public class GenInferStateSeg extends Event3InferState
               // Check whether we are in the end of our sequence and generate
               // the final end node (we don't want to get stuck in infinite recursion).
               final Object recurseNode = seqNo < ex.events.values().size() ?
-                  genEvents(seqNo+1, remember_t, allowNone): genEndNode();
+                  genEvents(seqNo+1, remember_t): genEndNode();
+//                  genEvents(seqNo+1, remember_t, allowNone): genEndNode();
               if (opts.useEventTypeDistrib)
               {
                   hypergraph.addEdge(node,
@@ -444,27 +446,27 @@ public class GenInferStateSeg extends Event3InferState
         {
 //            System.out.println(String.format("Father : [%d]", i));
             EventsNode node = new EventsNode(seqNo, t0);
-            if(hypergraph.addSumNode(node))
-            {
-                if (oneEventPerExample())
-                    selectEnd(N, node, i, t0);
-                else if (newEventTypeFieldPerWord())
-                    selectEnd(i+1, node, i, t0);
-                else // Allow everything
-                {
-                    for(int k = i+1; k < end(i, Integer.MAX_VALUE)+1; k++)
-                    {
-                        selectEnd(k, node, i, t0);
-                    }
-                }
-                hypergraph.assertNonEmpty(node);
-            }
+//            if(hypergraph.addSumNode(node))
+//            {
+//                if (oneEventPerExample())
+//                    selectEnd(N, node, i, t0);
+//                else if (newEventTypeFieldPerWord())
+//                    selectEnd(i+1, node, i, t0);
+//                else // Allow everything
+//                {
+//                    for(int k = i+1; k < end(i, Integer.MAX_VALUE)+1; k++)
+//                    {
+//                        selectEnd(k, node, i, t0);
+//                    }
+//                }
+//                hypergraph.assertNonEmpty(node);
+//            }
             return node;
         }
     }
 
     protected void selectEnd(int j, EventsNode node, int i, int t0)
     {
-        hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
+        hypergraph.addEdge(node, genTrack(i, t0, opts.allowNoneEvent));
     }
 }

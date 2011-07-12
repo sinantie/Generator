@@ -43,7 +43,8 @@ public abstract class WordModel<Widget extends AWidget,
         if(w > -1)
             return wordIndexer.getObject(w);
         else
-            return "N/A";
+//            return "N/A";
+            return "";
     }
 
     public static String[] wordsToStringArray()
