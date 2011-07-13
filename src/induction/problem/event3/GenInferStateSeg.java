@@ -47,13 +47,14 @@ public class GenInferStateSeg extends Event3InferState
         {
             segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
+        N = ex.N();
         this.vocabulary = ((Event3Model)model).getWordIndexer();
         numberOfEvents = ex.events.values().size();
     }
 
     protected int[] newMatrixOne()
     {
-        int[] out = new int[ex.N()]; // CAREFUL WITH N
+        int[] out = new int[N]; // CAREFUL WITH N
         for(int i = 0; i < out.length; i++)
         {
             Arrays.fill(out, -1);

@@ -44,7 +44,7 @@ public class GenerationAtisTest
          String args = "-modelType generate -testInputLists test/testAtisExamples "
                     + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
                     + "results/output/atis/alignments/"
-                    + "model_3/15_iter_no_null_no_smooth/stage1.params.obj "
+                    + "model_3/15_iter_no_null_no_smooth_STOP/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "

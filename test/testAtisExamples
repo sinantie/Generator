@@ -3,3 +3,8 @@ what flights go from dallas to phoenix
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
 .id:1	.type:search	@of:--	@typed:lambda	@what:flight
 0 0 1
+Example_440
+i want to book a flight from salt lake city to westchester county
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:westchester_county	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
