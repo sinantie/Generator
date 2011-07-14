@@ -88,7 +88,7 @@ public class GenInferStateSeg extends Event3InferState
                 vocabulary.getIndex("<s>"),
                 vocabulary.getIndex("</s>"),
                 opts.ngramWrapper != Options.NgramWrapper.roark,
-                vocabulary, ex);
+                vocabulary, ex, null);
         if(opts.fullPredRandomBaseline)
         {
             this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0,
@@ -111,8 +111,8 @@ public class GenInferStateSeg extends Event3InferState
         {
             WordNode startSymbol = new WordNode(-1, 0, -1, -1);
             hypergraph.addSumNode(startSymbol);
-            WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
-            hypergraph.addSumNode(endSymbol);
+//            WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
+//            hypergraph.addSumNode(endSymbol);
             this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
             {
                 public double getWeight()
@@ -131,31 +131,31 @@ public class GenInferStateSeg extends Event3InferState
                 public GenWidget chooseLM(GenWidget widget, int word)
                 { return widget; }
             });
-            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
-            {
-                public double getWeight()
-                { return 1;}
-                public Pair getWeightLM(int rank)
-                {
-                    if(rank > 0)
-                        return null;
-                    return new Pair(1.0, vocabulary.getIndex("</s>"));
-                }
-                public void setPosterior(double prob)
-                { }
-                public GenWidget choose(GenWidget widget)
-                { return widget; }
-
-                public GenWidget chooseLM(GenWidget widget, int word)
-                { return widget; }
-            });
+//            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
+//            {
+//                public double getWeight()
+//                { return 1;}
+//                public Pair getWeightLM(int rank)
+//                {
+//                    if(rank > 0)
+//                        return null;
+//                    return new Pair(1.0, vocabulary.getIndex("</s>"));
+//                }
+//                public void setPosterior(double prob)
+//                { }
+//                public GenWidget choose(GenWidget widget)
+//                { return widget; }
+//
+//                public GenWidget chooseLM(GenWidget widget, int word)
+//                { return widget; }
+//            });
             ArrayList<Object> list = new ArrayList(opts.ngramSize);
             for(int i = 0; i < opts.ngramSize - 1; i++) // Generate each word in this range using an LM
             {
                 list.add(startSymbol);
             }
             list.add(genEvents(0, ((Event3Model)model).boundary_t()));
-            list.add(endSymbol);
+//            list.add(endSymbol);
             this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
                            new Hypergraph.HyperedgeInfo<Widget>()
             {

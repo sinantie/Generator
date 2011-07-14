@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.uci.ics.jung.graph.Graph;
 import fig.basic.Indexer;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
@@ -34,6 +35,7 @@ import java.util.HashMap;
  */
 public class GenInferState extends InferState
 {
+    Graph graph;
     //public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
     protected NgramModel ngramModel;
     protected Indexer<String> vocabulary;
@@ -43,6 +45,13 @@ public class GenInferState extends InferState
     {
         super(model, ex, params, counts, ispec);
         this.ngramModel = ngramModel;
+    }
+
+    public GenInferState(Event3Model model, Example ex, Params params,
+            Params counts, InferSpec ispec, NgramModel ngramModel, Graph graph)
+    {
+        this(model, ex, params, counts, ispec, ngramModel);
+        this.graph = graph;
     }
 
     @Override
@@ -72,11 +81,6 @@ public class GenInferState extends InferState
     @Override
     protected Widget newWidget()
     {       
-//        int[] eventTypeIndices = new int[ex.events.length];
-//        for(int i = 0; i < eventTypeIndices.length; i++)
-//        {
-//           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
-//        }
         HashMap<Integer, Integer> eventTypeIndices =
                             new HashMap<Integer, Integer>(ex.events.size());
         for(Event e : ex.events.values())
@@ -99,7 +103,7 @@ public class GenInferState extends InferState
                 vocabulary.getIndex("<s>"),
                 vocabulary.getIndex("</s>"),
                 opts.ngramWrapper != Options.NgramWrapper.roark,
-                vocabulary, ex);
+                vocabulary, ex, graph);
 //        for(int i = 0; i < hypergraph.wordIndexer.size(); i++)
 //        {
 //            System.out.println(String.format("%d -> %s", i, hypergraph.wordIndexer.getObject(i)));

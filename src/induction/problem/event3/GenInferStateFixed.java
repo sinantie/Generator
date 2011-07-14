@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.uci.ics.jung.graph.Graph;
 import induction.Hypergraph;
 import induction.NgramModel;
 import induction.problem.InferSpec;
@@ -18,6 +19,12 @@ public class GenInferStateFixed extends GenInferState
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec, ngramModel);
+    }
+
+    public GenInferStateFixed(Event3Model model, Example ex, Params params,
+            Params counts, InferSpec ispec, NgramModel ngramModel, Graph graph)
+    {
+        super(model, ex, params, counts, ispec, ngramModel, graph);
     }
 
     @Override

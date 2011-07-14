@@ -56,21 +56,20 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
         initComponents();
         setSize(1000, 1000);
         setUp();
-        setUpView(model.testSemParseVisualise(name, lopts));
+        setUpView(model.testGenerateVisualise(name, lopts));
     }
 
     private void setUp()
     {
-         String args = "-modelType semParse -testInputLists test/testRobocupEvents "
-//         String args = "-modelType semParse -testInputLists robocupLists/robocupFold1PathsEval "
-                    + "-excludeLists robocupLists/robocupAllUnreachable "
-                    + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/model_3_percy_NO_NULL_semPar_values_unk_no_generic/fold1/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 2 "
-                    + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -reorderType eventTypeAndField "
-                    + "-maxPhraseLength 5 -useGoldStandardOnly "
-                    + "-modelUnkWord -newFieldPerWord 0,-1 -allowConsecutiveEvents";
+         String args = "-modelType generate -testInputLists test/testAtisExamples "
+                    + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
+                    + "results/output/atis/alignments/"
+                    + "model_3/15_iter_no_null_no_smooth_STOP/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -kBest 40 "
+                    + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
+                    + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
+                    + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
+                    + "-ngramSize 3";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

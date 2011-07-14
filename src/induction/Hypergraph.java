@@ -345,7 +345,7 @@ public class Hypergraph<Widget> {
                                         boolean allowConsecutiveEvents, int NUM,
                                         int ELIDED_SYMBOL, int START_SYMBOL,
                                         int END_SYMBOL, boolean numbersAsSymbol,
-                                        Indexer<String> wordIndexer, Example ex)
+                                        Indexer<String> wordIndexer, Example ex, Graph graph)
   {
         this.debug = debug;
         // Need this because the pc sets might be inconsistent with the types
@@ -364,6 +364,9 @@ public class Hypergraph<Widget> {
         this.numbersAsSymbol = numbersAsSymbol;
         this.vocabulary = wordIndexer;
         this.ex = ex;
+        this.graph = graph;
+        if(graph != null)
+            graph.addVertex(startNode);
   }
 
   public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
@@ -1207,18 +1210,18 @@ public class Hypergraph<Widget> {
       {
           if(derivation.derArray == null) // choose terminal nodes
           {
-              if(derivation.words.size() > 0)
+              if(!derivation.words.isEmpty())
               {
                   widget = (Widget) ((HyperedgeInfoLM)derivation.edge.info).
                           chooseLM(widget, derivation.words.get(0));
-//                  System.out.println(derivation.edge);
+                  System.out.println(derivation.edge);
               }
               return;
           }
         
          // choose intermediate non-terminal nodes
           widget = (Widget)derivation.edge.info.choose(widget);
-//          System.out.println(derivation.edge);
+          System.out.println(derivation.edge);
 //          if(setPosterior) derivation.edge.info.setPosterior(1.0);
           logWeight += derivation.weight.toLogDouble();
           for(Derivation d : derivation.derArray)

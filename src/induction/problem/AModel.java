@@ -812,6 +812,23 @@ public abstract class AModel<Widget extends AWidget,
         return graph;
     }
 
+    public Graph testGenerateVisualise(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        Params counts = newParams();
+        Example ex = examples.get(0);
+        Graph graph = new DirectedSparseGraph<String, String>();
+        InferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity, graph);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return graph;
+    }
+
     class InitParams extends MyCallable
     {
         private Example ex;

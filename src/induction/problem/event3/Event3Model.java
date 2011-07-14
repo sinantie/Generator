@@ -6,6 +6,7 @@ import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
+import induction.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.ModelType;
@@ -1084,16 +1085,21 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     {
         switch(opts.modelType)
         {
-            case generate : return new GenInferStateFixed(this, ex, params, counts, ispec, ngramModel);
+            case generate : return new GenInferStateSeg(this, ex, params, counts, ispec, ngramModel);
             case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
             default : return new InferState(this, ex, params, counts, ispec);
         }
     }
 
     protected Event3InferState newInferState(Example ex, Params params, Params counts,
-                                       InferSpec ispec, Graph graph)
+                                           InferSpec ispec, Graph graph)
     {
-        return new SemParseInferState(this, ex, params, counts, ispec, graph);
+        switch(opts.modelType)
+        {
+            case generate: return new GenInferStateFixed(this, ex, params, counts, ispec, ngramModel, graph);
+            case semParse: default: return new SemParseInferState(this, ex, params, counts, ispec, graph);
+        }
+        
     }
 
     @Override

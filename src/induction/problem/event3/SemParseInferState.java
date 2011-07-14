@@ -23,8 +23,6 @@ import java.util.HashMap;
  */
 public class SemParseInferState extends GenInferState
 {
-    Graph graph;
-
     public SemParseInferState(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
@@ -34,8 +32,7 @@ public class SemParseInferState extends GenInferState
     public SemParseInferState(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, Graph graph)
     {
-        super(model, ex, params, counts, ispec, null);
-        this.graph = graph;
+        super(model, ex, params, counts, ispec, null, graph);
     }
 
     @Override
