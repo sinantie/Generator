@@ -24,154 +24,22 @@ import java.util.HashMap;
  *
  * @author konstas
  */
-public class GenInferStateSeg extends Event3InferState
+public class GenInferStateSeg extends GenInferState
 {
-    protected NgramModel ngramModel;
-    protected Indexer<String> vocabulary;
     private int numberOfEvents;
 
     public GenInferStateSeg(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
-        super(model, ex, params, counts, ispec);
-        this.ngramModel = ngramModel;
+        super(model, ex, params, counts, ispec, ngramModel);
     }
 
     @Override
     protected void initInferState(AModel model)
     {
-        wildcard_pc = -1;
-        L = opts.maxPhraseLength;
-        segPenalty = new double[L + 1];
-        for(int l = 0; l < L +1; l++)
-        {
-            segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
-        }
-        N = ex.N();
-        this.vocabulary = ((Event3Model)model).getWordIndexer();
+        super.initInferState(model);
         numberOfEvents = ex.events.values().size();
-    }
-
-    protected int[] newMatrixOne()
-    {
-        int[] out = new int[N]; // CAREFUL WITH N
-        for(int i = 0; i < out.length; i++)
-        {
-            Arrays.fill(out, -1);
-        }
-        return out;
-    }
-
-    @Override
-    protected Widget newWidget()
-    {
-        HashMap<Integer, Integer> eventTypeIndices =
-                            new HashMap<Integer, Integer>(ex.events.size());
-        for(Event e : ex.events.values())
-        {
-            eventTypeIndices.put(e.id, e.getEventTypeIndex());
-        }
-        return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
-                               newMatrixOne(),
-                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
-    }
-
-    @Override
-    protected void createHypergraph(Hypergraph<Widget> hypergraph)
-    {
-        // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
-                opts.reorderType, opts.allowConsecutiveEvents,
-                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-                vocabulary.getIndex("<num>"),
-                vocabulary.getIndex("ELIDED_SYMBOL"),
-                vocabulary.getIndex("<s>"),
-                vocabulary.getIndex("</s>"),
-                opts.ngramWrapper != Options.NgramWrapper.roark,
-                vocabulary, ex, null);
-        if(opts.fullPredRandomBaseline)
-        {
-            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0,
-                    ((Event3Model)model).boundary_t()),
-                           new Hypergraph.HyperedgeInfo<Widget>()
-            {
-                public double getWeight()
-                {
-                    return 1;
-                }
-                public void setPosterior(double prob)
-                { }
-                public Widget choose(Widget widget)
-                {
-                    return widget;
-                }
-            });
-        } // if
-        else
-        {
-            WordNode startSymbol = new WordNode(-1, 0, -1, -1);
-            hypergraph.addSumNode(startSymbol);
-//            WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
-//            hypergraph.addSumNode(endSymbol);
-            this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
-            {
-                public double getWeight()
-                { return 1;}
-                public Pair getWeightLM(int rank)
-                {
-                    if(rank > 0)
-                        return null;
-                    return new Pair(1.0, vocabulary.getIndex("<s>"));
-                }
-                public void setPosterior(double prob)
-                { }
-                 public GenWidget choose(GenWidget widget)
-                { return widget; }
-
-                public GenWidget chooseLM(GenWidget widget, int word)
-                { return widget; }
-            });
-//            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
-//            {
-//                public double getWeight()
-//                { return 1;}
-//                public Pair getWeightLM(int rank)
-//                {
-//                    if(rank > 0)
-//                        return null;
-//                    return new Pair(1.0, vocabulary.getIndex("</s>"));
-//                }
-//                public void setPosterior(double prob)
-//                { }
-//                public GenWidget choose(GenWidget widget)
-//                { return widget; }
-//
-//                public GenWidget chooseLM(GenWidget widget, int word)
-//                { return widget; }
-//            });
-            ArrayList<Object> list = new ArrayList(opts.ngramSize);
-            for(int i = 0; i < opts.ngramSize - 1; i++) // Generate each word in this range using an LM
-            {
-                list.add(startSymbol);
-            }
-            list.add(genEvents(0, ((Event3Model)model).boundary_t()));
-//            list.add(endSymbol);
-            this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
-                           new Hypergraph.HyperedgeInfo<Widget>()
-            {
-                public double getWeight()
-                {
-                    return 1;
-                }
-                public void setPosterior(double prob)
-                { }
-                public Widget choose(Widget widget)
-                {
-                    return widget;
-                }
-            });
-        } // else
-    }
+    }   
 
     /**
      * Default: don't generate any event (there should be only one of these nodes)
@@ -430,10 +298,10 @@ public class GenInferStateSeg extends Event3InferState
 
     protected Object genEvents(int seqNo, final int t0)
     {
+        final TrackParams cparams = params.trackParams[0];
 
         if (seqNo == numberOfEvents)
         {
-//            System.out.println(String.format("END : [%d]", i));
 //            return hypergraph.endNode;
             EventsNode node = new EventsNode(N, t0);
             if(hypergraph.addSumNode(node))
@@ -445,25 +313,81 @@ public class GenInferStateSeg extends Event3InferState
         }
         else
         {
-//            System.out.println(String.format("Father : [%d]", i));
             EventsNode node = new EventsNode(seqNo, t0);
-//            if(hypergraph.addSumNode(node))
-//            {
-//                if (oneEventPerExample())
-//                    selectEnd(N, node, i, t0);
-//                else if (newEventTypeFieldPerWord())
-//                    selectEnd(i+1, node, i, t0);
-//                else // Allow everything
-//                {
-//                    for(int k = i+1; k < end(i, Integer.MAX_VALUE)+1; k++)
-//                    {
-//                        selectEnd(k, node, i, t0);
-//                    }
-//                }
-//                hypergraph.assertNonEmpty(node);
-//            }
+            if(hypergraph.addSumNode(node))
+            {
+                final int start = seqNo * L;
+                final int nextSeqNo = seqNo + 1;
+                for(int k = start; k < (start + L) + 1; k++)
+                {
+                    final int end = k;
+                    // (1) Choose the none event
+                    if (opts.allowNoneEvent && (!trueInfer || ex.getTrueWidget() == null ||
+                          ex.getTrueWidget().hasNoReachableContiguousEvents(start, end, 0)))
+                    {
+                        final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not
+                        hypergraph.addEdge(node,
+                          genNoneEvent(start, end, 0), genEvents(nextSeqNo, remember_t),
+                          new Hypergraph.HyperedgeInfo<Widget>() {
+                              public double getWeight() {
+                                  if(prevIndepEventTypes())
+                                      return get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t);
+                                  else
+                                      return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
+                              }
+                              public void setPosterior(double prob) { }
+                              public Widget choose(Widget widget) {
+                                  for(int p = start; p < end; p++)
+                                  {
+                                      widget.events[0][p] = Parameters.none_e;
+                                  }
+                                  return widget;
+                              }
+                          });
+                    } // if none_t
+                    // (2) Choose an event type t and event e for track c
+                    for(final Event e : ex.events.values())
+                    {
+                        final int eventId = e.id;
+                        final int eventTypeIndex = e.getEventTypeIndex();
+                        if (!trueInfer || ex.getTrueWidget() == null ||
+                            ex.getTrueWidget().hasContiguousEvents(start, end, eventId))
+                        {
+                            final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
+                            hypergraph.addEdge(node,
+                              genEvent(start, end, 0, eventId), genEvents(nextSeqNo, remember_t),
+                              new Hypergraph.HyperedgeInfo<Widget>() {
+                                  public double getWeight()
+                                  {
+                                      if(prevIndepEventTypes())
+                                          return get(cparams.getEventTypeChoices()[cparams.boundary_t],
+                                                  eventTypeIndex) *
+                                                  (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
+                                      else
+                                          return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                                  (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
+                                  }
+                                  public void setPosterior(double prob) { }
+                                  public Widget choose(Widget widget) {
+                                      for(int p = start; p < end; p++)
+                                      {
+                                          widget.events[0][p] = eventId;
+                                      }
+                                      return widget;
+                                  }
+                              });
+                          } // if
+                    } // for
+                } // for k = start to k < (start + L) + 1
+                hypergraph.assertNonEmpty(node);
+            }
             return node;
         }
+    }
+
+    protected void selectEvent(int seqNo, EventsNode node, int t0)
+    {
+
     }
 
     protected void selectEnd(int j, EventsNode node, int i, int t0)
