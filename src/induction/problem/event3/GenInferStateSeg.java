@@ -378,6 +378,8 @@ public class GenInferStateSeg extends GenInferState
                               });
                           } // if
                     } // for
+                    // (3) Choose to STOP
+                    hypergraph.addEdge(node, genStopNode(nextSeqNo, t0, cparams, null));
                 } // for k = start to k < (start + L) + 1
                 hypergraph.assertNonEmpty(node);
             }
