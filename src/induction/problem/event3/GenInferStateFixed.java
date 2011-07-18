@@ -118,7 +118,7 @@ public class GenInferStateFixed extends GenInferState
                                           (1.0d/(double)ex.eventTypeCounts[eventTypeIndex]); // remember_t = t under indepEventTypes
                               else
                                   return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
-                                          (1.0/(double)ex.eventTypeCounts[eventTypeIndex]);
+                                          (1.0/(double)ex.eventTypeCounts[eventTypeIndex])*(1-segPenalty[j-i]);
                           }
                           public void setPosterior(double prob) { }
                           public Widget choose(Widget widget) {

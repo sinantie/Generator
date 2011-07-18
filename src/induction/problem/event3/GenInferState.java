@@ -963,6 +963,8 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(getWeight(), vocabulary.getIndex("</s>"));
+//                    return new Pair(getWeight(), null);
+//                    return new Pair(getWeight(), vocabulary.getIndex("none_f"));
                 }
 
                 @Override

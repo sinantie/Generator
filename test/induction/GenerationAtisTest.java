@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package induction;
 
 import fig.exec.Execution;
@@ -45,10 +40,10 @@ public class GenerationAtisTest
                     + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
                     + "results/output/atis/alignments/"
                     + "model_3/15_iter_no_null_no_smooth_STOP/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 40 "
+                    + "-disallowConsecutiveRepeatFields -kBest 80 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
-                    + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
+                    + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
+                    + "eventType -maxPhraseLength 8 -binariseAtWordLevel "
                     + "-ngramSize 3";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
