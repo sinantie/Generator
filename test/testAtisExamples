@@ -3,6 +3,12 @@ what flights go from dallas to baltimore
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
 .id:1	.type:search	@of:--	@typed:lambda	@what:flight
 0 0 1
+Example_3
+i need an early flight from milwaukee to denver
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:early
+0 0 1 2
 Example_440
 i want to book a flight from salt lake city to westchester county
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:westchester_county	@year:--

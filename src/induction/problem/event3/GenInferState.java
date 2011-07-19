@@ -64,6 +64,12 @@ public class GenInferState extends InferState
         {
             segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
+        segPenalty[1] = 1;
+        segPenalty[2] = 1;
+        segPenalty[3] = 1;
+        segPenalty[4] = 1;
+        segPenalty[5] = 0.05;
+        segPenalty[6] = 0.9;
         N = ex.N();
         this.vocabulary = ((Event3Model)model).getWordIndexer();
     }
@@ -963,6 +969,7 @@ public class GenInferState extends InferState
                     if(rank > 0)
                         return null;
                     return new Pair(getWeight(), vocabulary.getIndex("</s>"));
+//                    return new Pair(1.0, vocabulary.getIndex("</s>"));
 //                    return new Pair(getWeight(), null);
 //                    return new Pair(getWeight(), vocabulary.getIndex("none_f"));
                 }
