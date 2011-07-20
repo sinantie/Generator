@@ -40,10 +40,10 @@ public class GenerationAtisTest
                     + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
                     + "results/output/atis/alignments/"
                     + "model_3/15_iter_no_null_no_smooth_STOP/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 80 "
+                    + "-disallowConsecutiveRepeatFields -kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
-                    + "eventType -maxPhraseLength 8 -binariseAtWordLevel "
+                    + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
@@ -69,9 +69,9 @@ public class GenerationAtisTest
     {
         System.out.println("run");
         String targetOutput = "<doc docid=\"Example_1\" genre=\"nw\"><p>"
-                + "<seg id=\"1\" bleu=\"0.1743883015602825\" bleu_modified=\"0.1743883015602825\" "
-                + "meteor=\"0.531022469646483\" ter=\"0.7142857142857143\">"
-                + "show me the flights from dallas to</seg></p></doc>";
+                + "<seg id=\"1\" bleu=\"0.4673945708424301\" bleu_modified=\"0.4673945708424301\" "
+                + "meteor=\"0.6853734613927462\" ter=\"0.42857142857142855\">"
+                + "show me flights from dallas to baltimore</seg></p></doc>";
         String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
         assertEquals(in, targetOutput);
     }
