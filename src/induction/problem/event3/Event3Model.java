@@ -948,7 +948,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
      * @return an array of Strings with name, text, events and align data in
      * each position
      */
-    private String[] extractExampleFromString(String input)
+    public static String[] extractExampleFromString(String input)
     {
         String[] res = new String[4];
         String ar[] = input.split("\n");
