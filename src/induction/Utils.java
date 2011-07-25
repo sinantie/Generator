@@ -6,7 +6,10 @@ import fig.exec.Execution;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Constants.TypeAdd;
 import induction.utils.StringWithEmbeddedInt;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -406,6 +409,25 @@ public class Utils
         return readLines(path, Integer.MAX_VALUE);
     }
 
+    public static String readFileAsString(String filePath) throws java.io.IOException
+    {
+        byte[] buffer = new byte[(int) new File(filePath).length()];
+        BufferedInputStream f = null;
+        try
+        {
+            f = new BufferedInputStream(new FileInputStream(filePath));
+            f.read(buffer);
+        } finally {
+            if (f != null) try { f.close(); } catch (IOException ignored) { }
+        }
+        return new String(buffer);
+    }
+
+    public static String stripExtension(String name)
+    {
+        return name.substring(0, name.lastIndexOf("."));
+    }
+    
     // Detect overflow, then set to cap (MAX_VALUE or MIN_VALUE)
     public static int safeAdd(int x, int y)
     {

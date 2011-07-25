@@ -30,13 +30,17 @@ public class ExtractFeatures
     private String[] emptyVector;    
     public enum FeatureType {BINARY, COUNTS, VALUES};
     private FeatureType type;
-
+    private boolean examplesInOneFile;
+    private int startIndex;
+    
     public ExtractFeatures(String outputFilename, String inputFilename, 
-            String paramsFilename, FeatureType type)
+            String paramsFilename, FeatureType type, boolean examplesInOneFile, int startIndex)
     {
         this.outputFilename = outputFilename;
         this.inputFilename = inputFilename;
         this.type = type;
+        this.examplesInOneFile = examplesInOneFile;
+        this.startIndex = startIndex;
         emptyVector = createEmptyVector(loadEventTypes(paramsFilename));
     }
 
@@ -85,26 +89,41 @@ public class ExtractFeatures
         {
             FileWriter fos = new FileWriter(outputFilename);
             fos.append(header);
-            String key = null;
             String example[];
-            StringBuilder str = new StringBuilder();
-            for(String line : Utils.readLines(inputFilename))
+            if(examplesInOneFile)
             {
-                if(line.startsWith("Example_"))
+                String key = null;
+                StringBuilder str = new StringBuilder();
+                for(String line : Utils.readLines(inputFilename))
                 {
-                    if(key != null) // only for the first example
-                    {                        
-                        example = Event3Model.extractExampleFromString(str.toString());
-                        fos.append(extractFeatures(example[1], example[2]) + "\n");
-                        str = new StringBuilder();
-                    }
-                    key = line;
-                } // if
-                str.append(line).append("\n");
-            }  // for
-            // don't forget last example
-            example = Event3Model.extractExampleFromString(str.toString());
-            fos.append(extractFeatures(example[1], example[2]));
+                    if(line.startsWith("Example_"))
+                    {
+                        if(key != null) // only for the first example
+                        {
+                            example = Event3Model.extractExampleFromString(str.toString());
+                            fos.append(extractFeatures(example[1], example[2]) + "\n");
+                            str = new StringBuilder();
+                        }
+                        key = line;
+                    } // if
+                    str.append(line).append("\n");
+                }  // for
+                // don't forget last example
+                example = Event3Model.extractExampleFromString(str.toString());
+                fos.append(extractFeatures(example[1], example[2]));
+            }
+            else
+            {
+                for(String line : Utils.readLines(inputFilename)) // contains list of .events files
+                {
+//                    System.out.println(line);
+                    String events = Utils.readFileAsString(line);
+                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
+                    fos.append(extractFeatures(text, events) + "\n");
+                }
+            }
+            
+            
             fos.close();
         }
         catch(IOException ioe) {}
@@ -118,7 +137,7 @@ public class ExtractFeatures
             fillVector(vector, line);
         }
         // put the text length as label
-        return Arrays.toString(vector).replaceAll("[\\[\\] ]", "") + "," + text.split(" ").length;
+        return Arrays.toString(vector).replaceAll("[\\[\\] ]", "") + "," + text.split("[ \n]").length;
     }
 
     private void fillVector(String[] vector, String event)
@@ -127,10 +146,11 @@ public class ExtractFeatures
         int index = eventTypesIndex.get(tokens[1].split(":")[1]); // 2nd token holds the type (.type:xxx)
 //        vector[index] = type == FeatureType.BINARY ? "1" : String.valueOf(Integer.valueOf(vector[index]) + 1);;
 
-        for(int i = 2; i < tokens.length; i++)
+        for(int i = startIndex; i < tokens.length; i++)
         {
-            int currentIndex = index + i - 2;
-            String value = tokens[i].split(":")[1];
+            int currentIndex = index + i - startIndex;
+            String[] subTokens = tokens[i].split(":");
+            String value = subTokens.length > 1 ? subTokens[1] : "--";
             if(!value.equals("--"))
             {
                 if(type == FeatureType.BINARY)
@@ -170,14 +190,23 @@ public class ExtractFeatures
   
     public static void main(String[] args)
     {
-        String paramsFilename = "results/output/atis/alignments/model_3/"
-                + "15_iter_no_null_no_smooth_STOP/stage1.params.obj";
+//        String paramsFilename = "results/output/atis/alignments/model_3/"
+//                + "15_iter_no_null_no_smooth_STOP/stage1.params.obj";
 //        String outputFilename = "data/atis/train/atis5000.sents.full.counts.features.csv";
 //        String inputFilename = "data/atis/train/atis5000.sents.full";
-        String outputFilename = "data/atis/test/atis-test.txt.counts.features.csv";
-        String inputFilename = "data/atis/test/atis-test.txt";
+//        String outputFilename = "data/atis/test/atis-test.txt.counts.features.csv";
+//        String inputFilename = "data/atis/test/atis-test.txt";
+        String paramsFilename = "results/output/weatherGov/alignments/"
+                + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj";
+        String outputFilename = "gaborLists/trainListPathsGabor.counts.features.csv";
+        String inputFilename = "gaborLists/trainListPathsGabor";
+//        String outputFilename = "gaborLists/genEvalListPathsGabor.counts.features.csv";
+//        String inputFilename = "gaborLists/genEvalListPathsGabor";
         FeatureType type = FeatureType.COUNTS;
-        ExtractFeatures ef = new ExtractFeatures(outputFilename, inputFilename, paramsFilename, type);
+        boolean examplesInOneFile = false;
+        int startIndex = 4; // 4 for weatherGov, 2 for atis
+        ExtractFeatures ef = new ExtractFeatures(outputFilename, inputFilename, 
+                paramsFilename, type, examplesInOneFile, startIndex);
         ef.execute();
     }
 }

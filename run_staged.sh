@@ -1,14 +1,13 @@
 #!/bin/bash
  
 input=data/atis/test/atis-test.txt
-output=results/output/atis/alignments/test_staged
-stagedFile=results/output/atis/alignments/model_3/15_iter_no_null/stage1.params.obj
+output=results/output/atis/alignments/test_staged/no_null_smooth_0001_STOP
+stagedFile=results/output/atis/alignments/model_3/15_iter_no_null_smooth_0001_STOP/stage1.params.obj
 threads=2
 
-java -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:dist/stanford-postagger-2010-05-26.jar induction.Induction -create -modeltype event3 -testInputLists $input -Options.stage1.numIters 1 -execPoolDir $output \
+java -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:dist/stanford-postagger-2010-05-26.jar induction.Induction -create -modeltype event3 -testInputLists $input -Options.stage1.numIters 1 -execDir $output \
 -inputFileExt events -numThreads $threads -initNoise 0 -initType staged -stagedParamsFile $stagedFile \
--disallowConsecutiveRepeatFields -dontCrossPunctuation -indepWords 0,-1 \
--outputFullPred -modelUnkWord #-useGoldStandardOnly
+-disallowConsecutiveRepeatFields -dontCrossPunctuation -outputFullPred -modelUnkWord -examplesInSingleFile #-useGoldStandardOnly \
 #-excludedFields skyCover.time temperature.time windChill.time windSpeed.time windDir.time gust.time precipPotential.time thunderChance.time \
 #snowChance.time freezingRainChance.time sleetChance.time
 
