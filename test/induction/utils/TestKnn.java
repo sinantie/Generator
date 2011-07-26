@@ -5,8 +5,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import weka.classifiers.lazy.IBk;
-import weka.classifiers.lazy.IBk;
+import weka.classifiers.Classifier;
+import weka.core.FastVector;
 import weka.core.Instances;
 
 /**
@@ -53,10 +53,12 @@ public class TestKnn {
                      "java weka.classifiers.lazy.IBk -K 10 -W 0 -I "
                      + "-A \"weka.core.neighboursearch.LinearNNSearch -A "
                      + "\"weka.core.EuclideanDistance -R first-last\"\" "
-                     + "-l '%s' -T '%s'", modelFilename, testSetFilename));
-             IBk classifier = new IBk();
-             classifier.setOptions(options);
-
+                     + "-l '%s'", modelFilename));
+//             IBk classifier = new IBk();
+//             classifier.setOptions(options);
+//             classifier.classifyInstance(new Instance());
+             Classifier cls = (Classifier) weka.core.SerializationHelper.read(modelFilename);
+//             Instances i = new Instances("Test", null, capacity)
          }
          catch(Exception e) {}
      }

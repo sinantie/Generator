@@ -732,7 +732,7 @@ public abstract class AModel<Widget extends AWidget,
             
             iter++;
         }
-        System.out.println(params.output());
+//        System.out.println(params.output());
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 

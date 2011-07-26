@@ -465,6 +465,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                         tokens.add(new Token(':', "type", -1, value));
                     }
                 } // if
+                else
+                    return null;
             } // if (fieldName.equals("type"))
             else if (tchar != '.' &&  // Ignore hidden fields
                      eventTypeIndex != -1) // Consider only fields that come after type
@@ -508,6 +510,8 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
             // parse tokens
             final Token[] tokens = readTokens(line, excludedEventTypes,
                                               excludedFields);
+            if(tokens == null) // excludedEventType
+                continue;
             values = new ArrayList<Integer>(tokens.length);
             if (eventTypeIndex != -1 &&
                 (!opts.takeOneOfEventType ||
@@ -604,7 +608,9 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
         {
             // parse tokens
             final Token[] tokens = readTokens(line, excludedEventTypes,
-                                              excludedFields);           
+                                              excludedFields);
+            if(tokens == null) // excludedEventType
+                continue;
             // eventTypeIndex is already defined from readTokens(...). It's
             // guaranteed to have a value, since readMRTokens(...) is called
             // after readEvents(...)

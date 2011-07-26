@@ -42,7 +42,8 @@ public class InductionAtisTest
                 + "test/testAtisExamples -examplesInSingleFile -inputFileExt events "
                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                 + "-disallowConsecutiveRepeatFields -indepWords 0,5 -initNoise 0 "
-                + "-dontCrossPunctuation -Options.stage1.smoothing 0.001 -modelUnkWord";
+                + "-dontCrossPunctuation -Options.stage1.smoothing 0.001 -modelUnkWord "
+                + "-excludedEventTypes airline airport booking_class city entity fare_basis_code location transport";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

@@ -1,3 +1,9 @@
+Example_54
+is fare code b the same as business class
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:business	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:2	.type:fare_basis_code	@equals:b
+.id:1	.type:search	@of:fare_basis_code	@typed:lambda	@what:flight
+0 0 1 2
 Example_1
 what flights go from dallas to baltimore
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--

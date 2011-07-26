@@ -87,10 +87,15 @@ public class RecomputeGaborMetrics
             Node instanceNode = nodeInstanceList.item(i);
             if(instanceNode.getNodeType() == Node.ELEMENT_NODE)
             {
-                keyId = ((Element)instanceNode).getAttribute("id");
+                Element instanceElement = (Element)instanceNode;
+                keyId = instanceElement.getAttribute("id");
                 // get the guess and gold tags                
-                predStr = instanceNode.getChildNodes().item(1).getTextContent().trim();
-                trueStr = instanceNode.getChildNodes().item(3).getTextContent().trim();
+                predStr = ((Element)instanceElement.getElementsByTagName("guess").item(0)).
+                        getChildNodes().item(0).getNodeValue().trim();
+                trueStr = ((Element)instanceElement.getElementsByTagName("gold").item(0)).
+                        getChildNodes().item(0).getNodeValue().trim();
+//                predStr = instanceNode.getChildNodes().item(1).getTextContent().trim();
+//                trueStr = instanceNode.getChildNodes().item(3).getTextContent().trim();
                 fos.write(computeSGMLEntry(keyId, predStr, trueStr).getBytes());
             }
         }
@@ -153,7 +158,7 @@ public class RecomputeGaborMetrics
     {
         String inputFile = "";
         if(args.length < 1)
-            inputFile = "/home/konstas/Desktop/2010emnlp-generation/results-weather.xml";
+            inputFile = "/home/konstas/EDI/Gabor/generation/outs/atis/1.exec/results-test.xml";
         else
             inputFile = args[0];
 
