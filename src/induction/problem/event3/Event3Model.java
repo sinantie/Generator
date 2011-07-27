@@ -883,11 +883,12 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 //                            new GenWidget(trueEvents, text)));
                         // predict length
                         double[] features = new double[lengthPredictionDataset.size() - 1]; // no label
-                         int j = 0;
-                         for(String s : "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7".split(","))
-                             features[j++] = Double.valueOf(s);
-                         Instance featureVector = new SparseInstance(1.0, features);
-                         featureVector.setDataset(lengthPredictionDataset);
+                        int j = 0;
+                        for(String s : "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7".split(","))
+                            features[j++] = Double.valueOf(s);
+                        Instance featureVector = new SparseInstance(1.0, features);
+                        featureVector.setDataset(lengthPredictionDataset);
+
                         examples.add(new Example(this, name, events,
                             null, null, null, text.length,
 //                            null, null, null, text.length,
