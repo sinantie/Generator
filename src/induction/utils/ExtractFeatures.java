@@ -3,7 +3,6 @@ package induction.utils;
 import induction.Utils;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
-import induction.problem.event3.Field;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -130,6 +129,12 @@ public class ExtractFeatures
     }
     
     private String extractFeatures(String text, String events)
+    {        
+        // put the text length as label
+        return extractFeatures(events) + "," + text.split("[ \n]").length;
+    }
+
+    private String extractFeatures(String events)
     {
         String[] vector = Arrays.copyOf(emptyVector, emptyVector.length);
         for(String line : events.split("\n"))
@@ -137,7 +142,7 @@ public class ExtractFeatures
             fillVector(vector, line);
         }
         // put the text length as label
-        return Arrays.toString(vector).replaceAll("[\\[\\] ]", "") + "," + text.split("[ \n]").length;
+        return Arrays.toString(vector).replaceAll("[\\[\\] ]", "");
     }
 
     private void fillVector(String[] vector, String event)
@@ -190,21 +195,34 @@ public class ExtractFeatures
   
     public static void main(String[] args)
     {
-//        String paramsFilename = "results/output/atis/alignments/model_3/"
-//                + "15_iter_no_null_no_smooth_STOP/stage1.params.obj";
-//        String outputFilename = "data/atis/train/atis5000.sents.full.counts.features.csv";
-//        String inputFilename = "data/atis/train/atis5000.sents.full";
-//        String outputFilename = "data/atis/test/atis-test.txt.counts.features.csv";
-//        String inputFilename = "data/atis/test/atis-test.txt";
-        String paramsFilename = "results/output/weatherGov/alignments/"
-                + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj";
-        String outputFilename = "gaborLists/trainListPathsGabor.counts.features.csv";
-        String inputFilename = "gaborLists/trainListPathsGabor";
-//        String outputFilename = "gaborLists/genEvalListPathsGabor.counts.features.csv";
-//        String inputFilename = "gaborLists/genEvalListPathsGabor";
-        FeatureType type = FeatureType.COUNTS;
-        boolean examplesInOneFile = false;
-        int startIndex = 4; // 4 for weatherGov, 2 for atis
+        String paramsFilename, outputFilename, inputFilename;
+        int startIndex;
+        if(args.length > 0)
+        {
+            paramsFilename = args[0];
+            inputFilename = args[1];
+            outputFilename = args[2];
+            startIndex = Integer.valueOf(args[3]);
+        }
+        else
+        {
+    //        paramsFilename = "results/output/atis/alignments/model_3/"
+    //                + "15_iter_no_null_no_smooth_STOP/stage1.params.obj";
+    //        outputFilename = "data/atis/train/atis5000.sents.full.counts.features.csv";
+    //        inputFilename = "data/atis/train/atis5000.sents.full";
+    //        outputFilename = "data/atis/test/atis-test.txt.counts.features.csv";
+    //        inputFilename = "data/atis/test/atis-test.txt";
+            paramsFilename = "results/output/weatherGov/alignments/"
+                    + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj";
+    //        String outputFilename = "gaborLists/trainListPathsGabor.values.features.csv";
+    //        String inputFilename = "gaborLists/trainListPathsGabor";
+            outputFilename = "gaborLists/genEvalListPathsGabor.values.features.csv";
+            inputFilename = "gaborLists/genEvalListPathsGabor";
+            startIndex = 4; // 4 for weatherGov, 2 for atis
+        }
+        FeatureType type = FeatureType.VALUES;
+        boolean examplesInOneFile = true;
+        
         ExtractFeatures ef = new ExtractFeatures(outputFilename, inputFilename, 
                 paramsFilename, type, examplesInOneFile, startIndex);
         ef.execute();

@@ -112,6 +112,7 @@ public class Options {
   @Option(gloss="For each line, make a separate example (NFL data)") public boolean oneExamplePerLine = false;
 
   // Generation
+  @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
   @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
   @Option(gloss="number k of candidates (default=1, i.e. perform 1-best viterbi)") public int kBest = 1;
   @Option(gloss="ngram model input file") public String ngramModelFile;

@@ -6,7 +6,6 @@ import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
-import induction.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.ModelType;
@@ -31,6 +30,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import weka.core.Instance;
+import weka.core.SparseInstance;
 
 /**
  * A model of events and their text summaries (ACL 2009).
@@ -880,8 +881,16 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 //                        examples.add(new Example(this, textPath, events,
 //                            null, null, null, opts.averageTextLength,
 //                            new GenWidget(trueEvents, text)));
+                        // predict length
+                        double[] features = new double[lengthPredictionDataset.size() - 1]; // no label
+                         int j = 0;
+                         for(String s : "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7".split(","))
+                             features[j++] = Double.valueOf(s);
+                         Instance featureVector = new SparseInstance(1.0, features);
+                         featureVector.setDataset(lengthPredictionDataset);
                         examples.add(new Example(this, name, events,
                             null, null, null, text.length,
+//                            null, null, null, text.length,
 //                            null, null, null, events.size()*opts.maxPhraseLength,
                             new GenWidget(trueEvents, text)));
                     } // if (generation WITH gold-standard)
@@ -1117,5 +1126,21 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
     public Options getOpts()
     {
         return opts;
-    }     
+    }
+
+    /**
+     * compute total number of elements: ~|eventTypes|*|fields_per_eventType|
+     * @return
+     */
+    @Override
+    protected int getLengthPredictionAttrSize()
+    {
+        int total = 0;
+        for(EventType eventType: eventTypes)
+        {            
+            
+            total += eventType.getF();
+        }
+        return total;
+    }
 }
