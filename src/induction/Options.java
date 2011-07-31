@@ -2,6 +2,7 @@ package induction;
 
 import java.util.*;
 import fig.basic.*;
+import induction.utils.ExtractFeatures;
 
 public class Options {
   public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, generate, semParse };
@@ -112,8 +113,6 @@ public class Options {
   @Option(gloss="For each line, make a separate example (NFL data)") public boolean oneExamplePerLine = false;
 
   // Generation
-  @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
-  @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
   @Option(gloss="number k of candidates (default=1, i.e. perform 1-best viterbi)") public int kBest = 1;
   @Option(gloss="ngram model input file") public String ngramModelFile;
   @Option(gloss="n-gram size (default=3)") public int ngramSize = 3;
@@ -123,12 +122,17 @@ public class Options {
   @Option(gloss="allow consecutive events (default=false)") public boolean allowConsecutiveEvents = false;
   @Option public ReorderType reorderType = ReorderType.eventType;
   @Option(gloss="model unknown word (default=false)") public boolean modelUnkWord = false;
-
   @Option(gloss="binarise at word level (default=false)") public boolean binariseAtWordLevel = false;
   @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean posAtSurfaceLevel = false;
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;
-
   @Option(gloss="set n for modified BLEU score") public int modifiedBleuScoreSize = 4;
+
+  // length prediction
+  @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
+  @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
+  @Option(gloss="Feature type for length prediction vector (default=value)") public ExtractFeatures.FeatureType
+    lengthPredictionFeatureType = ExtractFeatures.FeatureType.VALUES;
+  @Option(gloss="Position of eventType interface events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;
 
   // Semantic Parsing
   @Option(gloss="generate semantic parsing parameters (default=false)") public boolean generateSemParParams = false;

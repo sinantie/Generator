@@ -30,17 +30,38 @@ public class ExtractFeatures
     public enum FeatureType {BINARY, COUNTS, VALUES};
     private FeatureType type;
     private boolean examplesInOneFile;
-    private int startIndex;
-    
+    private int startIndex, vectorLength;
+
+    /**
+     * Constructor for stand-alone use. In short, copies parameters and
+     * creates an empty vector of the correct size.
+     * @param outputFilename
+     * @param inputFilename
+     * @param paramsFilename
+     * @param type
+     * @param examplesInOneFile
+     * @param startIndex
+     */
     public ExtractFeatures(String outputFilename, String inputFilename, 
             String paramsFilename, FeatureType type, boolean examplesInOneFile, int startIndex)
     {
+        this(paramsFilename, type, startIndex);
         this.outputFilename = outputFilename;
         this.inputFilename = inputFilename;
+        this.examplesInOneFile = examplesInOneFile;        
+    }
+
+    public ExtractFeatures(String paramsFilename, FeatureType type, int startIndex)
+    {
         this.type = type;
-        this.examplesInOneFile = examplesInOneFile;
         this.startIndex = startIndex;
-        emptyVector = createEmptyVector(loadEventTypes(paramsFilename));
+        this.vectorLength = loadEventTypes(paramsFilename);
+        emptyVector = createEmptyVector(vectorLength);
+    }
+
+    public int getVectorLength()
+    {
+        return vectorLength;
     }
 
     private int loadEventTypes(String paramsFilename)
@@ -120,9 +141,7 @@ public class ExtractFeatures
                     String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
                     fos.append(extractFeatures(text, events) + "\n");
                 }
-            }
-            
-            
+            }                       
             fos.close();
         }
         catch(IOException ioe) {}
@@ -134,14 +153,13 @@ public class ExtractFeatures
         return extractFeatures(events) + "," + text.split("[ \n]").length;
     }
 
-    private String extractFeatures(String events)
+    public String extractFeatures(String events)
     {
         String[] vector = Arrays.copyOf(emptyVector, emptyVector.length);
         for(String line : events.split("\n"))
         {
             fillVector(vector, line);
         }
-        // put the text length as label
         return Arrays.toString(vector).replaceAll("[\\[\\] ]", "");
     }
 
@@ -188,11 +206,11 @@ public class ExtractFeatures
 
     }
 
-    private String header(EventType[] eventTypes)
+    public String getHeader()
     {
-        return "";
+        return header;
     }
-  
+    
     public static void main(String[] args)
     {
         String paramsFilename, outputFilename, inputFilename;

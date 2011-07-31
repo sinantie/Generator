@@ -878,20 +878,12 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     }
                     if(opts.modelType == Options.ModelType.generate)
                     {
-//                        examples.add(new Example(this, textPath, events,
-//                            null, null, null, opts.averageTextLength,
-//                            new GenWidget(trueEvents, text)));
-                        // predict length
-                        double[] features = new double[lengthPredictionDataset.size() - 1]; // no label
-                        int j = 0;
-                        for(String s : "0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7".split(","))
-                            features[j++] = Double.valueOf(s);
-                        Instance featureVector = new SparseInstance(1.0, features);
-                        featureVector.setDataset(lengthPredictionDataset);
-
+                        // predict length                        
+                        int predictedLength = (int) lengthPredictor.predict(eventInput);
                         examples.add(new Example(this, name, events,
-                            null, null, null, text.length,
+                            null, null, null, predictedLength,
 //                            null, null, null, text.length,
+//                            null, null, null, opts.averageTextLength,
 //                            null, null, null, events.size()*opts.maxPhraseLength,
                             new GenWidget(trueEvents, text)));
                     } // if (generation WITH gold-standard)
@@ -933,8 +925,6 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                         examples.add(new Example(this, name, events,
                             null, null, null, opts.averageTextLength,
                             new GenWidget(text)));
-//                         examples.add(new Example(this, textPath, events,
-//                        null, null, null, opts.averageTextLength, null));
                     } // else (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
@@ -1133,8 +1123,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
      * compute total number of elements: ~|eventTypes|*|fields_per_eventType|
      * @return
      */
-    @Override
-    protected int getLengthPredictionAttrSize()
+    protected int getTotalNumberOfFields()
     {
         int total = 0;
         for(EventType eventType: eventTypes)

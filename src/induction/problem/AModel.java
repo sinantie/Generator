@@ -17,6 +17,7 @@ import induction.Options.InitType;
 import induction.RoarkNgramWrapper;
 import induction.SrilmNgramWrapper;
 import induction.Utils;
+import induction.WekaWrapper;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,11 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import weka.classifiers.Classifier;
-import weka.core.Attribute;
-import weka.core.Instances;
-import weka.core.SerializationHelper;
 
 /**
  *
@@ -51,8 +49,7 @@ public abstract class AModel<Widget extends AWidget,
     private PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
     private Performance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
-    protected Classifier lengthPredictionModel;
-    protected Instances lengthPredictionDataset;
+    protected WekaWrapper lengthPredictor;
 
     int currExample;
 
@@ -179,8 +176,17 @@ public abstract class AModel<Widget extends AWidget,
                 Execution.finish();
             }
         }
-        boolean setTrainTest = opts.testInputPaths.size() > 0 ||
-                opts.testInputLists.size() > 0;
+        if(opts.lengthPredictionModelFile != null)
+        {
+            Utils.begin_track("Loading Length Prediction Model...");
+            lengthPredictor = new WekaWrapper(opts.stagedParamsFile,
+                    opts.lengthPredictionModelFile,
+                    opts.lengthPredictionStartIndex,
+                    opts.lengthPredictionFeatureType);
+            LogInfo.end_track();
+        }
+        boolean setTrainTest = !opts.testInputPaths.isEmpty() ||
+                !opts.testInputLists.isEmpty();
 
         if (setTrainTest)
         {
@@ -606,24 +612,6 @@ public abstract class AModel<Widget extends AWidget,
             else if(opts.ngramWrapper == opts.ngramWrapper.roark)
                 ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
             LogInfo.end_track();
-            Utils.begin_track("Loading Length Prediction Model: " + name);
-            try
-            {
-                if(new File(opts.lengthPredictionModelFile).exists())
-                {
-                    lengthPredictionModel = (Classifier) SerializationHelper.read(
-                        opts.lengthPredictionModelFile);
-                    // create host dataset
-                    ArrayList<Attribute> attrs = new ArrayList<Attribute>();
-                    int total = getLengthPredictionAttrSize();
-                     for(int i = 0; i < total; i++)
-                         attrs.add(new Attribute("attr_" + i));
-                    lengthPredictionDataset = new Instances("pred", attrs, 1);
-                    lengthPredictionDataset.setClassIndex(total - 1);
-                }                
-            }
-            catch(Exception e) {}
-            LogInfo.end_track();
         }
         FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)
         double temperature = lopts.initTemperature;
@@ -674,8 +662,6 @@ public abstract class AModel<Widget extends AWidget,
         Record.end();
         LogInfo.end_track();
     }
-
-    protected abstract int getLengthPredictionAttrSize();
 
     /**
      * helper method for testing the learning output. Simulates learn(...) method

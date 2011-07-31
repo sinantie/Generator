@@ -44,7 +44,10 @@ public class GenerationAtisTest
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
-                    + "-ngramSize 3";
+                    + "-ngramSize 3 "
+                    + "-lengthPredictionModelFile data/atis/train/atis5000.sents.full.linear-reg.model "
+                    + "-lengthPredictionFeatureType COUNTS "
+                    + "-lengthPredictionStartIndex 2";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
