@@ -49,7 +49,10 @@ public class GenerationWeatherTest
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
                     + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
-                    + "-ngramSize 3 -indepWords 0,-1";
+                    + "-ngramSize 3 -indepWords 0,-1 "
+                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
+                    + "-lengthPredictionFeatureType VALUES "
+                    + "-lengthPredictionStartIndex 4";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
