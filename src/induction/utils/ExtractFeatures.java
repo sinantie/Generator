@@ -1,14 +1,19 @@
 package induction.utils;
 
 import induction.Utils;
+import induction.problem.event3.CatField;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
+import induction.problem.event3.Field;
+import induction.problem.event3.NumField;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,9 +33,11 @@ public class ExtractFeatures
     private Map<String, Integer> eventTypesIndex;
     private String[] emptyVector;    
     public enum FeatureType {BINARY, COUNTS, VALUES};
+    public enum FieldType {CAT, NUM};
     private FeatureType type;
     private boolean examplesInOneFile;
     private int startIndex, vectorLength;
+    private List<Feature> features;
 
     /**
      * Constructor for stand-alone use. In short, copies parameters and
@@ -75,21 +82,24 @@ public class ExtractFeatures
             ois.readObject(); // labelIndexer, don't need it
             EventType[] eventTypes = (EventType[]) ois.readObject(); // we only need this one
             eventTypesIndex = new HashMap<String, Integer>();
-            StringBuilder str = new StringBuilder(); // create header
+            StringBuilder headStr = new StringBuilder(); // create header
+            features = new ArrayList<Feature>();
             for(EventType eventType: eventTypes)
             {
-                String eventName = eventType.getName();
+                String eventName = eventType.getName();                
                 for(int i = 0; i < eventType.getF(); i++)
-                    str.append(eventName).append("_").append(eventType.fieldToString(i)).append(",");
-//                    str.append(eventName).append(",");
-                    
+                {
+                    String attrName = eventName + "_" + eventType.fieldToString(i);
+                    headStr.append(attrName).append(",");                    
+                    features.add(new Feature(attrName, eventType.getFields()[i]));
+                }                
                 // compute total number of elements: ~|eventTypes|*|fields_per_eventType|
                 eventTypesIndex.put(eventName, totalNumberOfFields);
                 totalNumberOfFields += eventType.getF();
-//                totalNumberOfFields++;
             }
-            str.append("text_length").append("\n");
-            header = str.toString();
+            headStr.append("text_length").append("\n");
+            header = headStr.toString();
+            features.add(new Feature("text_length", FieldType.NUM));
             ois.close();
         }
         catch(Exception ioe)
@@ -210,7 +220,61 @@ public class ExtractFeatures
     {
         return header;
     }
-    
+
+    public List<Feature> getFeatures()
+    {
+        return features;
+    }
+
+    public class Feature
+    {
+        String name;
+        FieldType type;
+        List<String> values = new ArrayList<String>();
+
+        public Feature(String name, Field field)
+        {
+            this.name = name;
+            addValues(field);
+        }
+
+        public Feature(String name, FieldType type)
+        {
+            this.name = name;
+            this.type = type;            
+        }
+
+        private void addValues(Field field)
+        {
+            if (field instanceof NumField)
+            {
+                type = FieldType.NUM;
+            }
+            else // we currently support categorical fields only
+            {
+                type = FieldType.CAT;
+                CatField catField = (CatField)field;
+                for(String value : catField.getIndexer().getObjects())
+                    values.add(!value.equals("") ? value : "--");
+            }
+        }
+
+        public FieldType getType()
+        {
+            return type;
+        }
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public List<String> getValues()
+        {
+            return values;
+        }
+    }
+
     public static void main(String[] args)
     {
         String paramsFilename, outputFilename, inputFilename;

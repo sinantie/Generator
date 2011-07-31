@@ -879,7 +879,18 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                     if(opts.modelType == Options.ModelType.generate)
                     {
                         // predict length                        
-                        int predictedLength = (int) lengthPredictor.predict(eventInput);
+                        int predictedLength = text.length; // get a default value, if all else fails
+                        try
+                        {
+                            predictedLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
+                                    (int) lengthPredictor.predict(
+                                    opts.examplesInSingleFile ? eventInput :
+                                    Utils.readFileAsString(eventInput));
+                        }
+                        catch(Exception e)
+                        {
+                            Utils.log(e);
+                        }
                         examples.add(new Example(this, name, events,
                             null, null, null, predictedLength,
 //                            null, null, null, text.length,

@@ -18,6 +18,7 @@ import induction.RoarkNgramWrapper;
 import induction.SrilmNgramWrapper;
 import induction.Utils;
 import induction.WekaWrapper;
+import induction.utils.ExtractFeatures;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -182,7 +183,7 @@ public abstract class AModel<Widget extends AWidget,
             lengthPredictor = new WekaWrapper(opts.stagedParamsFile,
                     opts.lengthPredictionModelFile,
                     opts.lengthPredictionStartIndex,
-                    opts.lengthPredictionFeatureType);
+                    opts.lengthPredictionFeatureType, WekaWrapper.Mode.TEST);
             LogInfo.end_track();
         }
         boolean setTrainTest = !opts.testInputPaths.isEmpty() ||

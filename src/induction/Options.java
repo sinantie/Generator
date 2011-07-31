@@ -133,6 +133,7 @@ public class Options {
   @Option(gloss="Feature type for length prediction vector (default=value)") public ExtractFeatures.FeatureType
     lengthPredictionFeatureType = ExtractFeatures.FeatureType.VALUES;
   @Option(gloss="Position of eventType interface events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;
+  @Option(gloss="Length compensation due to mismatch (default=0)") public String lengthCompensation = "0";
 
   // Semantic Parsing
   @Option(gloss="generate semantic parsing parameters (default=false)") public boolean generateSemParParams = false;
