@@ -31,7 +31,7 @@ public class ExportScenariosToWebExp2
                          MODEL = "model",
                          BASELINE = "baseline",
                          GABOR = "gabor";
-    private final String scenariosPath, imagesPathUrl, outputPath;
+    private final String scenariosPath, imagesPathUrl, outputPath, goldPath;
     private final Properties properties;
     private String modelPath, baselinePath, gaborPath;
     private Event3Model model;
@@ -40,12 +40,14 @@ public class ExportScenariosToWebExp2
     private List<String> filterFieldsList;
 
     public ExportScenariosToWebExp2(String scenariosPath, String imagesPathUrl,
-                                    String outputPath, String propertiesPath)
+                                    String outputPath, String propertiesPath,
+                                    String goldPath)
     {
         this.scenariosPath = scenariosPath;
         this.imagesPathUrl = imagesPathUrl;
         this.outputPath = outputPath;
         this.properties = new Properties();
+        this.goldPath = goldPath;
         try
         {
             this.properties.load(new FileInputStream(propertiesPath));
@@ -82,6 +84,9 @@ public class ExportScenariosToWebExp2
         try
         {
            BufferedReader scenariosReader = new BufferedReader(new FileReader(scenariosPath));
+           String[] humanLines = null;
+           if(goldPath != null)
+               humanLines = Utils.readLines(goldPath);
            String[] modelLines = null;
            if(modelPath != null)
                modelLines = Utils.readLines(modelPath);
@@ -102,12 +107,12 @@ public class ExportScenariosToWebExp2
                        gaborEntries.put(ge.gold, ge);
                    }
                }
-           }
+           } // if           
            for(String path : Utils.readLines(scenariosPath))
            {
                if(path.equals(""))
                    continue;
-                if(processHuman(path))
+                if(processHuman(path, humanLines))
                     System.out.println(path + " human system processed succesfully");
                 else
                     System.out.println(path + " human system error!");
@@ -141,7 +146,7 @@ public class ExportScenariosToWebExp2
                // read list of unwanted fields
                String[] ar = properties.getProperty("filter.fields.list").split(",");
                filterFieldsList.addAll(Arrays.asList(ar));
-               writeOutput(fos);
+               writeOutputWebExp(fos);
                fos.close();
            }
            
@@ -156,22 +161,37 @@ public class ExportScenariosToWebExp2
      * Process the gold standard text, events and alignments. Read all events
      * and a new Scenario instance to the <code>scenariosList</code>
      * @param basename the stripped basename path of the scenario to be processed
+     * @param lines  the lines of the file that contains the gold input
      * @return true if all corresponding files exist 
      */
-    private boolean processHuman(String basename)
+    private boolean processHuman(String basename, String[] lines)
     {
-        // sanity check: all corresponding files exist
-        boolean sanity = new File(basename + ".events").exists() &&
-                         new File(basename + ".align").exists() &&
-                         new File(basename + ".text").exists();
-        if(!sanity)
-            return false;
+        String[] eventInput = null, textInput = null, alignInput = null;
+        // sanity check: all corresponding files exist (if in seperate files)
+        if(lines == null) // examples in seperate files
+        {
+            boolean sanity = new File(basename + ".events").exists() &&
+                             new File(basename + ".align").exists() &&
+                             new File(basename + ".text").exists();
+            if(!sanity)
+                return false;
+            eventInput = Utils.readLines(basename + ".events");
+            alignInput = Utils.readLines(basename + ".align");
+            textInput  = Utils.readLines(basename + ".text");
+        } // if
+        else // examples in single file
+        {
+            String[] res = Event3Model.extractExampleFromString(fetchExampleFromGold(basename, lines));
+            textInput = res[1].split("\n");
+            eventInput = res[2].split("\n");
+            alignInput = res[3].split("\n");
+        }
         // read all the events from the .events file
         Scenario scn = new Scenario(basename,
-                                    model.readEvents(Utils.readLines(basename + ".events"),
+                                    model.readEvents(eventInput,
                                     new HashSet(), new HashSet()));
         // read the gold-standard human events
-        for(String eventLine : Utils.readLines(basename + ".align"))
+        for(String eventLine : alignInput)
         {
             // each line holds line number and aligned event(s)
             String []lineEvents = eventLine.split(" ");
@@ -183,10 +203,39 @@ public class ExportScenariosToWebExp2
         }
         // read the gold-standard text
         String text = "";
-        for(String line : Utils.readLines(basename + ".text"))
+        for(String line : textInput)
             text += line + " ";
         scn.setText(HUMAN, text.trim().toUpperCase());
         return scenariosList.add(scn);
+    }
+
+    /**
+     * Find the excerpt in the gold standard file (not the best solution for many searches!)
+     * @param basename the name-id of the example to look at
+     * @param lines the input lines
+     * @return the excerpt
+     */
+    private String fetchExampleFromGold(String basename, String[] lines)
+    {
+        String key = null;
+        StringBuilder str = new StringBuilder();
+        for(String line : lines)
+        {
+            if(line.startsWith("Example_"))
+            {
+                if(key != null) // only for the first example
+                {
+                    if(key.equals(basename))
+                        return str.toString();
+                    str = new StringBuilder();
+                }
+                key = line;
+            } // if
+            str.append(line).append("\n");
+        }  // for
+        if(key.equals(basename)) // don't forget last example
+            return str.toString();
+        return null;
     }
 
     /**
@@ -268,7 +317,7 @@ public class ExportScenariosToWebExp2
         return true;
     }
 
-    private void writeOutput(FileOutputStream fos) throws IOException
+    private void writeOutputWebExp(FileOutputStream fos) throws IOException
     {
         // write header
         writeLine(fos, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<resources>");
@@ -380,6 +429,7 @@ public class ExportScenariosToWebExp2
     {
         String outputPath = null;
         String imagesPathUrl = null;
+        String goldPath = null;
         // we assume that the input path has a scenario on each seperate line
         // and does not have a file extension
 
@@ -398,23 +448,36 @@ public class ExportScenariosToWebExp2
 //                           + "1-best_reordered_eventTypes_user_eval_only/2.exec" +
 //                           "/stage1.test.full-pred-gen";
         // roboCup
-        String scenariosPath = "robocupLists/robocupEvalScenariosRandomBest12";
+//        String scenariosPath = "robocupLists/robocupEvalScenariosRandomBest12";
+////        String imagesPathUrl = "file:///home/konstas/EDI/webexp2/statgen/resources/icons/";
+////        String imagesPathUrl = "http://fordyce.inf.ed.ac.uk/users/s0793019/statgen/resources/icons/";
+//        outputPath = "../webexp2/data/statgen/bgm-robocup4/robocupResources4";
+//        String propertiesPath = "../webexp2/statgen/resources/robocup.properties";
+//        String modelPath = "results/output/robocup/generation/all/fold4/" +
+//                           "NO_NULL_LM2_gold_perfect.exec/stage1.test.full-pred-gen";
+//        String gaborPath = "../gaborFiles/2010emnlp-generation/results-robocup2004.xml";
+//        String baselinePath = "results/output/robocup/generation/all/fold4/" +
+//                           "NO_NULL_LM2_gold_perfect_baseline.exec/stage1.test.full-pred-gen";
+
+        // roboCup
+        String scenariosPath = "data/atis/test/atisEvalScenariosRandomBest12";
 //        String imagesPathUrl = "file:///home/konstas/EDI/webexp2/statgen/resources/icons/";
 //        String imagesPathUrl = "http://fordyce.inf.ed.ac.uk/users/s0793019/statgen/resources/icons/";
-        outputPath = "../webexp2/data/statgen/bgm-robocup4/robocupResources4";
-        String propertiesPath = "../webexp2/statgen/resources/robocup.properties";
-        String modelPath = "results/output/robocup/generation/all/fold4/" +
-                           "NO_NULL_LM2_gold_perfect.exec/stage1.test.full-pred-gen";
-        String gaborPath = "../gaborFiles/2010emnlp-generation/results-robocup2004.xml";
-        String baselinePath = "results/output/robocup/generation/all/fold4/" +
-                           "NO_NULL_LM2_gold_perfect_baseline.exec/stage1.test.full-pred-gen";
+        outputPath = "../../Public/humanEval/data/atisExperiment1";
+        String propertiesPath = "../../Public/humanEval/data/atis.properties";
+        String modelPath = "results/output/atis/generation/" +
+                           "model_3_40-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
+        String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml";
+        String baselinePath = "results/output/atis/generation/" +
+                           "model_3_1-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
+        goldPath = "data/atis/test/atis-test.txt";
         if(args.length > 1)
         {
             scenariosPath = args[0];
             imagesPathUrl = args[1];
         }
         ExportScenariosToWebExp2 estw = new ExportScenariosToWebExp2(scenariosPath, 
-                imagesPathUrl, outputPath, propertiesPath);
+                imagesPathUrl, outputPath, propertiesPath, goldPath);
         estw.setModelPath(modelPath);
         estw.setGaborPath(gaborPath);
         estw.setBaselinePath(baselinePath);
