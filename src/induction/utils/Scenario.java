@@ -49,6 +49,20 @@ public class Scenario
         return events;
     }
 
+    /**
+     * Returns the id of a particular event, matching on the name, i.e. eventType.
+     * Performs a linear search on the set of keys, so use with caution
+     * @param eventType
+     * @return
+     */
+    public Integer getIdOfEvent(String eventType)
+    {
+        for(Integer id : events.keySet())
+            if(events.get(id).getEventTypeName().equals(eventType))
+                return id;
+        return null;
+    }
+
     public void setText(String system, String text)
     {
         systemsTextMap.put(system, text);

@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -32,6 +33,7 @@ public class ExportScenariosToWebExp2
                          BASELINE = "baseline",
                          GABOR = "gabor";
     private final String scenariosPath, imagesPathUrl, outputPath, goldPath;
+    private boolean nullifyOrder, outputAllFields;
     private final Properties properties;
     private String modelPath, baselinePath, gaborPath;
     private Event3Model model;
@@ -77,6 +79,16 @@ public class ExportScenariosToWebExp2
     public void setModelPath(String modelPath)
     {
         this.modelPath = modelPath;
+    }
+
+    public void setNullifyOrder(boolean nullifyOrder)
+    {
+        this.nullifyOrder = nullifyOrder;
+    }
+
+    public void setOutputAllFields(boolean outputAllFields)
+    {
+        this.outputAllFields = outputAllFields;
     }
 
     public void execute()
@@ -146,7 +158,8 @@ public class ExportScenariosToWebExp2
                // read list of unwanted fields
                String[] ar = properties.getProperty("filter.fields.list").split(",");
                filterFieldsList.addAll(Arrays.asList(ar));
-               writeOutputWebExp(fos);
+//               writeOutputWebExp(fos);
+               writeOutputHumanEval(fos);
                fos.close();
            }
            
@@ -250,7 +263,7 @@ public class ExportScenariosToWebExp2
         {
             // try to find the corresponding entry in the model's output file
             // using the scenarios basename as a key
-            if(lines[i].equals(keyBasename + ".text"))
+            if(lines[i].equals(keyBasename + ".text") || lines[i].equals(keyBasename))
             {                
                 // get current scenario
                 Scenario scn = scenariosList.get(scenariosList.size() - 1);
@@ -260,14 +273,16 @@ public class ExportScenariosToWebExp2
                     scn.setText(MODEL, lines[i + 1].trim().toUpperCase());
                     // after two lines we have the generated events
                     scn.getEventIndices(MODEL).addAll(processEventsLine(lines[i + 3],
-                                                  scn.getEventTypeNames()));                    
+                                                  scn.getEventTypeNames(),
+                                                  scn, false));
                 }
                 else if(modelType == Type.baseline)
                 {
                     scn.setText(BASELINE, lines[i + 1].trim().toUpperCase());
                     // after two lines we have the generated events
                     scn.getEventIndices(BASELINE).addAll(processEventsLine(lines[i + 3],
-                                                  scn.getEventTypeNames()));
+                                                  scn.getEventTypeNames(),
+                                                  scn, false));
                 }
                 return true;
             }
@@ -280,9 +295,12 @@ public class ExportScenariosToWebExp2
      * instances of the type eventType(eventId).
      * @param line the input line
      * @param eventTypeNames a list of the names of the eventTypes found in the scenario
+     * @param ignoreTrueId if true then don't use ids in the line, but rather
+     * match the event's name to the id captured earlier in the Scenario
      * @return a set of events id
      */
-    private Collection<Integer> processEventsLine(String line, Set<String> eventTypeNames)
+    private Collection<Integer> processEventsLine(String line, Set<String> eventTypeNames,
+            Scenario scn, boolean ignoreTrueId)
     {
         Set<Integer> ids = new TreeSet();
         // we are interested only in the eventId to cross match with the
@@ -293,7 +311,10 @@ public class ExportScenariosToWebExp2
         {
             // double check we already know the eventType
             if(eventTypeNames.contains(tokens[i]))
-                ids.add(Integer.valueOf(tokens[i + 1]));
+            {                
+                ids.add(ignoreTrueId ? scn.getIdOfEvent(tokens[i]) :
+                                       Integer.valueOf(tokens[i + 1]));
+            }
         }
         return ids;
     }
@@ -313,7 +334,7 @@ public class ExportScenariosToWebExp2
             return false;
         scn.setText(GABOR, ge.guess);
         scn.getEventIndices(GABOR).addAll(processEventsLine(ge.guessEvents,
-                scn.getEventTypeNames()));
+            scn.getEventTypeNames(), scn, nullifyOrder));
         return true;
     }
 
@@ -358,13 +379,54 @@ public class ExportScenariosToWebExp2
 //                    htmlEncode(text) + "<\\/content>",
 //                    htmlEncode(text) + "<\\/content>\\n\\n"+htmlEncode(id)
 //                    ));
-            writeLine(fos, htmlEncode(events+text));
+            writeLine(fos, events+text);
+//            writeLine(fos, htmlEncode(events+text));
             // write resource footer
             writeLine(fos, "</resource>");
             // write block footer
             writeLine(fos, "</block>");
             
         }
+        // write footer
+        writeLine(fos, "\n\n</resources>");
+    }
+
+    private void writeOutputHumanEval(FileOutputStream fos) throws IOException
+    {
+        // write header
+        writeLine(fos, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<resources>");
+
+        // write each scenario-system combination on one block.
+        // The permutation order is given from the properties file
+        String[] permutationOrder = properties.getProperty("permutationOrder").split(",");
+        int perm = 0;
+        for(Scenario scn : scenariosList)
+        {
+            // we cycle through all the systems in the permutationOrder array
+            // and pick the corresponding scenario. We should output
+            // scneariosList.size() in the end
+            String system = permutationOrder[(perm++) % permutationOrder.length];            
+            // write resource header
+            writeLine(fos, String.format("<resource id=\"%s_%s\">", scn.getPath(), system));
+            // write resource body
+            String events = "\n<h2>Events</h2><table>\n"
+                          + "<tr><th colspan=\"2\">Category</th>"
+                          + "<th colspan=\"2\">Fields - Values</th></tr>\n";
+            for(Integer id : scn.getEventIndices(system))
+            {
+                events += eventToHtml(scn.getEvents().get(id));
+            }
+            events += "</table>\n";
+            // write text
+            String text = "<h2>Translation</h2>\n" +
+                          "<table id=\"text\"><tr><td>" +
+                          scn.getText(system) +
+                          "</td></tr></table>";
+            writeLine(fos, events+text);
+//            writeLine(fos, htmlEncode(events+text));
+            // write resource footer
+            writeLine(fos, "</resource>");
+        } // for
         // write footer
         writeLine(fos, "\n\n</resources>");
     }
@@ -393,8 +455,9 @@ public class ExportScenariosToWebExp2
         for(int i = 0; i < fields.length; i++)
         {
             fieldName = event.fieldToString(i);
-            // don't output fields in the filtered fields' list
-            if(filterFieldsList.contains(fieldName))
+            value = fields[i].valueToString(event.getValues().get(i));
+            // don't output fields in the filtered fields' list or fields that are empty and outputAllFields=false
+            if(filterFieldsList.contains(fieldName) || (!outputAllFields && value.equals("--")))
                 continue;
             // check whether the fieldName needs formatting
             out += ((i == fields.length-1) ? "<td colspan=\"1\">" : "<td>") + // make sure we span the whole line
@@ -403,7 +466,7 @@ public class ExportScenariosToWebExp2
                     properties.getProperty("field."+fieldName)) == null
                     ? fieldName : formattedName) +
                     ":</b> ";
-            value = fields[i].valueToString(event.getValues().get(i));
+            
             // check whether the value needs formatting
             out += ((formattedValue =
                     properties.getProperty("value."+fieldName+"."+value)) == null
@@ -425,11 +488,27 @@ public class ExportScenariosToWebExp2
     {
         return String.format("perl -pi -w -e 's/%s/%s/g;' *.xml",from, to);
     }
+
+    public String exportTextFromSystems()
+    {
+        StringBuilder str = new StringBuilder();
+        for(Scenario scn: scenariosList)
+        {
+            str.append(scn.getPath()).append("\n");
+            str.append(HUMAN).append(": ").append(scn.getText(HUMAN)).append("\n");
+            str.append(MODEL).append(": ").append(scn.getText(MODEL)).append("\n");
+            str.append(GABOR).append(": ").append(scn.getText(GABOR)).append("\n");
+            str.append(BASELINE).append(": ").append(scn.getText(BASELINE)).append("\n");
+        }
+        return str.toString();
+    }
+
     public static void main(String[] args)
     {
         String outputPath = null;
         String imagesPathUrl = null;
         String goldPath = null;
+        boolean nullifyOrder = false, outputAllFields = true;
         // we assume that the input path has a scenario on each seperate line
         // and does not have a file extension
 
@@ -459,18 +538,25 @@ public class ExportScenariosToWebExp2
 //        String baselinePath = "results/output/robocup/generation/all/fold4/" +
 //                           "NO_NULL_LM2_gold_perfect_baseline.exec/stage1.test.full-pred-gen";
 
-        // roboCup
+        // atis
         String scenariosPath = "data/atis/test/atisEvalScenariosRandomBest12";
-//        String imagesPathUrl = "file:///home/konstas/EDI/webexp2/statgen/resources/icons/";
-//        String imagesPathUrl = "http://fordyce.inf.ed.ac.uk/users/s0793019/statgen/resources/icons/";
+        imagesPathUrl = "resources/icons/";
         outputPath = "../../Public/humanEval/data/atisExperiment1";
         String propertiesPath = "../../Public/humanEval/data/atis.properties";
         String modelPath = "results/output/atis/generation/" +
                            "model_3_40-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
-        String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml";
+        String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml.tree";
         String baselinePath = "results/output/atis/generation/" +
                            "model_3_1-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
         goldPath = "data/atis/test/atis-test.txt";
+        nullifyOrder = true; // in the case of Gabor's system, all events are identified
+                                     // by their position in the file, rather than their id.
+                                     // As such, these ids may not correspond to the real event ids,
+                                     // assert in the case of ATIS. Therefore, we ignore this order
+                                     // and instead match the true event's id based on the eventType's
+                                     // name. WARNING: this will not work correctly in the case of
+                                     // examples with more than one events of the same event type.
+        outputAllFields = false; // don't output fields that are emtpy, i.e. have value='--'
         if(args.length > 1)
         {
             scenariosPath = args[0];
@@ -481,7 +567,10 @@ public class ExportScenariosToWebExp2
         estw.setModelPath(modelPath);
         estw.setGaborPath(gaborPath);
         estw.setBaselinePath(baselinePath);
+        estw.setNullifyOrder(nullifyOrder);
+        estw.setOutputAllFields(outputAllFields);
         estw.execute();
+//        System.out.println(estw.exportTextFromSystems());
     }
 
     class GaborEntry
