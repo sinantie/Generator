@@ -404,14 +404,17 @@ public class ExportScenariosToWebExp2
         {
             // we cycle through all the systems in the permutationOrder array
             // and pick the corresponding scenario. We should output
+            // write block header
+            writeLine(fos, String.format("<block id=\"%s\">", (perm+1)));
             // scneariosList.size() in the end
+            writeLine(fos, "<![CDATA["); // escape html embedded in xml
             String system = permutationOrder[(perm++) % permutationOrder.length];            
-            // write resource header
-            writeLine(fos, String.format("<resource id=\"%s_%s\">", scn.getPath(), system));
+            // write div header
+            writeLine(fos, String.format("<div class=\"resource\" id=\"%s_%s\">", scn.getPath(), system));
             // write resource body
             String events = "\n<h2>Events</h2><table>\n"
-                          + "<tr><th colspan=\"2\">Category</th>"
-                          + "<th colspan=\"2\">Fields - Values</th></tr>\n";
+                          + "<tr><th class=\"events\" colspan=\"2\">Category</th>"
+                          + "<th class=\"events\" colspan=\"5\">Fields - Values</th></tr>\n"; // make colspan sth big to make sure it spans all cols
             for(Integer id : scn.getEventIndices(system))
             {
                 events += eventToHtml(scn.getEvents().get(id));
@@ -419,13 +422,16 @@ public class ExportScenariosToWebExp2
             events += "</table>\n";
             // write text
             String text = "<h2>Translation</h2>\n" +
-                          "<table id=\"text\"><tr><td>" +
+                          "<table class=\"text\" id=\"text\"><tr><td>" +
                           scn.getText(system) +
                           "</td></tr></table>";
             writeLine(fos, events+text);
 //            writeLine(fos, htmlEncode(events+text));
-            // write resource footer
-            writeLine(fos, "</resource>");
+            // write div footer
+            writeLine(fos, "</div>");
+            writeLine(fos, "]]>"); // close escaping escape html embedded in xml
+            // write block footer
+            writeLine(fos, "</block>");
         } // for
         // write footer
         writeLine(fos, "\n\n</resources>");
@@ -541,8 +547,8 @@ public class ExportScenariosToWebExp2
         // atis
         String scenariosPath = "data/atis/test/atisEvalScenariosRandomBest12";
         imagesPathUrl = "resources/icons/";
-        outputPath = "../../Public/humanEval/data/atisExperiment1";
-        String propertiesPath = "../../Public/humanEval/data/atis.properties";
+        outputPath = "../../Public/humaneval/data/atisExperiment4";
+        String propertiesPath = "../../Public/humaneval/data/atis.properties";
         String modelPath = "results/output/atis/generation/" +
                            "model_3_40-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
         String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml.tree";
