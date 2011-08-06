@@ -360,7 +360,7 @@ public class ExportScenariosToWebExp2
             // write resource body
             String events = "<html><head>"
                     + "<style type=\"text/css\">"+ properties.getProperty("style")+"</style></head>\n"
-                    + "<center>\n<h2>Events</h2><table>\n";
+                    + "<center>\n<h2>Categories</h2><table>\n";
             events += "<tr><th colspan=\"1\">Category"
                     + "</th><th colspan=\"2\">Fields - Values</th></tr>\n";
             for(Integer id : scn.getEventIndices(system))
@@ -412,7 +412,7 @@ public class ExportScenariosToWebExp2
             // write div header
             writeLine(fos, String.format("<div class=\"resource\" id=\"%s_%s\">", scn.getPath(), system));
             // write resource body
-            String events = "\n<h2>Events</h2><table>\n"
+            String events = "\n<h2>Categories</h2><table>\n"
                           + "<tr><th class=\"events\" colspan=\"2\">Category</th>"
                           + "<th class=\"events\" colspan=\"5\">Fields - Values</th></tr>\n"; // make colspan sth big to make sure it spans all cols
             for(Integer id : scn.getEventIndices(system))
@@ -431,7 +431,7 @@ public class ExportScenariosToWebExp2
             writeLine(fos, "</div>");
             writeLine(fos, "]]>"); // close escaping escape html embedded in xml
             // write block footer
-            writeLine(fos, "</block>");
+            writeLine(fos, "</block>");            
         } // for
         // write footer
         writeLine(fos, "\n\n</resources>");
