@@ -130,7 +130,7 @@ public class GenPerformance extends Performance
         return subResult;
     }
 
-    private String widgetToString(GenWidget widget)
+    public static String widgetToString(GenWidget widget)
     {
         String out = "";
         for(int i = 0; i < widget.text.length; i++)

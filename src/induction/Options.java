@@ -126,6 +126,7 @@ public class Options {
   @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean posAtSurfaceLevel = false;
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;
   @Option(gloss="set n for modified BLEU score") public int modifiedBleuScoreSize = 4;
+  @Option(gloss="re-rank output based on oracle BLEU score") public boolean oracleReranker = false;
 
   // length prediction
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;

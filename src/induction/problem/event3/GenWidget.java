@@ -73,7 +73,7 @@ public class GenWidget extends Widget
              }
          }
     }
-
+    
     @Override
     public String toString()
     {

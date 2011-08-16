@@ -76,13 +76,10 @@ public class GenInferState extends InferState
         
     protected int[] newMatrixOne()
     {
-        int[] out = new int[N];
-        for(int i = 0; i < out.length; i++)
-        {
-            Arrays.fill(out, -1);
-        }
+        int[] out = new int[N];        
+        Arrays.fill(out, -1);
         return out;
-    }
+    }   
 
     @Override
     protected Widget newWidget()
@@ -103,6 +100,7 @@ public class GenInferState extends InferState
         // setup hypergraph preliminaries
         hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
+                opts.oracleReranker,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),

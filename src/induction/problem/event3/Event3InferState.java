@@ -46,7 +46,7 @@ public abstract class Event3InferState extends AHypergraphInferState<Widget, Exa
         }
         N = ex.N();
     }
-
+    
     protected int[][] newMatrix()
     {        
         int[][] out = new int[((Event3Model)model).C][ex.N()];

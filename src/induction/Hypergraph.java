@@ -1,5 +1,8 @@
 package induction;
 
+import induction.problem.event3.GenPerformance;
+import induction.problem.event3.GenWidget;
+import edu.berkeley.nlp.mt.BatchBleuScorer;
 import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.nodes.WordNode;
 import induction.Options.ModelType;
@@ -327,7 +330,7 @@ public class Hypergraph<Widget> {
   private enum Reorder {eventType, event, field, ignore};
   public NgramModel ngramModel;
   public Indexer<String> vocabulary;
-  public boolean numbersAsSymbol = true, allowConsecutiveEvents;
+  public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
@@ -342,7 +345,8 @@ public class Hypergraph<Widget> {
 
   public  void setupForGeneration(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
-                                        boolean allowConsecutiveEvents, int NUM,
+                                        boolean allowConsecutiveEvents,
+                                        boolean oracleReranker, int NUM,
                                         int ELIDED_SYMBOL, int START_SYMBOL,
                                         int END_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
@@ -356,6 +360,7 @@ public class Hypergraph<Widget> {
         this.ngramModel = ngramModel;
         this.reorderType = reorderType;
         this.allowConsecutiveEvents = allowConsecutiveEvents;
+        this.oracleReranker = oracleReranker;
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
@@ -654,15 +659,92 @@ public class Hypergraph<Widget> {
                 }
             }            
         }
-
-        HyperpathChooser chooser = new HyperpathChooser();        
-        chooser.widget = widget;
-        chooser.choose = true;
-        chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0));
-
-        return new HyperpathResult(chooser.widget, chooser.logWeight);
+        if(oracleReranker) // Perform oracle reranking, against BLEU-4 score
+        {
+            BatchBleuScorer bleuScorer = new BatchBleuScorer();
+            String trueStr = GenPerformance.widgetToString((GenWidget)ex.getTrueWidget());
+            TreeSet<DerivationWithBleu> set = new TreeSet<DerivationWithBleu>();
+            for(int k = 0; k < startNodeInfo.derivations.size(); k++)
+                set.add(new DerivationWithBleu(widget, k, ex.N(), trueStr, bleuScorer));
+            // choose the derivation with the highest score score
+            DerivationWithBleu oracle = set.first();
+    //        System.out.println(set);
+    //        System.out.println("K with highest score score is: " + oracle.k);
+            return new HyperpathResult(oracle.chooser.widget, oracle.chooser.logWeight);
+        }
+        else // Original 1-best derivation
+        {
+            HyperpathChooser chooser = new HyperpathChooser();
+            chooser.widget = widget;
+            chooser.choose = true;
+            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0));
+            return new HyperpathResult(chooser.widget, chooser.logWeight);
+        }
     }
 
+    class DerivationWithBleu implements Comparable{
+        HyperpathChooser chooser;
+        double score;
+        int k, N;
+        String predStr;
+
+        public DerivationWithBleu(Widget widget, int k, int N, String trueStr, BatchBleuScorer bleuScorer)
+        {
+            chooser = new HyperpathChooser();
+            chooser.widget = (Widget)new GenWidget(newMatrix(1, N), newMatrix(1, N),
+                                           newMatrix(1, N), newMatrix(1, N),
+                                           newMatrixOne(N), ((GenWidget)widget).getEventTypeAllowedOnTrack(),
+                                           ((GenWidget)widget).getEventTypeIndices());
+            chooser.choose = true;
+            this.k = k;
+            // get the k-best derivation
+            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k));
+            predStr = GenPerformance.widgetToString((GenWidget)chooser.widget);
+            // score it
+            score = bleuScorer.evaluateBleu(predStr, trueStr);
+        }
+
+        private int[] newMatrixOne(int N)
+        {
+            int[] out = new int[N];
+            Arrays.fill(out, -1);
+            return out;
+        }
+
+        private int[][] newMatrix(int C, int N)
+        {
+            int[][] out = new int[C][N];
+            for(int i = 0; i < out.length; i++)
+            {
+                Arrays.fill(out[i], -1);
+            }
+            return out;
+        }
+
+        /**
+         * Compares two derivations against their score
+         * @param o
+         * @return
+         */
+        @Override
+        public int compareTo(Object o)
+        {
+            DerivationWithBleu dwb = (DerivationWithBleu)o;
+            if(dwb.score > this.score)
+                return 1;
+            else if(dwb.score < this.score)
+                return -1;
+            return 0;
+        }
+    
+        @Override
+        public String toString()
+        {
+            return String.format("k=%d, BLEU-4=%s: %s\n", k, score, predStr);
+        }
+
+
+    }
     /**
      * Implementation of k-best cube pruning algorithm found in Huang and Chiang, 2005
      * @param v the node for which we will create k-best derivations

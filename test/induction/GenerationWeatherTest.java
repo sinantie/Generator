@@ -45,14 +45,15 @@ public class GenerationWeatherTest
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_control_cond_null/0.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 15 "
+                    + "-disallowConsecutiveRepeatFields -kBest 20 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
                     + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
-                    + "-ngramSize 3 -indepWords 0,-1 "
+                    + "-ngramSize 3 "
                     + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
-                    + "-lengthPredictionStartIndex 4";
+                    + "-lengthPredictionStartIndex 4 "
+                    + "-oracleReranker";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

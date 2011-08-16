@@ -36,6 +36,16 @@ public class Widget implements AWidget
         this.eventTypeIndices = eventTypeIndices;
     }
 
+    public HashSet<Integer>[] getEventTypeAllowedOnTrack()
+    {
+        return eventTypeAllowedOnTrack;
+    }
+
+    public Map<Integer, Integer> getEventTypeIndices()
+    {
+        return eventTypeIndices;
+    }
+    
     // Tried to see if can use posteriors (of one track), but they're too
     // sharply peaked to be useful
     public void setEventPosterior(int e, int E, double prob)
