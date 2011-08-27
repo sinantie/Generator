@@ -580,7 +580,15 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
 
                 // Create the event with its values
 //                events.add(new Event(id, currentEventType, values));
-                events.put(id, new Event(id, currentEventType, values));
+                Event newEvent = new Event(id, currentEventType, values);
+                if(opts.omitEmptyEvents)
+                {
+                    if(!newEvent.containsEmptyValues())
+                        events.put(id, newEvent);
+                }
+                else
+                    events.put(id, newEvent);
+
             } // if
         } // for
 //        Event[] e = new Event[events.size()];

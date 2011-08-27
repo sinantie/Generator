@@ -56,6 +56,63 @@ public class Event
     {
         return values;
     }
+
+    public boolean containsEmptyValues()
+    {
+        int offset = 1;
+        // in case event contains only categorical fields
+        if(allCatFields())
+        {
+            for(int i = offset; i < values.size(); i++)
+            {
+                if(fields[i].valueToString(values.get(i)).equals("--"))
+                    return true;
+            }
+            return false;
+        }
+        // in case event contains only numberical fields
+        else if(allNumFields())
+        {
+            for(int i = offset; i < values.size(); i++)
+            {
+                if(fields[i].valueToString(values.get(i)).equals("0"))
+                    return true;
+            }
+            return false;
+        }
+        else
+        {
+            boolean allEmpty = true;
+            for(int i = offset; i < values.size(); i++)
+            {
+                if(!(fields[i].valueToString(values.get(i)).equals("0") ||
+                     fields[i].valueToString(values.get(i)).equals("--"))
+                  )
+                {
+                    allEmpty = false;
+                    break;
+                }
+            }
+            return allEmpty;
+        }
+    }
+
+    private boolean allCatFields()
+    {
+        for(int i = 0; i < fields.length; i++)
+            if(!(fields[i] instanceof CatField))
+                return false;
+        return true;
+    }
+
+    private boolean allNumFields()
+    {
+        for(int i = 0; i < fields.length; i++)
+            if(!(fields[i] instanceof NumField))
+                return false;
+        return true;
+    }
+
     @Override
     public String toString()
     {

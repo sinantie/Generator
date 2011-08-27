@@ -165,10 +165,10 @@ public class LMPreprocessor
 
     public static void main(String[] args)
     {
-        String source = "bikesLists/allListText";
-        String target = "bikesLM/bikes-all-3-gram.sentences";
+        String source = "gaborLists/genDevListPathsGabor";
+        String target = "weatherGovLM/dev/weather-dev-3-gram.sentences";
         String fileExtension = "text";
-        boolean tokeniseOnly = false, replaceNumbers = false;
+        boolean tokeniseOnly = false, replaceNumbers = true;
         int ngramSize = 3;
         LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
                                               SourceType.LIST, fileExtension, replaceNumbers);

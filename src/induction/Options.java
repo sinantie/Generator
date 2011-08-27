@@ -127,6 +127,7 @@ public class Options {
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;
   @Option(gloss="set n for modified BLEU score") public int modifiedBleuScoreSize = 4;
   @Option(gloss="re-rank output based on oracle BLEU score") public boolean oracleReranker = false;
+  @Option(gloss="omit events that contain only 0's or '--'") public boolean omitEmptyEvents = false;
 
   // length prediction
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
