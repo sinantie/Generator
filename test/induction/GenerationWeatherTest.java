@@ -44,16 +44,20 @@ public class GenerationWeatherTest
          String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
-                    + "model_3_gabor_control_cond_null/0.exec/stage1.params.obj "
+//                    + "dev/model_3_gabor_dev_cond_null_bigrams/prior_0.1/stage1.params.obj "
+                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 20 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -allowConsecutiveEvents -reorderType "
+//                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
+                    + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
-                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
+//                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
                     + "-lengthPredictionStartIndex 4 "
-                    + "-oracleReranker";
+                    + "-oracleReranker "
+                    + "-omitEmptyEvents";
+//                    + "-useGoldStandardOnly";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
