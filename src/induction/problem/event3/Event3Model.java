@@ -30,8 +30,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import weka.core.Instance;
-import weka.core.SparseInstance;
 
 /**
  * A model of events and their text summaries (ACL 2009).
