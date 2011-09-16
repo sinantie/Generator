@@ -1,5 +1,10 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
+import induction.problem.event3.fields.Field;
+import induction.problem.event3.fields.NumField;
+import induction.problem.event3.fields.SymField;
+import induction.problem.event3.fields.StrField;
+import induction.problem.event3.fields.CatField;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.SymFieldParams;
 import induction.problem.event3.params.StrFieldParams;
@@ -651,7 +656,7 @@ public class InferState extends Event3InferState
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
 //               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
-               j-i <= ex.events.get(event).getFields()[f].maxLength)))
+               j-i <= ex.events.get(event).getFields()[f].getMaxLength())))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :

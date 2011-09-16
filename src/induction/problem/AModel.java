@@ -14,11 +14,11 @@ import induction.MyCallable;
 import induction.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
+import induction.Options.NgramWrapper;
 import induction.RoarkNgramWrapper;
 import induction.SrilmNgramWrapper;
 import induction.Utils;
 import induction.WekaWrapper;
-import induction.utils.ExtractFeatures;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -606,11 +605,11 @@ public abstract class AModel<Widget extends AWidget,
         if(!opts.fullPredRandomBaseline)
         {
             Utils.begin_track("Loading Language Model: " + name);
-            if(opts.ngramWrapper == opts.ngramWrapper.kylm)
+            if(opts.ngramWrapper == NgramWrapper.kylm)
                 ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-            else if(opts.ngramWrapper == opts.ngramWrapper.srilm)
+            else if(opts.ngramWrapper == NgramWrapper.srilm)
                 ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-            else if(opts.ngramWrapper == opts.ngramWrapper.roark)
+            else if(opts.ngramWrapper == NgramWrapper.roark)
                 ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
             LogInfo.end_track();
         }
@@ -778,9 +777,9 @@ public abstract class AModel<Widget extends AWidget,
     public String testSemParse(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-        if(opts.ngramWrapper == opts.ngramWrapper.kylm)
+        if(opts.ngramWrapper == NgramWrapper.kylm)
             ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        else if(opts.ngramWrapper == opts.ngramWrapper.srilm)
+        else if(opts.ngramWrapper == NgramWrapper.srilm)
             ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;

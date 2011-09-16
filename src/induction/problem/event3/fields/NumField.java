@@ -1,8 +1,9 @@
-package induction.problem.event3;
+package induction.problem.event3.fields;
 
 import induction.problem.event3.params.NumFieldParams;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.event3.generative.Constants;
 import java.io.Serializable;
 
 /**
@@ -35,7 +36,7 @@ public class NumField extends Field implements Serializable
     }
 
     @Override
-    protected int parseValue(int role, String str)
+    public int parseValue(int role, String str)
     {
        int x = Constants.str2numOrFail(str);
        if (x < min) min = x;

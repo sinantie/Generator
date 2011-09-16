@@ -1,5 +1,7 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
+import induction.problem.event3.fields.Field;
+import induction.problem.event3.fields.NumField;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.Indexer;
 import induction.Hypergraph;

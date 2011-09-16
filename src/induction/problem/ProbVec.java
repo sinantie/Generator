@@ -2,7 +2,7 @@ package induction.problem;
 
 import fig.prob.DirichletUtils;
 import induction.Utils;
-import induction.problem.event3.Constants;
+import induction.problem.event3.generative.Constants;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;

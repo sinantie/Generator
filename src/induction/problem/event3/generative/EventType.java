@@ -1,5 +1,6 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
+import induction.problem.event3.fields.Field;
 import java.io.Serializable;
 
 /**
@@ -74,7 +75,7 @@ public class EventType implements Serializable
         {
             return "(boundary)";
         }
-        return fields[f].name;
+        return fields[f].getName();
     }
 
     @Override

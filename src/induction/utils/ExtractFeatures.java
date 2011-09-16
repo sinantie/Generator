@@ -1,11 +1,11 @@
 package induction.utils;
 
 import induction.Utils;
-import induction.problem.event3.CatField;
-import induction.problem.event3.Event3Model;
-import induction.problem.event3.EventType;
-import induction.problem.event3.Field;
-import induction.problem.event3.NumField;
+import induction.problem.event3.fields.CatField;
+import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.generative.EventType;
+import induction.problem.event3.fields.Field;
+import induction.problem.event3.fields.NumField;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;

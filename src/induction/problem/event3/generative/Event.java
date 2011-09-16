@@ -1,5 +1,8 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
+import induction.problem.event3.fields.Field;
+import induction.problem.event3.fields.NumField;
+import induction.problem.event3.fields.CatField;
 import induction.Utils;
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Params;

@@ -1,4 +1,4 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
 import edu.uci.ics.jung.graph.Graph;
 import induction.Hypergraph;

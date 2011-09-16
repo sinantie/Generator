@@ -2,9 +2,9 @@ package induction.utils;
 
 import induction.Options;
 import induction.Utils;
-import induction.problem.event3.Event;
-import induction.problem.event3.Event3Model;
-import induction.problem.event3.Field;
+import induction.problem.event3.generative.Event;
+import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.fields.Field;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

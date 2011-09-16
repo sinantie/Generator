@@ -1,5 +1,10 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
+import induction.problem.event3.fields.Field;
+import induction.problem.event3.fields.NumField;
+import induction.problem.event3.fields.SymField;
+import induction.problem.event3.fields.StrField;
+import induction.problem.event3.fields.CatField;
 import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
@@ -155,7 +160,7 @@ public class Event3Model extends WordModel<Widget, Params, Performance,
                 int i = 0;
                 for(Field f : e.getFields())
                 {
-                    fields.put(f.name, i++);
+                    fields.put(f.getName(), i++);
                 }
                 fields.put("none_f", i++);
                 fieldsMap.put(e.getEventTypeIndex(), fields);

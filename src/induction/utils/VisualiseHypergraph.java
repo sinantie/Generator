@@ -30,7 +30,7 @@ import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.Event3Model;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.Node;
 import induction.problem.event3.nodes.TrackNode;

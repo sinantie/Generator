@@ -1,8 +1,9 @@
-package induction.problem.event3;
+package induction.problem.event3.fields;
 
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.event3.generative.Event3Model;
 import induction.problem.event3.params.StrFieldParams;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class StrField extends Field implements Serializable
     }
 
     @Override
-    protected int parseValue(int role, String str)
+    public int parseValue(int role, String str)
     {
         String[] tokens = str.split(" ");
         ArrayList<Integer> words = new ArrayList<Integer>();

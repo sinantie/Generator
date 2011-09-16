@@ -5,7 +5,7 @@ import edu.berkeley.nlp.mt.BatchBleuScorer;
 import edu.cmu.meteor.Meteor;
 import edu.cmu.meteor.scorer.MeteorScorer;
 import edu.cmu.meteor.scorer.MeteorStats;
-import induction.problem.event3.TERMetric;
+import induction.problem.event3.generative.TERMetric;
 import java.io.FileOutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

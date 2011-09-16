@@ -1,7 +1,7 @@
 package induction.utils;
 
 import induction.Utils;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.Event3Model;
 
 /**
  * Partition a dataset in a single file, to multiple individual counterparts,

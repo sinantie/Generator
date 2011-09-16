@@ -1,7 +1,7 @@
 package induction;
 
-import induction.problem.event3.GenPerformance;
-import induction.problem.event3.GenWidget;
+import induction.problem.event3.generative.GenPerformance;
+import induction.problem.event3.generative.GenWidget;
 import edu.berkeley.nlp.mt.BatchBleuScorer;
 import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.nodes.WordNode;
@@ -9,7 +9,7 @@ import induction.Options.ModelType;
 import java.util.*;
 import fig.basic.*;
 import induction.Options.ReorderType;
-import induction.problem.event3.Example;
+import induction.problem.event3.generative.Example;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.FieldsNode;
 import java.util.PriorityQueue;

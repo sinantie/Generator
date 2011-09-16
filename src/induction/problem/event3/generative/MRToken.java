@@ -1,4 +1,4 @@
-package induction.problem.event3;
+package induction.problem.event3.generative;
 
 import java.util.ArrayList;
 import java.util.Collection;

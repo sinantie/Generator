@@ -1,6 +1,6 @@
 package induction.problem;
 
-import induction.problem.event3.Constants;
+import induction.problem.event3.generative.Constants;
 
 /**
  *

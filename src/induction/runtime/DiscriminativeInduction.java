@@ -1,17 +1,18 @@
-package induction;
+package induction.runtime;
 
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 import fig.record.Record;
+import induction.Options;
 import induction.Options.InitType;
 import induction.problem.ModelInterface;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.Event3Model;
 
 /**
  *
  * @author konstas
  */
-public class DiscriminativeGeneration implements Runnable
+public class DiscriminativeInduction implements Runnable
 {
     Options opts = new Options();
 
@@ -20,6 +21,7 @@ public class DiscriminativeGeneration implements Runnable
         ModelInterface model = null;
         switch(opts.modelType)
         {
+            case precompute:
             case train:
             case generate:
             default:
@@ -29,7 +31,6 @@ public class DiscriminativeGeneration implements Runnable
         model.init(InitType.staged, opts.initRandom, "");        
         model.readExamples();
         
-//model.init(InitType.staged, opts.initRandom, "");
         Record.begin("stats");
         LogInfo.track("Stats", true);
         model.logStats();
@@ -42,7 +43,7 @@ public class DiscriminativeGeneration implements Runnable
 
     public static void main(String[] args)
     {
-        DiscriminativeGeneration x = new DiscriminativeGeneration();        
+        DiscriminativeInduction x = new DiscriminativeInduction();        
         Execution.run(args, x, x.opts);
     }
 }

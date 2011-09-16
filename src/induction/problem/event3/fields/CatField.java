@@ -1,9 +1,10 @@
-package induction.problem.event3;
+package induction.problem.event3.fields;
 
 import induction.problem.event3.params.CatFieldParams;
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.event3.generative.Event3Model;
 import java.io.Serializable;
 
 /**
@@ -50,7 +51,7 @@ public class CatField extends Field implements Serializable
     }
 
     @Override
-    protected int parseValue(int role, String str)
+    public int parseValue(int role, String str)
     {
         return indexer.getIndex(str);
     }

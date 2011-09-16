@@ -5,7 +5,7 @@ import fig.basic.*;
 import induction.utils.ExtractFeatures;
 
 public class Options {
-  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, generate, train, semParse };
+  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, precompute, generate, train, semParse };
   public enum InitType { random, bait, supervised, uniformz, artificial, staged };
   public enum InputFormat { raw, tag, mrg, seg };
   public enum AlignmentModel { m1, m2, hmm };
