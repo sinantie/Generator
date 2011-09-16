@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package induction;
+package induction.runtime;
 
+import induction.Utils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

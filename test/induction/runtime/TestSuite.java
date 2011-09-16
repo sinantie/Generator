@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package induction;
+package induction.runtime;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -17,9 +17,9 @@ import org.junit.runners.Suite;
  * @author konstas
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({induction.InductionWeatherTest.class,
-                    induction.StagedInductionWeatherTest.class,
-                    induction.GenerationWeatherTest.class})
+@Suite.SuiteClasses({induction.runtime.InductionWeatherTest.class,
+                    induction.runtime.StagedInductionWeatherTest.class,
+                    induction.runtime.GenerationWeatherTest.class})
 public class TestSuite {
 
     @BeforeClass

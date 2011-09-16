@@ -1,5 +1,7 @@
-package induction;
+package induction.runtime;
 
+import induction.Utils;
+import induction.WekaWrapper;
 import java.io.IOException;
 import induction.utils.ExtractFeatures.FeatureType;
 import org.junit.After;

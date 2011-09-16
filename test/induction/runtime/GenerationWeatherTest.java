@@ -3,11 +3,13 @@
  * and open the template in the editor.
  */
 
-package induction;
+package induction.runtime;
 
 import fig.exec.Execution;
+import induction.LearnOptions;
+import induction.Options;
 import induction.Options.InitType;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,7 +25,7 @@ public class GenerationWeatherTest
 {
     LearnOptions lopts;
     String name;
-    Event3Model model;
+    GenerativeEvent3Model model;
 
     public GenerationWeatherTest() {
     }
@@ -61,7 +63,7 @@ public class GenerationWeatherTest
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
-        model = new Event3Model(opts);
+        model = new GenerativeEvent3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
         model.logStats();

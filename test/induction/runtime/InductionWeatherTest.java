@@ -3,11 +3,13 @@
  * and open the template in the editor.
  */
 
-package induction;
+package induction.runtime;
 
 import fig.exec.Execution;
+import induction.LearnOptions;
+import induction.Options;
 import induction.Options.InitType;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,13 +21,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class StagedInductionWeatherTest
+public class InductionWeatherTest
 {
     LearnOptions lopts;
     String name;
-    Event3Model model;
+    GenerativeEvent3Model model;
 
-    public StagedInductionWeatherTest() {
+    public InductionWeatherTest() {
     }
 
     @BeforeClass
@@ -41,27 +43,25 @@ public class StagedInductionWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 1 -testInputLists "
-                + "test/testWeatherGovEvents -inputFileExt events "
-//                + "gaborLists/genEvalListPathsGabor -inputFileExt events "
-                + "-Options.stage1.smoothing 0.1 -initNoise 0 -initType staged "
-                + "-stagedParamsFile results/output/weatherGov/alignments/"
-                + "model_3_gabor/1.exec/stage1.params.obj -dontCrossPunctuation "
-                + "-disallowConsecutiveRepeatFields -allowNoneEvent -useGoldStandardOnly";
+         String args = "-modelType event3 -Options.stage1.numIters 15 -testInputLists "
+                + "gaborLists/weatherEvalScenariosRandomBest12Events -inputFileExt events "
+                + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
+                + "-disallowConsecutiveRepeatFields -indepWords 0,5 "
+                + "-dontCrossPunctuation -Options.stage1.smoothing 0.1";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
-        model = new Event3Model(opts);
-        model.init(InitType.staged, opts.initRandom, "");
+        model = new GenerativeEvent3Model(opts);
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
+        model.init(InitType.random, opts.initRandom, "");
         lopts = opts.stage1;
         name = "stage1";
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Throwable {
     }
 
     /**
@@ -71,7 +71,7 @@ public class StagedInductionWeatherTest
     public void testRun()
     {
         System.out.println("run");
-        String targetOutput = "5 5 5 0 0 0 0 0 0 3 3 3 2 2 2 2 2";
-        assertEquals(model.testStagedLearn(name, lopts).trim(), targetOutput);
+        String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
+        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
     }
 }
