@@ -2,7 +2,7 @@ package induction.problem.event3.params;
 
 import induction.problem.AParams;
 import induction.problem.ProbVec;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
  *
@@ -32,7 +32,7 @@ public class SymFieldParams extends AParams
     {
         return forEachProb(labelChoices,
                 getLabels(LB, "labelC " + prefix + " " ,
-                          Event3Model.labelsToStringArray()));
+                          GenerativeEvent3Model.labelsToStringArray()));
     }
 
 }

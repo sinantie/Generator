@@ -1,8 +1,8 @@
 package induction.problem.event3.params;
 
 import induction.problem.ProbVec;
-import induction.problem.event3.fields.CatField;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.CatField;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
  *
@@ -30,7 +30,7 @@ public class CatFieldParams extends FieldParams
 // uncomment for semantic parsing
         valueEmissions = ProbVec.zeros2(W, field.getV());
         addVec(getLabels(W, "catVE " + prefix + " ",
-                    Event3Model.wordsToStringArray()), valueEmissions);
+                    GenerativeEvent3Model.wordsToStringArray()), valueEmissions);
 
         filters = ProbVec.zeros2(field.getV(), Parameters.B);
 //        addVec(filters);
@@ -43,14 +43,14 @@ public class CatFieldParams extends FieldParams
     {
         String out = super.output();
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
-                    field.valuesToStringArray(), Event3Model.wordsToStringArray());
+                    field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
         for(ProbVec v: emissions)
         {
             out += forEachProb(v, labels[i++]);
         }
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
-                    Event3Model.wordsToStringArray(), field.valuesToStringArray());
+                    GenerativeEvent3Model.wordsToStringArray(), field.valuesToStringArray());
         i = 0;
 
 // uncomment for semantic parsing

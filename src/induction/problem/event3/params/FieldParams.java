@@ -2,8 +2,8 @@ package induction.problem.event3.params;
 
 import induction.problem.AParams;
 import induction.problem.ProbVec;
-import induction.problem.event3.generative.Event3Model;
-import induction.problem.event3.generative.Example;
+import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.Example;
 import java.io.Serializable;
 
 /**
@@ -20,11 +20,11 @@ public abstract class FieldParams extends AParams implements Serializable
     public FieldParams(String prefix)
     {
         super();
-        this.W = Event3Model.W();
+        this.W = GenerativeEvent3Model.W();
         this.prefix = prefix;
         wordBigramChoices = ProbVec.zeros2(W, W);
         addVec(getLabels(W, "wordBi "  + prefix + " ",
-                    Event3Model.wordsToStringArray()), wordBigramChoices);
+                    GenerativeEvent3Model.wordsToStringArray()), wordBigramChoices);
     }
 
     // Provide potentials for salience
@@ -40,7 +40,7 @@ public abstract class FieldParams extends AParams implements Serializable
     {
         String out = "";
         String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
-                    Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
+                    GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
         // if too huge parameter set, comment
 //        for(ProbVec v: wordBigramChoices)

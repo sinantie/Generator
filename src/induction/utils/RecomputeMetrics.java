@@ -7,7 +7,7 @@ import edu.cmu.meteor.scorer.MeteorScorer;
 import edu.cmu.meteor.scorer.MeteorStats;
 import fig.basic.IOUtils;
 import induction.Utils;
-import induction.problem.event3.generative.TERMetric;
+import induction.problem.event3.TERMetric;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;

@@ -2,7 +2,7 @@ package induction.problem.event3.params;
 
 import induction.problem.AParams;
 import induction.problem.ProbVec;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.Event3Model;
 
 /**
  *

@@ -2,9 +2,10 @@ package induction.problem.event3.params;
 
 import induction.problem.AParams;
 import induction.problem.ProbVec;
-import induction.problem.event3.generative.Constants;
-import induction.problem.event3.generative.Event3Model;
-import induction.problem.event3.generative.EventType;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.Constants;
+import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.EventType;
 
 /**
  *
@@ -181,7 +182,7 @@ public class EventTypeParams extends AParams
         // if too huge parameter set, comment
 //        i = 0;
 //        String[][] labelsNone = getLabels(W, W, "noneFieldWordBiC " + typeToString + " ",
-//                          Event3Model.wordsToStringArray(), Event3Model.wordsToStringArray());
+//                          GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
 //        for(ProbVec v : noneFieldBigramChoices)
 //        {
 //            out += forEachProb(v, labelsNone[i++]);
@@ -189,7 +190,7 @@ public class EventTypeParams extends AParams
         String[][] labelsGen = getLabels(F, Parameters.G, "genC " + typeToString + " ",
                           fieldToString, Parameters.generateToString);
 //        String[][] labelsEm = getLabels(F, W, "fieldNameE " + typeToString + " " ,
-//                          fieldToString, Event3Model.wordsToStringArray());
+//                          fieldToString, GenerativeEvent3Model.wordsToStringArray());
         for(int f = 0; f < F; f++)
         {
             out += forEachProb(genChoices[f], labelsGen[f]) +

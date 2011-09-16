@@ -2,9 +2,9 @@ package induction.utils;
 
 import induction.Options;
 import induction.Utils;
-import induction.problem.event3.generative.Event;
-import induction.problem.event3.generative.Event3Model;
-import induction.problem.event3.fields.Field;
+import induction.problem.event3.Event;
+import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.Field;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +36,7 @@ public class ExportScenariosToWebExp2
     private boolean nullifyOrder, outputAllFields;
     private final Properties properties;
     private String modelPath, baselinePath, gaborPath;
-    private Event3Model model;
+    private GenerativeEvent3Model model;
     private List<Scenario> scenariosList;
     private enum Type {model, baseline};
     private List<String> filterFieldsList;
@@ -61,7 +61,7 @@ public class ExportScenariosToWebExp2
         }
         Options opts = new Options();
         opts.useGoldStandardOnly = true;
-        model = new Event3Model(opts);
+        model = new GenerativeEvent3Model(opts);
         scenariosList = new ArrayList<Scenario>();
         filterFieldsList = new ArrayList<String>();
     }
@@ -194,7 +194,7 @@ public class ExportScenariosToWebExp2
         } // if
         else // examples in single file
         {
-            String[] res = Event3Model.extractExampleFromString(fetchExampleFromGold(basename, lines));
+            String[] res = GenerativeEvent3Model.extractExampleFromString(fetchExampleFromGold(basename, lines));
             textInput = res[1].split("\n");
             eventInput = res[2].split("\n");
             alignInput = res[3].split("\n");

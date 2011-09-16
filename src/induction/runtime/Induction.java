@@ -6,7 +6,7 @@ import fig.record.Record;
 import induction.Options;
 import induction.Options.InitType;
 import induction.problem.ModelInterface;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
  *
@@ -21,7 +21,7 @@ public class Induction implements Runnable
         ModelInterface model = null;
         switch(opts.modelType)
         {
-            case event3 : model = new Event3Model(opts); break;
+            case event3 : model = new GenerativeEvent3Model(opts); break;
             default : LogInfo.fail("Unknown model type: " + opts.modelType);
         }
         /*in staged initialisation we need to read parameters before examples*/

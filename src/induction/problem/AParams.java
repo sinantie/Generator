@@ -2,7 +2,7 @@ package induction.problem;
 
 import fig.basic.LogInfo;
 import induction.Utils;
-import induction.problem.event3.generative.Constants.TypeAdd;
+import induction.problem.event3.Constants.TypeAdd;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;

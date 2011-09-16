@@ -1,11 +1,11 @@
 package induction.utils;
 
 import induction.Utils;
-import induction.problem.event3.fields.CatField;
-import induction.problem.event3.generative.Event3Model;
-import induction.problem.event3.generative.EventType;
-import induction.problem.event3.fields.Field;
-import induction.problem.event3.fields.NumField;
+import induction.problem.event3.CatField;
+import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.EventType;
+import induction.problem.event3.Field;
+import induction.problem.event3.NumField;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -130,7 +130,7 @@ public class ExtractFeatures
                     {
                         if(key != null) // only for the first example
                         {
-                            example = Event3Model.extractExampleFromString(str.toString());
+                            example = GenerativeEvent3Model.extractExampleFromString(str.toString());
                             fos.append(extractFeatures(example[1], example[2]) + "\n");
                             str = new StringBuilder();
                         }
@@ -139,7 +139,7 @@ public class ExtractFeatures
                     str.append(line).append("\n");
                 }  // for
                 // don't forget last example
-                example = Event3Model.extractExampleFromString(str.toString());
+                example = GenerativeEvent3Model.extractExampleFromString(str.toString());
                 fos.append(extractFeatures(example[1], example[2]));
             }
             else

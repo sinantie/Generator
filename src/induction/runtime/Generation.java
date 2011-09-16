@@ -6,7 +6,7 @@ import fig.record.Record;
 import induction.Options;
 import induction.Options.InitType;
 import induction.problem.ModelInterface;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
  *
@@ -24,7 +24,7 @@ public class Generation implements Runnable
             case generate:
             case semParse:
             default:
-                model = new Event3Model(opts);
+                model = new GenerativeEvent3Model(opts);
                 break;
         }
         model.init(InitType.staged, opts.initRandom, "");        

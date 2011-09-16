@@ -1,7 +1,7 @@
 package induction.utils;
 
 import induction.Utils;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
  * Partition a dataset in a single file, to multiple individual counterparts,
@@ -43,7 +43,7 @@ public class PartitionDataset
 
     private void writeFiles(String input, int id)
     {
-        String[] parts = Event3Model.extractExampleFromString(input);
+        String[] parts = GenerativeEvent3Model.extractExampleFromString(input);
         Utils.write(String.format("%s%s.%s", outputPath, id, "text"), parts[1]);
         Utils.write(String.format("%s%s.%s", outputPath, id, "events"), parts[2]);
 //        Utils.write(String.format("%s%s.%s", outputPath, id, "align"), parts[3]);

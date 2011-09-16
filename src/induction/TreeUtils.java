@@ -16,7 +16,7 @@ public class TreeUtils {
   public static Tree<String> binarize(Tree<String> tree, int order) {
     String rootLabel = tree.getLabel();
 
-    if(tree.getChildren().size() == 0)
+    if( tree.getChildren().isEmpty())
       return tree;
     if(tree.getChildren().size() == 1)
       return new Tree<String>(rootLabel,
@@ -35,7 +35,7 @@ public class TreeUtils {
     for(int i = intermediateLabels.size()-1; i >= 0; i--) {
       StringBuilder buf = new StringBuilder((order == -1 ? "" : "@")+tree.getLabel());
       for(int k = 0; k < order && i-k >= 0; k++)
-        buf.append("-"+intermediateLabels.get(i-k));
+            buf.append("-").append(intermediateLabels.get(i-k));
       intermediateLabels.set(i, buf.toString());
     }
 
@@ -58,7 +58,7 @@ public class TreeUtils {
   public static Tree<String> headBinarize(Tree<String> tree, int order) {
     String rootLabel = tree.getLabel();
 
-    if(tree.getChildren().size() == 0)
+    if( tree.getChildren().isEmpty())
       return tree;
     if(tree.getChildren().size() == 1)
       return new Tree<String>(rootLabel,
@@ -135,7 +135,7 @@ public class TreeUtils {
       if(newChild != null)
         newChildren.add(newChild);
     }
-    if(newChildren.size() == 0) return null;
+    if( newChildren.isEmpty()) return null;
     return new Tree<T>(label, tree.isIntermediateNode(), newChildren);
   }
 

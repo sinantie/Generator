@@ -4,23 +4,19 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
-import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
-import fig.record.Record;
-import induction.KylmNgramWrapper;
+import induction.ngrams.KylmNgramWrapper;
 import induction.LearnOptions;
 import induction.MyCallable;
-import induction.NgramModel;
+import induction.ngrams.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.NgramWrapper;
-import induction.RoarkNgramWrapper;
-import induction.SrilmNgramWrapper;
+import induction.ngrams.SrilmNgramWrapper;
 import induction.Utils;
 import induction.WekaWrapper;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,8 +42,8 @@ public abstract class AModel<Widget extends AWidget,
 //    protected InferState inferState;
     protected List<Example> examples = new ArrayList<Example>();
     private int numExamples, maxExamples;
-    private PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
-    private Performance trainPerformance, testPerformance;
+    protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
+    protected Performance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
     protected WekaWrapper lengthPredictor;
 
@@ -356,18 +352,18 @@ public abstract class AModel<Widget extends AWidget,
       LogInfo.end_track();
     }
 
-    private boolean isTrain(int i)
+    protected boolean isTrain(int i)
     {
         return opts.trainStart <= i && i < opts.trainEnd;
     }
-    private boolean isTest(int i)
+    protected boolean isTest(int i)
     {
         return opts.testStart <= i && i < opts.testEnd;
     }
 
     // ext specifies the iteration or example number
     // Use the given params (which are actually counts so we can evaluate even in batch EM)
-    private void record(String ext, String name, FullStatFig complexity)
+    protected void record(String ext, String name, FullStatFig complexity)
     {
         Utils.logs("Inference complexity: %s", complexity);
         if (!(trainPerformance == null || trainPerformance.isEmpty()))
@@ -474,195 +470,7 @@ public abstract class AModel<Widget extends AWidget,
             return "test: "+testPerformance.summary();
         else return "(skip)";
     }
-
-    public void learn(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel; // HACK        
-        Record.begin(name);
-        Utils.begin_track("Train: " + name);
-        boolean existsTrain = false, existsTest = false, output, fullOutput;
-        for(int i = 0; i < examples.size(); i++)
-        {
-            if(isTrain(i))
-            {
-                existsTrain = true; break;
-            }
-        }
-        for(int i = 0; i < examples.size(); i++)
-        {
-            if(isTest(i))
-            {
-                existsTest = true; break;
-            }
-        }
         
-        int iter = 0;
-        while (iter < lopts.numIters)
-        {
-            FullStatFig complexity = new FullStatFig(); // Complexity inference
-            // Gradually reduce temperature
-            double temperature = (lopts.numIters == 1) ? lopts.initTemperature :
-                lopts.initTemperature +
-                (lopts.finalTemperature- lopts.initTemperature) *
-                iter / (lopts.numIters - 1);
-
-            Utils.begin_track("Iteration %s/%s: temperature = %s",
-                    Utils.fmt(iter+1), Utils.fmt(lopts.numIters),
-                    Utils.fmt(temperature));
-            Record.begin("iteration", iter+1);
-            Execution.putOutput("currIter", iter+1);
-
-            trainPerformance = existsTrain ? newPerformance() : null;
-            testPerformance = existsTest ? newPerformance() : null;
-
-//            output = opts.outputIterFreq != 0 && iter % opts.outputIterFreq == 0;
-            output = (iter+1) % lopts.numIters == 0; // output only at the last iteration
-            fullOutput = output && opts.outputFullPred;
-            try
-            {
-                trainPredOut = (output && existsTrain) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".train.pred."+iter)) : null;
-                testPredOut = (output && existsTest) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".test.pred."+iter)) : null;
-                trainFullPredOut = (fullOutput && existsTrain) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".train.full-pred."+iter)) : null;
-                testFullPredOut = (fullOutput && existsTest) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".test.full-pred."+iter)) : null;
-            }
-            catch(IOException ioe)
-            {
-                Utils.begin_track("Error opening file");
-                LogInfo.end_track();
-            }
-
-            // Batch EM only
-            Params counts = newParams();
-
-            // E-step
-            Utils.begin_track("E-step");
-            Collection<BatchEM> list = new ArrayList(examples.size());
-            for(int i = 0; i < examples.size(); i++)
-            {
-                list.add(new BatchEM(i, examples.get(i), counts, temperature,
-                        lopts, iter, complexity));
-            }
-            Utils.parallelForeach(opts.numThreads, list);
-            LogInfo.end_track();
-            list.clear();
-            // M-step
-            params = counts;
-//            params.saveSum(); // 02/07/09: for printing out posterior mass (see AParams.foreachProb)
-            if (lopts.useVarUpdates)
-            {
-                params.optimiseVar(lopts.smoothing);
-            }
-            else
-            {
-                params.optimise(lopts.smoothing);
-            }
-            
-            record(String.valueOf(iter), name, complexity);
-            if(trainPredOut != null) trainPredOut.close();
-            if(testPredOut != null) testPredOut.close();
-            if(trainFullPredOut != null) trainFullPredOut.close();
-            if(testFullPredOut != null) testFullPredOut.close();
-
-            Execution.putOutput("currExample", examples.size());
-            LogInfo.end_track();
-            Record.end();
-            // Final
-            if (iter == lopts.numIters - 1)
-            {
-                LogInfo.track("Final", true);
-                if(trainPerformance != null)
-                    trainPerformance.record("train");
-                if(testPerformance != null)
-                    testPerformance.record("test");
-            }
-            iter++;
-            if (Execution.shouldBail() || existsTest) // it makes sense to perform one iteration at test time
-                lopts.numIters = iter;
-        } // while (iter < lopts.numIters)
-        saveParams(name);
-        params.output(Execution.getFile(name+".params"));
-        LogInfo.end_track();
-        LogInfo.end_track();
-        Record.end();
-        Record.end();
-        Execution.putOutput("currIter", lopts.numIters);
-    }
-
-    @Override
-    public void generate(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel; // HACK
-//        saveParams("stage1");
-//        System.exit(1);
-        if(!opts.fullPredRandomBaseline)
-        {
-            Utils.begin_track("Loading Language Model: " + name);
-            if(opts.ngramWrapper == NgramWrapper.kylm)
-                ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-            else if(opts.ngramWrapper == NgramWrapper.srilm)
-                ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-            else if(opts.ngramWrapper == NgramWrapper.roark)
-                ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
-            LogInfo.end_track();
-        }
-        FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();       
-        try
-        {
-            testFullPredOut = (opts.outputFullPred) ?
-                IOUtils.openOut(Execution.getFile(
-                name+".test.full-pred-gen")) : null;
-            testPredOut = IOUtils.openOut(Execution.getFile(name+".tst.xml"));
-            // write prediction file header, conforming to SGML NIST standard
-            testPredOut.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                                "<mteval>\n" +
-                                "<tstset setid=\"" + name + "\" srclang=\"English\" " +
-                                "trglang=\"English\" sysid=\"sample_system\">");
-        }
-        catch(Exception ioe)
-        {
-            Utils.begin_track("Error opening file(s) for writing. No output will be written!");
-            LogInfo.end_track();
-        }                
-        // E-step
-        Utils.begin_track("Generation-step " + name);
-        Params counts = newParams();
-        Collection<BatchEM> list = new ArrayList(examples.size());
-        for(int i = 0; i < examples.size(); i++)
-        {
-            list.add(new BatchEM(i, examples.get(i), counts, temperature,
-                    lopts, 0, complexity));                
-        }
-        Utils.parallelForeach(opts.numThreads, list);
-        LogInfo.end_track();
-        list.clear();
-
-        if(testFullPredOut != null) testFullPredOut.close();
-        if(testPredOut != null)
-        {
-            // write prediction file footer, conforming to SGML NIST standard
-            testPredOut.println("</tstset>\n</mteval>");
-            testPredOut.close();
-        }
-        Execution.putOutput("currExample", examples.size());
-
-        // Final
-//        testPerformance.output(Execution.getFile(name+".test.performance"));
-        Record.begin("generation");
-        record("results", name, complexity);
-        Record.end();
-        LogInfo.end_track();
-    }
-
     /**
      * helper method for testing the learning output. Simulates learn(...) method
      * for a single example without the thread mechanism
@@ -841,7 +649,7 @@ public abstract class AModel<Widget extends AWidget,
         return graph;
     }
 
-    class InitParams extends MyCallable
+    protected class InitParams extends MyCallable
     {
         private Example ex;
         private int i;
@@ -865,7 +673,7 @@ public abstract class AModel<Widget extends AWidget,
         }
     }
 
-    class BatchEM extends MyCallable
+    protected class BatchEM extends MyCallable
     {
         private Example ex;
         private int i, iter;
@@ -874,7 +682,7 @@ public abstract class AModel<Widget extends AWidget,
         private LearnOptions lopts;
         private FullStatFig complexity;
 
-        BatchEM(int i, Example ex, Params counts, double temperature,
+        public BatchEM(int i, Example ex, Params counts, double temperature,
                 LearnOptions lopts, int iter, FullStatFig complexity)
         {
             this.i = i;

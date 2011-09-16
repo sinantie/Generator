@@ -1,6 +1,6 @@
 package induction.utils;
 
-import induction.problem.event3.generative.Event;
+import induction.problem.event3.Event;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

@@ -30,7 +30,7 @@ import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
-import induction.problem.event3.generative.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.Node;
 import induction.problem.event3.nodes.TrackNode;
@@ -49,7 +49,7 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
     private Layout layout;
     LearnOptions lopts;
     String name;
-    Event3Model model;
+    GenerativeEvent3Model model;
 
     /** Creates new form VisualiseHypergraph */
     public VisualiseHypergraph() {
@@ -73,7 +73,7 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
-        model = new Event3Model(opts);
+        model = new GenerativeEvent3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
         model.logStats();

@@ -40,7 +40,7 @@ public abstract class APerformance<Widget>
         return foreachStat().toString(" = ", ", ");
     }
 
-    protected void record(String name)
+    public void record(String name)
     {
         Utils.logs(name + ": " + summary());
         Record.begin(name);
