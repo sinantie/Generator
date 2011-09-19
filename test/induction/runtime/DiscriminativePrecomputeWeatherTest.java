@@ -1,15 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package induction.runtime;
 
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
-import induction.problem.event3.generative.GenerativeEvent3Model;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,13 +17,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class DiscriminativeTrainGenerationWeatherTest
+public class DiscriminativePrecomputeWeatherTest
 {
     LearnOptions lopts;
     String name;
-    GenerativeEvent3Model model;
+    Event3Model model;
 
-    public DiscriminativeTrainGenerationWeatherTest() {
+    public DiscriminativePrecomputeWeatherTest() {
     }
 
     @BeforeClass
@@ -43,15 +39,23 @@ public class DiscriminativeTrainGenerationWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 15 -testInputLists "
-                + "gaborLists/weatherEvalScenariosRandomBest12Events -inputFileExt events "
-                + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
-                + "-disallowConsecutiveRepeatFields -indepWords 0,5 "
-                + "-dontCrossPunctuation -Options.stage1.smoothing 0.1";
+         String args = "-modelType precompute -testInputLists test/testWeatherGovEvents "
+                    + "-inputFileExt events -stagedParamsFile "
+                    + "results/output/weatherGov/alignments/"
+                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -kBest 20 "
+                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
+                    + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
+                    + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
+                    + "-ngramSize 3 "
+//                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
+                    + "-lengthPredictionFeatureType VALUES "
+                    + "-lengthPredictionStartIndex 4 ";
+         
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
-        model = new GenerativeEvent3Model(opts);
+        model = new DiscriminativeEvent3Model(opts);
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
