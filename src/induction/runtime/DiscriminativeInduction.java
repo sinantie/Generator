@@ -6,7 +6,7 @@ import fig.record.Record;
 import induction.Options;
 import induction.Options.InitType;
 import induction.problem.ModelInterface;
-import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 
 /**
  *
@@ -18,19 +18,10 @@ public class DiscriminativeInduction implements Runnable
 
     public void run()
     {
-        ModelInterface model = null;
-        switch(opts.modelType)
-        {
-            case precompute:
-            case train:
-            case generate:
-            default:
-                model = new GenerativeEvent3Model(opts);
-                break;
-        }
-        model.init(InitType.staged, opts.initRandom, "");        
-        model.readExamples();
+        ModelInterface model = new DiscriminativeEvent3Model(opts);
         
+        model.init(InitType.staged, opts.initRandom, "");        
+        model.readExamples();        
         Record.begin("stats");
         LogInfo.track("Stats", true);
         model.logStats();
@@ -38,7 +29,20 @@ public class DiscriminativeInduction implements Runnable
         Record.end();
                 
         opts.outputIterFreq = opts.stage1.numIters;
-        model.generate("stage1", opts.stage1);
+        if(opts.modelType == Options.ModelType.precompute)
+        {
+            model.init(InitType.supervised, null, "stage1");
+        }
+        else if(opts.modelType == Options.ModelType.train)
+        {
+            model.init(InitType.random, opts.initRandom, "stage1");
+            model.learn("stage1", opts.stage1);
+        }
+        else if(opts.modelType == Options.ModelType.generate)
+        {
+            model.init(InitType.staged, null, "stage1");
+            model.generate("stage1", opts.stage1);
+        }                
     }
 
     public static void main(String[] args)

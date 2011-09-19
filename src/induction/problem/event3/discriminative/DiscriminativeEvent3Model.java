@@ -115,11 +115,12 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     }
 
     @Override
-    protected void baitInitParams()
-    { // Hard code things
-        params = newParams();
-        params.setUniform(1);
+    protected void supervisedInitParams()
+    {
+        
     }
+
+    
     @Override
     protected Params newParams()
     {
