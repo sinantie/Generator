@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class DiscriminativePrecomputeWeatherTest
+public class DiscriminativeTrainWeatherTest
 {
     LearnOptions lopts;
     String name;
     Event3Model model;
 
-    public DiscriminativePrecomputeWeatherTest() {
+    public DiscriminativeTrainWeatherTest() {
     }
 
     @BeforeClass
@@ -39,7 +39,7 @@ public class DiscriminativePrecomputeWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType precompute -testInputLists test/testWeatherGovEvents "
+         String args = "-modelType discriminativeTrain -testInputLists test/testWeatherGovEvents "
                     + "-inputFileExt events -stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
@@ -59,7 +59,9 @@ public class DiscriminativePrecomputeWeatherTest
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
+//        model.init(InitType.random, opts.initRandom, "");
+        model.init(InitType.staged, opts.initRandom, "");
+//        model.init(InitType.supervised, null, name);
         lopts = opts.stage1;
         name = "stage1";
     }
@@ -74,8 +76,7 @@ public class DiscriminativePrecomputeWeatherTest
     @Test
     public void testRun()
     {
-        System.out.println("run");
-        String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
-        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
+        System.out.println("run");        
+        System.out.println(model.testGenerate(name, lopts).trim());
     }
 }
