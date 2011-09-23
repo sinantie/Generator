@@ -1,6 +1,5 @@
 package induction.problem.event3.discriminative;
 
-import induction.problem.event3.generative.*;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;

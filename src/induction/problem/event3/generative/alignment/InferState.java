@@ -1,8 +1,5 @@
 package induction.problem.event3.generative.alignment;
 
-import induction.problem.event3.Event3InferState;
-import induction.problem.event3.Event3Model;
-import induction.problem.event3.Event;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.SymFieldParams;
 import induction.problem.event3.params.StrFieldParams;
