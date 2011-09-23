@@ -396,6 +396,7 @@ public abstract class AModel<Widget extends AWidget,
         new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter), graph);
+        currentInferState.createHypergraph();
         currentInferState.doInference();
         synchronized(complexity)
         {
@@ -412,6 +413,7 @@ public abstract class AModel<Widget extends AWidget,
         new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter));
+        currentInferState.createHypergraph();
         currentInferState.doInference();
         synchronized(complexity)
         {

@@ -5,10 +5,6 @@ import induction.problem.event3.generative.generation.SemParsePerformance;
 import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenPerformance;
 import induction.problem.event3.generative.alignment.Performance;
-import induction.problem.event3.generative.generation.SemParseInferState;
-import induction.problem.event3.generative.generation.GenInferState;
-import induction.problem.event3.generative.alignment.InferState;
-import edu.uci.ics.jung.graph.Graph;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
@@ -20,7 +16,6 @@ import induction.Options.ModelType;
 import util.Stemmer;
 import induction.Utils;
 import induction.problem.InductionUtils;
-import induction.problem.InferSpec;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
 import java.io.Serializable;
@@ -996,30 +991,7 @@ public abstract class Event3Model extends WordModel<Widget, Params, Performance,
             case semParse : return new SemParsePerformance(this);
             default : return new Performance(this);
         }        
-    }
-
-    @Override
-    protected Event3InferState newInferState(Example ex, Params params, Params counts,
-                                       InferSpec ispec)
-    {
-        switch(opts.modelType)
-        {
-            case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferState(this, ex, params, counts, ispec);
-        }
-    }
-
-    protected Event3InferState newInferState(Example ex, Params params, Params counts,
-                                           InferSpec ispec, Graph graph)
-    {
-        switch(opts.modelType)
-        {
-            case generate: return new GenInferState(this, ex, params, counts, ispec, ngramModel, graph);
-            case semParse: default: return new SemParseInferState(this, ex, params, counts, ispec, graph);
-        }
-        
-    }
+    }   
 
     @Override
     protected Example genExample(int index)

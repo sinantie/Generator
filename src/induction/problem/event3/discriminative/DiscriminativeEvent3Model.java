@@ -24,7 +24,6 @@ import induction.problem.event3.Example;
 import induction.problem.event3.Field;
 import induction.problem.event3.generative.generation.GenInferState;
 import induction.problem.event3.generative.generation.GenPerformance;
-import induction.problem.event3.generative.alignment.InferState;
 import induction.problem.event3.generative.alignment.Performance;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
@@ -116,7 +115,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected void supervisedInitParams()
     {
-        
+        params = newParams();
     }
 
     
@@ -137,6 +136,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         }        
     }
 
+    /**
+     * Averaged Perceptron training (Collins 2002)
+     * @param name
+     * @param lopts 
+     */
     @Override
     public void learn(String name, LearnOptions lopts)
     {
@@ -163,22 +167,14 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         while (iter < lopts.numIters)
         {
             FullStatFig complexity = new FullStatFig(); // Complexity inference
-            // Gradually reduce temperature
-            double temperature = (lopts.numIters == 1) ? lopts.initTemperature :
-                lopts.initTemperature +
-                (lopts.finalTemperature- lopts.initTemperature) *
-                iter / (lopts.numIters - 1);
 
-            Utils.begin_track("Iteration %s/%s: temperature = %s",
-                    Utils.fmt(iter+1), Utils.fmt(lopts.numIters),
-                    Utils.fmt(temperature));
+            Utils.begin_track("Iteration %s/%s: ",
+                    Utils.fmt(iter+1), Utils.fmt(lopts.numIters));
             Record.begin("iteration", iter+1);
             Execution.putOutput("currIter", iter+1);
 
             trainPerformance = existsTrain ? newPerformance() : null;
             testPerformance = existsTest ? newPerformance() : null;
-
-//            output = opts.outputIterFreq != 0 && iter % opts.outputIterFreq == 0;
             output = (iter+1) % lopts.numIters == 0; // output only at the last iteration
             fullOutput = output && opts.outputFullPred;
             try
@@ -210,7 +206,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             Collection<BatchEM> list = new ArrayList(examples.size());
             for(int i = 0; i < examples.size(); i++)
             {
-                list.add(new BatchEM(i, examples.get(i), counts, temperature,
+                list.add(new BatchEM(i, examples.get(i), counts, lopts.initTemperature,
                         lopts, iter, complexity));
             }
             Utils.parallelForeach(opts.numThreads, list);
@@ -328,15 +324,16 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     
 
     @Override
-    protected Event3InferState newInferState(Example ex, Params params, Params counts,
+    protected Event3InferState newInferState(Example ex, Params weights, Params counts,
                                        InferSpec ispec)
     {
-        switch(opts.modelType)
-        {
-            case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferState(this, ex, params, counts, ispec);
-        }
+        return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);
+//        switch(opts.modelType)
+//        {
+//            case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
+//            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
+//            default : return new InferState(this, ex, params, counts, ispec);
+//        }
     }
 
     protected Event3InferState newInferState(Example ex, Params params, Params counts,

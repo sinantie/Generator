@@ -390,7 +390,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
             case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
-            default : return new InferState(this, ex, params, counts, ispec);
+            case event3 : default : return new InferState(this, ex, params, counts, ispec);
         }
     }
 

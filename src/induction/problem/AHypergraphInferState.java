@@ -28,14 +28,19 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
         
     }
 
-    public void doInference()
+    @Override
+    public void createHypergraph()
     {
         initInferState(model);
         StopWatchSet.begin("createHypergraph");
         createHypergraph(hypergraph);
         StopWatchSet.end();
-
-        if(opts.modelType == Options.ModelType.generate ||
+    }
+    
+    public void doInference()
+    {
+        if(opts.modelType == Options.ModelType.discriminativeTrain ||
+           opts.modelType == Options.ModelType.generate ||
            opts.modelType == Options.ModelType.semParse)
         {
             HyperpathResult result;

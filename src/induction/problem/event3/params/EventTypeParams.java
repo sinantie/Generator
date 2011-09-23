@@ -4,7 +4,6 @@ import induction.problem.AParams;
 import induction.problem.ProbVec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
-import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.EventType;
 
 /**
@@ -128,7 +127,7 @@ public class EventTypeParams extends AParams
     {
         return Constants.setContainsSet(efs, onlyabsent_efs);
     }
-    public int efs_addAbsent(int efs, int f)
+    public final int efs_addAbsent(int efs, int f)
     {
         return Constants.setAdd(efs, f+f);
     }

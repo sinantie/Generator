@@ -33,7 +33,7 @@ public class DiscriminativeInduction implements Runnable
         {
             model.init(InitType.supervised, null, "stage1");
         }
-        else if(opts.modelType == Options.ModelType.train)
+        else if(opts.modelType == Options.ModelType.discriminativeTrain)
         {
             model.init(InitType.random, opts.initRandom, "stage1");
             model.learn("stage1", opts.stage1);
