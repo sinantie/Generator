@@ -130,9 +130,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         switch(opts.modelType)
         {
-            case generate : return new GenPerformance(this);
-            case semParse : return new SemParsePerformance(this);
-            default : return new Performance(this);
+            default: case generate : return new GenPerformance(this);            
+//            default : return new Performance(this);
         }        
     }
 
@@ -147,22 +146,14 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         opts.alignmentModel = lopts.alignmentModel; // HACK        
         Record.begin(name);
         Utils.begin_track("Train: " + name);
-        boolean existsTrain = false, existsTest = false, output, fullOutput;
+        boolean existsTrain = false;
         for(int i = 0; i < examples.size(); i++)
         {
             if(isTrain(i))
             {
                 existsTrain = true; break;
             }
-        }
-        for(int i = 0; i < examples.size(); i++)
-        {
-            if(isTest(i))
-            {
-                existsTest = true; break;
-            }
-        }
-        
+        }       
         int iter = 0;
         while (iter < lopts.numIters)
         {
@@ -170,34 +161,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 
             Utils.begin_track("Iteration %s/%s: ",
                     Utils.fmt(iter+1), Utils.fmt(lopts.numIters));
-            Record.begin("iteration", iter+1);
-            Execution.putOutput("currIter", iter+1);
+            Record.begin("iteration", iter+1);            
 
-            trainPerformance = existsTrain ? newPerformance() : null;
-            testPerformance = existsTest ? newPerformance() : null;
-            output = (iter+1) % lopts.numIters == 0; // output only at the last iteration
-            fullOutput = output && opts.outputFullPred;
-            try
-            {
-                trainPredOut = (output && existsTrain) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".train.pred."+iter)) : null;
-                testPredOut = (output && existsTest) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".test.pred."+iter)) : null;
-                trainFullPredOut = (fullOutput && existsTrain) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".train.full-pred."+iter)) : null;
-                testFullPredOut = (fullOutput && existsTest) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".test.full-pred."+iter)) : null;
-            }
-            catch(IOException ioe)
-            {
-                Utils.begin_track("Error opening file");
-                LogInfo.end_track();
-            }
-
+            trainPerformance = existsTrain ? newPerformance() : null;            
+            
             // Batch EM only
             Params counts = newParams();
 
@@ -214,7 +181,6 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             list.clear();
             // M-step
             params = counts;
-//            params.saveSum(); // 02/07/09: for printing out posterior mass (see AParams.foreachProb)
             if (lopts.useVarUpdates)
             {
                 params.optimiseVar(lopts.smoothing);
@@ -222,15 +188,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             else
             {
                 params.optimise(lopts.smoothing);
-            }
-            
-            record(String.valueOf(iter), name, complexity);
-            if(trainPredOut != null) trainPredOut.close();
-            if(testPredOut != null) testPredOut.close();
-            if(trainFullPredOut != null) trainFullPredOut.close();
-            if(testFullPredOut != null) testFullPredOut.close();
-
-            Execution.putOutput("currExample", examples.size());
+            }            
+            record(String.valueOf(iter), name, complexity);            
             LogInfo.end_track();
             Record.end();
             // Final
@@ -239,20 +198,16 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 LogInfo.track("Final", true);
                 if(trainPerformance != null)
                     trainPerformance.record("train");
-                if(testPerformance != null)
-                    testPerformance.record("test");
+                LogInfo.end_track();
             }
             iter++;
-            if (Execution.shouldBail() || existsTest) // it makes sense to perform one iteration at test time
+            if (Execution.shouldBail())
                 lopts.numIters = iter;
         } // while (iter < lopts.numIters)
         saveParams(name);
         params.output(Execution.getFile(name+".params"));
         LogInfo.end_track();
-        LogInfo.end_track();
         Record.end();
-        Record.end();
-        Execution.putOutput("currIter", lopts.numIters);
     }
 
     @Override

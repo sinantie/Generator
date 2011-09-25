@@ -44,7 +44,7 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
            opts.modelType == Options.ModelType.semParse)
         {
             HyperpathResult result;
-            if(opts.fullPredRandomBaseline)
+                if(opts.fullPredRandomBaseline)
             {
                 StopWatchSet.begin("1-best Viterbi");
                 result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);

@@ -754,33 +754,7 @@ public abstract class Event3Model extends WordModel<Widget, Params, Performance,
 //                    {
 //
 //                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
-//                    }
-                    
-                    if (opts.oneExamplePerLine) // if (one example per line WITH gold-standard)
-                    {
-                        int[][] subTrueEvents;
-                        for(int l = 0; l < lineStartIndices.length - 1; l++)
-                        {
-                            int i = lineStartIndices[l];
-                            int j = lineStartIndices[l + 1];
-                            subTrueEvents = new int[trueEvents.length][j - i];
-                            for(int r = 0; r < trueEvents.length; r++)
-                            {
-                                subTrueEvents[r] = Arrays.copyOfRange(
-                                        trueEvents[r], i, j);
-                            } // for
-                            int[] subStartIndices = {0, j - i};
-                            examples.add(new Example(this, name+":" + l,
-                                               events,
-                                               Arrays.copyOfRange(text, i, j),
-                                               Arrays.copyOfRange(labels, i, j),
-                                               subStartIndices, text.length,
-                                               new Widget(subTrueEvents, null, null,
-                                               null, subStartIndices,
-                                               eventTypeAllowedOnTrack,
-                                               eventTypeIndices)));
-                        } // for
-                    }
+//                    }                                        
                     if(opts.modelType == Options.ModelType.generate)
                     {
                         // predict length                        
@@ -826,21 +800,7 @@ public abstract class Event3Model extends WordModel<Widget, Params, Performance,
                 } // if(alignPathExists)
                 else
                 {
-                    if (opts.oneExamplePerLine)
-                    { // Originally for NFL data, but now with cooked.pruned, don't need this anymore
-                        for(int l = 0; l < lineStartIndices.length - 1; l++)
-                        {
-                            int i = lineStartIndices[l];
-                            int j = lineStartIndices[l + 1];
-                            int[] subStartIndices = {0, j - i};
-                            examples.add(new Example(this, name+":" + l,
-                                               events,
-                                               Arrays.copyOfRange(text, i, j),
-                                               Arrays.copyOfRange(labels, i, j),
-                                               subStartIndices, text.length, null));
-                        } // for
-                    } // if (alignment one example per line - NO gold-standard)
-                    else if(opts.modelType == Options.ModelType.generate) // for generation only
+                    if(opts.modelType == Options.ModelType.generate) // for generation only
                     { 
                         examples.add(new Example(this, name, events,
                             null, null, null, opts.averageTextLength,
