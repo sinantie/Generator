@@ -148,7 +148,8 @@ public class Options {
   @Option public int testStart = 0;
   @Option public int testEnd = 0;
   @Option(gloss="all examples are in a single file (default=false)") public boolean examplesInSingleFile = false;
-
+  @Option(gloss="don't save parameter files (for tests only)") public boolean dontOutputParams = false;  
+  
   // Learning
   @Option public InitType initType = InitType.random;
   @Option public double initSmoothing = 0.01;

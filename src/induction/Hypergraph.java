@@ -1,7 +1,7 @@
 package induction;
 
 import induction.ngrams.NgramModel;
-import induction.problem.event3.generative.generation.GenPerformance;
+import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.generation.GenWidget;
 import edu.berkeley.nlp.mt.BatchBleuScorer;
 import edu.uci.ics.jung.graph.Graph;
@@ -663,7 +663,7 @@ public class Hypergraph<Widget> {
         if(oracleReranker) // Perform oracle reranking, against BLEU-4 score
         {
             BatchBleuScorer bleuScorer = new BatchBleuScorer();
-            String trueStr = GenPerformance.widgetToString((GenWidget)ex.getTrueWidget());
+            String trueStr = GenerationPerformance.widgetToString((GenWidget)ex.getTrueWidget());
             TreeSet<DerivationWithBleu> set = new TreeSet<DerivationWithBleu>();
             for(int k = 0; k < startNodeInfo.derivations.size(); k++)
                 set.add(new DerivationWithBleu(widget, k, ex.N(), trueStr, bleuScorer));
@@ -700,7 +700,7 @@ public class Hypergraph<Widget> {
             this.k = k;
             // get the k-best derivation
             chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k));
-            predStr = GenPerformance.widgetToString((GenWidget)chooser.widget);
+            predStr = GenerationPerformance.widgetToString((GenWidget)chooser.widget);
             // score it
             score = bleuScorer.evaluateBleu(predStr, trueStr);
         }

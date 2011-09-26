@@ -19,7 +19,7 @@ import java.util.TreeSet;
  * one line of the input to the events
  * @author konstas
  */
-public class Performance extends APerformance<Widget>
+public class AlignmentPerformance extends APerformance<Widget>
 {
     protected  Event3Model model;
     protected  EvalResult result; // Precision/recall on events
@@ -27,7 +27,7 @@ public class Performance extends APerformance<Widget>
     // For each event type, number of correct (some of counts(t)(t) could be wrong)
     protected int[] correctCounts;
 
-    public Performance(Event3Model model)
+    public AlignmentPerformance(Event3Model model)
     {
         this.model = model;
         result = new EvalResult();

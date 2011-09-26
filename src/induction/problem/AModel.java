@@ -31,19 +31,17 @@ import java.util.Random;
 // A problem is defined by params, performance, example, inferState, model
 public abstract class AModel<Widget extends AWidget,
                              Params extends AParams,
-                             Performance extends APerformance<Widget>,
+//                             Performance extends APerformance<Widget>,
                              Example extends AExample<Widget>,
                              InferState extends AInferState<Widget, Example, Params> >
                              implements ModelInterface
 {
     protected Options opts;
     protected Params params;
-    protected Performance performance;
-//    protected InferState inferState;
     protected List<Example> examples = new ArrayList<Example>();
     private int numExamples, maxExamples;
     protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
-    protected Performance trainPerformance, testPerformance;
+    protected APerformance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
     protected WekaWrapper lengthPredictor;
 
@@ -58,7 +56,7 @@ public abstract class AModel<Widget extends AWidget,
     }
 
     protected abstract Params newParams();
-    protected abstract Performance newPerformance();
+    protected abstract APerformance newPerformance();
 
     protected Example tokensToExample(String[] tokens)
     {
@@ -527,7 +525,7 @@ public abstract class AModel<Widget extends AWidget,
         InferState inferState = null;
         while (iter < lopts.numIters)
         {
-            testPerformance = newPerformance();
+            trainPerformance = newPerformance();
             Params counts = newParams();
 //            Example ex = examples.get(0);
             for(Example ex: examples)
@@ -537,8 +535,7 @@ public abstract class AModel<Widget extends AWidget,
                     inferState =  createInferState(ex, 1, counts, temperature,
                         lopts, iter, complexity);
                     inferState.updateCounts();
-//                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
-                    testPerformance.add(ex, inferState.bestWidget);
+                    trainPerformance.add(ex, inferState.bestWidget);
                 }
                 catch(Exception e)
                 {
@@ -549,15 +546,25 @@ public abstract class AModel<Widget extends AWidget,
             }
             // M step
             params = counts;
-//            params.saveSum();
-            params.optimise(lopts.smoothing);
-            
+            params.optimise(lopts.smoothing);            
             iter++;
         }
 //        System.out.println(params.output());
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
 
+    /**
+     * helper method for testing the discriminative learning scheme. 
+     * Simulates learn(...) method from the DiscriminativeEvent3Model class
+     * for a number of examples without the thread mechanism.
+     * @return the average Viterbi log probability
+     */
+    public double testDiscriminativeLearn(String name, LearnOptions lopts)
+    {
+        learn(name, lopts);
+        return trainPerformance.getAccuracy();
+    }
+    
     /**
      * helper method for testing the generation output. Simulates generate(...) method
      * for a single example without the thread mechanism

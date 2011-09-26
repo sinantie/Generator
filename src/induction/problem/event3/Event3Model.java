@@ -1,10 +1,7 @@
 package induction.problem.event3;
 
 import induction.problem.event3.generative.generation.SemParseWidget;
-import induction.problem.event3.generative.generation.SemParsePerformance;
 import induction.problem.event3.generative.generation.GenWidget;
-import induction.problem.event3.generative.generation.GenPerformance;
-import induction.problem.event3.generative.alignment.Performance;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
@@ -52,7 +49,8 @@ import java.util.Map;
  *
  * @author konstas
  */
-public abstract class Event3Model extends WordModel<Widget, Params, Performance,
+public abstract class Event3Model extends WordModel<Widget, Params, 
+//                                           Performance,
                                            Example, Event3InferState> implements Serializable
 {
 
@@ -940,18 +938,7 @@ public abstract class Event3Model extends WordModel<Widget, Params, Performance,
             } // for
         }
         return set;
-    }   
-
-    @Override
-    protected Performance newPerformance()
-    {
-        switch(opts.modelType)
-        {
-            case generate : return new GenPerformance(this);
-            case semParse : return new SemParsePerformance(this);
-            default : return new Performance(this);
-        }        
-    }   
+    }       
 
     @Override
     protected Example genExample(int index)

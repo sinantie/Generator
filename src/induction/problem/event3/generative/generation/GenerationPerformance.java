@@ -1,6 +1,6 @@
 package induction.problem.event3.generative.generation;
 
-import induction.problem.event3.generative.alignment.Performance;
+import induction.problem.event3.generative.alignment.AlignmentPerformance;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.Parameters;
 import edu.berkeley.nlp.mt.BatchBleuModifiedScorer;
@@ -27,7 +27,7 @@ import tercom.TERcalc;
  *
  * @author konstas
  */
-public class GenPerformance extends Performance
+public class GenerationPerformance extends AlignmentPerformance
 {
     BatchBleuScorer bleuScorer, bleuModifiedScorer;
     MeteorScorer meteorScorer;
@@ -35,7 +35,7 @@ public class GenPerformance extends Performance
     TERMetric terScorer;
     double TERTotalEdits = 0.0, TERTotalWords = 0.0;
 
-    public GenPerformance(Event3Model model)
+    public GenerationPerformance(Event3Model model)
     {
         super(model);
         bleuScorer = new BatchBleuScorer();

@@ -15,6 +15,7 @@ import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
+import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.ProbVec;
 import induction.problem.event3.Event3InferState;
@@ -22,11 +23,7 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
-import induction.problem.event3.generative.generation.GenInferState;
-import induction.problem.event3.generative.generation.GenPerformance;
-import induction.problem.event3.generative.alignment.Performance;
-import induction.problem.event3.generative.generation.SemParseInferState;
-import induction.problem.event3.generative.generation.SemParsePerformance;
+import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -126,12 +123,13 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     }
 
     @Override
-    protected Performance newPerformance()
+    protected APerformance newPerformance()
     {
         switch(opts.modelType)
         {
-            default: case generate : return new GenPerformance(this);            
-//            default : return new Performance(this);
+            case discriminativeTrain: return new DiscriminativePerformance();
+            default: case generate : return new GenerationPerformance(this);            
+//            default : return new InductionPerformance(this);
         }        
     }
 
@@ -154,16 +152,13 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 existsTrain = true; break;
             }
         }       
-        int iter = 0;
-        while (iter < lopts.numIters)
+        for(int iter = 0; iter < lopts.numIters; iter++)
         {
             FullStatFig complexity = new FullStatFig(); // Complexity inference
-
             Utils.begin_track("Iteration %s/%s: ",
                     Utils.fmt(iter+1), Utils.fmt(lopts.numIters));
             Record.begin("iteration", iter+1);            
-
-            trainPerformance = existsTrain ? newPerformance() : null;            
+            trainPerformance = existsTrain ? newPerformance() : null;
             
             // Batch EM only
             Params counts = newParams();
@@ -203,9 +198,12 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             iter++;
             if (Execution.shouldBail())
                 lopts.numIters = iter;
-        } // while (iter < lopts.numIters)
-        saveParams(name);
-        params.output(Execution.getFile(name+".params"));
+        } // for (all iterations)
+        if(!opts.dontOutputParams)
+        {
+            saveParams(name);
+            params.output(Execution.getFile(name+".params"));
+        }        
         LogInfo.end_track();
         Record.end();
     }
@@ -283,23 +281,12 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                                        InferSpec ispec)
     {
         return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);
-//        switch(opts.modelType)
-//        {
-//            case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
-//            case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
-//            default : return new InferState(this, ex, params, counts, ispec);
-//        }
     }
 
-    protected Event3InferState newInferState(Example ex, Params params, Params counts,
+    protected Event3InferState newInferState(Example ex, Params weights, Params counts,
                                            InferSpec ispec, Graph graph)
     {
-        switch(opts.modelType)
-        {
-            case generate: return new GenInferState(this, ex, params, counts, ispec, ngramModel, graph);
-            case semParse: default: return new SemParseInferState(this, ex, params, counts, ispec, graph);
-        }
-        
+        return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);        
     }
 
 }

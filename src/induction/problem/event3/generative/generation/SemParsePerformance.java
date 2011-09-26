@@ -1,6 +1,6 @@
 package induction.problem.event3.generative.generation;
 
-import induction.problem.event3.generative.alignment.Performance;
+import induction.problem.event3.generative.alignment.AlignmentPerformance;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.params.Parameters;
 import fig.basic.EvalResult;
@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author konstas
  */
-public class SemParsePerformance extends Performance
+public class SemParsePerformance extends AlignmentPerformance
 {
     EvalResult eventsResult;
     EvalResult fieldsResult;

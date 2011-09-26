@@ -15,6 +15,7 @@ import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
+import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.ProbVec;
 import induction.problem.event3.Event3InferState;
@@ -22,10 +23,10 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
+import induction.problem.event3.generative.alignment.AlignmentPerformance;
 import induction.problem.event3.generative.generation.GenInferState;
-import induction.problem.event3.generative.generation.GenPerformance;
+import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.alignment.InferState;
-import induction.problem.event3.generative.alignment.Performance;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
 import java.io.FileInputStream;
@@ -182,13 +183,13 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     }
 
     @Override
-    protected Performance newPerformance()
+    protected APerformance newPerformance()
     {
         switch(opts.modelType)
         {
-            case generate : return new GenPerformance(this);
+            case generate : return new GenerationPerformance(this);
             case semParse : return new SemParsePerformance(this);
-            default : return new Performance(this);
+            default : return new AlignmentPerformance(this);
         }        
     }
 

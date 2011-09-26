@@ -1,6 +1,5 @@
 package induction.problem.event3;
 
-import induction.problem.event3.Event3Model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
