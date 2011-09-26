@@ -43,7 +43,7 @@ public class InductionWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 15 -testInputLists "
+         String args = "-modelType event3 -Options.stage1.numIters 15 -inputLists "
                 + "gaborLists/weatherEvalScenariosRandomBest12Events -inputFileExt events "
                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                 + "-disallowConsecutiveRepeatFields -indepWords 0,5 "

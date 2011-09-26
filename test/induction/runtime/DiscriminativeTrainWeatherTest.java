@@ -40,7 +40,7 @@ public class DiscriminativeTrainWeatherTest
     public void setUp() 
     {
          String args = "-modelType discriminativeTrain -testInputLists test/testWeatherGovEvents "
-                    + "-inputFileExt events -stagedParamsFile "
+                    + "-inputFileExt events -dontOutputParams -stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 20 "
@@ -77,6 +77,6 @@ public class DiscriminativeTrainWeatherTest
     public void testRun()
     {
         System.out.println("run");        
-        System.out.println(model.testGenerate(name, lopts).trim());
+        System.out.println(model.testDiscriminativeLearn(name, lopts));
     }
 }
