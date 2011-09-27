@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import joshua.discriminative.training.learning_algorithm.DefaultPerceptron;
+import joshua.discriminative.training.learning_algorithm.GradientBasedOptimizer;
 
 /**
  * A discriminative model of events and their text summaries
@@ -151,29 +153,39 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             {
                 existsTrain = true; break;
             }
-        }       
-        for(int iter = 0; iter < lopts.numIters; iter++)
+        }
+        // initialise model
+        HashMap perceptronSumModel = new HashMap();
+        HashMap perceptronAverageModel = new HashMap();
+        GradientBasedOptimizer optimizer = new DefaultPerceptron(
+                perceptronSumModel, perceptronAverageModel, 
+                examples.size(), lopts.batchUpdateSize);
+        
+        for(int iter = 0; iter < lopts.numIters; iter++) // for t = 1...T do
         {
             FullStatFig complexity = new FullStatFig(); // Complexity inference
-            Utils.begin_track("Iteration %s/%s: ",
-                    Utils.fmt(iter+1), Utils.fmt(lopts.numIters));
+            Utils.begin_track("Iteration %s/%s: ", Utils.fmt(iter+1), 
+                    Utils.fmt(lopts.numIters));
             Record.begin("iteration", iter+1);            
             trainPerformance = existsTrain ? newPerformance() : null;
             
-            // Batch EM only
-            Params counts = newParams();
-
-            // E-step
-            Utils.begin_track("E-step");
-            Collection<BatchEM> list = new ArrayList(examples.size());
-            for(int i = 0; i < examples.size(); i++)
+            for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {
-                list.add(new BatchEM(i, examples.get(i), counts, lopts.initTemperature,
-                        lopts, iter, complexity));
+                Params counts = newParams();
+                Collection<BatchEM> list = new ArrayList(examples.size());
+                // Batch Update
+                for(int j = 0; j < lopts.batchUpdateSize; j++)
+                {
+                    list.add(new BatchEM(i, examples.get(i), counts, lopts.initTemperature,
+                            lopts, iter, complexity));
+                }
+                Utils.parallelForeach(opts.numThreads, list);
+                LogInfo.end_track();
+                list.clear();
             }
-            Utils.parallelForeach(opts.numThreads, list);
-            LogInfo.end_track();
-            list.clear();
+            
+            
+            
             // M-step
             params = counts;
             if (lopts.useVarUpdates)

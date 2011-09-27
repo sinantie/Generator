@@ -5,6 +5,7 @@ import fig.basic.*;
 public class LearnOptions {
   // Learning
   @Option(gloss="Number of training iterations") public int numIters = 0;
+  @Option(gloss="Batch Update Size (Perceptron only)") public int batchUpdateSize = 30;
   @Option(gloss="Online") public boolean online = false;
   @Option(gloss="Incremental EM (keep around suff stats)") public boolean incremental = false;
   @Option(gloss="Hard EM") public boolean hardUpdate = false;
