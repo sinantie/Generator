@@ -3,6 +3,7 @@ package induction.problem.event3.discriminative;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
+import induction.problem.AInferState;
 import induction.problem.event3.params.Params;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
@@ -23,6 +24,8 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
+import induction.problem.event3.discriminative.params.DiscriminativeParams;
+import induction.problem.event3.generative.alignment.InferState;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -90,6 +93,47 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         }
         LogInfo.end_track();
     }
+    
+    public Params loadGenerativeModelParams()
+    {
+        Params generativeParams = null;
+        Utils.begin_track("generativeModelInitParams");
+        try
+        {
+            Utils.log("Loading " + opts.stagedParamsFile);
+            ObjectInputStream ois = new ObjectInputStream(
+                    new FileInputStream(opts.stagedParamsFile));
+            wordIndexer = ((Indexer<String>) ois.readObject());
+            labelIndexer = ((Indexer<String>) ois.readObject());
+            eventTypes = (EventType[]) ois.readObject();
+            eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
+            // fill in eventTypesNameIndexer
+            fieldsMap = new HashMap<Integer, HashMap<String, Integer>>(eventTypes.length);
+            for(EventType e: eventTypes)
+            {
+                eventTypeNameIndexer.add(e.getName());
+                HashMap<String, Integer> fields = new HashMap<String, Integer>();
+                int i = 0;
+                for(Field f : e.getFields())
+                {
+                    fields.put(f.getName(), i++);
+                }
+                fields.put("none_f", i++);
+                fieldsMap.put(e.getEventTypeIndex(), fields);
+            }
+            generativeParams = new Params(this, opts);
+            generativeParams.setVecs((Map<String, ProbVec>) ois.readObject());
+            ois.close();
+        }
+        catch(Exception ioe)
+        {
+            Utils.log("Error loading "+ opts.stagedParamsFile);
+            ioe.printStackTrace();
+            Execution.finish();
+        }
+        LogInfo.end_track();
+        return generativeParams;
+    }
 
     @Override
     protected void saveParams(String name)
@@ -121,7 +165,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected Params newParams()
     {
-        return new Params(this, opts);
+        return new DiscriminativeParams(this, opts);
     }
 
     @Override
@@ -154,6 +198,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 existsTrain = true; break;
             }
         }
+        // Load generative model parameters
+        Params baselineModelParams = loadGenerativeModelParams();
+        
         // initialise model
         HashMap perceptronSumModel = new HashMap();
         HashMap perceptronAverageModel = new HashMap();
@@ -171,31 +218,26 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {
-                Params counts = newParams();
-                Collection<BatchEM> list = new ArrayList(examples.size());
-                // Batch Update
-                for(int j = 0; j < lopts.batchUpdateSize; j++)
-                {
-                    list.add(new BatchEM(i, examples.get(i), counts, lopts.initTemperature,
-                            lopts, iter, complexity));
-                }
-                Utils.parallelForeach(opts.numThreads, list);
-                LogInfo.end_track();
-                list.clear();
+                // compute k-best derivations (may have to save to disk instead)
+                AInferState inferState = createInferState(
+                        examples.get(i), 1, baselineModelParams, 1, lopts, iter, complexity);
+                
+//                Params counts = newParams();
+//                Collection<BatchEM> list = new ArrayList(examples.size());
+//                // Batch Update
+//                for(int j = 0; j < lopts.batchUpdateSize; j++)
+//                {
+//                    list.add(new BatchEM(i, examples.get(i), counts, lopts.initTemperature,
+//                            lopts, iter, complexity));
+//                }
+//                Utils.parallelForeach(opts.numThreads, list);
+//                LogInfo.end_track();
+//                list.clear();
             }
             
             
             
-            // M-step
-            params = counts;
-            if (lopts.useVarUpdates)
-            {
-                params.optimiseVar(lopts.smoothing);
-            }
-            else
-            {
-                params.optimise(lopts.smoothing);
-            }            
+                 
             record(String.valueOf(iter), name, complexity);            
             LogInfo.end_track();
             Record.end();

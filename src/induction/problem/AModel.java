@@ -32,8 +32,8 @@ import java.util.Random;
 public abstract class AModel<Widget extends AWidget,
                              Params extends AParams,
 //                             Performance extends APerformance<Widget>,
-                             Example extends AExample<Widget>,
-                             InferState extends AInferState<Widget, Example, Params> >
+                             Example extends AExample<Widget>>
+//                             InferState extends AInferState<Widget, Example, Params> >
                              implements ModelInterface
 {
     protected Options opts;
@@ -63,9 +63,9 @@ public abstract class AModel<Widget extends AWidget,
         throw new UnsupportedOperationException("Not supported");
     }
 
-    protected abstract InferState newInferState(Example ex, Params params,
+    protected abstract AInferState newInferState(Example ex, Params params,
                                                 Params counts, InferSpec ispec);
-    protected abstract InferState newInferState(Example ex, Params params,
+    protected abstract AInferState newInferState(Example ex, Params params,
                                                 Params counts, InferSpec ispec, Graph graph);
 
     @Override
@@ -386,11 +386,11 @@ public abstract class AModel<Widget extends AWidget,
                 lopts, iter, complexity), i, ex);
     }
 
-    private InferState createInferState(Example ex, double stepSize,
+    private AInferState createInferState(Example ex, double stepSize,
             Params counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity, Graph graph)
     {
-        InferState currentInferState = newInferState(ex, params, counts,
+        AInferState currentInferState = newInferState(ex, params, counts,
         new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter), graph);
@@ -403,11 +403,11 @@ public abstract class AModel<Widget extends AWidget,
         return currentInferState;
     }
 
-    private InferState createInferState(Example ex, double stepSize,
+    protected AInferState createInferState(Example ex, double stepSize,
             Params counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity)
     {
-        InferState currentInferState = newInferState(ex, params, counts,
+        AInferState currentInferState = newInferState(ex, params, counts,
         new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter));
@@ -420,7 +420,7 @@ public abstract class AModel<Widget extends AWidget,
         return currentInferState;
     }
 
-    private void processInferState(InferState inferState, int i, Example ex)
+    private void processInferState(AInferState inferState, int i, Example ex)
     {
         if (isTrain(i))
         {
@@ -484,7 +484,7 @@ public abstract class AModel<Widget extends AWidget,
         testPerformance = newPerformance();
         Params counts = newParams();
         Example ex = examples.get(0);
-        InferState inferState =  createInferState(ex, 1, counts, temperature,
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
 //        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
         testPerformance.add(ex, inferState.bestWidget);
@@ -522,7 +522,7 @@ public abstract class AModel<Widget extends AWidget,
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         int iter = 0;
-        InferState inferState = null;
+        AInferState inferState = null;
         while (iter < lopts.numIters)
         {
             trainPerformance = newPerformance();
@@ -579,7 +579,7 @@ public abstract class AModel<Widget extends AWidget,
         testPerformance = newPerformance();
         Params counts = newParams();
         Example ex = examples.get(0);
-        InferState inferState =  createInferState(ex, 1, counts, temperature,
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));
@@ -607,7 +607,7 @@ public abstract class AModel<Widget extends AWidget,
 //        Example ex = examples.get(0);
             try
             {
-                InferState inferState =  createInferState(ex, 1, counts, temperature,
+                AInferState inferState =  createInferState(ex, 1, counts, temperature,
                         lopts, 0, complexity);
                 testPerformance.add(ex, inferState.bestWidget);
                 System.out.println(widgetToFullString(ex, inferState.bestWidget));
@@ -633,7 +633,7 @@ public abstract class AModel<Widget extends AWidget,
         Params counts = newParams();
         Example ex = examples.get(0);
         Graph graph = new DirectedSparseGraph<String, String>();
-        InferState inferState =  createInferState(ex, 1, counts, temperature,
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity, graph);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));
@@ -651,7 +651,7 @@ public abstract class AModel<Widget extends AWidget,
         Params counts = newParams();
         Example ex = examples.get(0);
         Graph graph = new DirectedSparseGraph<String, String>();
-        InferState inferState =  createInferState(ex, 1, counts, temperature,
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity, graph);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));

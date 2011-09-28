@@ -3,7 +3,6 @@ package induction.problem.wordproblem;
 import fig.basic.Indexer;
 import fig.exec.Execution;
 import induction.Options;
-import induction.problem.AInferState;
 import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.AWidget;
@@ -15,11 +14,11 @@ import induction.problem.AWidget;
 public abstract class WordModel<Widget extends AWidget,
                                 Params extends AParams,
 //                                Performance extends APerformance<Widget>,
-                                Example extends WordExample<Widget>,
-                                InferState extends AInferState<Widget, Example, Params> >
+                                Example extends WordExample<Widget>>//,
+                                //InferState extends AInferState<Widget, Example, Params> >
                       extends AModel<Widget, Params, 
 //                                     Performance, 
-                                     Example, InferState>
+                                     Example>//, InferState>
 {
 
     protected static Indexer<String> wordIndexer = new Indexer<String>();

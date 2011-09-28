@@ -12,6 +12,7 @@ import induction.Options.InitType;
 import induction.Options.ModelType;
 import util.Stemmer;
 import induction.Utils;
+import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
@@ -51,7 +52,8 @@ import java.util.Map;
  */
 public abstract class Event3Model extends WordModel<Widget, Params, 
 //                                           Performance,
-                                           Example, Event3InferState> implements Serializable
+//                                           Example, Event3InferState> implements Serializable
+                                           Example> implements Serializable
 {
 
     protected EventType[] eventTypes = null;  // Filled in later
