@@ -1,19 +1,15 @@
 package induction.problem;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
-import induction.ngrams.KylmNgramWrapper;
 import induction.LearnOptions;
 import induction.MyCallable;
 import induction.ngrams.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
-import induction.Options.NgramWrapper;
-import induction.ngrams.SrilmNgramWrapper;
 import induction.Utils;
 import induction.WekaWrapper;
 import java.io.File;
@@ -29,16 +25,17 @@ import java.util.Random;
  * @author konstas
  */
 // A problem is defined by params, performance, example, inferState, model
-public abstract class AModel<Widget extends AWidget,
-                             Params extends AParams,
+public abstract class AModel
+//                            <Widget extends AWidget,
+//                             Params extends AParams,
 //                             Performance extends APerformance<Widget>,
-                             Example extends AExample<Widget>>
+//                             Example extends AExample<Widget>>
 //                             InferState extends AInferState<Widget, Example, Params> >
                              implements ModelInterface
 {
     protected Options opts;
-    protected Params params;
-    protected List<Example> examples = new ArrayList<Example>();
+    protected AParams params;
+    protected List<AExample> examples = new ArrayList<AExample>();
     private int numExamples, maxExamples;
     protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
     protected APerformance trainPerformance, testPerformance;
@@ -55,18 +52,18 @@ public abstract class AModel<Widget extends AWidget,
         maxExamples = opts.maxExamples;
     }
 
-    protected abstract Params newParams();
+    protected abstract AParams newParams();
     protected abstract APerformance newPerformance();
 
-    protected Example tokensToExample(String[] tokens)
+    protected AExample tokensToExample(String[] tokens)
     {
         throw new UnsupportedOperationException("Not supported");
     }
 
-    protected abstract AInferState newInferState(Example ex, Params params,
-                                                Params counts, InferSpec ispec);
-    protected abstract AInferState newInferState(Example ex, Params params,
-                                                Params counts, InferSpec ispec, Graph graph);
+    protected abstract AInferState newInferState(AExample ex, AParams params,
+                                                AParams counts, InferSpec ispec);
+    protected abstract AInferState newInferState(AExample ex, AParams params,
+                                                AParams counts, InferSpec ispec, Graph graph);
 
     @Override
     public void logStats()
@@ -79,7 +76,7 @@ public abstract class AModel<Widget extends AWidget,
         return v.sample(opts.genRandom);
     }
 
-    protected abstract Example genExample(int index);
+    protected abstract AExample genExample(int index);
 
     @Override
     public void genExamples()
@@ -97,20 +94,20 @@ public abstract class AModel<Widget extends AWidget,
         Utils.writeLines(Execution.getFile("gen.examples"), examplesToString);
     }
 
-    protected abstract Integer[] widgetToIntSeq(Widget widget);
-    protected abstract String widgetToSGMLOutput(Example ex, Widget widget);
+    protected abstract Integer[] widgetToIntSeq(AWidget widget);
+    protected abstract String widgetToSGMLOutput(AExample ex, AWidget widget);
 
-    protected String widgetToFullString(Example ex, Widget widget)
+    protected String widgetToFullString(AExample ex, AWidget widget)
     {
         return exampleToString(ex) + " " + Utils.mkString(widgetToIntSeq(widget), " ");
     }
 
-    protected abstract String exampleToString(Example ex);
+    protected abstract String exampleToString(AExample ex);
 
     protected void supervisedInitParams()
     {
         Utils.begin_track("supervisedInitParams");
-        final Params counts = newParams();
+        final AParams counts = newParams();
         params.setUniform(1);
         Collection<InitParams> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
@@ -378,7 +375,7 @@ public abstract class AModel<Widget extends AWidget,
         }
     }
 
-    private void processExample(int i, Example ex, double stepSize, Params counts,
+    private void processExample(int i, AExample ex, double stepSize, AParams counts,
                                 double temperature, LearnOptions lopts,
                                 int iter, FullStatFig complexity)
     {
@@ -386,8 +383,8 @@ public abstract class AModel<Widget extends AWidget,
                 lopts, iter, complexity), i, ex);
     }
 
-    protected AInferState createInferState(Example ex, double stepSize,
-            Params counts, double temperature, LearnOptions lopts, int iter,
+    protected AInferState createInferState(AExample ex, double stepSize,
+            AParams counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity, Graph graph)
     {
         AInferState currentInferState = newInferState(ex, params, counts,
@@ -403,8 +400,8 @@ public abstract class AModel<Widget extends AWidget,
         return currentInferState;
     }
 
-    protected AInferState createInferState(Example ex, double stepSize,
-            Params counts, double temperature, LearnOptions lopts, int iter,
+    protected AInferState createInferState(AExample ex, double stepSize,
+            AParams counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity)
     {
         AInferState currentInferState = newInferState(ex, params, counts,
@@ -420,7 +417,7 @@ public abstract class AModel<Widget extends AWidget,
         return currentInferState;
     }
 
-    private void processInferState(AInferState inferState, int i, Example ex)
+    private void processInferState(AInferState inferState, int i, AExample ex)
     {
         if (isTrain(i))
         {
@@ -469,89 +466,7 @@ public abstract class AModel<Widget extends AWidget,
         else if (isTest(i))
             return "test: "+testPerformance.summary();
         else return "(skip)";
-    }
-        
-    /**
-     * helper method for testing the learning output. Simulates learn(...) method
-     * for a single example without the thread mechanism
-     * @return a String with the aligned events' indices
-     */
-    public String testStagedLearn(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel;
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();
-        Params counts = newParams();
-        Example ex = examples.get(0);
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
-                lopts, 0, complexity);
-//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
-        testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-//        int i = 0;
-//        for(Example ex: examples)
-//        {
-//            try
-//            {
-//            InferState inferState =  createInferState(ex, 1, counts, temperature,
-//                    lopts, 0, complexity);
-//            testPerformance.add(ex, inferState.bestWidget);
-//            System.out.println(widgetToFullString(ex, inferState.bestWidget));
-//
-//            }
-//            catch(Exception e)
-//            {
-//                System.out.println(i+ " " + e.getMessage());
-//                e.printStackTrace();
-//            }
-//            i++;
-//        }
-//        return "";
-        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
-    }
-
-    /**
-     * helper method for testing the learning output. Simulates learn(...) method
-     * for a number of examples without the thread mechanism.
-     * @return a String with the aligned events' indices of the last example
-     */
-    public String testInitLearn(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel;
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        int iter = 0;
-        AInferState inferState = null;
-        while (iter < lopts.numIters)
-        {
-            trainPerformance = newPerformance();
-            Params counts = newParams();
-//            Example ex = examples.get(0);
-            for(Example ex: examples)
-            {
-                try
-                {
-                    inferState =  createInferState(ex, 1, counts, temperature,
-                        lopts, iter, complexity);
-                    inferState.updateCounts();
-                    trainPerformance.add(ex, inferState.bestWidget);
-                }
-                catch(Exception e)
-                {
-                    System.out.println(ex.toString());
-                    e.printStackTrace();
-                    System.exit(0);
-                }
-            }
-            // M step
-            params = counts;
-            params.optimise(lopts.smoothing);            
-            iter++;
-        }
-//        System.out.println(params.output());
-        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
-    }
+    }               
 
     /**
      * helper method for testing the discriminative learning scheme. 
@@ -564,107 +479,14 @@ public abstract class AModel<Widget extends AWidget,
         learn(name, lopts);
         return trainPerformance.getAccuracy();
     }
-    
-    /**
-     * helper method for testing the generation output. Simulates generate(...) method
-     * for a single example without the thread mechanism
-     * @return a String with the generated SGML text output (contains results as well)
-     */
-    public String testGenerate(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel;
-        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();
-        Params counts = newParams();
-        Example ex = examples.get(0);
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
-                lopts, 0, complexity);
-        testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-        return widgetToSGMLOutput(ex, inferState.bestWidget);
-    }
-
-    /**
-     * helper method for testing the semantic parse output. Simulates generate(...) method
-     * for a single example without the thread mechanism
-     * @return the accuracy of the semantic parsing
-     */
-    public String testSemParse(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel;
-        if(opts.ngramWrapper == NgramWrapper.kylm)
-            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        else if(opts.ngramWrapper == NgramWrapper.srilm)
-            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();
-        Params counts = newParams(); int i = 0;
-        for(Example ex: examples)
-        {
-//        Example ex = examples.get(0);
-            try
-            {
-                AInferState inferState =  createInferState(ex, 1, counts, temperature,
-                        lopts, 0, complexity);
-                testPerformance.add(ex, inferState.bestWidget);
-                System.out.println(widgetToFullString(ex, inferState.bestWidget));
-            }
-            catch(Exception e)
-            {
-                System.out.println(i+ " " + e.getMessage());
-                e.printStackTrace();
-            }
-            i++;
-        }
-
-        return testPerformance.output();
-    }
-
-    public Graph testSemParseVisualise(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel;
-//        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();
-        Params counts = newParams();
-        Example ex = examples.get(0);
-        Graph graph = new DirectedSparseGraph<String, String>();
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
-                lopts, 0, complexity, graph);
-        testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-                                    
-        return graph;
-    }
-
-    public Graph testGenerateVisualise(String name, LearnOptions lopts)
-    {
-        opts.alignmentModel = lopts.alignmentModel;
-        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();
-        Params counts = newParams();
-        Example ex = examples.get(0);
-        Graph graph = new DirectedSparseGraph<String, String>();
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
-                lopts, 0, complexity, graph);
-        testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-        return graph;
-    }
-
+        
     protected class InitParams extends MyCallable
     {
-        private Example ex;
+        private AExample ex;
         private int i;
-        private Params counts;
+        private AParams counts;
 
-        InitParams(int i, Example ex, Params counts)
+        InitParams(int i, AExample ex, AParams counts)
         {
             this.i = i;
             this.ex = ex;
@@ -684,14 +506,14 @@ public abstract class AModel<Widget extends AWidget,
 
     protected class BatchEM extends MyCallable
     {
-        private Example ex;
+        private AExample ex;
         private int i, iter;
-        private Params counts;
+        private AParams counts;
         private double temperature;
         private LearnOptions lopts;
         private FullStatFig complexity;
 
-        public BatchEM(int i, Example ex, Params counts, double temperature,
+        public BatchEM(int i, AExample ex, AParams counts, double temperature,
                 LearnOptions lopts, int iter, FullStatFig complexity)
         {
             this.i = i;

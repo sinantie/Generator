@@ -150,7 +150,7 @@ public class GenerationPerformance extends AlignmentPerformance
      * Print metrics
      */
     @Override
-    protected String output()
+    public String output()
     {
         meteorScorer.computeMetrics(meteorAggStats);
         String out = "BLEU scores";
@@ -220,7 +220,7 @@ public class GenerationPerformance extends AlignmentPerformance
 //    }
 
     @Override
-    protected void output(String path)
+    public void output(String path)
     {
         Utils.write(path, output());
     }

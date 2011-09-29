@@ -1,7 +1,6 @@
 package induction.problem.event3.generative.generation;
 
 import induction.problem.event3.generative.alignment.AlignmentPerformance;
-import induction.problem.event3.Event3Model;
 import induction.problem.event3.params.Parameters;
 import fig.basic.EvalResult;
 import induction.MyList;
@@ -39,7 +38,7 @@ public class SemParsePerformance extends AlignmentPerformance
     }
 
     @Override
-    protected void add(AExample example, Widget predWidget)
+    public void add(AExample example, Widget predWidget)
     {
         Example ex = (Example)example;
         Widget trueWidget = ex.getTrueWidget();
@@ -184,7 +183,7 @@ public class SemParsePerformance extends AlignmentPerformance
      * Print metrics
      */
     @Override
-    protected String output()
+    public String output()
     {
         String out = "\n\nPrecision - Recall - F-measure";
         out += "\n------------------------------";
@@ -232,7 +231,7 @@ public class SemParsePerformance extends AlignmentPerformance
     }
 
     @Override
-    protected void output(String path)
+    public void output(String path)
     {
         Utils.write(path, output());
     }

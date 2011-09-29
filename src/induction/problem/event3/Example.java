@@ -4,7 +4,7 @@ import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
-import induction.problem.wordproblem.WordExample;
+import induction.problem.AExample;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.TreeSet;
  *
  * @author konstas
  */
-public class Example extends WordExample<Widget>
+public class Example implements AExample<Widget>
 {
     public Event3Model model;
     protected String name;
@@ -487,6 +487,7 @@ public class Example extends WordExample<Widget>
         return trueWidget;
     }
 
+    @Override
     public int[] getText()
     {
         return text;

@@ -41,7 +41,7 @@ public class AlignmentPerformance extends APerformance<Widget>
     }
 
     @Override
-    protected void add(AExample example, Widget predWidget)
+    public void add(AExample example, Widget predWidget)
     {
         add((Widget)example.getTrueWidget(), predWidget);
     }
@@ -160,7 +160,7 @@ public class AlignmentPerformance extends APerformance<Widget>
      * Print confusion matrix: true event types are columns, predicted event types are rows
      */
     @Override
-    protected String output()
+    public String output()
     {
         TreeSet<Pair<String>> ts = new TreeSet<Pair<String>>();
         for(int t = 0; t < T(); t++)

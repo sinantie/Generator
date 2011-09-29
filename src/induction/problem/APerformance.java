@@ -54,11 +54,11 @@ public abstract class APerformance<Widget>
 
     protected abstract double getAccuracy();
     protected abstract void add(Widget trueWidget, Widget predWidget);
-    protected abstract void add(AExample trueWidget, Widget predWidget);
+    public abstract void add(AExample trueWidget, Widget predWidget);
 
-    protected abstract String output();
+    public abstract String output();
 
-    protected void output(String path)
+    public void output(String path)
     {
         String out = foreachStat().toString("\t", "\n");
         out += output();

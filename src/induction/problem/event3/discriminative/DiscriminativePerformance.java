@@ -28,13 +28,13 @@ public class DiscriminativePerformance extends APerformance<Widget>
     }
 
     @Override
-    protected void add(AExample trueWidget, Widget predWidget)
+    public void add(AExample trueWidget, Widget predWidget)
     {
        
     }
 
     @Override
-    protected String output()
+    public String output()
     {
         return "Average Viterbi logZ: " + getAccuracy();
     }

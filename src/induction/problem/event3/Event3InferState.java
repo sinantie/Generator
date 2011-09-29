@@ -20,7 +20,9 @@ import java.util.Arrays;
  *
  * @author konstas
  */
-public abstract class Event3InferState extends AHypergraphInferState<Widget, Example, Params>
+public abstract class Event3InferState
+                                        extends AHypergraphInferState//<Example>
+        <Widget, Example, Params>
 {
     protected double[] segPenalty;
     protected int[] words, nums;

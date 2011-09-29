@@ -2,7 +2,6 @@ package induction.problem.event3;
 
 import induction.problem.event3.generative.generation.SemParseWidget;
 import induction.problem.event3.generative.generation.GenWidget;
-import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
@@ -12,6 +11,7 @@ import induction.Options.InitType;
 import induction.Options.ModelType;
 import util.Stemmer;
 import induction.Utils;
+import induction.problem.AExample;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.wordproblem.WordModel;
@@ -50,10 +50,12 @@ import java.util.Map;
  *
  * @author konstas
  */
-public abstract class Event3Model extends WordModel<Widget, Params, 
-//                                           Performance,
-//                                           Example, Event3InferState> implements Serializable
-                                           Example> implements Serializable
+public abstract class Event3Model extends WordModel
+//                                            <Widget, Params, 
+////                                           Performance,
+////                                           Example, Event3InferState> implements Serializable
+//                                           Example> 
+                                  implements Serializable
 {
 
     protected EventType[] eventTypes = null;  // Filled in later
@@ -294,22 +296,23 @@ public abstract class Event3Model extends WordModel<Widget, Params,
     }
 
     @Override
-    protected Integer[] widgetToIntSeq(Widget widget)
+    protected Integer[] widgetToIntSeq(AWidget widget)
     {
-        return Utils.int2Integer(widget.events[0]); // WARNING: only use first track
+        return Utils.int2Integer(((Widget)widget).events[0]); // WARNING: only use first track
     }
 
     @Override
-    protected String widgetToSGMLOutput(Example ex, Widget widget)
+    protected String widgetToSGMLOutput(AExample ex, AWidget widget)
     {
-        return ex.genWidgetToSGMLOutput((GenWidget)widget);
+        return ((Example)ex).genWidgetToSGMLOutput((GenWidget)widget);
     }
     @Override
-    protected String widgetToFullString(Example ex, Widget widget)
+    protected String widgetToFullString(AExample aex, AWidget widget)
     {
+        Example ex = (Example)aex;
         if (opts.fullPredForEval)
         {
-            return ex.widgetToEvalFullString(widget);
+            return ex.widgetToEvalFullString((Widget)widget);
         }
         else
         {
@@ -321,13 +324,14 @@ public abstract class Event3Model extends WordModel<Widget, Params,
             {
                 return ex.semParseWidgetToNiceFullString((GenWidget)widget);
             }
-            return ex.widgetToNiceFullString(widget);
+            return ex.widgetToNiceFullString((Widget)widget);
         }
     }
 
     @Override
-    protected String exampleToString(Example ex)
+    protected String exampleToString(AExample aex)
     {
+        Example ex = (Example)aex;
         return ex.name + ": " + ex.events.get(0) + "..." + " ||| " +
                 Utils.mkString(InductionUtils.getObject(wordIndexer,
                                                         ex.text), " ");
@@ -903,9 +907,9 @@ public abstract class Event3Model extends WordModel<Widget, Params,
         } // for
         LogInfo.end_track();
         Utils.begin_track("Setting up examples");
-        for(Example ex: examples)
+        for(AExample ex: examples)
         {
-            ex.computeEventTypeCounts();
+            ((Example)ex).computeEventTypeCounts();
 //            ex.computeTrackEvents();
         }
         LogInfo.end_track();

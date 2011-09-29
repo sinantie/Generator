@@ -8,14 +8,16 @@ import induction.Options;
  *
  * @author konstas
  */
-public abstract class AHypergraphInferState<Widget extends AWidget,
+public abstract class AHypergraphInferState//<Example extends AExample>
+                                            <Widget extends AWidget,
                                             Example extends AExample<Widget>,
                                             Params extends AParams>
-        extends AInferState<Widget, Example, Params>
+                      extends AInferState//<Example>
+                      <Widget, Example, Params>
 {
     protected Options opts;
     protected AModel model;
-    protected final Hypergraph hypergraph = new Hypergraph<Widget>();
+    protected final Hypergraph hypergraph = new Hypergraph<AWidget>();
     //protected final double logZ, elogZ, entropy, logVZ;    
 
     public AHypergraphInferState(AModel model, Example ex, Params params,
@@ -111,7 +113,7 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
 
     // Main functions to override: specifies the entire model
     protected abstract void createHypergraph(Hypergraph<Widget> hypergraph);
-    protected abstract Widget newWidget();
+    protected abstract AWidget newWidget();
     protected abstract void initInferState(AModel model);
     public int getComplexity()
     {

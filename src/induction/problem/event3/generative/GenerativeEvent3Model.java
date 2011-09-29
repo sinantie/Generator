@@ -1,5 +1,6 @@
 package induction.problem.event3.generative;
 
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
@@ -15,10 +16,12 @@ import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
+import induction.problem.AExample;
+import induction.problem.AInferState;
+import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.ProbVec;
-import induction.problem.event3.Event3InferState;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -128,8 +131,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         }
         catch(Exception ioe)
         {
-            Utils.log("Error loading "+ opts.stagedParamsFile);
-            ioe.printStackTrace();
+            Utils.log("Error loading "+ opts.stagedParamsFile);            
+            ioe.printStackTrace(LogInfo.stderr);
             Execution.finish();
         }
         LogInfo.end_track();
@@ -166,7 +169,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         catch (IOException ex)
         {
             Utils.log(ex.getMessage());
-            ex.printStackTrace();
+            ex.printStackTrace(LogInfo.stderr);
+//            ex.printStackTrace();
         }
     }
 
@@ -382,11 +386,191 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         LogInfo.end_track();
     }
     
-
-    @Override
-    protected Event3InferState newInferState(Example ex, Params params, Params counts,
-                                       InferSpec ispec)
+/**
+     * helper method for testing the learning output. Simulates learn(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the aligned events' indices
+     */
+    public String testStagedLearn(String name, LearnOptions lopts)
     {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//        int i = 0;
+//        for(Example ex: examples)
+//        {
+//            try
+//            {
+//            InferState inferState =  createInferState(ex, 1, counts, temperature,
+//                    lopts, 0, complexity);
+//            testPerformance.add(ex, inferState.bestWidget);
+//            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//
+//            }
+//            catch(Exception e)
+//            {
+//                System.out.println(i+ " " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//            i++;
+//        }
+//        return "";
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+    }
+    
+    /**
+     * helper method for testing the learning output. Simulates learn(...) method
+     * for a number of examples without the thread mechanism.
+     * @return a String with the aligned events' indices of the last example
+     */
+    public String testInitLearn(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        int iter = 0;
+        AInferState inferState = null;
+        while (iter < lopts.numIters)
+        {
+            trainPerformance = newPerformance();
+            AParams counts = newParams();
+//            Example ex = examples.get(0);
+            for(AExample ex: examples)
+            {
+                try
+                {
+                    inferState =  createInferState(ex, 1, counts, temperature,
+                        lopts, iter, complexity);
+                    inferState.updateCounts();
+                    trainPerformance.add(ex, inferState.bestWidget);
+                }
+                catch(Exception e)
+                {
+                    System.out.println(ex.toString());
+                    e.printStackTrace(LogInfo.stderr);
+//                    e.printStackTrace();
+                    System.exit(0);
+                }
+            }
+            // M step
+            params = counts;
+            params.optimise(lopts.smoothing);            
+            iter++;
+        }
+//        System.out.println(params.output());
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+    }
+    
+    /**
+     * helper method for testing the generation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the generated SGML text output (contains results as well)
+     */
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return widgetToSGMLOutput(ex, inferState.bestWidget);
+    }
+
+    /**
+     * helper method for testing the semantic parse output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return the accuracy of the semantic parsing
+     */
+    public String testSemParse(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        if(opts.ngramWrapper == NgramWrapper.kylm)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        else if(opts.ngramWrapper == NgramWrapper.srilm)
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams(); int i = 0;
+        for(AExample ex: examples)
+        {
+//        Example ex = examples.get(0);
+            try
+            {
+                AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                        lopts, 0, complexity);
+                testPerformance.add(ex, inferState.bestWidget);
+                System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            }
+            catch(Exception e)
+            {
+                System.out.println(i+ " " + e.getMessage());
+                e.printStackTrace(LogInfo.stderr);
+//                e.printStackTrace();
+            }
+            i++;
+        }
+
+        return testPerformance.output();
+    }
+
+    public Graph testSemParseVisualise(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+//        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        Graph graph = new DirectedSparseGraph<String, String>();
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity, graph);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+                                    
+        return graph;
+    }
+
+    public Graph testGenerateVisualise(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        Graph graph = new DirectedSparseGraph<String, String>();
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity, graph);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return graph;
+    }
+    
+    @Override
+    protected AInferState newInferState(AExample aex, AParams aparams,
+                                                 AParams acounts, InferSpec ispec)
+    {
+        Example ex = (Example)aex;
+        Params params = (Params)aparams;
+        Params counts = (Params)acounts;
+        
         switch(opts.modelType)
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
@@ -395,9 +579,14 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         }
     }
 
-    protected Event3InferState newInferState(Example ex, Params params, Params counts,
+    @Override
+    protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts,
                                            InferSpec ispec, Graph graph)
     {
+        Example ex = (Example)aex;
+        Params params = (Params)aparams;
+        Params counts = (Params)acounts;
+        
         switch(opts.modelType)
         {
             case generate: return new GenInferState(this, ex, params, counts, ispec, ngramModel, graph);

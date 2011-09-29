@@ -4,7 +4,8 @@ package induction.problem;
  *
  * @author konstas
  */
-public abstract class AInferState<Widget extends AWidget,
+public abstract class AInferState
+                         <Widget extends AWidget,
                          Example extends AExample<Widget>,
                          Params extends AParams>
 {
@@ -101,6 +102,11 @@ public abstract class AInferState<Widget extends AWidget,
         {
             return v.addCountKeepNonNegative(i, x * ispec.getUpdateScale());
         }
+    }
+    
+    public AWidget getBestWidget()
+    {
+        return bestWidget;
     }
 
     public abstract void createHypergraph();

@@ -4,21 +4,20 @@ import fig.basic.Indexer;
 import fig.exec.Execution;
 import induction.Options;
 import induction.problem.AModel;
-import induction.problem.AParams;
-import induction.problem.AWidget;
 
 /**
  *
  * @author konstas
  */
-public abstract class WordModel<Widget extends AWidget,
-                                Params extends AParams,
-//                                Performance extends APerformance<Widget>,
-                                Example extends WordExample<Widget>>//,
-                                //InferState extends AInferState<Widget, Example, Params> >
-                      extends AModel<Widget, Params, 
-//                                     Performance, 
-                                     Example>//, InferState>
+public abstract class WordModel extends AModel
+//                                <Widget extends AWidget,
+//                                Params extends AParams,
+////                                Performance extends APerformance<Widget>,
+//                                Example extends WordExample<Widget>>//,
+//                                //InferState extends AInferState<Widget, Example, Params> >
+//                      extends AModel<Widget, Params, 
+////                                     Performance, 
+//                                     Example>//, InferState>
 {
 
     protected static Indexer<String> wordIndexer = new Indexer<String>();

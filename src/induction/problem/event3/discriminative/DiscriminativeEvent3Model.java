@@ -16,16 +16,16 @@ import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
+import induction.problem.AExample;
+import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.ProbVec;
-import induction.problem.event3.Event3InferState;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
-import induction.problem.event3.generative.alignment.InferState;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -88,7 +88,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         catch(Exception ioe)
         {
             Utils.log("Error loading "+ opts.stagedParamsFile);
-            ioe.printStackTrace();
+            ioe.printStackTrace(LogInfo.stderr);
+//            ioe.printStackTrace();
             Execution.finish();
         }
         LogInfo.end_track();
@@ -128,7 +129,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         catch(Exception ioe)
         {
             Utils.log("Error loading "+ opts.stagedParamsFile);
-            ioe.printStackTrace();
+            ioe.printStackTrace(LogInfo.stderr);
+//            ioe.printStackTrace();
             Execution.finish();
         }
         LogInfo.end_track();
@@ -151,7 +153,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         catch (IOException ex)
         {
             Utils.log(ex.getMessage());
-            ex.printStackTrace();
+            ex.printStackTrace(LogInfo.stderr);
+//            ex.printStackTrace();
         }
     }
 
@@ -163,7 +166,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 
     
     @Override
-    protected Params newParams()
+    protected AParams newParams()
     {
         return new DiscriminativeParams(this, opts);
     }
@@ -301,7 +304,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         }                
         // E-step
         Utils.begin_track("Generation-step " + name);
-        Params counts = newParams();
+        AParams counts = newParams();
         Collection<BatchEM> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
@@ -331,15 +334,22 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     
 
     @Override
-    protected Event3InferState newInferState(Example ex, Params weights, Params counts,
+    protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                        InferSpec ispec)
     {
+        Example ex = (Example)aex;
+        Params weights = (Params)aweights;
+        Params counts = (Params)acounts;        
         return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);
     }
 
-    protected Event3InferState newInferState(Example ex, Params weights, Params counts,
+    @Override
+    protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                            InferSpec ispec, Graph graph)
     {
+        Example ex = (Example)aex;
+        Params weights = (Params)aweights;
+        Params counts = (Params)acounts;
         return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);        
     }
 
