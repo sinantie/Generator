@@ -386,7 +386,7 @@ public abstract class AModel<Widget extends AWidget,
                 lopts, iter, complexity), i, ex);
     }
 
-    private AInferState createInferState(Example ex, double stepSize,
+    protected AInferState createInferState(Example ex, double stepSize,
             Params counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity, Graph graph)
     {

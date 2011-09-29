@@ -4,6 +4,7 @@ import induction.problem.event3.generative.generation.*;
 import induction.problem.event3.generative.alignment.InferState;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.Indexer;
+import fig.basic.StopWatchSet;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
@@ -11,6 +12,7 @@ import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import induction.BigDouble;
 import induction.Hypergraph;
+import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
 import induction.Options;
 import induction.problem.AModel;
@@ -169,6 +171,28 @@ public class DiscriminativeInferState extends InferState
         } // else
     }            
 
+    @Override
+    public void doInference()
+    {
+        HyperpathResult result;
+        if(opts.fullPredRandomBaseline)
+        {
+            StopWatchSet.begin("1-best Viterbi");
+            result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
+            StopWatchSet.end();
+        }
+        else
+        {
+            StopWatchSet.begin("k-best Viterbi");
+            result = hypergraph.kBestViterbi(newWidget());
+            StopWatchSet.end();
+        }
+        bestWidget = (Widget) result.widget;
+//            System.out.println(bestWidget);
+        logVZ = result.logWeight;
+        updateStats();
+    }
+    
     @Override
     protected Object genNumFieldValue(final int i, final int c, final int event, final int field, final int v)
     {

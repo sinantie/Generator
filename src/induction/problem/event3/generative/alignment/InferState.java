@@ -1,5 +1,6 @@
 package induction.problem.event3.generative.alignment;
 
+import fig.basic.StopWatchSet;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.SymFieldParams;
 import induction.problem.event3.params.StrFieldParams;
@@ -9,6 +10,8 @@ import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
+import induction.Hypergraph.HyperpathResult;
+import induction.Options;
 import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.AParams;
@@ -158,6 +161,29 @@ public class InferState extends Event3InferState
         });
     }
 
+    @Override
+    public void doInference()
+    {        
+        StopWatchSet.begin("computePosteriors");
+//        hypergraph.computePosteriors(ispec.isHardUpdate());
+        hypergraph.computePosteriors(false);
+        StopWatchSet.end();
+        // Hard inference
+        if (hardInfer)
+        {
+            HyperpathResult result = hypergraph.fetchBestHyperpath(newWidget());
+//            HyperpathResult<Widget> result = hypergraph.fetchSampleHyperpath(opts.initRandom, newWidget());
+            bestWidget = (Widget)result.widget;
+            logVZ = result.logWeight;
+        }
+        else
+        {
+            bestWidget = newWidget();
+            logVZ = Double.NaN;
+        }
+        updateStats();
+    }
+    
     protected Object genNumFieldValue(final int i, final int c, int event, int field)
     {
         return genNumFieldValue(i, c, event, field, getValue(event, field));

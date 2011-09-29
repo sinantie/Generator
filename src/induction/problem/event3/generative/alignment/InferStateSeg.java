@@ -1,11 +1,13 @@
 package induction.problem.event3.generative.alignment;
 
+import fig.basic.StopWatchSet;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
+import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
@@ -133,6 +135,29 @@ public class InferStateSeg extends Event3InferState
         });
     }
 
+    @Override
+    public void doInference()
+    {        
+        StopWatchSet.begin("computePosteriors");
+//        hypergraph.computePosteriors(ispec.isHardUpdate());
+        hypergraph.computePosteriors(false);
+        StopWatchSet.end();
+        // Hard inference
+        if (hardInfer)
+        {
+            HyperpathResult result = hypergraph.fetchBestHyperpath(newWidget());
+//            HyperpathResult<Widget> result = hypergraph.fetchSampleHyperpath(opts.initRandom, newWidget());
+            bestWidget = (Widget)result.widget;
+            logVZ = result.logWeight;
+        }
+        else
+        {
+            bestWidget = newWidget();
+            logVZ = Double.NaN;
+        }
+        updateStats();
+    }
+    
     /**
      * Default: don't generate any event (there should be only one of these nodes)
      * Note: we don't need any state, but include i and c so that we get distinct

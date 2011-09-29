@@ -2,7 +2,6 @@ package induction.problem;
 
 import fig.basic.StopWatchSet;
 import induction.Hypergraph;
-import induction.Hypergraph.HyperpathResult;
 import induction.Options;
 
 /**
@@ -37,51 +36,55 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
         StopWatchSet.end();
     }
     
-    public void doInference()
+    public abstract void doInference();
+//    {
+//        if(opts.modelType == Options.ModelType.discriminativeTrain ||
+//           opts.modelType == Options.ModelType.generate ||
+//           opts.modelType == Options.ModelType.semParse)
+//        {
+//            HyperpathResult result;
+//                if(opts.fullPredRandomBaseline)
+//            {
+//                StopWatchSet.begin("1-best Viterbi");
+//                result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
+//                StopWatchSet.end();
+//            }
+//            else
+//            {
+//                StopWatchSet.begin("k-best Viterbi");
+//                result = hypergraph.kBestViterbi(newWidget());
+//                StopWatchSet.end();
+//            }
+//            bestWidget = (Widget) result.widget;
+////            System.out.println(bestWidget);
+//            logVZ = result.logWeight;
+//
+//        }
+//        else
+//        {
+//            StopWatchSet.begin("computePosteriors");
+//    //        hypergraph.computePosteriors(ispec.isHardUpdate());
+//            hypergraph.computePosteriors(false);
+//            StopWatchSet.end();
+//            // Hard inference
+//            if (hardInfer)
+//            {
+//                HyperpathResult result = hypergraph.fetchBestHyperpath(newWidget());
+//    //            HyperpathResult<Widget> result = hypergraph.fetchSampleHyperpath(opts.initRandom, newWidget());
+//                bestWidget = (Widget)result.widget;
+//                logVZ = result.logWeight;
+//            }
+//            else
+//            {
+//                bestWidget = newWidget();
+//                logVZ = Double.NaN;
+//            }
+//        } // else
+//        updateStats();
+//    }
+
+    public void updateStats()
     {
-        if(opts.modelType == Options.ModelType.discriminativeTrain ||
-           opts.modelType == Options.ModelType.generate ||
-           opts.modelType == Options.ModelType.semParse)
-        {
-            HyperpathResult result;
-                if(opts.fullPredRandomBaseline)
-            {
-                StopWatchSet.begin("1-best Viterbi");
-                result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
-                StopWatchSet.end();
-            }
-            else
-            {
-                StopWatchSet.begin("k-best Viterbi");
-                result = hypergraph.kBestViterbi(newWidget());
-                StopWatchSet.end();
-            }
-            bestWidget = (Widget) result.widget;
-//            System.out.println(bestWidget);
-            logVZ = result.logWeight;
-
-        }
-        else
-        {
-            StopWatchSet.begin("computePosteriors");
-    //        hypergraph.computePosteriors(ispec.isHardUpdate());
-            hypergraph.computePosteriors(false);
-            StopWatchSet.end();
-            // Hard inference
-            if (hardInfer)
-            {
-                HyperpathResult result = hypergraph.fetchBestHyperpath(newWidget());
-    //            HyperpathResult<Widget> result = hypergraph.fetchSampleHyperpath(opts.initRandom, newWidget());
-                bestWidget = (Widget)result.widget;
-                logVZ = result.logWeight;
-            }
-            else
-            {
-                bestWidget = newWidget();
-                logVZ = Double.NaN;
-            }
-        } // else
-
         if (opts.computeELogZEntropy)
         {
             hypergraph.computeELogZEntropy(ispec.isHardUpdate());
@@ -91,7 +94,7 @@ public abstract class AHypergraphInferState<Widget extends AWidget,
         entropy = hypergraph.getEntropy();
         initialiseValues();
     }
-
+    
     public void updateCounts()
     {
         synchronized(counts)
