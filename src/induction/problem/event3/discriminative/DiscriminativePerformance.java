@@ -16,7 +16,7 @@ public class DiscriminativePerformance extends APerformance<Widget>
     }    
 
     @Override
-    protected double getAccuracy()
+    public double getAccuracy()
     {
         return stats.getAvg_logVZ();
     }

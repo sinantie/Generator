@@ -174,23 +174,30 @@ public class DiscriminativeInferState extends InferState
     @Override
     public void doInference()
     {
-        HyperpathResult result;
-        if(opts.fullPredRandomBaseline)
-        {
-            StopWatchSet.begin("1-best Viterbi");
-            result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
-            StopWatchSet.end();
-        }
-        else
-        {
-            StopWatchSet.begin("k-best Viterbi");
-            result = hypergraph.kBestViterbi(newWidget());
-            StopWatchSet.end();
-        }
+        HyperpathResult result;        
+        StopWatchSet.begin("1-best Viterbi");
+        result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
+        StopWatchSet.end();
+        
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);
         logVZ = result.logWeight;
         updateStats();
+    }
+    
+    @Override
+    public void updateCounts()
+    {
+        synchronized(counts)
+        {
+          if(ispec.isMixParamsCounts())
+          {
+              counts.saveSum();
+          }
+          StopWatchSet.begin("fetchPosteriors");
+          hypergraph.fetchPosteriors(ispec.isHardUpdate());
+          StopWatchSet.end();
+        }
     }
     
     @Override

@@ -466,19 +466,7 @@ public abstract class AModel
         else if (isTest(i))
             return "test: "+testPerformance.summary();
         else return "(skip)";
-    }               
-
-    /**
-     * helper method for testing the discriminative learning scheme. 
-     * Simulates learn(...) method from the DiscriminativeEvent3Model class
-     * for a number of examples without the thread mechanism.
-     * @return the average Viterbi log probability
-     */
-    public double testDiscriminativeLearn(String name, LearnOptions lopts)
-    {
-        learn(name, lopts);
-        return trainPerformance.getAccuracy();
-    }
+    }                   
         
     protected class InitParams extends MyCallable
     {

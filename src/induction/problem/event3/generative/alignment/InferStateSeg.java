@@ -158,6 +158,21 @@ public class InferStateSeg extends Event3InferState
         updateStats();
     }
     
+    @Override
+    public void updateCounts()
+    {
+        synchronized(counts)
+        {
+          if(ispec.isMixParamsCounts())
+          {
+              counts.saveSum();
+          }
+          StopWatchSet.begin("fetchPosteriors");
+          hypergraph.fetchPosteriors(ispec.isHardUpdate());
+          StopWatchSet.end();
+        }
+    }
+    
     /**
      * Default: don't generate any event (there should be only one of these nodes)
      * Note: we don't need any state, but include i and c so that we get distinct

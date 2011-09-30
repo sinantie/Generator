@@ -682,7 +682,20 @@ public class Hypergraph<Widget> {
             return new HyperpathResult(chooser.widget, chooser.logWeight);
         }
     }
-
+    
+  public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
+  {
+        computeTopologicalOrdering();
+        computeInsideMaxScores(false);
+        HyperpathChooser chooser = new HyperpathChooser();
+        chooser.viterbi = false; // choose nodes randomly
+        chooser.widget = widget;
+        chooser.choose = true;
+        chooser.random = random;
+        chooser.recurse(startNodeInfo);
+        return new HyperpathResult(chooser.widget, chooser.logWeight);
+  }
+  
     class DerivationWithBleu implements Comparable{
         HyperpathChooser chooser;
         double score;

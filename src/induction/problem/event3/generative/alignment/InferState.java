@@ -183,6 +183,21 @@ public class InferState extends Event3InferState
         updateStats();
     }
     
+    @Override
+    public void updateCounts()
+    {
+        synchronized(counts)
+        {
+          if(ispec.isMixParamsCounts())
+          {
+              counts.saveSum();
+          }
+          StopWatchSet.begin("fetchPosteriors");
+          hypergraph.fetchPosteriors(ispec.isHardUpdate());
+          StopWatchSet.end();
+        }
+    }
+    
     protected Object genNumFieldValue(final int i, final int c, int event, int field)
     {
         return genNumFieldValue(i, c, event, field, getValue(event, field));

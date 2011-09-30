@@ -36,54 +36,7 @@ public abstract class AHypergraphInferState//<Example extends AExample>
         StopWatchSet.begin("createHypergraph");
         createHypergraph(hypergraph);
         StopWatchSet.end();
-    }
-    
-    public abstract void doInference();
-//    {
-//        if(opts.modelType == Options.ModelType.discriminativeTrain ||
-//           opts.modelType == Options.ModelType.generate ||
-//           opts.modelType == Options.ModelType.semParse)
-//        {
-//            HyperpathResult result;
-//                if(opts.fullPredRandomBaseline)
-//            {
-//                StopWatchSet.begin("1-best Viterbi");
-//                result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
-//                StopWatchSet.end();
-//            }
-//            else
-//            {
-//                StopWatchSet.begin("k-best Viterbi");
-//                result = hypergraph.kBestViterbi(newWidget());
-//                StopWatchSet.end();
-//            }
-//            bestWidget = (Widget) result.widget;
-////            System.out.println(bestWidget);
-//            logVZ = result.logWeight;
-//
-//        }
-//        else
-//        {
-//            StopWatchSet.begin("computePosteriors");
-//    //        hypergraph.computePosteriors(ispec.isHardUpdate());
-//            hypergraph.computePosteriors(false);
-//            StopWatchSet.end();
-//            // Hard inference
-//            if (hardInfer)
-//            {
-//                HyperpathResult result = hypergraph.fetchBestHyperpath(newWidget());
-//    //            HyperpathResult<Widget> result = hypergraph.fetchSampleHyperpath(opts.initRandom, newWidget());
-//                bestWidget = (Widget)result.widget;
-//                logVZ = result.logWeight;
-//            }
-//            else
-//            {
-//                bestWidget = newWidget();
-//                logVZ = Double.NaN;
-//            }
-//        } // else
-//        updateStats();
-//    }
+    }    
 
     public void updateStats()
     {
@@ -96,20 +49,7 @@ public abstract class AHypergraphInferState//<Example extends AExample>
         entropy = hypergraph.getEntropy();
         initialiseValues();
     }
-    
-    public void updateCounts()
-    {
-        synchronized(counts)
-        {
-          if(ispec.isMixParamsCounts())
-          {
-              counts.saveSum();
-          }
-          StopWatchSet.begin("fetchPosteriors");
-          hypergraph.fetchPosteriors(ispec.isHardUpdate());
-          StopWatchSet.end();
-        }
-    }
+        
 
     // Main functions to override: specifies the entire model
     protected abstract void createHypergraph(Hypergraph<Widget> hypergraph);

@@ -52,7 +52,7 @@ public abstract class APerformance<Widget>
         Record.end();
     }
 
-    protected abstract double getAccuracy();
+    public abstract double getAccuracy();
     protected abstract void add(Widget trueWidget, Widget predWidget);
     public abstract void add(AExample trueWidget, Widget predWidget);
 

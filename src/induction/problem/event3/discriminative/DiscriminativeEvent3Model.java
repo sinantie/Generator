@@ -101,9 +101,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         Utils.begin_track("generativeModelInitParams");
         try
         {
-            Utils.log("Loading " + opts.stagedParamsFile);
+            Utils.log("Loading " + opts.generativeModelParamsFile);
             ObjectInputStream ois = new ObjectInputStream(
-                    new FileInputStream(opts.stagedParamsFile));
+                    new FileInputStream(opts.generativeModelParamsFile));
             wordIndexer = ((Indexer<String>) ois.readObject());
             labelIndexer = ((Indexer<String>) ois.readObject());
             eventTypes = (EventType[]) ois.readObject();
@@ -161,7 +161,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected void supervisedInitParams()
     {
-        params = newParams();
+        //do nothing, initialise to zero by default
     }
 
     
@@ -216,14 +216,16 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             FullStatFig complexity = new FullStatFig(); // Complexity inference
             Utils.begin_track("Iteration %s/%s: ", Utils.fmt(iter+1), 
                     Utils.fmt(lopts.numIters));
-            Record.begin("iteration", iter+1);            
+            Record.begin("iteration", iter+1);
             trainPerformance = existsTrain ? newPerformance() : null;
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {
                 // compute k-best derivations (may have to save to disk instead)
                 AInferState inferState = createInferState(
-                        examples.get(i), 1, baselineModelParams, 1, lopts, iter, complexity);
+                        examples.get(i), 1, params, 1, lopts, iter, complexity);
+                //TODO processExample
+                
                 
 //                Params counts = newParams();
 //                Collection<BatchEM> list = new ArrayList(examples.size());
@@ -236,11 +238,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 //                Utils.parallelForeach(opts.numThreads, list);
 //                LogInfo.end_track();
 //                list.clear();
-            }
+            } // for
             
-            
-            
-                 
             record(String.valueOf(iter), name, complexity);            
             LogInfo.end_track();
             Record.end();
@@ -332,6 +331,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         LogInfo.end_track();
     }
     
+    /**
+     * helper method for testing the discriminative learning scheme. 
+     * Simulates learn(...) method from the DiscriminativeEvent3Model class
+     * for a number of examples without the thread mechanism.
+     * @return the average Viterbi log probability
+     */
+    public double testDiscriminativeLearn(String name, LearnOptions lopts)
+    {
+        learn(name, lopts);
+        return trainPerformance.getAccuracy();
+    }
 
     @Override
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
