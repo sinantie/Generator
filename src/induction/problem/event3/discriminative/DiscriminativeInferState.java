@@ -1,7 +1,6 @@
 package induction.problem.event3.discriminative;
 
 import induction.problem.event3.generative.generation.*;
-import induction.problem.event3.generative.alignment.InferState;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.Indexer;
 import fig.basic.StopWatchSet;
@@ -15,12 +14,17 @@ import induction.Hypergraph;
 import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
 import induction.Options;
+import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
+import induction.problem.event3.CatField;
 import induction.problem.event3.Event;
+import induction.problem.event3.Event3InferState;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
+import induction.problem.event3.Field;
+import induction.problem.event3.NumField;
 import induction.problem.event3.Widget;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.EventsNode;
@@ -30,6 +34,7 @@ import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.StopNode;
+import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
 import java.util.ArrayList;
@@ -37,24 +42,48 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
- *
+ * This class describes a hypregraph representation of the problem. The main
+ * difference from the Generative Model is the calculation of the weights in
+ * the various edges, via getWeight() method.
+ * <code>Params params</code> contain the perceptron weight vector w.
+ * 
+ * We allow for two different weight calculations: 
+ * a) using the original generative baseline model
+ * b) by computing w.f(e) at each edge:
+ * w.f(e) = 
+ *      pecreptron_weight * 1 (omitted, since it is equivalent to the count of 
+ *          the alignment model rule, which is always included in f(e)) + 
+ *      ... (other features) + 
+ *      logP(baseline)
+ * 
  * @author konstas
  */
-public class DiscriminativeInferState extends InferState
+public class DiscriminativeInferState extends Event3InferState
 {
     Graph graph;
     //public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
     protected NgramModel ngramModel;
     protected Indexer<String> vocabulary;
-
-    public DiscriminativeInferState(Event3Model model, Example ex, Params params,
+    /**
+     * baseline model parameters (contains probabilities not logs)
+     */
+    Params baseline; 
+    /** 
+     * set true when we are doing the calculation of f(y+), using the original baseline model's
+     * parameters
+     * set false when we are calculating w*f(y*), during the reranking stage
+     */ 
+    boolean useBaselineWeightsOnly = false; 
+    
+    public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec);
         this.ngramModel = ngramModel;
+        this.baseline = model.getBaselineModelParams();
     }
 
-    public DiscriminativeInferState(Event3Model model, Example ex, Params params,
+    public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel, Graph graph)
     {
         this(model, ex, params, counts, ispec, ngramModel);
@@ -94,7 +123,7 @@ public class DiscriminativeInferState extends InferState
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                                newMatrixOne(),
                                ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
-    }
+    }    
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
@@ -175,7 +204,7 @@ public class DiscriminativeInferState extends InferState
     public void doInference()
     {
         HyperpathResult result;        
-        StopWatchSet.begin("1-best Viterbi");
+        StopWatchSet.begin("rerank 1-best Viterbi");
         result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
         StopWatchSet.end();
         
@@ -200,7 +229,11 @@ public class DiscriminativeInferState extends InferState
         }
     }
     
-    @Override
+    protected Object genNumFieldValue(final int i, final int c, int event, int field)
+    {
+        return genNumFieldValue(i, c, event, field, getValue(event, field));
+    }
+    
     protected Object genNumFieldValue(final int i, final int c, final int event, final int field, final int v)
     {
         NumFieldValueNode node = new NumFieldValueNode(i, c, event, field);
@@ -360,7 +393,6 @@ public class DiscriminativeInferState extends InferState
         return node;
     }
 
-    @Override
     protected  CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
     {
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
@@ -372,19 +404,19 @@ public class DiscriminativeInferState extends InferState
 
             if(opts.fullPredRandomBaseline)
             {
-                    final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
-                            fparams.emissions[v].getCounts());
-                    // Talk about the event type, not a particular field
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
-                    public double getWeight() {
-                        return get(fparams.emissions[v], w);
-                    }
-                    public void setPosterior(double prob) { }
-                    public GenWidget choose(GenWidget widget) {
-                        widget.getText()[i] = w;
-                        return widget;
-                    }
-                    });
+                final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
+                        fparams.emissions[v].getCounts());
+                // Talk about the event type, not a particular field
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
+                public double getWeight() {
+                    return get(fparams.emissions[v], w);
+                }
+                public void setPosterior(double prob) { }
+                public GenWidget choose(GenWidget widget) {
+                    widget.getText()[i] = w;
+                    return widget;
+                }
+                });
             }
             else
             {
@@ -409,8 +441,17 @@ public class DiscriminativeInferState extends InferState
         return node;
     }
 
+    protected Object genFieldValue(int i, int c, int event, int field)
+    {
+        Field tempField = ex.events.get(event).getFields()[field];
+        if(tempField instanceof NumField) return genNumFieldValue(i, c, event, field);
+        else if(tempField instanceof CatField) return genCatFieldValueNode(i, c, event, field);
+//        else if(tempField instanceof SymField) return genSymFieldValue(i, c, event, field);
+//        else if(tempField instanceof StrField) return genStrFieldValue(i, c, event, field);
+        else return Utils.impossible();
+    }
+    
     // Generate word at position i with event e and field f
-    @Override
     protected WordNode genWord(final int i, final int c, int event, final int field)
     {
         WordNode node = new WordNode(i, c, event, field);
@@ -426,18 +467,18 @@ public class DiscriminativeInferState extends InferState
                 {
                     final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
                             eventTypeParams.noneFieldEmissions.getCounts());
-                        // Talk about the event type, not a particular field
-                        hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
-                        public double getWeight() {
-                            return get(eventTypeParams.noneFieldEmissions, w) *
-                                   getEventTypeGivenWord(eventTypeIndex, w);
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget) {
-                            widget.getText()[i] = w;
-                            return widget;
-                        }
-                        });
+                    // Talk about the event type, not a particular field
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
+                    public double getWeight() {
+                        return get(eventTypeParams.noneFieldEmissions, w) *
+                               getEventTypeGivenWord(eventTypeIndex, w);
+                    }
+                    public void setPosterior(double prob) { }
+                    public GenWidget choose(GenWidget widget) {
+                        widget.getText()[i] = w;
+                        return widget;
+                    }
+                    });
                 }
                 else
                 {
@@ -480,19 +521,19 @@ public class DiscriminativeInferState extends InferState
                 {
                     final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
                             params.genericEmissions.getCounts());
-                        hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
-                        public double getWeight() {
-                            return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC) *
-                                   get(params.genericEmissions, w) *
-                                   getEventTypeGivenWord(eventTypeIndex, w);
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget) {
-                            widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
-                            widget.getText()[i] = w;
-                            return widget;
-                        }
-                        });
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
+                    public double getWeight() {
+                        return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC) *
+                               get(params.genericEmissions, w) *
+                               getEventTypeGivenWord(eventTypeIndex, w);
+                    }
+                    public void setPosterior(double prob) { }
+                    public GenWidget choose(GenWidget widget) {
+                        widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
+                        widget.getText()[i] = w;
+                        return widget;
+                    }
+                    });
                 }
                 else
                 {
@@ -521,7 +562,6 @@ public class DiscriminativeInferState extends InferState
     }     
 
     // Generate field f of event e from begin to end
-    @Override
     protected Object genField(final int begin, final int end, int c, int event, final int field)
     {
         FieldNode node = new FieldNode(begin, end, c, event, field);
@@ -582,7 +622,6 @@ public class DiscriminativeInferState extends InferState
     }   
 
      // Generate segmentation of i...end into fields; previous field is f0
-    @Override
     protected Object genFields(final int i, final int end, int c, final int event, final int f0, int efs)
     {
         final EventTypeParams eventTypeParams = params.eventTypeParams[
@@ -612,7 +651,6 @@ public class DiscriminativeInferState extends InferState
     }
 
     // Choose ending position j
-    @Override
     protected void selectJ(final int j, final int i, int end, final int c, final int event,
                          final int f0, int efs,
                          final EventTypeParams eventTypeParams,
@@ -711,7 +749,6 @@ public class DiscriminativeInferState extends InferState
     // Default: don't generate any event (there should be only one of these nodes)
     // Note: we don't need any state, but include i and c so that we get distinct
     // nodes (see note in Hypergraph)
-    @Override
     protected Object selectNoEvents(int i, int c)
     {
         if (ex.events.isEmpty())
@@ -743,7 +780,6 @@ public class DiscriminativeInferState extends InferState
         } // else
     }
 
-    @Override
     protected Object genNoneEventWords(final int i, final int j, final int c)
     {
         NoneEventWordsNode node = new NoneEventWordsNode(i, j, c);
@@ -839,7 +875,6 @@ public class DiscriminativeInferState extends InferState
         return node;
     }
 
-    @Override
     protected StopNode genStopNode(int i, final int t0, final TrackParams cparams, final TrackParams ccounts)
     {
         StopNode node = new StopNode(i, t0);
@@ -877,9 +912,192 @@ public class DiscriminativeInferState extends InferState
         return node;
     }
 
-    @Override
+    // Generate track c in i...j (t0 is previous event type for track 0);
+    // allowNone and allowReal specify what event types we can use
+    protected Object genTrack(final int i, final int j, final int t0, final int c,
+                       boolean allowNone, boolean allowReal)
+    {        
+        final TrackParams cparams = params.trackParams[c];        
+        final TrackParams baseCParams = baseline.trackParams[c];        
+//        final TrackParams ccounts = counts.trackParams[c];
+
+        if(i == j)
+        {
+            if(indepEventTypes())
+                return hypergraph.endNode;
+            else
+            {                
+                return genStopNode(i, t0, cparams, ccounts);
+            } // else
+        } // if (i == j)
+        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+        // WARNING: allowNone/allowReal might not result in any valid nodes
+        if(hypergraph.addSumNode(node))
+        {
+            // (1) Choose the none event
+          if (allowNone && (!trueInfer || ex.getTrueWidget() == null ||
+              ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
+          {
+//              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
+              final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not
+              Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
+              hypergraph.addEdge(node,
+                  genNoneEventWords(i, j, c), recurseNode,
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight() {
+                          if(prevIndepEventTypes())
+                          {
+                              double baseWeight = get(
+                                      baseCParams.getEventTypeChoices()[baseCParams.boundary_t], 
+                                      baseCParams.none_t);
+                              return useBaselineWeightsOnly ? 
+                                      baseWeight :
+                                     // pecreptron weight * 1 (omitted, since 
+                                     // it is equivalent to the count of the 
+                                     // alignment model rule)
+                                     get(cparams.getEventTypeChoices()[cparams.boundary_t], 
+                                     cparams.none_t) +
+                                     // baseline logP
+                                     getLogProb(baseWeight);
+                          }
+                          else
+                          {
+                              double baseWeight = get(baseCParams.getEventTypeChoices()[t0], 
+                                     baseCParams.none_t);
+                              return useBaselineWeightsOnly ? 
+                                     baseWeight :
+                                     get(cparams.getEventTypeChoices()[t0], cparams.none_t) +
+                                     getLogProb(baseWeight);
+                          }
+                      }
+                      public void setPosterior(double prob) {}
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[c][k] = Parameters.none_e;
+                          }
+                          return widget;
+                      }
+                  });                            
+          } // if
+          // (2) Choose an event type t and event e for track c
+          for(final Event e : ex.events.values())
+          {
+              final int eventId = e.getId();
+              final int eventTypeIndex = e.getEventTypeIndex();
+              if (allowReal && 
+                      (!trueInfer || ex.getTrueWidget() == null ||
+                      ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
+              {
+                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
+                  final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
+                  final EventTypeParams eventTypeParams = params.eventTypeParams[e.getEventTypeIndex()];
+                  hypergraph.addEdge(node,
+                  genFields(i, j, c, eventId, eventTypeParams.boundary_f, 
+                                              eventTypeParams.getDontcare_efs()), 
+                                              recurseNode,
+                            new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight()
+                      {
+                          if(prevIndepEventTypes())
+                          {
+                              double baseWeight = get(baseCParams.getEventTypeChoices()[baseCParams.boundary_t],
+                                      eventTypeIndex) *
+                                      (1.0d/(double)ex.getEventTypeCounts()[eventTypeIndex]);
+                                      // remember_t = t under indepEventTypes
+                              return useBaselineWeightsOnly ? 
+                                      baseWeight :
+                                      get(cparams.getEventTypeChoices()[cparams.boundary_t],
+                                      eventTypeIndex) +
+                                      getLogProb(baseWeight);
+                          }
+                          else
+                          {
+                              double baseWeight = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                      (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
+                              return useBaselineWeightsOnly ?
+                                      baseWeight : 
+                                      get(cparams.getEventTypeChoices()[t0], eventTypeIndex) +
+                                      getLogProb(baseWeight);
+                          }
+                      }
+                      public void setPosterior(double prob) {}
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[c][k] = eventId;
+                          }
+                          return widget;
+                      }
+                  });                  
+              } // if
+          } // for
+        } // if        
+        return node;
+    }
+
+    // Generate segmentation of i...N into event types; previous event type is t0
+    // Incorporate eventType distributions
+    protected Object genEvents(int i, int t0)
+    {
+        
+        if (i == N)
+        {
+//            return hypergraph.endNode;
+            EventsNode node = new EventsNode(N, t0);
+            if(hypergraph.addSumNode(node))
+            {
+                selectEnd(N, node, N, t0);
+                hypergraph.assertNonEmpty(node);
+            }
+            return node;
+        }
+        else
+        {
+            EventsNode node = new EventsNode(i, t0);
+            if(hypergraph.addSumNode(node))
+            {
+                if (oneEventPerExample())
+                    selectEnd(N, node, i, t0);
+                else if (newEventTypeFieldPerWord())
+                    selectEnd(i+1, node, i, t0);
+                else if (opts.onlyBreakOnPunctuation &&
+                         opts.dontCrossPunctuation) // Break at first punctuation
+                {
+                    selectEnd(Utils.find(i+1, N, ex.getIsPunctuationArray()), node, i, t0);
+                }
+                else if (opts.onlyBreakOnPunctuation) // Break at punctuation (but can cross)
+                {
+                    for(int j = i+1; j < end(i, N)+1; j++)
+                    {
+                        if(j == N || ex.getIsPunctuationArray()[j-1])
+                        {
+                            selectEnd(j, node, i, t0);
+                        }
+                    }
+                }
+                else if (opts.dontCrossPunctuation) // Go up until the first punctuation
+                {
+                    for(int k = i+1; k < Utils.find(i+1, N, ex.getIsPunctuationArray())+1; k++)
+                    {
+                        selectEnd(k, node, i, t0);
+                    }
+                }
+                else // Allow everything
+                {
+                    for(int k = i+1; k < end(i, N)+1; k++)
+                    {
+                        selectEnd(k, node, i, t0);
+                    }
+                }
+                hypergraph.assertNonEmpty(node);
+            }
+            return node;
+        }
+    }
+        
     protected void selectEnd(int j, EventsNode node, int i, int t0)
     {
         hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
-    }   
+    }
 }

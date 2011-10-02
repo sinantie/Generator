@@ -45,6 +45,16 @@ public abstract class AInferState
         }
     }
 
+    public double getLogProb(ProbVec v, int i)
+    {
+        return Math.abs(Math.log(get(v, i)));
+    }
+    
+    public double getLogProb(double prob)
+    {
+        return Math.abs(Math.log(prob));
+    }
+    
     public int getMax(ProbVec v)
     {
         return v.getMax();

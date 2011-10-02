@@ -48,9 +48,13 @@ import joshua.discriminative.training.learning_algorithm.GradientBasedOptimizer;
  */
 public class DiscriminativeEvent3Model extends Event3Model implements Serializable
 {  
+    Params baselineModelParams;
+    
     public DiscriminativeEvent3Model(Options opts)
     {
         super(opts);
+        // Load generative model parameters
+        baselineModelParams = loadGenerativeModelParams();
     }
 
     @Override
@@ -95,7 +99,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         LogInfo.end_track();
     }
     
-    public Params loadGenerativeModelParams()
+    private Params loadGenerativeModelParams()
     {
         Params generativeParams = null;
         Utils.begin_track("generativeModelInitParams");
@@ -200,9 +204,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             {
                 existsTrain = true; break;
             }
-        }
-        // Load generative model parameters
-        Params baselineModelParams = loadGenerativeModelParams();
+        }        
         
         // initialise model
         HashMap perceptronSumModel = new HashMap();
@@ -221,9 +223,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {
-                // compute k-best derivations (may have to save to disk instead)
+                // create hypergraph and do inference
                 AInferState inferState = createInferState(
                         examples.get(i), 1, params, 1, lopts, iter, complexity);
+                
                 //TODO processExample
                 
                 
@@ -343,6 +346,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return trainPerformance.getAccuracy();
     }
 
+    public Params getBaselineModelParams()
+    {
+        return baselineModelParams;
+    }
+    
     @Override
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                        InferSpec ispec)

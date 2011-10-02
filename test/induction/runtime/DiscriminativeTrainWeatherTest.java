@@ -21,7 +21,7 @@ public class DiscriminativeTrainWeatherTest
 {
     LearnOptions lopts;
     String name;
-    Event3Model model;
+    DiscriminativeEvent3Model model;
 
     public DiscriminativeTrainWeatherTest() {
     }

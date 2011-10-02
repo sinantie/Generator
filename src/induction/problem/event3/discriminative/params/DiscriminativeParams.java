@@ -1,26 +1,26 @@
 package induction.problem.event3.discriminative.params;
 
 import induction.Options;
-import induction.problem.AParams;
 import induction.problem.ProbVec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.params.Params;
 
 /**
- *
+ * The weights of the perceptron model
  * @author konstas
  */
-public class DiscriminativeParams extends AParams
+public class DiscriminativeParams extends Params
 {
-    Params alignParams;
-    public ProbVec baselineParams;
+//    Params alignWeights;
+    public ProbVec baselineWeight;
     
     public DiscriminativeParams(Event3Model model, Options opts)
     {
-        alignParams = new Params(model, opts);
-        addVec(alignParams.getVecs());
-        baselineParams = ProbVec.zeros(1);
-        addVec("baseline", baselineParams);
+        super(model, opts);
+//        alignWeights = new Params(model, opts);
+//        addVec(alignWeights.getVecs());
+        baselineWeight = ProbVec.zeros(1);
+        addVec("baseline", baselineWeight);
     }
     
     @Override
