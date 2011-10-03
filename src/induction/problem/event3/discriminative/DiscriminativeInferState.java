@@ -26,13 +26,13 @@ import induction.problem.event3.Example;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
 import induction.problem.event3.Widget;
+import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.nodes.FieldsNode;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
-import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
@@ -227,6 +227,11 @@ public class DiscriminativeInferState extends Event3InferState
           hypergraph.fetchPosteriors(ispec.isHardUpdate());
           StopWatchSet.end();
         }
+    }
+    
+    private double getBaselineWeight()
+    {
+        return ((DiscriminativeParams)params).baselineWeight.getCount(0);
     }
     
     protected Object genNumFieldValue(final int i, final int c, int event, int field)
@@ -744,69 +749,12 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             } // if
         } // for
-    }
-
-    // Default: don't generate any event (there should be only one of these nodes)
-    // Note: we don't need any state, but include i and c so that we get distinct
-    // nodes (see note in Hypergraph)
-    protected Object selectNoEvents(int i, int c)
-    {
-        if (ex.events.isEmpty())
-            return hypergraph.endNode;
-        else
-        {
-            SelectNoEventsNode node = new SelectNoEventsNode(i, c);
-            if (hypergraph.addProdNode(node))
-            {
-                for(final Event ev: ex.events.values())
-                {
-                    final int eventTypeIndex = ev.getEventTypeIndex();
-                    final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        public double getWeight() {
-                                return get(eventTypeParams.filters, Parameters.B_FALSE);
-                        }
-                        public void setPosterior(double prob) {}
-                        public Pair getWeightLM(int rank)
-                        {
-                            return new Pair(getWeight(), null);
-                        }
-                        public GenWidget chooseLM(GenWidget widget, int word) {return widget;}
-                        public GenWidget choose(GenWidget widget) {return widget;}
-                    });
-                } // for
-            } // if
-            return node;
-        } // else
-    }
+    }    
 
     protected Object genNoneEventWords(final int i, final int j, final int c)
     {
         NoneEventWordsNode node = new NoneEventWordsNode(i, j, c);
-        if(opts.fullPredRandomBaseline)
-        {
-            if(hypergraph.addProdNode(node))
-            {
-                for(int k = i; k < j; k++) // Generate each word in this range independently
-                {
-                    final int kIter = k;
-                        final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,
-                                params.trackParams[c].getNoneEventTypeEmissions().getCounts());
-                        hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<GenWidget>() {
-                        public double getWeight() {
-                                return get(params.trackParams[c].getNoneEventTypeEmissions(), w) *
-                                       getEventTypeGivenWord(params.trackParams[c].none_t, w);
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget) {
-                            widget.getText()[kIter] = w;
-                            return widget;
-                        }
-                        });
-                } // for
-            }
-        }
-        else if(opts.binariseAtWordLevel)
+        if(opts.binariseAtWordLevel)
         {
             if (i == j)
             {
@@ -857,28 +805,38 @@ public class DiscriminativeInferState extends Event3InferState
         WordNode node = new WordNode(i, c, ((Event3Model)model).none_t(), -1);
         if(hypergraph.addSumNode(node))
         {
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() 
-                {
-                    double baseWeight = 1.0;
-                    return useBaselineWeightsOnly ? 
-                                 baseWeight :
-                                 // 1-best viterbi
-                                 getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), 0).value +
-                                 getLogProb(baseWeight);
-                }
-                public Pair getWeightLM(int rank)
-                {
-                    return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
-                }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public GenWidget chooseLM(GenWidget widget, int word)
-                {
-                    widget.getText()[i] = word;
-                    return widget;
-                }
-            });
+            for(int wIter = 0; wIter < Event3Model.W(); wIter++) // add hyperedge for each word. COSTLY!
+            {
+                final int w = wIter;
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                    public double getWeight() 
+                    {
+                        double baseWeight = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
+                        return useBaselineWeightsOnly ? 
+                                     baseWeight :
+//                                     // 1-best viterbi. Originally Φ(e) should return the top
+//                                     // scoring axiom rule. Since we do counting, 
+//                                     // we return max(w(e) * 1)
+                                     get(params.trackParams[c].getNoneEventTypeEmissions(), w) +
+                                     getBaselineWeight() * getLogProb(baseWeight);
+                    }
+                    public Pair getWeightLM(int rank) // used for k-best
+                    {
+                        return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
+                    }
+                    public void setPosterior(double prob) { }
+                    public GenWidget choose(GenWidget widget) 
+                    { 
+                        widget.getText()[i] = w;
+                        return widget; 
+                    }
+                    public GenWidget chooseLM(GenWidget widget, int word)
+                    {
+                        widget.getText()[i] = word;
+                        return widget;
+                    }
+                });
+            }
         }
         return node;
     }
@@ -900,7 +858,7 @@ public class DiscriminativeInferState extends Event3InferState
                                  baseWeight :
                                  get(modelCParams.getEventTypeChoices()[t0], 
                                  modelCParams.boundary_t) +
-                                 getLogProb(baseWeight);
+                                 getBaselineWeight() * getLogProb(baseWeight);
                         
                 }
                 public void setPosterior(double prob) {}
@@ -971,8 +929,8 @@ public class DiscriminativeInferState extends Event3InferState
                                      // alignment model rule)
                                      get(modelCParams.getEventTypeChoices()[modelCParams.boundary_t], 
                                      modelCParams.none_t) +
-                                     // baseline logP
-                                     getLogProb(baseWeight);
+                                     // baseline weight * baseline logP
+                                      getBaselineWeight() * getLogProb(baseWeight);
                           }
                           else
                           {
@@ -981,7 +939,7 @@ public class DiscriminativeInferState extends Event3InferState
                               return useBaselineWeightsOnly ? 
                                      baseWeight :
                                      get(modelCParams.getEventTypeChoices()[t0], modelCParams.none_t) +
-                                     getLogProb(baseWeight);
+                                     getBaselineWeight() * getLogProb(baseWeight);
                           }
                       }
                       public void setPosterior(double prob) {}
@@ -1023,7 +981,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       baseWeight :
                                       get(modelCParams.getEventTypeChoices()[modelCParams.boundary_t],
                                       eventTypeIndex) +
-                                      getLogProb(baseWeight);
+                                      getBaselineWeight() * getLogProb(baseWeight);
                           }
                           else
                           {
@@ -1032,7 +990,7 @@ public class DiscriminativeInferState extends Event3InferState
                               return useBaselineWeightsOnly ?
                                       baseWeight : 
                                       get(modelCParams.getEventTypeChoices()[t0], eventTypeIndex) +
-                                      getLogProb(baseWeight);
+                                      getBaselineWeight() * getLogProb(baseWeight);
                           }
                       }
                       public void setPosterior(double prob) {}
