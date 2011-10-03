@@ -858,7 +858,15 @@ public class DiscriminativeInferState extends Event3InferState
         if(hypergraph.addSumNode(node))
         {
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
+                public double getWeight() 
+                {
+                    double baseWeight = 1.0;
+                    return useBaselineWeightsOnly ? 
+                                 baseWeight :
+                                 // 1-best viterbi
+                                 getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), 0).value +
+                                 getLogProb(baseWeight);
+                }
                 public Pair getWeightLM(int rank)
                 {
                     return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
@@ -875,18 +883,25 @@ public class DiscriminativeInferState extends Event3InferState
         return node;
     }
 
-    protected StopNode genStopNode(int i, final int t0, final TrackParams cparams, final TrackParams ccounts)
+    protected StopNode genStopNode(int i, final int t0, final TrackParams modelCParams)
     {
         StopNode node = new StopNode(i, t0);
         if(hypergraph.addSumNode(node))
         {   // Transition to boundary_t
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<Widget>() {
                 public double getWeight() {
+                    double baseWeight;
                     if (prevIndepEventTypes())
-                        return 1.0;
+                        baseWeight = 1.0;
                     else
-                        return get(cparams.getEventTypeChoices()[t0],
-                                cparams.boundary_t);
+                        baseWeight = get(modelCParams.getEventTypeChoices()[t0],
+                                modelCParams.boundary_t);
+                    return useBaselineWeightsOnly ? 
+                                 baseWeight :
+                                 get(modelCParams.getEventTypeChoices()[t0], 
+                                 modelCParams.boundary_t) +
+                                 getLogProb(baseWeight);
+                        
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
@@ -917,9 +932,8 @@ public class DiscriminativeInferState extends Event3InferState
     protected Object genTrack(final int i, final int j, final int t0, final int c,
                        boolean allowNone, boolean allowReal)
     {        
-        final TrackParams cparams = params.trackParams[c];        
-        final TrackParams baseCParams = baseline.trackParams[c];        
-//        final TrackParams ccounts = counts.trackParams[c];
+        final TrackParams modelCParams = params.trackParams[c];        
+        final TrackParams baseCParams = baseline.trackParams[c];
 
         if(i == j)
         {
@@ -927,7 +941,7 @@ public class DiscriminativeInferState extends Event3InferState
                 return hypergraph.endNode;
             else
             {                
-                return genStopNode(i, t0, cparams, ccounts);
+                return genStopNode(i, t0, modelCParams);
             } // else
         } // if (i == j)
         TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
@@ -939,7 +953,7 @@ public class DiscriminativeInferState extends Event3InferState
               ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
           {
 //              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
-              final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not
+              final int remember_t = opts.conditionNoneEvent ? modelCParams.none_t : t0; // Condition on none_t or not
               Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
               hypergraph.addEdge(node,
                   genNoneEventWords(i, j, c), recurseNode,
@@ -955,8 +969,8 @@ public class DiscriminativeInferState extends Event3InferState
                                      // pecreptron weight * 1 (omitted, since 
                                      // it is equivalent to the count of the 
                                      // alignment model rule)
-                                     get(cparams.getEventTypeChoices()[cparams.boundary_t], 
-                                     cparams.none_t) +
+                                     get(modelCParams.getEventTypeChoices()[modelCParams.boundary_t], 
+                                     modelCParams.none_t) +
                                      // baseline logP
                                      getLogProb(baseWeight);
                           }
@@ -966,7 +980,7 @@ public class DiscriminativeInferState extends Event3InferState
                                      baseCParams.none_t);
                               return useBaselineWeightsOnly ? 
                                      baseWeight :
-                                     get(cparams.getEventTypeChoices()[t0], cparams.none_t) +
+                                     get(modelCParams.getEventTypeChoices()[t0], modelCParams.none_t) +
                                      getLogProb(baseWeight);
                           }
                       }
@@ -989,7 +1003,7 @@ public class DiscriminativeInferState extends Event3InferState
                       (!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {
-                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
+                  final int remember_t = (indepEventTypes()) ? modelCParams.boundary_t : eventTypeIndex;
                   final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
                   final EventTypeParams eventTypeParams = params.eventTypeParams[e.getEventTypeIndex()];
                   hypergraph.addEdge(node,
@@ -1007,7 +1021,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       // remember_t = t under indepEventTypes
                               return useBaselineWeightsOnly ? 
                                       baseWeight :
-                                      get(cparams.getEventTypeChoices()[cparams.boundary_t],
+                                      get(modelCParams.getEventTypeChoices()[modelCParams.boundary_t],
                                       eventTypeIndex) +
                                       getLogProb(baseWeight);
                           }
@@ -1017,7 +1031,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
                               return useBaselineWeightsOnly ?
                                       baseWeight : 
-                                      get(cparams.getEventTypeChoices()[t0], eventTypeIndex) +
+                                      get(modelCParams.getEventTypeChoices()[t0], eventTypeIndex) +
                                       getLogProb(baseWeight);
                           }
                       }
