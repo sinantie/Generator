@@ -778,9 +778,9 @@ public class GenInferState extends InferState
                             return widget;
                         }
 
-                        @Override
+                        @Override                        
                         public Pair getWeightLM(int rank)
-                        {
+                        { // semantic parsing only
                             return new Pair(getWeight(),
                                     fIter < ex.events.get(event).getF() ?
                                         vocabulary.getIndex(ex.events.get(event).
@@ -821,7 +821,7 @@ public class GenInferState extends InferState
 
                         @Override
                         public Pair getWeightLM(int rank)
-                        {
+                        { // semantic parsing only
                             return new Pair(getWeight(), 
                                     fIter < ex.events.get(event).getF() ?
                                         vocabulary.getIndex(ex.events.get(event).
