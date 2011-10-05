@@ -1,6 +1,5 @@
 package induction.runtime;
 
-import induction.problem.event3.Event3Model;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import fig.exec.Execution;
 import induction.LearnOptions;
@@ -11,7 +10,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -40,7 +38,7 @@ public class DiscriminativeTrainWeatherTest
     public void setUp() 
     {
          String args = "-modelType discriminativeTrain -testInputLists test/testWeatherGovEvents "
-                    + "-inputFileExt events -dontOutputParams -stagedParamsFile "
+                    + "-inputFileExt events -dontOutputParams -generativeModelParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -kBest 20 "
@@ -60,7 +58,7 @@ public class DiscriminativeTrainWeatherTest
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
 //        model.init(InitType.random, opts.initRandom, "");
-        model.init(InitType.staged, opts.initRandom, "");
+        model.init(InitType.supervised, opts.initRandom, "stage1");
 //        model.init(InitType.supervised, null, name);
         lopts = opts.stage1;
         name = "stage1";
