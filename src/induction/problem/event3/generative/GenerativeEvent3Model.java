@@ -358,11 +358,11 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         }                
         // E-step
         Utils.begin_track("Generation-step " + name);
-        Params counts = newParams();
+//        Params counts = newParams();
         Collection<BatchEM> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
-            list.add(new BatchEM(i, examples.get(i), counts, temperature,
+            list.add(new BatchEM(i, examples.get(i), null, temperature, // used to have counts instead of null, but they are never used
                     lopts, 0, complexity));                
         }
         Utils.parallelForeach(opts.numThreads, list);
@@ -481,9 +481,9 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
-        AParams counts = newParams();
+//        AParams counts = newParams();
         AExample ex = examples.get(0);
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+        AInferState inferState =  createInferState(ex, 1, null, temperature,
                 lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));

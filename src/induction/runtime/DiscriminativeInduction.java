@@ -19,8 +19,14 @@ public class DiscriminativeInduction implements Runnable
     public void run()
     {
         ModelInterface model = new DiscriminativeEvent3Model(opts);
-        
-        model.init(InitType.staged, opts.initRandom, "");        
+        if(opts.modelType == Options.ModelType.discriminativeTrain)
+        {
+            model.init(InitType.supervised, null, "stage1");
+        }
+        else
+        {
+            model.init(InitType.staged, null, "stage1");
+        }      
         model.readExamples();        
         Record.begin("stats");
         LogInfo.track("Stats", true);
@@ -31,16 +37,14 @@ public class DiscriminativeInduction implements Runnable
         opts.outputIterFreq = opts.stage1.numIters;
         if(opts.modelType == Options.ModelType.precompute)
         {
-            model.init(InitType.supervised, null, "stage1");
+//            model.init(InitType.supervised, null, "stage1");
         }
         else if(opts.modelType == Options.ModelType.discriminativeTrain)
-        {
-            model.init(InitType.supervised, opts.initRandom, "stage1");
+        {            
             model.learn("stage1", opts.stage1);
         }
         else if(opts.modelType == Options.ModelType.generate)
         {
-            model.init(InitType.staged, null, "stage1");
             model.generate("stage1", opts.stage1);
         }                
     }

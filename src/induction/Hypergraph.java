@@ -686,9 +686,9 @@ public class Hypergraph<Widget> {
   public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
-        computeInsideMaxScores(false);
+        computeInsideMaxScores(true); // viterbi
         HyperpathChooser chooser = new HyperpathChooser();
-        chooser.viterbi = false; // choose nodes randomly
+        chooser.viterbi = true;
         chooser.widget = widget;
         chooser.choose = true;
         chooser.random = random;
@@ -1324,8 +1324,8 @@ public class Hypergraph<Widget> {
           {
               recurseKBest(d);
           }
-      }
-
+      }    
+    
     private void recurse(NodeInfo nodeInfo) {
       if(nodeInfo == endNodeInfo) return;
 
@@ -1361,9 +1361,12 @@ public class Hypergraph<Widget> {
           //if(choose) dbg("Choose "+widget);
           if(setPosterior) chosenEdge.info.setPosterior(1.0);
           logWeight += chosenEdge.weight.toLogDouble();
-
-          recurse(chosenEdge.dest.get(0));
-          recurse(chosenEdge.dest.get(1));
+          for(NodeInfo node : chosenEdge.dest)
+          {
+              recurse(node);
+          }
+//          recurse(chosenEdge.dest.get(0));
+//          recurse(chosenEdge.dest.get(1));
           break;
         case prod:
           // Recurse on each edge
@@ -1371,8 +1374,12 @@ public class Hypergraph<Widget> {
             if(choose) widget = (Widget)edge.info.choose(widget);
             if(setPosterior) edge.info.setPosterior(1.0);
             logWeight += edge.weight.toLogDouble();
-            recurse(edge.dest.get(0));
-            recurse(edge.dest.get(1));
+            for(NodeInfo node : edge.dest)
+            {
+                recurse(node);
+            }
+//            recurse(edge.dest.get(0));
+//            recurse(edge.dest.get(1));
           }
           break;
       }

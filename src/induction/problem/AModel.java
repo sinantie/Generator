@@ -400,6 +400,21 @@ public abstract class AModel
         return currentInferState;
     }
 
+    /**
+     * Create the inference state model. This includes instantiating the
+     * correct model (generative or discriminative) based on the implementing
+     * sub-class, creating the hypergraph, doing inference (inside-outside or viterbi)
+     * and updating the statistics
+     * @param ex the example to create the inference state on
+     * @param stepSize the update scale (useful in online EM)
+     * @param counts an empty set of parameters that is going to filled in
+     * (for training, at the E-step only)
+     * @param temperature value used for cooling during training (online EM only)
+     * @param lopts learning options
+     * @param iter the iteration we are running the experiment
+     * @param complexity useful statistics
+     * @return an inference state model
+     */
     protected AInferState createInferState(AExample ex, double stepSize,
             AParams counts, double temperature, LearnOptions lopts, int iter,
             FullStatFig complexity)
@@ -417,6 +432,28 @@ public abstract class AModel
         return currentInferState;
     }
 
+    /**
+     * Create the inference state model. This only instantiates the
+     * correct model (generative or discriminative) based on the implementing
+     * sub-class
+     * @param ex the example to create the inference state on
+     * @param stepSize the update scale (useful in online EM)
+     * @param counts an empty set of parameters that is going to filled in
+     * (for training, at the E-step only)
+     * @param temperature value used for cooling during training (online EM only)
+     * @param lopts learning options
+     * @param iter the iteration we are running the experiment
+     * @return an inference state model
+     */
+    protected AInferState createInferState(AExample ex, double stepSize,
+            AParams counts, double temperature, LearnOptions lopts, int iter)
+    {
+        return newInferState(ex, params, counts,
+        new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
+                      false, lopts.mixParamsCounts, lopts.useVarUpdates,
+                      stepSize, iter));
+    }
+    
     private void processInferState(AInferState inferState, int i, AExample ex)
     {
         if (isTrain(i))

@@ -9,7 +9,6 @@ import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
-import induction.BigDouble;
 import induction.Hypergraph;
 import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
@@ -75,13 +74,19 @@ public class DiscriminativeInferState extends Event3InferState
      * set false when we are calculating w*f(y*), during the reranking stage
      */ 
     boolean useBaselineWeightsOnly = false; 
+    /**
+     * map of the count of features extracted during the Viterbi search.
+     * It has to be set first to the corresponding map (model under train, or oracle)
+     * before doing the recursive call to extract D_1 (top derivation)
+     */
+    private HashMap features;
     
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec);
         this.ngramModel = ngramModel;
-        this.baseline = model.getBaselineModelParams();
+        this.baseline = model.getBaselineModelParams();        
     }
 
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
@@ -91,6 +96,11 @@ public class DiscriminativeInferState extends Event3InferState
         this.graph = graph;
     }
 
+    public void setFeatures(HashMap features)
+    {
+        this.features = features;
+    }
+    
     @Override
     protected void initInferState(AModel model)
     {
@@ -206,7 +216,7 @@ public class DiscriminativeInferState extends Event3InferState
     {
         HyperpathResult result;        
         StopWatchSet.begin("rerank 1-best Viterbi");
-        result = hypergraph.oneBestViterbi(newWidget(), opts.initRandom);
+        result = hypergraph.rerankOneBestViterbi(newWidget(), opts.initRandom);
         StopWatchSet.end();
         
         bestWidget = (Widget) result.widget;

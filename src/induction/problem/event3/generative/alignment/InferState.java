@@ -854,8 +854,8 @@ public class InferState extends Event3InferState
     {
         final EventTypeParams eventTypeParams = params.eventTypeParams[
                 ex.events.get(event).getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
-                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts != null ? counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()] : null;
         if (opts.useEventSalienceModel)
         {
             EventNode node = new EventNode(i, j, c, event);
@@ -892,8 +892,8 @@ public class InferState extends Event3InferState
     {
         final EventTypeParams eventTypeParams = params.eventTypeParams[
                 ex.events.get(event).getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
-                ex.events.get(event).getEventTypeIndex()];
+        final EventTypeParams eventTypeCounts = counts != null ? counts.eventTypeParams[
+                ex.events.get(event).getEventTypeIndex()] : null;
         if (useFieldSets(ex.events.get(event).getEventTypeIndex()))
         {
             EventNode node = new EventNode(i, j, c, event);
@@ -959,7 +959,7 @@ public class InferState extends Event3InferState
     {
         
         final TrackParams cparams = params.trackParams[c];
-        final TrackParams ccounts = counts.trackParams[c];
+        final TrackParams ccounts = counts != null ? counts.trackParams[c] : null;
 
         if(i == j)
         {

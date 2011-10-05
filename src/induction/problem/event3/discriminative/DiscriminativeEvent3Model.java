@@ -49,17 +49,25 @@ import joshua.discriminative.training.learning_algorithm.GradientBasedOptimizer;
 public class DiscriminativeEvent3Model extends Event3Model implements Serializable
 {  
     Params baselineModelParams;
+    /**
+     * maps that contain the total feature counts extracted from the Viterbi search
+     * of the oracle model and the model under train
+     */
+    HashMap oracleFeatures, modelFeatures;
     
     public DiscriminativeEvent3Model(Options opts)
     {
-        super(opts);
-        // Load generative model parameters
-        baselineModelParams = loadGenerativeModelParams();
+        super(opts);        
+        oracleFeatures = new HashMap();
+        modelFeatures = new HashMap();
     }
 
     @Override
     public void stagedInitParams()
     {
+        // Load generative model parameters
+        baselineModelParams = loadGenerativeModelParams();
+        
         Utils.begin_track("stagedInitParams");
         try
         {
@@ -165,6 +173,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected void supervisedInitParams()
     {
+        // Load generative model parameters
+        baselineModelParams = loadGenerativeModelParams();
         //do nothing, initialise to zero by default
     }
 
@@ -223,10 +233,22 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {
-                // create hypergraph and do inference
-                AInferState inferState = createInferState(
-                        examples.get(i), 1, params, 1, lopts, iter, complexity);
+                // create an inference state model
+                DiscriminativeInferState inferState = (DiscriminativeInferState) createInferState(
+                        examples.get(i), 1, null, 1, lopts, iter);
+                // create hypergraph - precompute local features on the fly
+                inferState.createHypergraph();                                
+                // perform reranking on the hypergraph. During the recursive call
+                // in order to extract D_1 (top derivation) update the modelFeatures
+                // map, i.e. compute f(y^). We will need this for the perceptron updates
+                inferState.setFeatures(modelFeatures);
+                inferState.doInference();
                 
+                // update statistics
+                synchronized(complexity)
+                {
+                    complexity.add(inferState.getComplexity());
+                }
                 //TODO processExample
                 
                 
@@ -349,6 +371,16 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public Params getBaselineModelParams()
     {
         return baselineModelParams;
+    }
+
+    public HashMap getOracleFeatures()
+    {
+        return oracleFeatures;
+    }
+
+    public HashMap getModelFeatures()
+    {
+        return modelFeatures;
     }
     
     @Override

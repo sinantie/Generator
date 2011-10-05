@@ -461,7 +461,7 @@ public class GenInferState extends InferState
         WordNode node = new WordNode(i, c, event, field);
         final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
         final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
+//        final EventTypeParams eventTypeCounts = counts.eventTypeParams[eventTypeIndex];
 
         if(hypergraph.addSumNode(node))
         {
@@ -512,9 +512,7 @@ public class GenInferState extends InferState
                 public double getWeight() {
                     return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_VALUE);
                 }
-                public void setPosterior(double prob) {
-                    update(eventTypeCounts.genChoices[field], Parameters.G_FIELD_VALUE, prob);
-                }
+                public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
@@ -668,8 +666,8 @@ public class GenInferState extends InferState
     {
         final EventTypeParams eventTypeParams = params.eventTypeParams[
                 ex.events.get(event).getEventTypeIndex()];
-        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
-                ex.events.get(event).getEventTypeIndex()];
+//        final EventTypeParams eventTypeCounts = counts.eventTypeParams[
+//                ex.events.get(event).getEventTypeIndex()];
 //        if(i == end)
 //        {
 //            // Make sure we've used all the fields we agreed to see
@@ -721,17 +719,17 @@ public class GenInferState extends InferState
             {
                 if(oneFieldPerEvent())
                 {
-                    selectJ(end, i, end, c, event, f0, efs, eventTypeParams, eventTypeCounts, node);
+                    selectJ(end, i, end, c, event, f0, efs, eventTypeParams, null, node);
                 }
                 else if(newFieldPerWord())
                 {
-                    selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams, eventTypeCounts, node);
+                    selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams, null, node);
                 }
                 else
                 {
                     for(int k = i+1; k < end+1; k++)
                     {
-                        selectJ(k, i, end, c, event, f0, efs, eventTypeParams, eventTypeCounts, node);
+                        selectJ(k, i, end, c, event, f0, efs, eventTypeParams, null, node);
                     }
                 }
             } // if
