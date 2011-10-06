@@ -18,6 +18,7 @@ import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
+import induction.problem.ProbVec;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3InferState;
@@ -68,11 +69,15 @@ public class DiscriminativeInferState extends Event3InferState
      * baseline model parameters (contains probabilities not logs)
      */
     Params baseline; 
+    /**
+     * the baseline model feature
+     */
+    Feature baselineFeature;
     /** 
      * set true when we are doing the calculation of f(y+), using the original baseline model's
      * parameters
      * set false when we are calculating w*f(y*), during the reranking stage
-     */ 
+     */     
     boolean useBaselineWeightsOnly = false; 
     /**
      * map of the count of features extracted during the Viterbi search.
@@ -86,7 +91,8 @@ public class DiscriminativeInferState extends Event3InferState
     {
         super(model, ex, params, counts, ispec);
         this.ngramModel = ngramModel;
-        this.baseline = model.getBaselineModelParams();        
+        this.baseline = model.getBaselineModelParams();
+        this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
     }
 
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
@@ -100,14 +106,19 @@ public class DiscriminativeInferState extends Event3InferState
     {
         this.features = features;
     }
-    
-    private void increaseCount(HashMap<String, Double> tbl, String feat, double increment)
+
+    public void setUseBaselineWeightsOnly(boolean useBaselineWeightsOnly)
     {
-        Double oldCount = tbl.get(feat);
+        this.useBaselineWeightsOnly = useBaselineWeightsOnly;
+    }
+    
+    private void increaseCount(HashMap<Feature, Double> map, Feature feat, double increment)
+    {
+        Double oldCount = map.get(feat);
         if(oldCount != null)
-            tbl.put(feat, oldCount + increment);
+            map.put(feat, oldCount + increment);
         else
-            tbl.put(feat, increment);
+            map.put(feat, increment);
     }
     
     @Override
@@ -237,16 +248,7 @@ public class DiscriminativeInferState extends Event3InferState
     @Override
     public void updateCounts()
     {
-        synchronized(counts)
-        {
-          if(ispec.isMixParamsCounts())
-          {
-              counts.saveSum();
-          }
-          StopWatchSet.begin("fetchPosteriors");
-          hypergraph.fetchPosteriors(ispec.isHardUpdate());
-          StopWatchSet.end();
-        }
+        // Do nothing, we don't use or update counts in this class
     }
     
     private double getBaselineScore(double baseWeight)
@@ -1005,28 +1007,29 @@ public class DiscriminativeInferState extends Event3InferState
                                               eventTypeParams.getDontcare_efs()), 
                                               recurseNode,
                             new Hypergraph.HyperedgeInfo<Widget>() {
+                      double baseWeight, baseScore; ProbVec modelProbVec; int index;
                       public double getWeight()
                       {
+                          index = eventTypeIndex;
                           if(prevIndepEventTypes())
                           {
-                              double baseWeight = get(baseCParams.getEventTypeChoices()[baseCParams.boundary_t],
+                              baseWeight = get(baseCParams.getEventTypeChoices()[baseCParams.boundary_t],
                                       eventTypeIndex) *
                                       (1.0d/(double)ex.getEventTypeCounts()[eventTypeIndex]);
-                                      // remember_t = t under indepEventTypes
-                              return useBaselineWeightsOnly ? 
-                                      baseWeight :
-                                      get(modelCParams.getEventTypeChoices()[modelCParams.boundary_t],
-                                      eventTypeIndex) +
-                                      getBaselineScore(baseWeight);
+                                      // remember_t = t under indepEventTypes                              
+                              baseScore = getBaselineScore(baseWeight);
+                              modelProbVec = modelCParams.getEventTypeChoices()[modelCParams.boundary_t];
+                              return useBaselineWeightsOnly ? baseWeight :
+                                      get(modelProbVec, index) + baseScore;
                           }
                           else
                           {
-                              double baseWeight = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
+                              baseWeight = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
                                       (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
-                              return useBaselineWeightsOnly ?
-                                      baseWeight : 
-                                      get(modelCParams.getEventTypeChoices()[t0], eventTypeIndex) +
-                                      getBaselineScore(baseWeight);
+                              baseScore = getBaselineScore(baseWeight);
+                              modelProbVec = modelCParams.getEventTypeChoices()[t0];
+                              return useBaselineWeightsOnly ? baseWeight : 
+                                      get(modelProbVec, index) + baseScore;
                           }
                       }
                       public void setPosterior(double prob) {}
@@ -1034,10 +1037,9 @@ public class DiscriminativeInferState extends Event3InferState
                           for(int k = i; k < j; k++)
                           {
                               widget.getEvents()[c][k] = eventId;
-                          }
-                          increaseCount(features, 
-                                  String.format("%s_%s", 
-                                  modelCParams.getEventTypeChoices()[t0], eventTypeIndex), 1);
+                          }                          
+                          increaseCount(features, new Feature(modelProbVec, index), 1);                          
+                          increaseCount(features, baselineFeature, baseScore);
                           return widget;
                       }
                   });                  

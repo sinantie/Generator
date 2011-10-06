@@ -25,6 +25,8 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
+import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
+import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.FileInputStream;
@@ -38,8 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import joshua.discriminative.training.learning_algorithm.DefaultPerceptron;
-import joshua.discriminative.training.learning_algorithm.GradientBasedOptimizer;
+
 
 /**
  * A discriminative model of events and their text summaries
@@ -54,6 +55,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      * of the oracle model and the model under train
      */
     HashMap oracleFeatures, modelFeatures;
+    /**
+     * Keeps count of the number of examples processed so far. Necessary for batch updates
+     */
+    int numProcessedExamples = 0;
     
     public DiscriminativeEvent3Model(Options opts)
     {
@@ -243,15 +248,21 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 // map, i.e. compute f(y^). We will need this for the perceptron updates
                 inferState.setFeatures(modelFeatures);
                 inferState.doInference();
-                
+                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
+                inferState.setFeatures(oracleFeatures);
+                inferState.setUseBaselineWeightsOnly(true);
+                inferState.doInference();
                 // update statistics
                 synchronized(complexity)
                 {
                     complexity.add(inferState.getComplexity());
                 }
+                numProcessedExamples++;
+                // update perceptron if necessary (batch update)
+                updateOptimizer(false, optimizer);
+                
                 //TODO processExample
-                
-                
+                                
 //                Params counts = newParams();
 //                Collection<BatchEM> list = new ArrayList(examples.size());
 //                // Batch Update
@@ -264,6 +275,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 //                LogInfo.end_track();
 //                list.clear();
             } // for
+            // purge any unprocessed examples
+            updateOptimizer(true, optimizer);
+            // update the internal average model
+            ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
             
             record(String.valueOf(iter), name, complexity);            
             LogInfo.end_track();
@@ -280,6 +295,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             if (Execution.shouldBail())
                 lopts.numIters = iter;
         } // for (all iterations)
+        
+        // use average model weights instead of sum (reduces overfitting according to Collins, 2002)
         if(!opts.dontOutputParams)
         {
             saveParams(name);
@@ -289,6 +306,22 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         Record.end();
     }
 
+    public void updateOptimizer(boolean forceUpdate, GradientBasedOptimizer optimizer)
+    {
+        if(forceUpdate || numProcessedExamples >= optimizer.getBatchSize())
+        {            
+            optimizer.updateModel(oracleFeatures, modelFeatures);            
+//            reset_baseline_feat();            
+            oracleFeatures.clear();
+            modelFeatures.clear();
+            numProcessedExamples = 0;						
+        }
+    }
+    
+    public void resetBaselineFeature(GradientBasedOptimizer optimizer)
+    {        
+        optimizer.setFeatureWeight(((DiscriminativeParams)params).baselineWeight, 1.0);
+    }
     @Override
     public void generate(String name, LearnOptions lopts)
     {
