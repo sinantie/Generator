@@ -101,6 +101,15 @@ public class DiscriminativeInferState extends Event3InferState
         this.features = features;
     }
     
+    private void increaseCount(HashMap<String, Double> tbl, String feat, double increment)
+    {
+        Double oldCount = tbl.get(feat);
+        if(oldCount != null)
+            tbl.put(feat, oldCount + increment);
+        else
+            tbl.put(feat, increment);
+    }
+    
     @Override
     protected void initInferState(AModel model)
     {
@@ -1026,6 +1035,9 @@ public class DiscriminativeInferState extends Event3InferState
                           {
                               widget.getEvents()[c][k] = eventId;
                           }
+                          increaseCount(features, 
+                                  String.format("%s_%s", 
+                                  modelCParams.getEventTypeChoices()[t0], eventTypeIndex), 1);
                           return widget;
                       }
                   });                  

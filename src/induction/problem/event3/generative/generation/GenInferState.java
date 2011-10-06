@@ -438,8 +438,8 @@ public class GenInferState extends InferState
                     return 1.0d;
                 }
                 public Pair getWeightLM(int rank)
-                {
-                    return getAtRank(fparams.emissions[v], rank);
+                {                    
+                    return getAtRank(fparams.emissions[v], rank);                    
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
