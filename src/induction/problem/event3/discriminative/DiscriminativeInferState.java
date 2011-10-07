@@ -78,7 +78,7 @@ public class DiscriminativeInferState extends Event3InferState
      * parameters
      * set false when we are calculating w*f(y*), during the reranking stage
      */     
-    boolean useBaselineWeightsOnly = false; 
+    boolean calculateOracle = false; 
     /**
      * map of the count of features extracted during the Viterbi search.
      * It has to be set first to the corresponding map (model under train, or oracle)
@@ -107,9 +107,9 @@ public class DiscriminativeInferState extends Event3InferState
         this.features = features;
     }
 
-    public void setUseBaselineWeightsOnly(boolean useBaselineWeightsOnly)
+    public void setCalculateOracle(boolean calculateOracle)
     {
-        this.useBaselineWeightsOnly = useBaselineWeightsOnly;
+        this.calculateOracle = calculateOracle;
     }
 
     private void increaseCounts(Feature[] ar, double baseScore)
@@ -303,7 +303,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     double baseParam = get(baseFParams.methodChoices, method);
                     baseScore = getBaselineScore(baseParam); 
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam : get(weightProbVec, method) + baseScore;
                 }
                 public Pair getWeightLM(int rank) {
@@ -330,7 +330,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     double baseParam = get(baseFParams.methodChoices, method);
                     baseScore = getBaselineScore(baseParam); 
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam : get(weightProbVec, method) + baseScore;
                 }
                 public Pair getWeightLM(int rank) {
@@ -357,7 +357,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     double baseParam = get(baseFParams.methodChoices, method);
                     baseScore = getBaselineScore(baseParam); 
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam : get(weightProbVec, method) + baseScore;
                 }
                 public Pair getWeightLM(int rank) {
@@ -384,7 +384,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     double baseParam = get(baseFParams.methodChoices, method);
                     baseScore = getBaselineScore(baseParam); 
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam : get(weightProbVec, method) + baseScore;
                 }
                 public Pair getWeightLM(int rank) {
@@ -414,7 +414,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     double baseParam = get(baseFParams.methodChoices, method);
                     baseScore = getBaselineScore(baseParam);
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam : get(weightProbVec, method) + baseScore;
                 }
                 public Pair getWeightLM(int rank) {
@@ -444,7 +444,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     double baseParam = get(baseFParams.methodChoices, method);
                     baseScore = getBaselineScore(baseParam);                    
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam : get(weightProbVec, method) + baseScore;
                 }
                 public Pair getWeightLM(int rank) {
@@ -488,7 +488,7 @@ public class DiscriminativeInferState extends Event3InferState
                     double baseParam = get(baseFParams.emissions[v], w);
                     baseScore = getBaselineScore(baseParam);
                     weightProbVec = modelFParams.emissions[v];
-                    return useBaselineWeightsOnly ? baseParam : get(weightProbVec, w) + baseScore;
+                    return calculateOracle ? baseParam : get(weightProbVec, w) + baseScore;
                 }
                 public Pair getWeightLM(int rank)
                 {
@@ -542,7 +542,7 @@ public class DiscriminativeInferState extends Event3InferState
                             double baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
                             baseScore = getBaselineScore(baseParam);
                             weightProbVec = modelEventTypeParams.noneFieldEmissions;
-                            return useBaselineWeightsOnly ?
+                            return calculateOracle ?
                                     baseParam : get(weightProbVec, w) + baseScore;
                         }
                         public void setPosterior(double prob) { }
@@ -575,7 +575,7 @@ public class DiscriminativeInferState extends Event3InferState
                             Parameters.G_FIELD_VALUE);
                     baseScore = getBaselineScore(baseParam);
                     weightProbVec = modelEventTypeParams.genChoices[field];
-                    return useBaselineWeightsOnly ?
+                    return calculateOracle ?
                             baseParam :
                             get(weightProbVec, Parameters.G_FIELD_VALUE) +
                             baseScore;  
@@ -599,7 +599,7 @@ public class DiscriminativeInferState extends Event3InferState
                             double baseParam = get(baseEventTypeParams.genChoices[field], 
                                     Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);
                             baseScore = getBaselineScore(baseParam);
-                            return useBaselineWeightsOnly ?
+                            return calculateOracle ?
                                     baseParam :
                                     get(modelEventTypeParams.genChoices[field], 
                                     Parameters.G_FIELD_GENERIC) + get(params.genericEmissions, w) +
@@ -742,7 +742,7 @@ public class DiscriminativeInferState extends Event3InferState
                                        get(baseEventTypeParams.fieldChoices[fIter],
                                            baseEventTypeParams.boundary_f);
                                 baseScore = getBaselineScore(baseParam);
-                                return useBaselineWeightsOnly ?
+                                return calculateOracle ?
                                         baseParam :
                                         get(modelEventTypeParams.fieldChoices[f0], fIter) +
                                         get(modelEventTypeParams.fieldChoices[fIter],
@@ -795,7 +795,7 @@ public class DiscriminativeInferState extends Event3InferState
                                 baseScore = getBaselineScore(baseParam);
                                 weightProbVec = modelEventTypeParams.
                                         fieldChoices[modelEventTypeParams.boundary_f];
-                                return useBaselineWeightsOnly ?
+                                return calculateOracle ?
                                         baseParam: get(weightProbVec, fIter) + baseScore;
                             }
                             else
@@ -803,7 +803,7 @@ public class DiscriminativeInferState extends Event3InferState
                                 double baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter);
                                 baseScore = getBaselineScore(baseParam);
                                 weightProbVec = modelEventTypeParams.fieldChoices[f0];
-                                return useBaselineWeightsOnly ?
+                                return calculateOracle ?
                                         baseParam : get(weightProbVec, fIter) + baseScore;
                             }
                         }
@@ -903,7 +903,7 @@ public class DiscriminativeInferState extends Event3InferState
                         double baseParam = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
                         baseScore = getBaselineScore(baseParam);
                         weightProbVec = params.trackParams[c].getNoneEventTypeEmissions();
-                        return useBaselineWeightsOnly ? 
+                        return calculateOracle ? 
                                  baseParam : get(weightProbVec, w) + baseScore;
                     }
                     public Pair getWeightLM(int rank) // used for k-best
@@ -946,7 +946,7 @@ public class DiscriminativeInferState extends Event3InferState
                         baseParam = get(baseCParams.getEventTypeChoices()[t0],
                                 index);
                     baseScore = getBaselineScore(baseParam);    
-                    return useBaselineWeightsOnly ? baseParam :
+                    return calculateOracle ? baseParam :
                             get(weightProbVec, index) + baseScore;
                         
                 }
@@ -1017,7 +1017,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       baseCParams.none_t);
                               baseScore = getBaselineScore(baseParam);
                               weightProbVec = modelCParams.getEventTypeChoices()[index];
-                              return useBaselineWeightsOnly ? 
+                              return calculateOracle ? 
                                       baseParam :
                                      // pecreptron weight * 1 (omitted, since 
                                      // it is equivalent to the count of the 
@@ -1032,7 +1032,7 @@ public class DiscriminativeInferState extends Event3InferState
                                      baseCParams.none_t);
                               baseScore = getBaselineScore(baseWeight);
                               weightProbVec = modelCParams.getEventTypeChoices()[t0];
-                              return useBaselineWeightsOnly ? 
+                              return calculateOracle ? 
                                      baseWeight :
                                      get(weightProbVec, index) + baseScore;
                           }
@@ -1077,7 +1077,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       // remember_t = t under indepEventTypes                              
                               baseScore = getBaselineScore(baseParam);
                               weightProbVec = modelCParams.getEventTypeChoices()[modelCParams.boundary_t];
-                              return useBaselineWeightsOnly ? baseParam :
+                              return calculateOracle ? baseParam :
                                       get(weightProbVec, eventTypeIndex) + baseScore;
                           }
                           else
@@ -1086,7 +1086,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
                               baseScore = getBaselineScore(baseParam);
                               weightProbVec = modelCParams.getEventTypeChoices()[t0];
-                              return useBaselineWeightsOnly ? baseParam : 
+                              return calculateOracle ? baseParam : 
                                       get(weightProbVec, eventTypeIndex) + baseScore;
                           }
                       }

@@ -250,7 +250,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 inferState.doInference();
                 // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
                 inferState.setFeatures(oracleFeatures);
-                inferState.setUseBaselineWeightsOnly(true);
+                inferState.setCalculateOracle(true);
                 inferState.doInference();
                 // update statistics
                 synchronized(complexity)
@@ -321,7 +321,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     
     public void resetBaselineFeature(GradientBasedOptimizer optimizer)
     {        
-        optimizer.setFeatureWeight(((DiscriminativeParams)params).baselineWeight, 1.0);
+//        optimizer.setFeatureWeight(((DiscriminativeParams)params).baselineWeight, 1.0);
     }
     @Override
     public void generate(String name, LearnOptions lopts)
