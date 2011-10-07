@@ -52,14 +52,12 @@ public class DiscriminativeTrainWeatherTest
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
-        Execution.init(args.split(" "), new Object[] {opts}); // parse input params
+        Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
         model = new DiscriminativeEvent3Model(opts);
+        model.init(InitType.supervised, null, "stage1");
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-//        model.init(InitType.random, opts.initRandom, "");
-        model.init(InitType.supervised, opts.initRandom, "stage1");
-//        model.init(InitType.supervised, null, name);
         lopts = opts.stage1;
         name = "stage1";
     }
