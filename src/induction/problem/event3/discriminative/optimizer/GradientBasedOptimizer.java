@@ -1,6 +1,7 @@
 package induction.problem.event3.discriminative.optimizer;
 
 import fig.basic.LogInfo;
+import induction.problem.event3.discriminative.Feature;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,29 +81,30 @@ public abstract class GradientBasedOptimizer
 
     public abstract void initModel(double minValue, double maxValue);// random start
 
-    public abstract void updateModel(HashMap tbl_feats_empirical, HashMap tbl_feats_model);
+    public abstract void updateModel(HashMap<Feature, Double> oracleFeatures, 
+                                     HashMap<Feature, Double> modelFeatures);
 
     public abstract HashMap getAvgModel();
 
     public abstract HashMap getSumModel();
 
-    public abstract void setFeatureWeight(String feat, double weight);
+    public abstract void setFeatureWeight(Feature feat, double weight);
 
     public int getBatchSize()
     {
         return BATCH_UPDATE_SIZE;
     }
 
-    protected HashMap<String, Double> getGradient(HashMap<String, Double> empiricalFeatsTbl, 
-              HashMap<String, Double> modelFeatsTbl)
+    protected HashMap<Feature, Double> getGradient(HashMap<Feature, Double> oracleFeatures, 
+              HashMap<Feature, Double> modelFeatures)
     {
-        HashMap<String, Double> res = new HashMap<String, Double>();
+        HashMap<Feature, Double> res = new HashMap<Feature, Double>();
         // process tbl_feats_oracle
-        for (Map.Entry<String, Double> entry : empiricalFeatsTbl.entrySet())
+        for (Map.Entry<Feature, Double> entry : oracleFeatures.entrySet())
         {
-            String key = entry.getKey();
+            Feature key = entry.getKey();
             double gradient = entry.getValue();
-            Double v_1best = modelFeatsTbl.get(key);
+            Double v_1best = modelFeatures.get(key);
             if (v_1best != null)
             {
                 gradient -= v_1best; // v_oracle - v_1best
@@ -119,12 +121,11 @@ public abstract class GradientBasedOptimizer
                 }
             }
         }
-
         // process tbl_feats_1best
-        for (Map.Entry<String, Double> entry : modelFeatsTbl.entrySet())
+        for (Map.Entry<Feature, Double> entry : modelFeatures.entrySet())
         {
-            String key = entry.getKey();
-            Double v_oracle = empiricalFeatsTbl.get(key);
+            Feature key = entry.getKey();
+            Double v_oracle = oracleFeatures.get(key);
             if (v_oracle == null) // this feat only activate in the 1best, not in oracle
             {
                 if (IS_MINIMIZE_SCORE)

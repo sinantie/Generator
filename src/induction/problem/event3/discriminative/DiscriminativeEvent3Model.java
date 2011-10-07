@@ -54,7 +54,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      * maps that contain the total feature counts extracted from the Viterbi search
      * of the oracle model and the model under train
      */
-    HashMap oracleFeatures, modelFeatures;
+    HashMap<Feature, Double> oracleFeatures, modelFeatures;
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
@@ -63,8 +63,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public DiscriminativeEvent3Model(Options opts)
     {
         super(opts);        
-        oracleFeatures = new HashMap();
-        modelFeatures = new HashMap();
+        oracleFeatures = new HashMap<Feature, Double>();
+        modelFeatures = new HashMap<Feature, Double>();
     }
 
     @Override
@@ -222,8 +222,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         }        
         
         // initialise model
-        HashMap perceptronSumModel = new HashMap();
-        HashMap perceptronAverageModel = new HashMap();
+        HashMap<Feature, Double> perceptronSumModel = new HashMap();
+        HashMap<Feature, Double[]> perceptronAverageModel = new HashMap();
         GradientBasedOptimizer optimizer = new DefaultPerceptron(
                 perceptronSumModel, perceptronAverageModel, 
                 examples.size(), lopts.batchUpdateSize);
@@ -294,9 +294,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             iter++;
             if (Execution.shouldBail())
                 lopts.numIters = iter;
-        } // for (all iterations)
-        
+        } // for (all iterations)       
         // use average model weights instead of sum (reduces overfitting according to Collins, 2002)
+        ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
+        
         if(!opts.dontOutputParams)
         {
             saveParams(name);

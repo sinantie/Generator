@@ -1,5 +1,6 @@
 package induction.problem.event3.discriminative.optimizer;
 
+import induction.problem.event3.discriminative.Feature;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -13,10 +14,10 @@ import java.util.Random;
  * */
 
 public class DefaultCRF extends GradientBasedOptimizer {
-	protected HashMap<String, Double> modelTbl = null;
+	protected HashMap<Feature, Double> modelTbl = null;
 	
 	
-	public DefaultCRF(HashMap<String, Double> model, int train_size, int batch_update_size, int converge_pass, double init_gain, double sigma, boolean is_minimize_score){
+	public DefaultCRF(HashMap<Feature, Double> model, int train_size, int batch_update_size, int converge_pass, double init_gain, double sigma, boolean is_minimize_score){
 		super(train_size, batch_update_size, converge_pass, init_gain,  sigma, is_minimize_score);
 		modelTbl = model;
 		if(modelTbl==null || modelTbl.size()<=0){System.out.println("model table is null or empty"); System.exit(0);}	
@@ -30,8 +31,8 @@ public class DefaultCRF extends GradientBasedOptimizer {
 			scaleMapEntries(modelTbl, min_value);
 		}else{
 			Random rd = new Random(0);//TODO: fixed seed?
-			for (Iterator iter = modelTbl.keySet().iterator(); iter.hasNext();)		{ 
-				String key = (String) iter.next();
+			for (Iterator<Feature> iter = modelTbl.keySet().iterator(); iter.hasNext();)		{ 
+				Feature key =  iter.next();
 				double val = rd.nextDouble()*(max_value-min_value)+min_value;
 				modelTbl.put(key, val);
 			}
@@ -67,9 +68,9 @@ public class DefaultCRF extends GradientBasedOptimizer {
 		
 		
 		//further update activated features
-		for(Iterator it =gradient.keySet().iterator(); it.hasNext();){
-			String key = (String)it.next();
-			Double old_v = (Double)modelTbl.get(key);
+		for(Iterator<Feature> it =gradient.keySet().iterator(); it.hasNext();){
+			Feature key = it.next();
+			Double old_v = modelTbl.get(key);
 			if(old_v!=null)
 				modelTbl.put(key, old_v + update_gain*(Double)gradient.get(key));
 			else{
@@ -95,7 +96,7 @@ public class DefaultCRF extends GradientBasedOptimizer {
 	}
 
 	@Override
-	public void setFeatureWeight(String feat, double weight) {
+	public void setFeatureWeight(Feature feat, double weight) {
 		modelTbl.put(feat, weight);
 	}
 	

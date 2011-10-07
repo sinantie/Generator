@@ -1,6 +1,7 @@
 package induction.problem.event3.discriminative.optimizer;
 
 import fig.basic.LogInfo;
+import induction.problem.event3.discriminative.Feature;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -17,12 +18,13 @@ public class DefaultPerceptron extends GradientBasedOptimizer
 {
 
     // key: feature string; value: model paramemter
-    HashMap globalTableSumModel = null; 
+    HashMap<Feature, Double> globalTableSumModel = null; 
     //key: feature string; val: (1) last avg-model parameter, 
     // (2) last iter-id; (3) the last sum-model parammter 
-    HashMap globalTableAverageModel = null;
+    HashMap<Feature, Double[]> globalTableAverageModel = null;
 
-    public DefaultPerceptron(HashMap sumModel, HashMap averageModel, int trainSize, 
+    public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
+                             HashMap<Feature, Double[]> averageModel, int trainSize, 
                              int batchUpdateSize)
     {
         super(trainSize, batchUpdateSize);
@@ -34,7 +36,8 @@ public class DefaultPerceptron extends GradientBasedOptimizer
             System.exit(0);
         }
     }
-    public DefaultPerceptron(HashMap sumModel, HashMap averageModel, int trainSize, 
+    public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
+                             HashMap<Feature, Double[]> averageModel, int trainSize, 
                              int batchUpdateSize, int convergePass, double initGain, 
                              double sigma, boolean isMinimizeScore)
     {
@@ -54,11 +57,11 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     }
 
     //	update tbl_sum_model and tbl_avg_model inside
-    public void updateModel(HashMap oracleFeatures, HashMap modelFeatures)
+    public void updateModel(HashMap<Feature, Double> oracleFeatures, HashMap<Feature, Double> modelFeatures)
     {
         numModelChanges++;
         LogInfo.logs("Update the perceptron model " + numModelChanges);
-        HashMap gradient = getGradient(oracleFeatures, modelFeatures);
+        HashMap<Feature, Double> gradient = getGradient(oracleFeatures, modelFeatures);
         //Support.print_hash_tbl(gradient);
         double updateGain = computeGain(numModelChanges);
         LogInfo.logs("Update gain is " + updateGain + "; gradident table size " + gradient.size());
@@ -67,30 +70,37 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     }
 
     //update tbl_sum_model inside
-    protected void updateSumModel(HashMap tableSumModel, HashMap gradient, double updateGain)
+    protected void updateSumModel(HashMap<Feature, Double> tableSumModel, 
+                                  HashMap<Feature, Double> gradient, double updateGain)
     {
-        for (Iterator it = gradient.keySet().iterator(); it.hasNext();)
+        for (Iterator<Feature> it = gradient.keySet().iterator(); it.hasNext();)
         {
-            String key = (String) it.next();
-            Double oldValue = (Double) tableSumModel.get(key);
+            Feature key = it.next();
+            Double oldValue = tableSumModel.get(key);
+            Double update;
             if (oldValue != null)
             {
-                tableSumModel.put(key, oldValue + updateGain * (Double) gradient.get(key));
+                update = oldValue + updateGain * gradient.get(key);
+                tableSumModel.put(key, update);                
             }
             else
             {
-                tableSumModel.put(key, updateGain * (Double) gradient.get(key)); //incrementally add feature
+                update = updateGain * gradient.get(key);
+                tableSumModel.put(key, update); // incrementally add feature
             }
+            key.setValue(update); // propagate change to the ProbVecs
         }
     }
 
     //	key: feat str; val: (1) last avg-model paramemter, (2) last iter-id; (3) the last sum-model paramemter
     //update tbl_avg_model inside
-    protected void updateAverageModel(HashMap tableSumModel, HashMap tableAverageModel, HashMap featureSet, int curIterId)
+    protected void updateAverageModel(HashMap<Feature, Double> tableSumModel, 
+                                      HashMap<Feature, Double[]> tableAverageModel, 
+                                      HashMap featureSet, int curIterId)
     {//feature_set: the features need to be updated
-        for (Iterator it = featureSet.keySet().iterator(); it.hasNext();)
+        for (Iterator<Feature> it = featureSet.keySet().iterator(); it.hasNext();)
         {
-            String key = (String) it.next();
+            Feature key = it.next();
             updateAverageModelOneFeature(tableSumModel, tableAverageModel, key, curIterId);
         }
     }
@@ -98,12 +108,14 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     //tbl_sum_model has already been updated	
     //	key: feat str; val: (1) last avg-model paramemter, (2) last iter-id; (3) the last sum-model paramemter
     //	update tbl_avg_model inside
-    protected void updateAverageModelOneFeature(HashMap tableSumModel, HashMap tableAverageModel, String featureKey, int curIterId)
+    protected void updateAverageModelOneFeature(HashMap<Feature, Double> tableSumModel, 
+                                                HashMap<Feature, Double[]> tableAverageModel, 
+                                                Feature featureKey, int curIterId)
     {
-        Double[] oldValues = (Double[]) tableAverageModel.get(featureKey);
+        Double[] oldValues = tableAverageModel.get(featureKey);
         Double[] newValues = new Double[3];
         newValues[1] = new Double(curIterId);//iter id 
-        newValues[2] = (Double) tableSumModel.get(featureKey);//sum model para
+        newValues[2] = tableSumModel.get(featureKey);//sum model para
         if (oldValues != null)
         {
             newValues[0] = (oldValues[0] * oldValues[1] + oldValues[2] * (curIterId - oldValues[1] - 1) + newValues[2]) / curIterId;//avg
@@ -133,12 +145,20 @@ public class DefaultPerceptron extends GradientBasedOptimizer
         return globalTableAverageModel;
     }
 
+    public void updateParamsWithAvgWeights()
+    {
+        for(Feature f : globalTableAverageModel.keySet())
+        {
+            f.setValue(globalTableAverageModel.get(f)[0]);
+        }
+    }
+    
     public HashMap getSumModel()
     {
         return globalTableSumModel;
     }
 
-    public void setFeatureWeight(String feat, double weight)
+    public void setFeatureWeight(Feature feat, double weight)
     {
         globalTableSumModel.put(feat, weight);
         Double[] vals = new Double[3];
