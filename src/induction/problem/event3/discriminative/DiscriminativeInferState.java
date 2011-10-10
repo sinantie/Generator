@@ -20,6 +20,7 @@ import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.ProbVec;
 import induction.problem.event3.CatField;
+import induction.problem.event3.Constants;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3InferState;
 import induction.problem.event3.Event3Model;
@@ -133,14 +134,16 @@ public class DiscriminativeInferState extends Event3InferState
     @Override
     protected void initInferState(AModel model)
     {
-        wildcard_pc = -1;
-        L = opts.maxPhraseLength;
-        segPenalty = new double[L + 1];
-        for(int l = 0; l < L +1; l++)
+        
+        super.initInferState(model);
+        // used for oracle only
+        words = ex.getText();
+        nums = new int[words.length];
+        for(int w = 0; w < nums.length; w++)
         {
-            segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
+            nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
         }
-        N = ex.N();
+        labels = ex.getLabels();
         this.vocabulary = ((Event3Model)model).getWordIndexer();
     }
         
@@ -243,11 +246,18 @@ public class DiscriminativeInferState extends Event3InferState
     @Override
     public void doInference()
     {
-        HyperpathResult result;        
-        StopWatchSet.begin("rerank 1-best Viterbi");
-        result = hypergraph.rerankOneBestViterbi(newWidget(), opts.initRandom);
+        HyperpathResult result;
+        if(calculateOracle)
+        {
+            StopWatchSet.begin("oracle 1-best Viterbi");
+            result = hypergraph.oracleOneBestViterbi(newWidget(), opts.initRandom);            
+        }
+        else
+        {
+            StopWatchSet.begin("rerank 1-best Viterbi");
+            result = hypergraph.rerankOneBestViterbi(newWidget(), opts.initRandom);
+        }
         StopWatchSet.end();
-        
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);
         logVZ = result.logWeight;

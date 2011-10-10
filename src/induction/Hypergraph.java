@@ -696,6 +696,18 @@ public class Hypergraph<Widget> {
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
+  public HyperpathResult<Widget> oracleOneBestViterbi(Widget widget, Random random)
+  {
+        computeInsideMaxScores(true); // viterbi
+        HyperpathChooser chooser = new HyperpathChooser();
+        chooser.viterbi = true;
+        chooser.widget = widget;
+        chooser.choose = true;
+        chooser.random = random;
+        chooser.recurse(startNodeInfo);
+        return new HyperpathResult(chooser.widget, chooser.logWeight);
+  }
+  
     class DerivationWithBleu implements Comparable{
         HyperpathChooser chooser;
         double score;
