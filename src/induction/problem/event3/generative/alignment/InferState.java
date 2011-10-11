@@ -143,7 +143,7 @@ public class InferState extends Event3InferState
             } // for
         } // if
 
-//        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+//        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)inferState).none_t()),
         hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
@@ -645,8 +645,8 @@ public class InferState extends Event3InferState
                             }
                             public Widget choose(Widget widget) {
 //                                System.out.println(String.format("FieldsNode i=%d, end=%d, e=%s, f0=%s", i,
-//                                                    end, model.eventTypeToString(event),
-//                                                    model.getEventTypes()[event].fieldToString(f0)));
+//                                                    end, inferState.eventTypeToString(event),
+//                                                    inferState.getEventTypes()[event].fieldToString(f0)));
                                 return widget;
                             }
                         });
@@ -701,7 +701,7 @@ public class InferState extends Event3InferState
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
-//               j-i <= ((Event3Model)model).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
+//               j-i <= ((Event3Model)inferState).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
                j-i <= ex.events.get(event).getFields()[f].getMaxLength())))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
@@ -722,8 +722,8 @@ public class InferState extends Event3InferState
                     public Widget choose(Widget widget) {
 //                        System.out.println(String.format("event=%s, i=%d, j=%d, f0=%s, f=%s",
 //                              ex.events[event].toString(), i, j,
-//                              model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
-//                              model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
+//                              inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
+//                              inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
                         for(int k = i; k < j; k++)
                         {
                             widget.getFields()[c][k] = fIter;                            
@@ -1040,7 +1040,7 @@ public class InferState extends Event3InferState
                       (!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {
-//                  final int remember_t = (indepEventTypes()) ? ((Event3Model)model).none_t() : eventTypeIndex;
+//                  final int remember_t = (indepEventTypes()) ? ((Event3Model)inferState).none_t() : eventTypeIndex;
                   final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
                   final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
                   if (opts.useEventTypeDistrib)
@@ -1051,7 +1051,7 @@ public class InferState extends Event3InferState
                           public double getWeight()
                           {
                               if(prevIndepEventTypes())
-//                                  return get(cparams.getEventTypeChoices()[((Event3Model)model).none_t()],
+//                                  return get(cparams.getEventTypeChoices()[((Event3Model)inferState).none_t()],
                                   return get(cparams.getEventTypeChoices()[cparams.boundary_t],
                                           eventTypeIndex) *
                                           (1.0d/(double)ex.getEventTypeCounts()[eventTypeIndex]); // remember_t = t under indepEventTypes
@@ -1073,8 +1073,8 @@ public class InferState extends Event3InferState
                                   widget.getEvents()[c][k] = eventId;
 //                                  System.out.println(String.format("TrackNode i=%d, j=%d, t0=%s, e=%s",
 //                                        i, j,
-//                                        model.eventTypeToString(t0),
-//                                        model.eventTypeToString(eIter)));
+//                                        inferState.eventTypeToString(t0),
+//                                        inferState.eventTypeToString(eIter)));
                               }
                               return widget;
                           }

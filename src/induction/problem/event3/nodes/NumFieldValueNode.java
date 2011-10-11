@@ -12,6 +12,17 @@ public class NumFieldValueNode extends Node {
         this.event = event;
         this.field = field;
     }
+
+    public int getEvent()
+    {
+        return event;
+    }
+
+    public int getField()
+    {
+        return field;
+    }
+    
     @Override
     public String toString() {
         return debug(this.getClass().getSimpleName(), i, c, event, field);

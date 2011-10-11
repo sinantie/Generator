@@ -33,6 +33,7 @@ import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.nodes.FieldsNode;
+import induction.problem.event3.nodes.Node;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.StopNode;
@@ -50,11 +51,11 @@ import java.util.HashMap;
  * <code>Params params</code> contain the perceptron weight vector w.
  * 
  * We allow for two different weight calculations: 
- * a) using the original generative baseline model
+ * a) using the original generative baseline inferState
  * b) by computing w.f(e) at each edge:
  * w.f(e) = 
  *      pecreptron_weight * 1 (omitted, since it is equivalent to the count of 
- *          the alignment model rule, which is always included in f(e)) + 
+ *          the alignment inferState rule, which is always included in f(e)) + 
  *      ... (other features) + 
  *      logP(baseline)
  * 
@@ -67,22 +68,22 @@ public class DiscriminativeInferState extends Event3InferState
     protected NgramModel ngramModel;
     protected Indexer<String> vocabulary;
     /**
-     * baseline model parameters (contains probabilities not logs)
+     * baseline inferState parameters (contains probabilities not logs)
      */
     Params baseline; 
     /**
-     * the baseline model feature
+     * the baseline inferState feature
      */
     Feature baselineFeature;
     /** 
-     * set true when we are doing the calculation of f(y+), using the original baseline model's
+     * set true when we are doing the calculation of f(y+), using the original baseline inferState's
      * parameters
      * set false when we are calculating w*f(y*), during the reranking stage
      */     
     boolean calculateOracle = false; 
     /**
      * map of the count of features extracted during the Viterbi search.
-     * It has to be set first to the corresponding map (model under train, or oracle)
+     * It has to be set first to the corresponding map (inferState under train, or oracle)
      * before doing the recursive call to extract D_1 (top derivation)
      */
     private HashMap<Feature, Double> features;
@@ -167,11 +168,43 @@ public class DiscriminativeInferState extends Event3InferState
                                newMatrixOne(),
                                ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
     }    
+
+    /**
+     * Gets a node emitting a terminal directly from the hypergraph viterbi search
+     * and returns the corresponding position of the oracle in its edges' list. 
+     * It relies on the fact that terminal hyperedges are added in the same order 
+     * (from the word vocabulary or according to the method they are produced in the case of numbers)
+     * @param node
+     * @return 
+     */
+    public int getOracleEdgeIndex(Node node)
+    {
+        int i = node.getI();
+        if(node instanceof NumFieldValueNode)
+        {
+            NumFieldValueNode numNode = (NumFieldValueNode)node;
+            int numValue = getValue(numNode.getEvent(), numNode.getField());
+            if (numValue == nums[i])
+                return 0;
+            if (roundUp(numValue) == nums[i])
+                return 1;
+            if (roundDown(numValue) == nums[i])
+                return 2;
+            if (roundClose(numValue) == nums[i])
+                return 3;
+            int noise = nums[i] - numValue;
+            if (noise > 0)
+                return 4;
+            else
+                return 5;
+        }
+        return words[i];
+    }
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+        hypergraph.setupForGeneration(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
@@ -478,9 +511,9 @@ public class DiscriminativeInferState extends Event3InferState
             });
         } // if (hypergraph.addSumNode(node))
         return node;
-    }
-
-    protected  CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
+    }   
+    
+    protected CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
     {
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
@@ -488,7 +521,7 @@ public class DiscriminativeInferState extends Event3InferState
             final CatFieldParams modelFParams = getCatFieldParams(event, field);
             final CatFieldParams baseFParams = getBaselineCatFieldParams(event, field);
             // Consider generating words(i) from category v
-            final int v = getValue(event, field);                        
+            final int v = getValue(event, field);
             for(int wIter = 0; wIter < Event3Model.W(); wIter++) // add hyperedge for each word. COSTLY!
             {
                 final int w = wIter;
@@ -1031,7 +1064,7 @@ public class DiscriminativeInferState extends Event3InferState
                                       baseParam :
                                      // pecreptron weight * 1 (omitted, since 
                                      // it is equivalent to the count of the 
-                                     // alignment model rule)
+                                     // alignment inferState rule)
                                      get(weightProbVec, index) +
                                      // baseline weight * baseline logP
                                       baseScore;

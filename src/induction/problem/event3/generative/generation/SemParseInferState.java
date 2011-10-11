@@ -83,11 +83,11 @@ public class SemParseInferState extends GenInferState
 //                vocabulary.getIndex("<num>"),
 //                vocabulary.getIndex("ELIDED_SYMBOL"),
 //                opts.ngramWrapper != Options.NgramWrapper.roark,
-//                ((Event3Model)model).getWordIndexer(), ex, graph);
+//                ((Event3Model)inferState).getWordIndexer(), ex, graph);
 //
 //        if(opts.fullPredRandomBaseline)
 //        {
-//            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+//            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)inferState).none_t()),
 //                           new Hypergraph.HyperedgeInfo<Widget>()
 //            {
 //                public double getWeight()
@@ -104,7 +104,7 @@ public class SemParseInferState extends GenInferState
 //        } // if
 //        else
 //        {
-//            this.hypergraph.addEdge(hypergraph.sumStartNode(), genEvents(0, ((Event3Model)model).none_t()),
+//            this.hypergraph.addEdge(hypergraph.sumStartNode(), genEvents(0, ((Event3Model)inferState).none_t()),
 //                           new Hypergraph.HyperedgeInfo<Widget>()
 //            {
 //                public double getWeight()

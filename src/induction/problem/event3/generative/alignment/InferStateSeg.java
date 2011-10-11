@@ -413,8 +413,8 @@ public class InferStateSeg extends Event3InferState
 //                                  widget.events[c][k] = eventId;
 ////                                  System.out.println(String.format("TrackNode i=%d, j=%d, t0=%s, e=%s",
 ////                                        i, j,
-////                                        model.eventTypeToString(t0),
-////                                        model.eventTypeToString(eIter)));
+////                                        inferState.eventTypeToString(t0),
+////                                        inferState.eventTypeToString(eIter)));
 //                              }
                               return widget;
                           }

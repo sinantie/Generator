@@ -1,5 +1,7 @@
 package induction;
 
+import induction.problem.event3.discriminative.DiscriminativeInferState;
+import induction.problem.AInferState;
 import induction.problem.event3.nodes.Node;
 import induction.ngrams.NgramModel;
 import induction.problem.event3.generative.generation.GenerationPerformance;
@@ -290,7 +292,7 @@ public class Hypergraph<Widget> {
             for(int i = 0; i < ngram.size(); i++)
             {
                 temp = vocabulary.getObject(ngram.get(i));
-                // ngram model needs to convert numbers to symbol <num>
+                // ngram inferState needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
                 ngramStr[i] = numbersAsSymbol &&
                               temp.matches("-\\p{Digit}+|" + // negative numbers
@@ -337,6 +339,8 @@ public class Hypergraph<Widget> {
   public Example ex;
   private Options.ModelType modelType;
   private Graph graph;
+  // discriminative stuff
+  AInferState inferState;
   // Start and end nodes
   private final Object startNode = addNodeAndReturnIt("START", NodeType.sum); // use sum or prod versions
   public final Object endNode = addNodeAndReturnIt("END", NodeType.sum);
@@ -345,7 +349,7 @@ public class Hypergraph<Widget> {
   private final NodeInfo endNodeInfo = getNodeInfoOrFail(endNode);
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
 
-  public  void setupForGeneration(boolean debug, ModelType modelType, boolean allowEmptyNodes,
+  public  void setupForGeneration(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
                                         boolean oracleReranker, int NUM,
@@ -353,6 +357,7 @@ public class Hypergraph<Widget> {
                                         int END_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
+        this.inferState = inferState;
         this.debug = debug;
         // Need this because the pc sets might be inconsistent with the types
         this.allowEmptyNodes = allowEmptyNodes;
@@ -633,7 +638,7 @@ public class Hypergraph<Widget> {
                             reorderType == ReorderType.eventTypeAndField)
                     {
                         int eventType = ((EventsNode)v.node).getEventType();
-//                        if(eventType != ex.model.none_t())
+//                        if(eventType != ex.inferState.none_t())
                             kBest(v, eventType, Reorder.eventType);
 //                        else
 //                            kBest(v, IGNORE_REORDERING, Reorder.ignore);
@@ -1221,7 +1226,13 @@ public class Hypergraph<Widget> {
       if(nodeInfo.edges.get(0).dest.get(0) == endNode && 
          nodeInfo.edges.get(0).dest.get(1) == endNode)
       {
-          ((Node)nodeInfo.node).getI();
+          chosenIndex = ((DiscriminativeInferState)inferState).
+                  getOracleEdgeIndex((Node)nodeInfo.node);
+          Hyperedge edge = nodeInfo.edges.get(chosenIndex);
+          score.updateMax_mult3(
+                    BigDouble.fromDouble(((HyperedgeInfo)nodeInfo).getWeight()), 
+                    edge.dest.get(0).maxScore, edge.dest.get(1).maxScore);
+          nodeInfo.bestEdge = chosenIndex;
       } // if
       else
       {
@@ -1229,15 +1240,15 @@ public class Hypergraph<Widget> {
           {
             Hyperedge edge = nodeInfo.edges.get(k);
             // call getWeight on each edge again, in order to force the use
-            // of the baseline model's parameters (it will work only if we have 
-            // already dictated the model to calculate the oracle scores)
+            // of the baseline inferState's parameters (it will work only if we have 
+            // already dictated the inferState to calculate the oracle scores)
             if(score.updateMax_mult3(
                     BigDouble.fromDouble(((HyperedgeInfo)nodeInfo).getWeight()), 
                     edge.dest.get(0).maxScore, edge.dest.get(1).maxScore))
             {
                 chosenIndex = k;
             }            
-            nodeInfo.bestEdge = chosenIndex;            
+            nodeInfo.bestEdge = chosenIndex;
           } // for
       } // else      
     } // for

@@ -105,7 +105,7 @@ public class GenInferState extends InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+        hypergraph.setupForGeneration(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
@@ -808,8 +808,8 @@ public class GenInferState extends InferState
                         public GenWidget choose(GenWidget widget) {
 //                            System.out.println(String.format("event=%s, i=%d, j=%d, f0=%s, f=%s",
 //                                  ex.events[event].toString(), i, j,
-//                                  model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
-//                                  model.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
+//                                  inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
+//                                  inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
                             for(int k = i; k < j; k++)
                             {
                                 widget.getFields()[c][k] = fIter;
