@@ -1,5 +1,6 @@
 package induction;
 
+import induction.problem.event3.nodes.Node;
 import induction.ngrams.NgramModel;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.generation.GenWidget;
@@ -686,7 +687,7 @@ public class Hypergraph<Widget> {
   public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
-        computeInsideMaxScores(true); // viterbi
+        computeOracleMaxScores(); // viterbi
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
@@ -1195,6 +1196,54 @@ public class Hypergraph<Widget> {
     }
   }
 
+  /**
+   * Used for discriminative re-ranking.
+   * Re-compute the Viterbi score for each hypernode. We assume that for each node
+   * that emits terminals (i.e. has two endNode children), we have added a
+   * hyperedge which is lexicalised (i.e. conditioned on the words/numbers of
+   * the observed text). Since we are performing Viterbi search on the oracle
+   * hypergraph, for each node that emits terminals, we pick the hyperedge that
+   * corresponds to the the word/number of the gold-standard text.
+   */
+  private void computeOracleMaxScores() {
+//    if(this.startNodeInfo.maxScore != null) return; // Already computed
+
+    for(int i = topologicalOrdering.size()-1; i >= 0; i--) 
+    {
+      NodeInfo nodeInfo = topologicalOrdering.get(i);
+      BigDouble score = nodeInfo.maxScore = BigDouble.invalid();
+      
+      if(nodeInfo == endNodeInfo) { score.setToOne(); continue; }
+      
+      score.setToZero();
+      int chosenIndex = -1;
+      // in case of nodes that emit terminals, skip choosing the max score of the children
+      if(nodeInfo.edges.get(0).dest.get(0) == endNode && 
+         nodeInfo.edges.get(0).dest.get(1) == endNode)
+      {
+          ((Node)nodeInfo.node).getI();
+      } // if
+      else
+      {
+          for(int k = 0; k < nodeInfo.edges.size(); k++)
+          {
+            Hyperedge edge = nodeInfo.edges.get(k);
+            // call getWeight on each edge again, in order to force the use
+            // of the baseline model's parameters (it will work only if we have 
+            // already dictated the model to calculate the oracle scores)
+            if(score.updateMax_mult3(
+                    BigDouble.fromDouble(((HyperedgeInfo)nodeInfo).getWeight()), 
+                    edge.dest.get(0).maxScore, edge.dest.get(1).maxScore))
+            {
+                chosenIndex = k;
+            }            
+            nodeInfo.bestEdge = chosenIndex;            
+          } // for
+      } // else      
+    } // for
+    assert !startNodeInfo.maxScore.isZero() : "Max score = 0";    
+  }
+  
   public void fetchPosteriors(boolean viterbi) {
     if(viterbi) fetchPosteriorsMax(); // Only need to call setPosteriors on the best widget
     else        fetchPosteriorsSum(); // Call setPosteriors on each hyperedge
@@ -1396,6 +1445,23 @@ public class Hypergraph<Widget> {
           break;
       }
     }   
+    
+    private void oracleRecurse(NodeInfo nodeInfo) 
+    {
+        if(nodeInfo == endNodeInfo) 
+            return;        
+        // Choose edge
+        Hyperedge chosenEdge = nodeInfo.edges.get(nodeInfo.bestEdge);
+        if(chosenEdge.dest.get(0) == endNode && chosenEdge.dest.get(1) == endNode)
+            
+        if(choose) 
+            widget = (Widget)chosenEdge.info.choose(widget);        
+        logWeight += chosenEdge.weight.toLogDouble();
+        for(NodeInfo node : chosenEdge.dest)
+        {
+          oracleRecurse(node);
+        }          
+    }    
     
   }
 }
