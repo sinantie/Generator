@@ -37,14 +37,18 @@ public class DiscriminativeTrainWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType discriminativeTrain -testInputLists test/testWeatherGovEvents "
+         String args = "-modelType discriminativeTrain -inputLists test/testWeatherGovEvents "
+                    + "-Options.stage1.numIters 15 "
                     + "-inputFileExt events -dontOutputParams -generativeModelParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 20 "
+                    + "-disallowConsecutiveRepeatFields -allowNoneEvent "
+//                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "
+                 
+                    + "-kBest 20 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
-                    + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
+                    + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
 //                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
