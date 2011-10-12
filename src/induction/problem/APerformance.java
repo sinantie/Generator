@@ -12,7 +12,7 @@ import induction.Utils;
 public abstract class APerformance<Widget>
 {
     protected ProbStats stats = new ProbStats(0, 0, 0, 0, 0, 0, 0);
-    protected void add(ProbStats newStats)
+    public void add(ProbStats newStats)
     {
         stats.add(newStats);
     }

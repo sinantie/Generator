@@ -29,6 +29,11 @@ public abstract class AInferState
         this.trueInfer = ispec.isTrueUpdate();
     }
 
+    public double getCount(ProbVec v, int i)
+    {
+        return v.getCount(i);
+    }
+    
     public double get(ProbVec v, int i)
     {
         if (ispec.isUseVarUpdates())
@@ -47,7 +52,8 @@ public abstract class AInferState
 
     public double getLogProb(ProbVec v, int i)
     {
-        return Math.abs(Math.log(get(v, i)));
+//        return Math.abs(Math.log(get(v, i)));
+        return Math.log(get(v, i));
     }
     
     public double getLogProb(double prob)
@@ -71,7 +77,7 @@ public abstract class AInferState
         objective = elogZ + temperature * entropy;
     }
 
-    protected ProbStats stats()
+    public ProbStats stats()
     {
         return new ProbStats(ex.N(), logZ, logVZ, logCZ, elogZ, entropy, objective);
     }

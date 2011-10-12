@@ -113,7 +113,7 @@ public abstract class GradientBasedOptimizer
             {
                 if (IS_MINIMIZE_SCORE)
                 {
-                    res.put(key, -gradient); // note: we are minizing the cost
+                    res.put(key, -gradient); // note: we are minimizing the cost
                 }
                 else
                 {

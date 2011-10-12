@@ -125,16 +125,19 @@ public abstract class AModel
    
     protected void uniformzInitParams()
     {
+        params = newParams();
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     protected void artificialInitParams()
     {
+        params = newParams();
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     protected void baitInitParams()
     {
+        params = newParams();
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
@@ -322,28 +325,20 @@ public abstract class AModel
     @Override
     public void init(InitType initType, Random initRandom, String name)
     {
-      Utils.begin_track("Init parameters: %s", initType);
-      if(initType == InitType.staged)
+      Utils.begin_track("Init parameters: %s", initType);    
+      switch(initType)
       {
-           stagedInitParams();
-//           params.output(Execution.getFile("init.params"));
+          case random : params = newParams();
+                        params.randomise(initRandom, opts.initNoise);
+                        params.optimise(opts.initSmoothing); break;
+          case bait : baitInitParams(); break;
+          case staged : stagedInitParams(); break;
+          case supervised : supervisedInitParams(); break;
+          case uniformz : uniformzInitParams(); break;
+          case artificial: artificialInitParams(); break;
+          default : throw new UnsupportedOperationException("Invalid init type");
       }
-      else
-      {
-          params = newParams();
-          switch(initType)
-          {
-              case random : params.randomise(initRandom, opts.initNoise);
-                            params.optimise(opts.initSmoothing); break;
-              case bait : baitInitParams(); break;
-              case supervised : supervisedInitParams(); break;
-              case uniformz : uniformzInitParams(); break;
-              case artificial: artificialInitParams(); break;
-              default : throw new UnsupportedOperationException("Invalid init type");
-          }
-          //params.output(Execution.getFile("init.params"));
-      }
-     
+      //params.output(Execution.getFile("init.params"));     
       LogInfo.end_track();
     }
 

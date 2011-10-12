@@ -180,6 +180,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         // Load generative model parameters
         baselineModelParams = loadGenerativeModelParams();
+        params = newParams();
         //do nothing, initialise to zero by default
     }
 
@@ -260,7 +261,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 numProcessedExamples++;
                 // update perceptron if necessary (batch update)
                 updateOptimizer(false, optimizer);
-                
+                synchronized(trainPerformance)
+                {
+                    trainPerformance.add(inferState.stats());
+                }
                 //TODO processExample
                                 
 //                Params counts = newParams();
@@ -274,7 +278,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 //                Utils.parallelForeach(opts.numThreads, list);
 //                LogInfo.end_track();
 //                list.clear();
-            } // for
+            } // for (all examples)
             // purge any unprocessed examples
             updateOptimizer(true, optimizer);
             // update the internal average model

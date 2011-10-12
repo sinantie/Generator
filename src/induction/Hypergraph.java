@@ -692,7 +692,7 @@ public class Hypergraph<Widget> {
   public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
-        computeOracleMaxScores(); // viterbi
+        computeInsideMaxScores(true); // viterbi        
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
@@ -704,7 +704,7 @@ public class Hypergraph<Widget> {
   
   public HyperpathResult<Widget> oracleOneBestViterbi(Widget widget, Random random)
   {
-        computeInsideMaxScores(true); // viterbi
+        computeOracleMaxScores(); // viterbi
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
@@ -1223,14 +1223,14 @@ public class Hypergraph<Widget> {
       score.setToZero();
       int chosenIndex = -1;
       // in case of nodes that emit terminals, skip choosing the max score of the children
-      if(nodeInfo.edges.get(0).dest.get(0) == endNode && 
-         nodeInfo.edges.get(0).dest.get(1) == endNode)
+      if(nodeInfo.edges.get(0).dest.get(0) == endNodeInfo && 
+         nodeInfo.edges.get(0).dest.get(1) == endNodeInfo)
       {
           chosenIndex = ((DiscriminativeInferState)inferState).
                   getOracleEdgeIndex((Node)nodeInfo.node);
           Hyperedge edge = nodeInfo.edges.get(chosenIndex);
           score.updateMax_mult3(
-                    BigDouble.fromDouble(((HyperedgeInfo)nodeInfo).getWeight()), 
+                    BigDouble.fromDouble(((HyperedgeInfo)edge.info).getWeight()),
                     edge.dest.get(0).maxScore, edge.dest.get(1).maxScore);
           nodeInfo.bestEdge = chosenIndex;
       } // if
@@ -1243,7 +1243,7 @@ public class Hypergraph<Widget> {
             // of the baseline inferState's parameters (it will work only if we have 
             // already dictated the inferState to calculate the oracle scores)
             if(score.updateMax_mult3(
-                    BigDouble.fromDouble(((HyperedgeInfo)nodeInfo).getWeight()), 
+                    BigDouble.fromDouble(((HyperedgeInfo)edge.info).getWeight()),
                     edge.dest.get(0).maxScore, edge.dest.get(1).maxScore))
             {
                 chosenIndex = k;
@@ -1455,24 +1455,6 @@ public class Hypergraph<Widget> {
           }
           break;
       }
-    }   
-    
-    private void oracleRecurse(NodeInfo nodeInfo) 
-    {
-        if(nodeInfo == endNodeInfo) 
-            return;        
-        // Choose edge
-        Hyperedge chosenEdge = nodeInfo.edges.get(nodeInfo.bestEdge);
-        if(chosenEdge.dest.get(0) == endNode && chosenEdge.dest.get(1) == endNode)
-            
-        if(choose) 
-            widget = (Widget)chosenEdge.info.choose(widget);        
-        logWeight += chosenEdge.weight.toLogDouble();
-        for(NodeInfo node : chosenEdge.dest)
-        {
-          oracleRecurse(node);
-        }          
     }    
-    
   }
 }

@@ -64,7 +64,7 @@ public class DefaultPerceptron extends GradientBasedOptimizer
         HashMap<Feature, Double> gradient = getGradient(oracleFeatures, modelFeatures);
         //Support.print_hash_tbl(gradient);
         double updateGain = computeGain(numModelChanges);
-        LogInfo.logs("Update gain is " + updateGain + "; gradident table size " + gradient.size());
+        LogInfo.logs("Update gain is " + updateGain + "; gradient table size " + gradient.size());
         updateSumModel(globalTableSumModel, gradient, updateGain);
         updateAverageModel(globalTableSumModel, globalTableAverageModel, gradient, numModelChanges);
     }
@@ -134,7 +134,7 @@ public class DefaultPerceptron extends GradientBasedOptimizer
      */
     public void forceUpdateAverageModel()
     {
-        LogInfo.logs("force avg update is called");
+        LogInfo.logs("force average update is called");
         updateAverageModel(globalTableSumModel, globalTableAverageModel, 
                            globalTableSumModel, numModelChanges); // update all features
 
