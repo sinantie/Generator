@@ -58,7 +58,8 @@ public abstract class AInferState
     
     public double getLogProb(double prob)
     {
-        return Math.abs(Math.log(prob));
+//        return Math.abs(Math.log(prob));
+        return Math.log(prob);
     }
     
     public int getMax(ProbVec v)

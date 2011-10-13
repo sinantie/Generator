@@ -178,8 +178,15 @@ public class BigDouble {
       this.M += M;
     standarize();
   }
-
+  public void incr(BigDouble d){
+      incr(d.M, d.E);
+  }
   // Update max
+  public boolean updateMax_sum3(BigDouble d1, BigDouble d2, BigDouble d3) {
+      BigDouble temp = BigDouble.zero();
+      temp.incr(d1); temp.incr(d2); temp.incr(d3);
+      return updateMax(temp);
+  }
   public boolean updateMax_mult3(BigDouble d1, BigDouble d2, BigDouble d3) {
       return updateMax(d1.M*d2.M*d3.M, d1.E+d2.E+d3.E);
   }

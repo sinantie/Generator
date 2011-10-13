@@ -91,6 +91,7 @@ public class Hypergraph<Widget> {
     ArrayList<Derivation> derivations;
     final List<Hyperedge> edges = new ArrayList(); // Children
     BigDouble insideScore, outsideScore, maxScore; // Things we compute during inference
+    double logMaxScore = Double.NEGATIVE_INFINITY; // For discriminative training we store log scores
         @Override
     public String toString() { return node.toString(); }
   }
@@ -99,7 +100,8 @@ public class Hypergraph<Widget> {
 //    final NodeInfo dest1, dest2; // Child nodes
     final AHyperedgeInfo info; // Specifies I/O for the hyperedge
     final BigDouble weight;
-
+    final double logWeight; // For discriminative training we store log scores
+    
     Hyperedge(NodeInfo dest1, NodeInfo dest2, AHyperedgeInfo info) {
       this.dest.add(dest1);
       this.dest.add(dest2);
@@ -107,26 +109,68 @@ public class Hypergraph<Widget> {
 //      this.dest2 = dest2;
       this.info = info;
       if(info instanceof HyperedgeInfo)
-        this.weight = BigDouble.fromDouble(((HyperedgeInfo)info).getWeight());
+      {
+          // in the discriminative model, we check the same hypergraph twice:
+          // - Once using the Perceptron model, thus we need to tackle log scores.
+          // - Then, using the gold standard text, where we just use the baseline
+          // model's parameters, which are probabilities, hence no log manipulation is necessary.
+          // So, in the latter case along with all other instances stick to using
+          // probabilities only.
+          if(inferState instanceof DiscriminativeInferState && !((DiscriminativeInferState)inferState).isCalculateOracle())
+          {
+              this.weight = null;
+              logWeight = ((HyperedgeInfo)info).getWeight();
+          }
+          else
+          {
+              this.weight = BigDouble.fromDouble(((HyperedgeInfo)info).getWeight());
+              logWeight = 0;
+          }
+      }
       else if(info instanceof LogHyperedgeInfo)
-        this.weight = BigDouble.fromLogDouble(((LogHyperedgeInfo)info).getLogWeight());
+      {   // convert from log to probability
+          this.weight = BigDouble.fromLogDouble(((LogHyperedgeInfo)info).getLogWeight());
+          logWeight = 0;
+      }
       else
         throw new RuntimeException("Unknown type of info");
-
-      if(weight.isZero()) weight.setToVerySmall(); // Avoid zeros so everything has some positive probability
+      // Avoid zeros so everything has some positive probability      
+      if(!(inferState instanceof DiscriminativeInferState) && weight.isZero()) 
+          weight.setToVerySmall(); 
     }
     Hyperedge(ArrayList<NodeInfo> dest, AHyperedgeInfo info)
     {
         this.dest.addAll(dest);
         this.info = info;
         if(info instanceof HyperedgeInfo)
-          this.weight = BigDouble.fromDouble(((HyperedgeInfo)info).getWeight());
-        else if(info instanceof LogHyperedgeInfo)
+        {
+          // in the discriminative model, we check the same hypergraph twice:
+          // - Once using the Perceptron model, thus we need to tackle log scores.
+          // - Then, using the gold standard text, where we just use the baseline
+          // model's parameters, which are probabilities, hence no log manipulation is necessary.
+          // So, in the latter case along with all other instances stick to using
+          // probabilities only.
+          if(inferState instanceof DiscriminativeInferState && !((DiscriminativeInferState)inferState).isCalculateOracle())
+          {
+              this.weight = null;
+              logWeight = ((HyperedgeInfo)info).getWeight();
+          }
+          else
+          {
+              this.weight = BigDouble.fromDouble(((HyperedgeInfo)info).getWeight());
+              logWeight = 0;
+          }
+      }
+      else if(info instanceof LogHyperedgeInfo)
+      {   // convert from log to probability
           this.weight = BigDouble.fromLogDouble(((LogHyperedgeInfo)info).getLogWeight());
-        else
-          throw new RuntimeException("Unknown type of info");
-
-        if(weight.isZero()) weight.setToVerySmall(); // Avoid zeros so everything has some positive probability
+          logWeight = 0;
+      }
+      else
+        throw new RuntimeException("Unknown type of info");
+      // Avoid zeros so everything has some positive probability      
+      if(!(inferState instanceof DiscriminativeInferState) && weight.isZero()) 
+          weight.setToVerySmall();
     }
     @Override
     public String toString()
@@ -692,13 +736,13 @@ public class Hypergraph<Widget> {
   public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
-        computeInsideMaxScores(true); // viterbi        
+        computeLogMaxScores(); // viterbi using log scores
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
         chooser.choose = true;
         chooser.random = random;
-        chooser.recurse(startNodeInfo);
+        chooser.recurseRerank(startNodeInfo, true);
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
@@ -710,7 +754,7 @@ public class Hypergraph<Widget> {
         chooser.widget = widget;
         chooser.choose = true;
         chooser.random = random;
-        chooser.recurse(startNodeInfo);
+        chooser.recurseRerank(startNodeInfo, false);
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
@@ -1139,13 +1183,14 @@ public class Hypergraph<Widget> {
           {
             Hyperedge edge = nodeInfo.edges.get(k);
             if(viterbi) 
-            {
-                if(score.updateMax_mult3(edge.weight, edge.dest.get(0).maxScore, edge.dest.get(1).maxScore))
+            {             
+                score.updateMax_mult3(edge.weight, edge.dest.get(0).maxScore, edge.dest.get(1).maxScore);
                 {
                     chosenIndex = k;
                 }
             }
-            else        score.incr_mult3(edge.weight, edge.dest.get(0).insideScore, edge.dest.get(1).insideScore);
+            else 
+                score.incr_mult3(edge.weight, edge.dest.get(0).insideScore, edge.dest.get(1).insideScore);
             nodeInfo.bestEdge = chosenIndex;
             //assert score.M != 0 : score + " " + edge.weight + " " + edge.dest1.insideScore + " " + edge.dest2.insideScore;
           }
@@ -1201,6 +1246,63 @@ public class Hypergraph<Widget> {
     }
   }
 
+//  private void computeLogMaxScores() {
+//    if(this.startNodeInfo.maxScore != null) return; // Already computed    
+//
+//    for(int i = topologicalOrdering.size()-1; i >= 0; i--) {
+//      NodeInfo nodeInfo = topologicalOrdering.get(i);
+//      BigDouble score = nodeInfo.maxScore = BigDouble.invalid();
+//      if(nodeInfo == endNodeInfo) { score.setToZero(); continue; }
+//          score.setToZero();
+//          int chosenIndex = -1;
+//          for(int k = 0; k < nodeInfo.edges.size(); k++)
+//          {
+//            Hyperedge edge = nodeInfo.edges.get(k);            
+//            score.updateMax_sum3(edge.weight, 
+//                                 edge.dest.get(0).maxScore, 
+//                                 edge.dest.get(1).maxScore);
+//            {
+//                chosenIndex = k;
+//            }            
+//            nodeInfo.bestEdge = chosenIndex;           
+//          }               
+//    } // for
+//    assert !startNodeInfo.maxScore.isZero() : "Max score = 0";    
+//  }
+  
+  private void computeLogMaxScores() {
+    if(this.startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY) return; // Already computed    
+    for(int i = topologicalOrdering.size()-1; i >= 0; i--) 
+    {
+        NodeInfo nodeInfo = topologicalOrdering.get(i);
+        if(nodeInfo == endNodeInfo) { nodeInfo.logMaxScore = 0; continue; }
+        double score = Double.NEGATIVE_INFINITY;
+        int chosenIndex = -1;
+        for(int k = 0; k < nodeInfo.edges.size(); k++)
+        {
+            Hyperedge edge = nodeInfo.edges.get(k);
+            double sum = edge.logWeight;
+            for(NodeInfo info : edge.dest)
+            {
+                sum += info.logMaxScore;
+            }
+            if(score < sum)
+            {
+                score = sum;
+                chosenIndex = k;
+            }          
+        } // for
+        nodeInfo.logMaxScore = score;
+        nodeInfo.bestEdge = chosenIndex;      
+    } // for
+    assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";    
+  }
+  
+  private double updateMaxSum3(double d0, double d1, double d2, double d3)
+  {
+      double sum = (d1 + d2 + d3);
+      return d0 < sum ? sum : d0;
+  }
   /**
    * Used for discriminative re-ranking.
    * Re-compute the Viterbi score for each hypernode. We assume that for each node
@@ -1374,7 +1476,7 @@ public class Hypergraph<Widget> {
     boolean setPosterior;
     double logWeight; // Likelihood of the weight of the hyperpath chosen
 
-      private void recurseKBest(Derivation derivation)
+    private void recurseKBest(Derivation derivation)
       {
           if(derivation.derArray == null) // choose terminal nodes
           {
@@ -1455,6 +1557,24 @@ public class Hypergraph<Widget> {
           }
           break;
       }
-    }    
+    }  
+    
+    private void recurseRerank(NodeInfo nodeInfo, boolean calculateLogVZ) {
+        if(nodeInfo == endNodeInfo) 
+            return;                
+        // Choose edge
+        int chosenIndex = nodeInfo.bestEdge;          
+        if(chosenIndex == -1)
+            throw Exceptions.bad("No best edge found!");
+        Hyperedge chosenEdge = nodeInfo.edges.get(chosenIndex);
+        if(choose) 
+            widget = (Widget)chosenEdge.info.choose(widget);          
+        if(calculateLogVZ)
+            logWeight += chosenEdge.logWeight;
+        for(NodeInfo node : chosenEdge.dest)
+        {
+            recurseRerank(node, calculateLogVZ);
+        }
+    }
   }
 }

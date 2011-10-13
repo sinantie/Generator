@@ -49,7 +49,7 @@ import java.util.HashMap;
  * difference from the Generative Model is the calculation of the weights in
  * the various edges, via getWeight() method.
  * <code>Params params</code> contain the perceptron weight vector w.
- * <br/>
+ * 
  * We allow for two different weight calculations: 
  * a) using the original generative baseline inferState
  * b) by computing w.f(e) at each edge:
@@ -61,7 +61,7 @@ import java.util.HashMap;
  * 
  * @author konstas
  */
-public class DiscriminativeInferState extends Event3InferState
+public class DiscriminativeInferStateOld extends Event3InferState
 {
     Graph graph;
     //public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
@@ -89,7 +89,7 @@ public class DiscriminativeInferState extends Event3InferState
     private HashMap<Feature, Double> features;
     WordNode startSymbol = new WordNode(-1, 0, -1, -1);
     
-    public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
+    public DiscriminativeInferStateOld(DiscriminativeEvent3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec);
@@ -98,7 +98,7 @@ public class DiscriminativeInferState extends Event3InferState
         this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);               
     }
 
-    public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
+    public DiscriminativeInferStateOld(DiscriminativeEvent3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel, Graph graph)
     {
         this(model, ex, params, counts, ispec, ngramModel);
@@ -115,11 +115,6 @@ public class DiscriminativeInferState extends Event3InferState
         this.calculateOracle = calculateOracle;
     }
 
-    public boolean isCalculateOracle()
-    {
-        return calculateOracle;
-    }
-    
     private void increaseCounts(Feature[] ar, double baseScore)
     {
         for(Feature f : ar)
@@ -228,9 +223,7 @@ public class DiscriminativeInferState extends Event3InferState
         this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
         {
             public double getWeight()
-            { 
-                return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking            
-            }
+            { return 1;}
             public Pair getWeightLM(int rank)
             {
                 if(rank > 0)
@@ -256,7 +249,7 @@ public class DiscriminativeInferState extends Event3InferState
         {
             public double getWeight()
             {
-                return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                return 1;
             }
             public void setPosterior(double prob)
             { }
@@ -284,11 +277,8 @@ public class DiscriminativeInferState extends Event3InferState
         StopWatchSet.end();
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);
-        if(!calculateOracle)
-        {
-            logVZ = result.logWeight;
-            updateStats();
-        }        
+        logVZ = result.logWeight;
+        updateStats();
     }
     
     @Override
@@ -691,7 +681,7 @@ public class DiscriminativeInferState extends Event3InferState
                                    genField(begin + 1, end, c, event, field),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
-                        return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                        return 1.0;
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -712,7 +702,7 @@ public class DiscriminativeInferState extends Event3InferState
                 hypergraph.addEdge(node, list, new Hypergraph.HyperedgeInfo<Widget>()
                 {
                     public double getWeight() {
-                        return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                        return 1.0;
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -769,8 +759,7 @@ public class DiscriminativeInferState extends Event3InferState
                (!opts.limitFieldLength ||
                j-i <= ex.events.get(event).getFields()[f].getMaxLength())))
             { // Limit field length
-//                int remember_f = indepFields() ? modelEventTypeParams.boundary_f : f;
-                int remember_f = f;
+                int remember_f = indepFields() ? modelEventTypeParams.boundary_f : f;
                 int new_efs = (f == modelEventTypeParams.none_f) ? efs :
                     modelEventTypeParams.efs_addAbsent(efs, f); // Now, allow f to be absent as we've already taken care of it
 
@@ -829,12 +818,25 @@ public class DiscriminativeInferState extends Event3InferState
                                        genFields(j, end, c, event, remember_f, new_efs),
                                        new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                         double baseScore; ProbVec weightProbVec;                   
-                        public double getWeight() {                            
-                            double baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter);
-                            baseScore = getBaselineScore(baseParam);
-                            weightProbVec = modelEventTypeParams.fieldChoices[f0];
-                            return calculateOracle ?
-                                    baseParam : getCount(weightProbVec, fIter) + baseScore;                            
+                        public double getWeight() {                                                                                    
+                            if (prevIndepFields()) // f0 == boundary_f under indepFields, so use that
+                            {                                
+                                double baseParam = get(baseEventTypeParams.
+                                        fieldChoices[baseEventTypeParams.boundary_f], fIter);
+                                baseScore = getBaselineScore(baseParam);
+                                weightProbVec = modelEventTypeParams.
+                                        fieldChoices[modelEventTypeParams.boundary_f];
+                                return calculateOracle ?
+                                        baseParam: getCount(weightProbVec, fIter) + baseScore;
+                            }
+                            else
+                            {
+                                double baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter);
+                                baseScore = getBaselineScore(baseParam);
+                                weightProbVec = modelEventTypeParams.fieldChoices[f0];
+                                return calculateOracle ?
+                                        baseParam : getCount(weightProbVec, fIter) + baseScore;
+                            }
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {                            
@@ -884,7 +886,7 @@ public class DiscriminativeInferState extends Event3InferState
                                    genNoneEventWords(i + 1, j, c),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
-                        return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                        return 1.0;
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -905,7 +907,7 @@ public class DiscriminativeInferState extends Event3InferState
                 hypergraph.addEdge(node, list, new Hypergraph.HyperedgeInfo<Widget>()
                 {
                     public double getWeight() {
-                        return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                        return 1.0;
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -969,11 +971,15 @@ public class DiscriminativeInferState extends Event3InferState
                 int index = modelCParams.boundary_t;
                 public double getWeight() {
                     double baseParam;
-                    weightProbVec = modelCParams.getEventTypeChoices()[index];                    
-                    baseParam = get(baseCParams.getEventTypeChoices()[t0], index);
+                    weightProbVec = modelCParams.getEventTypeChoices()[index];
+                    if (prevIndepEventTypes())
+                        baseParam = 1.0;
+                    else
+                        baseParam = get(baseCParams.getEventTypeChoices()[t0], index);
                     baseScore = getBaselineScore(baseParam);    
                     return calculateOracle ? baseParam :
-                            getCount(weightProbVec, index) + baseScore;                        
+                            getCount(weightProbVec, index) + baseScore;
+                        
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {                    
@@ -1010,8 +1016,13 @@ public class DiscriminativeInferState extends Event3InferState
         final TrackParams baseCParams = baseline.trackParams[c];
 
         if(i == j)
-        {                      
-            return genStopNode(i, t0, modelCParams, baseCParams);
+        {
+            if(indepEventTypes())
+                return hypergraph.endNode;
+            else
+            {                
+                return genStopNode(i, t0, modelCParams, baseCParams);
+            } // else
         } // if (i == j)
         TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
         // WARNING: allowNone/allowReal might not result in any valid nodes
@@ -1021,6 +1032,7 @@ public class DiscriminativeInferState extends Event3InferState
           if (allowNone && (!trueInfer || ex.getTrueWidget() == null ||
               ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
           {
+//              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
               final int remember_t = opts.conditionNoneEvent ? modelCParams.none_t : t0; // Condition on none_t or not
               Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
               hypergraph.addEdge(node,
@@ -1028,18 +1040,33 @@ public class DiscriminativeInferState extends Event3InferState
                   new Hypergraph.HyperedgeInfo<Widget>() {
                       double baseScore; ProbVec weightProbVec;
                       int index = modelCParams.boundary_t;
-                      public double getWeight() {                         
-                          double baseWeight = get(baseCParams.getEventTypeChoices()[t0], 
-                                 baseCParams.none_t);
-                          baseScore = getBaselineScore(baseWeight);
-                          weightProbVec = modelCParams.getEventTypeChoices()[t0];
-                          return calculateOracle ? 
-                                 baseWeight :
-                                  // pecreptron weight * 1 (omitted, since 
-                                 // it is equivalent to the count of the 
-                                 // alignment inferState rule)
-                                 getCount(weightProbVec, index) + baseScore;
-                         
+                      public double getWeight() {
+                          if(prevIndepEventTypes())
+                          {
+                              double baseParam = get(
+                                      baseCParams.getEventTypeChoices()[baseCParams.boundary_t], 
+                                      baseCParams.none_t);
+                              baseScore = getBaselineScore(baseParam);
+                              weightProbVec = modelCParams.getEventTypeChoices()[index];
+                              return calculateOracle ? 
+                                      baseParam :
+                                     // pecreptron weight * 1 (omitted, since 
+                                     // it is equivalent to the count of the 
+                                     // alignment inferState rule)
+                                     getCount(weightProbVec, index) +
+                                     // baseline weight * baseline logP
+                                      baseScore;
+                          }
+                          else
+                          {
+                              double baseWeight = get(baseCParams.getEventTypeChoices()[t0], 
+                                     baseCParams.none_t);
+                              baseScore = getBaselineScore(baseWeight);
+                              weightProbVec = modelCParams.getEventTypeChoices()[t0];
+                              return calculateOracle ? 
+                                     baseWeight :
+                                     getCount(weightProbVec, index) + baseScore;
+                          }
                       }
                       public void setPosterior(double prob) {}
                       public Widget choose(Widget widget) {
@@ -1062,8 +1089,7 @@ public class DiscriminativeInferState extends Event3InferState
                       (!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {
-//                  final int remember_t = (indepEventTypes()) ? modelCParams.boundary_t : eventTypeIndex;
-                  final int remember_t = eventTypeIndex;
+                  final int remember_t = (indepEventTypes()) ? modelCParams.boundary_t : eventTypeIndex;
                   final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
                   final EventTypeParams eventTypeParams = params.eventTypeParams[e.getEventTypeIndex()];
                   hypergraph.addEdge(node,
@@ -1073,13 +1099,27 @@ public class DiscriminativeInferState extends Event3InferState
                             new Hypergraph.HyperedgeInfo<Widget>() {
                       double baseScore; ProbVec weightProbVec;
                       public double getWeight()
-                      {                         
-                          double baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
-                                  (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
-                          baseScore = getBaselineScore(baseParam);
-                          weightProbVec = modelCParams.getEventTypeChoices()[t0];
-                          return calculateOracle ? baseParam : 
-                                  getCount(weightProbVec, eventTypeIndex) + baseScore;                         
+                      {
+                          if(prevIndepEventTypes())
+                          {
+                              double baseParam = get(baseCParams.getEventTypeChoices()[baseCParams.boundary_t],
+                                      eventTypeIndex) *
+                                      (1.0d/(double)ex.getEventTypeCounts()[eventTypeIndex]);
+                                      // remember_t = t under indepEventTypes                              
+                              baseScore = getBaselineScore(baseParam);
+                              weightProbVec = modelCParams.getEventTypeChoices()[modelCParams.boundary_t];
+                              return calculateOracle ? baseParam :
+                                      getCount(weightProbVec, eventTypeIndex) + baseScore;
+                          }
+                          else
+                          {
+                              double baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                      (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
+                              baseScore = getBaselineScore(baseParam);
+                              weightProbVec = modelCParams.getEventTypeChoices()[t0];
+                              return calculateOracle ? baseParam : 
+                                      getCount(weightProbVec, eventTypeIndex) + baseScore;
+                          }
                       }
                       public void setPosterior(double prob) {}
                       public Widget choose(Widget widget) {
