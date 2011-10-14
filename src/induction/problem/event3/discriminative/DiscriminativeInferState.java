@@ -86,7 +86,7 @@ public class DiscriminativeInferState extends Event3InferState
      * It has to be set first to the corresponding map (inferState under train, or oracle)
      * before doing the recursive call to extract D_1 (top derivation)
      */
-    private HashMap<Feature, Double> features;
+    protected HashMap<Feature, Double> features;
     WordNode startSymbol = new WordNode(-1, 0, -1, -1);
     
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
@@ -120,7 +120,7 @@ public class DiscriminativeInferState extends Event3InferState
         return calculateOracle;
     }
     
-    private void increaseCounts(Feature[] ar, double baseScore)
+    protected void increaseCounts(Feature[] ar, double baseScore)
     {
         for(Feature f : ar)
         {
@@ -188,6 +188,8 @@ public class DiscriminativeInferState extends Event3InferState
         int i = node.getI();
         if(node instanceof NumFieldValueNode)
         {
+            if (nums[i] == Constants.NaN)
+                return -1;
             NumFieldValueNode numNode = (NumFieldValueNode)node;
             int numValue = getValue(numNode.getEvent(), numNode.getField());
             if (numValue == nums[i])
@@ -297,7 +299,7 @@ public class DiscriminativeInferState extends Event3InferState
         // Do nothing, we don't use or update counts in this class
     }
     
-    private double getBaselineScore(double baseWeight)
+    protected double getBaselineScore(double baseWeight)
     {
         return getCount(((DiscriminativeParams)params).baselineWeight, 0) + getLogProb(baseWeight);
     }

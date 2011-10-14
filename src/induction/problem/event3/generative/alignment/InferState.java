@@ -507,7 +507,7 @@ public class InferState extends Event3InferState
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
                 }
-            });
+                });
                 // G_FIELD_GENERIC: generate based on event type
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
@@ -524,7 +524,7 @@ public class InferState extends Event3InferState
                     widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
                     return widget;
                 }
-            });
+                });
             } // else
         }
         return node;

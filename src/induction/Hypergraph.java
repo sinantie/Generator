@@ -1297,12 +1297,7 @@ public class Hypergraph<Widget> {
     } // for
     assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";    
   }
-  
-  private double updateMaxSum3(double d0, double d1, double d2, double d3)
-  {
-      double sum = (d1 + d2 + d3);
-      return d0 < sum ? sum : d0;
-  }
+    
   /**
    * Used for discriminative re-ranking.
    * Re-compute the Viterbi score for each hypernode. We assume that for each node
@@ -1330,10 +1325,15 @@ public class Hypergraph<Widget> {
       {
           chosenIndex = ((DiscriminativeInferState)inferState).
                   getOracleEdgeIndex((Node)nodeInfo.node);
-          Hyperedge edge = nodeInfo.edges.get(chosenIndex);
-          score.updateMax_mult3(
+          if(chosenIndex > -1)
+          {
+              Hyperedge edge = nodeInfo.edges.get(chosenIndex);
+              score.updateMax_mult3(
                     BigDouble.fromDouble(((HyperedgeInfo)edge.info).getWeight()),
                     edge.dest.get(0).maxScore, edge.dest.get(1).maxScore);
+          }
+          else
+              nodeInfo.maxScore = null;
           nodeInfo.bestEdge = chosenIndex;
       } // if
       else
@@ -1341,6 +1341,11 @@ public class Hypergraph<Widget> {
           for(int k = 0; k < nodeInfo.edges.size(); k++)
           {
             Hyperedge edge = nodeInfo.edges.get(k);
+            if(edge.dest.get(0).maxScore == null || edge.dest.get(1).maxScore == null)
+            {
+                int a = 0;
+                continue;
+            }
             // call getWeight on each edge again, in order to force the use
             // of the baseline inferState's parameters (it will work only if we have 
             // already dictated the inferState to calculate the oracle scores)
