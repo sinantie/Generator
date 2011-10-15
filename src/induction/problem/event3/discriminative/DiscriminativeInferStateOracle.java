@@ -16,18 +16,14 @@ import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.ProbVec;
 import induction.problem.event3.Constants;
-import induction.problem.event3.Event;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
 import induction.problem.event3.nodes.CatFieldValueNode;
-import induction.problem.event3.nodes.Node;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
-import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * This class describes a hypregraph representation of the problem. The main
@@ -73,66 +69,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
         }
         labels = ex.getLabels();        
-    }
-        
-    protected int[] newMatrixOne()
-    {
-        int[] out = new int[N];        
-        Arrays.fill(out, -1);
-        return out;
-    }   
-
-    @Override
-    protected Widget newWidget()
-    {       
-        HashMap<Integer, Integer> eventTypeIndices =
-                            new HashMap<Integer, Integer>(ex.events.size());
-        for(Event e : ex.events.values())
-        {
-            eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
-        }
-        return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
-                               newMatrixOne(),
-                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
-    }    
-
-    /**
-     * Gets a node emitting a terminal directly from the hypergraph viterbi search
-     * and returns the corresponding position of the oracle in its edges' list. 
-     * It relies on the fact that terminal hyperedges are added in the same order 
-     * (from the word vocabulary or according to the method they are produced in the case of numbers)
-     * @param node
-     * @return 
-     */
-    public int getOracleEdgeIndex(Node node)
-    {
-        int i = node.getI();
-        if(node instanceof NumFieldValueNode)
-        {
-            if (nums[i] == Constants.NaN)
-                return -1;
-            NumFieldValueNode numNode = (NumFieldValueNode)node;
-            int numValue = getValue(numNode.getEvent(), numNode.getField());
-            if (numValue == nums[i])
-                return 0;
-            if (roundUp(numValue) == nums[i])
-                return 1;
-            if (roundDown(numValue) == nums[i])
-                return 2;
-            if (roundClose(numValue) == nums[i])
-                return 3;
-            int noise = nums[i] - numValue;
-            if (noise > 0)
-                return 4;
-            else
-                return 5;
-        }
-        else if(node instanceof StopNode || node == startSymbol)
-        {
-            return 0;
-        }
-        return words[i];
-    }       
+    }                    
 
     @Override
     public void doInference()
@@ -368,109 +305,70 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
         final EventTypeParams modelEventTypeParams = params.eventTypeParams[eventTypeIndex];
         final EventTypeParams baseEventTypeParams = baseline.eventTypeParams[eventTypeIndex];
-
+        final int w = words[i];
         if(hypergraph.addSumNode(node))
         {
             if(field == modelEventTypeParams.none_f)
-            {
-                // add hyperedge for each word. COSTLY!
-                for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
-                { 
-                    final int w = wIter;
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseScore; ProbVec weightProbVec;
-                        public double getWeight() {
-                            double baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
-                            baseScore = getBaselineScore(baseParam);
-                            weightProbVec = modelEventTypeParams.noneFieldEmissions;
-                            return calculateOracle ?
-                                    baseParam : getCount(weightProbVec, w) + baseScore;
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget)
-                        {                            
-                            return chooseLM(widget, w);
-                        }
-                        public Pair getWeightLM(int rank) // used for k-best
-                        {
-                             return getAtRank(modelEventTypeParams.noneFieldEmissions, rank);
-                        }
-                        public GenWidget chooseLM(GenWidget widget, int word)
-                        {
-                            widget.getText()[i] = word;
-                            Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                            increaseCounts(featuresArray, baseScore);
-                            return widget;
-                        }
-                    });
-                } // for
+            {                
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
+                    double baseScore;
+                    public double getWeight() {
+                        double baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
+                        baseScore = getBaselineScore(baseParam);
+                        return baseParam;
+                    }
+                    public void setPosterior(double prob) { }
+                    public Widget choose(Widget widget)
+                    {                            
+                        Feature[] featuresArray = {new Feature(modelEventTypeParams.noneFieldEmissions, w)};
+                        increaseCounts(featuresArray, baseScore);
+                        return widget;
+                    }                    
+                });
             } // if
             else
             {
                 // G_FIELD_VALUE: generate based on field value
                 hypergraph.addEdge(node, genFieldValue(i, c, event, field),
                         new Hypergraph.HyperedgeInfo<Widget>() {
-                double baseScore; ProbVec weightProbVec;
+                double baseScore;
                 public double getWeight() {
                     double baseParam = get(baseEventTypeParams.genChoices[field], 
                             Parameters.G_FIELD_VALUE);
-                    baseScore = getBaselineScore(baseParam);
-                    weightProbVec = modelEventTypeParams.genChoices[field];
-                    return calculateOracle ?
-                            baseParam :
-                            getCount(weightProbVec, Parameters.G_FIELD_VALUE) +
-                            baseScore;  
+                    baseScore = getBaselineScore(baseParam);                    
+                    return baseParam;  
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
-                    Feature[] featuresArray = {new Feature(weightProbVec, 
-                            Parameters.G_FIELD_VALUE)};
+                    Feature[] featuresArray = {
+                        new Feature(modelEventTypeParams.genChoices[field], 
+                        Parameters.G_FIELD_VALUE)};
                     increaseCounts(featuresArray, baseScore);
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
                 }
                 });
-                // G_FIELD_GENERIC: generate based on event type               
-                // add hyperedge for each word. COSTLY!
-                for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
-                {
-                    final int w = wIter;
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseScore;
-                        public double getWeight() {
-                            double baseParam = get(baseEventTypeParams.genChoices[field], 
-                                    Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);
-                            baseScore = getBaselineScore(baseParam);
-                            return calculateOracle ?
-                                    baseParam :
-                                    getCount(modelEventTypeParams.genChoices[field], 
-                                    Parameters.G_FIELD_GENERIC) + getCount(params.genericEmissions, w) +
-                                    baseScore;
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget) {                            
-                            return chooseLM(widget, w);
-                        }
-                        public Pair getWeightLM(int rank) // used for k-best
-                        {
-                            Pair p =  getAtRank(baseline.genericEmissions, rank);
-                            p.value *= get(baseEventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-                            return p;
-                        }
-                        public GenWidget chooseLM(GenWidget widget, int word)
-                        {
-                            widget.getText()[i] = word;
-                            widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
-                            Feature[] featuresArray = {
-                                new Feature(modelEventTypeParams.genChoices[field], 
-                                        Parameters.G_FIELD_GENERIC),
-                                new Feature(params.genericEmissions, w)                                
-                            };
-                            increaseCounts(featuresArray, baseScore);
-                            return widget;
-                        }
-                        });
-                } // for
+                // G_FIELD_GENERIC: generate based on event type
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
+                    double baseScore;
+                    public double getWeight() {
+                        double baseParam = get(baseEventTypeParams.genChoices[field], 
+                                Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);
+                        baseScore = getBaselineScore(baseParam);
+                        return baseParam;
+                    }
+                    public void setPosterior(double prob) { }
+                    public Widget choose(Widget widget) {                            
+                        widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
+                        Feature[] featuresArray = {
+                            new Feature(modelEventTypeParams.genChoices[field], 
+                                    Parameters.G_FIELD_GENERIC),
+                            new Feature(params.genericEmissions, w)                                
+                        };
+                        increaseCounts(featuresArray, baseScore);
+                        return widget;
+                    }                    
+                    });
             } // else
         }
         return node;

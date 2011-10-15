@@ -10,6 +10,7 @@ import fig.basic.LogInfo;
 import fig.exec.Execution;
 import fig.record.Record;
 import induction.LearnOptions;
+import induction.MyCallable;
 import induction.Options;
 import induction.Options.NgramWrapper;
 import induction.Utils;
@@ -239,45 +240,44 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {
-                // create an inference state model
-                DiscriminativeInferState inferState = (DiscriminativeInferState) createInferState(
-                        examples.get(i), 1, null, 1, lopts, iter);
-                // create hypergraph - precompute local features on the fly
-                inferState.createHypergraph();                                
+//                // create an inference state model
+//                DiscriminativeInferState inferState = (DiscriminativeInferState) createInferState(
+//                        examples.get(i), 1, null, 1, lopts, iter);
+//                // create hypergraph - precompute local features on the fly
+//                inferState.createHypergraph();                                
+//                // perform reranking on the hypergraph. During the recursive call
+//                // in order to extract D_1 (top derivation) update the modelFeatures
+//                // map, i.e. compute f(y^). We will need this for the perceptron updates
+//                inferState.setFeatures(modelFeatures);
+//                inferState.doInference();
+//                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
+//                inferState.setFeatures(oracleFeatures);
+//                inferState.setCalculateOracle(true);
+//                inferState.doInference();
+//                // update statistics
+//                synchronized(complexity)
+//                {
+//                    complexity.add(inferState.getComplexity());
+//                }                
+//                synchronized(trainPerformance)
+//                {
+//                    trainPerformance.add(inferState.stats());
+//                }
+                
+                Collection<ExampleProcessor> list = new ArrayList(2);
                 // perform reranking on the hypergraph. During the recursive call
                 // in order to extract D_1 (top derivation) update the modelFeatures
                 // map, i.e. compute f(y^). We will need this for the perceptron updates
-                inferState.setFeatures(modelFeatures);
-                inferState.doInference();
+                list.add(new ExampleProcessor(
+                        examples.get(i), modelFeatures, false, lopts, iter, complexity));
                 // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
-                inferState.setFeatures(oracleFeatures);
-                inferState.setCalculateOracle(true);
-                inferState.doInference();
-                // update statistics
-                synchronized(complexity)
-                {
-                    complexity.add(inferState.getComplexity());
-                }
+                list.add(new ExampleProcessor(
+                        examples.get(i), oracleFeatures, true, lopts, iter, complexity));
+                Utils.parallelForeach(opts.numThreads, list);
+                list.clear();
                 numProcessedExamples++;
                 // update perceptron if necessary (batch update)
                 updateOptimizer(false, optimizer);
-                synchronized(trainPerformance)
-                {
-                    trainPerformance.add(inferState.stats());
-                }
-                //TODO processExample
-                                
-//                Params counts = newParams();
-//                Collection<BatchEM> list = new ArrayList(examples.size());
-//                // Batch Update
-//                for(int j = 0; j < lopts.batchUpdateSize; j++)
-//                {
-//                    list.add(new BatchEM(i, examples.get(i), counts, lopts.initTemperature,
-//                            lopts, iter, complexity));
-//                }
-//                Utils.parallelForeach(opts.numThreads, list);
-//                LogInfo.end_track();
-//                list.clear();
             } // for (all examples)
             // purge any unprocessed examples
             updateOptimizer(true, optimizer);
@@ -299,7 +299,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             if (Execution.shouldBail())
                 lopts.numIters = iter;
         } // for (all iterations)       
-        // use average model weights instead of sum (reduces overfitting according to Collins, 2002)
+        // use average model weights instead of sum 
+        // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
         if(!opts.dontOutputParams)
@@ -421,6 +422,21 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return modelFeatures;
     }
     
+    protected AInferState createInferState(Example ex, double stepSize,
+            LearnOptions lopts, int iter, boolean calculateOracle)
+    {
+        InferSpec ispec = new InferSpec(1, !lopts.hardUpdate, true, lopts.hardUpdate,
+                      false, lopts.mixParamsCounts, lopts.useVarUpdates,
+                      stepSize, iter);
+        if(calculateOracle)
+            return new DiscriminativeInferStateOracle(
+                    this, ex, (Params)params, null, ispec, ngramModel);
+        else 
+            return new DiscriminativeInferState(
+                    this, ex, (Params)params, null, ispec, ngramModel);
+
+    }
+    
     @Override
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                        InferSpec ispec)
@@ -441,4 +457,49 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);        
     }
 
+    protected class ExampleProcessor extends MyCallable
+    {
+        private AExample ex;
+        private int iter;
+        private HashMap<Feature, Double> features;
+        private LearnOptions lopts;
+        private final FullStatFig complexity;
+        private final boolean calculateOracle;
+        
+        public ExampleProcessor(AExample ex, HashMap<Feature, Double> features,
+                                boolean calculateOracle, LearnOptions lopts, 
+                                int iter, FullStatFig complexity)
+        {            
+            this.ex = ex;
+            this.features = features;
+            this.lopts = lopts;
+            this.iter = iter;
+            this.complexity = complexity;
+            this.calculateOracle = calculateOracle;
+        }
+        @Override
+        public Object call() throws Exception
+        {
+            // create an inference state model
+            DiscriminativeInferState inferState = 
+                    (DiscriminativeInferState) createInferState(
+                    (Example)ex, 1, lopts, iter, calculateOracle);            
+            // create hypergraph - precompute local features on the fly
+            inferState.createHypergraph();                                            
+            inferState.setFeatures(features);
+            inferState.setCalculateOracle(calculateOracle);
+            inferState.doInference();
+            // update statistics
+            synchronized(complexity)
+            {
+                complexity.add(inferState.getComplexity());
+            }
+            if(!calculateOracle)
+                synchronized(trainPerformance)
+                {
+                    trainPerformance.add(inferState.stats());
+                }
+            return null;
+        }
+    }
 }
