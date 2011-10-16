@@ -42,7 +42,7 @@ public class DiscriminativeTrainWeatherTest
                     + "-inputFileExt events -dontOutputParams -generativeModelParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -allowNoneEvent "
+                    + "-disallowConsecutiveRepeatFields -dontCrossPunctuation -allowNoneEvent "
 //                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "
                  
                     + "-kBest 20 "
