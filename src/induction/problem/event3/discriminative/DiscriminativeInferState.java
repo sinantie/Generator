@@ -129,7 +129,7 @@ public class DiscriminativeInferState extends Event3InferState
         increaseCount(baselineFeature, baseScore);
     }
     
-    private void increaseCount(Feature feat, double increment)
+    protected void increaseCount(Feature feat, double increment)
     {
         Double oldCount = features.get(feat);
         if(oldCount != null)
@@ -1121,39 +1121,51 @@ public class DiscriminativeInferState extends Event3InferState
             EventsNode node = new EventsNode(i, t0);
             if(hypergraph.addSumNode(node))
             {
-                if (oneEventPerExample())
-                    selectEnd(N, node, i, t0);
-                else if (newEventTypeFieldPerWord())
-                    selectEnd(i+1, node, i, t0);
-                else if (opts.onlyBreakOnPunctuation &&
-                         opts.dontCrossPunctuation) // Break at first punctuation
+                if(calculateOracle)
                 {
-                    selectEnd(Utils.find(i+1, N, ex.getIsPunctuationArray()), node, i, t0);
-                }
-                else if (opts.onlyBreakOnPunctuation) // Break at punctuation (but can cross)
-                {
-                    for(int j = i+1; j < end(i, N)+1; j++)
+                    if (oneEventPerExample())
+                        selectEnd(N, node, i, t0);
+                    else if (newEventTypeFieldPerWord())
+                        selectEnd(i+1, node, i, t0);
+                    else if (opts.onlyBreakOnPunctuation &&
+                             opts.dontCrossPunctuation) // Break at first punctuation
                     {
-                        if(j == N || ex.getIsPunctuationArray()[j-1])
+                        selectEnd(Utils.find(i+1, N, 
+                                ex.getIsPunctuationArray()), node, i, t0);
+                    }
+                    else if (opts.onlyBreakOnPunctuation) // Break at punctuation (but can cross)
+                    {
+                        for(int j = i+1; j < end(i, N)+1; j++)
                         {
-                            selectEnd(j, node, i, t0);
+                            if(j == N || ex.getIsPunctuationArray()[j-1])
+                            {
+                                selectEnd(j, node, i, t0);
+                            }
                         }
                     }
-                }
-                else if (opts.dontCrossPunctuation) // Go up until the first punctuation
-                {
-                    for(int k = i+1; k < Utils.find(i+1, N, ex.getIsPunctuationArray())+1; k++)
+                    else if (opts.dontCrossPunctuation) // Go up until the first punctuation
                     {
-                        selectEnd(k, node, i, t0);
+                        for(int k = i+1; k < Utils.find(i+1, N, 
+                                ex.getIsPunctuationArray())+1; k++)
+                        {
+                            selectEnd(k, node, i, t0);
+                        }
                     }
-                }
+                    else // Allow everything
+                    {
+                        for(int k = i+1; k < end(i, N)+1; k++)
+                        {
+                            selectEnd(k, node, i, t0);
+                        }
+                    }
+                } // if
                 else // Allow everything
                 {
                     for(int k = i+1; k < end(i, N)+1; k++)
                     {
                         selectEnd(k, node, i, t0);
                     }
-                }
+                }                               
                 hypergraph.assertNonEmpty(node);
             }
             return node;

@@ -26,6 +26,7 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
+import induction.problem.event3.Widget;
 import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
@@ -79,26 +80,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         {
             Utils.log("Loading " + opts.stagedParamsFile);
             ObjectInputStream ois = new ObjectInputStream(
-                    new FileInputStream(opts.stagedParamsFile));
-            wordIndexer = ((Indexer<String>) ois.readObject());
-            labelIndexer = ((Indexer<String>) ois.readObject());
-            eventTypes = (EventType[]) ois.readObject();
-            eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
-            // fill in eventTypesNameIndexer
-            fieldsMap = new HashMap<Integer, HashMap<String, Integer>>(eventTypes.length);
-            for(EventType e: eventTypes)
-            {
-                eventTypeNameIndexer.add(e.getName());
-                HashMap<String, Integer> fields = new HashMap<String, Integer>();
-                int i = 0;
-                for(Field f : e.getFields())
-                {
-                    fields.put(f.getName(), i++);
-                }
-                fields.put("none_f", i++);
-                fieldsMap.put(e.getEventTypeIndex(), fields);
-            }
-
+                    new FileInputStream(opts.stagedParamsFile));            
             params = newParams();
             params.setVecs((Map<String, ProbVec>) ois.readObject());
             ois.close();
@@ -161,10 +143,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         try
         {
             ObjectOutputStream oos = new ObjectOutputStream(
-                    new FileOutputStream(Execution.getFile(name + ".params.obj")));
-            oos.writeObject(wordIndexer);
-            oos.writeObject(labelIndexer);
-            oos.writeObject(eventTypes);
+                    new FileOutputStream(Execution.getFile(name + 
+                    "discriminative.params.obj")));
             oos.writeObject(params.getVecs());
             oos.close();
         }
@@ -198,8 +178,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         switch(opts.modelType)
         {
             case discriminativeTrain: return new DiscriminativePerformance();
-            default: case generate : return new GenerationPerformance(this);            
-//            default : return new InductionPerformance(this);
+            default: case generate : return new GenerationPerformance(this);
         }        
     }
 
@@ -275,6 +254,22 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                         examples.get(i), oracleFeatures, true, lopts, iter, complexity));
                 Utils.parallelForeach(opts.numThreads, list);
                 list.clear();
+//                try{
+//                    ExampleProcessor model = new ExampleProcessor(
+//                            examples.get(i), modelFeatures, false, lopts, iter, complexity);
+//                    model.call();
+//                    model = null;
+                
+//                    ExampleProcessor oracle = new ExampleProcessor(
+//                            examples.get(i), oracleFeatures, true, lopts, iter, complexity);
+//                    oracle.call();
+//                    oracle = null;
+//                }                
+//                catch(Exception e){
+//                    e.printStackTrace();
+//                    LogInfo.error(e);
+//                }
+                
                 numProcessedExamples++;
                 // update perceptron if necessary (batch update)
                 updateOptimizer(false, optimizer);
@@ -332,8 +327,6 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public void generate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel; // HACK
-//        saveParams("stage1");
-//        System.exit(1);
         if(!opts.fullPredRandomBaseline)
         {
             Utils.begin_track("Loading Language Model: " + name);
@@ -345,8 +338,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
             LogInfo.end_track();
         }
-        FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)
-        double temperature = lopts.initTemperature;
+        // Complexity inference (number of hypergraph nodes)
+        FullStatFig complexity = new FullStatFig();
         testPerformance = newPerformance();       
         try
         {
@@ -365,14 +358,19 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             Utils.begin_track("Error opening file(s) for writing. No output will be written!");
             LogInfo.end_track();
         }                
-        // E-step
-        Utils.begin_track("Generation-step " + name);
-        AParams counts = newParams();
-        Collection<BatchEM> list = new ArrayList(examples.size());
+        Utils.begin_track("Generation-step " + name);        
+        Collection<ExampleProcessor> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
-            list.add(new BatchEM(i, examples.get(i), counts, temperature,
-                    lopts, 0, complexity));                
+            list.add(new ExampleProcessor(
+                    examples.get(i), modelFeatures, false, lopts, 0, complexity));
+//            try{
+//            ExampleProcessor model = new ExampleProcessor(
+//                    examples.get(i), modelFeatures, false, lopts, 0, complexity);
+//            model.call();
+//            model = null;
+//            }
+//            catch(Exception e){}
         }
         Utils.parallelForeach(opts.numThreads, list);
         LogInfo.end_track();
@@ -398,7 +396,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     /**
      * helper method for testing the discriminative learning scheme. 
      * Simulates learn(...) method from the DiscriminativeEvent3Model class
-     * for a number of examples without the thread mechanism.
+     * for a number of examples.
      * @return the average Viterbi log probability
      */
     public double testDiscriminativeLearn(String name, LearnOptions lopts)
@@ -407,6 +405,31 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return trainPerformance.getAccuracy();
     }
 
+    /**
+     * helper method for testing the generation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the generated SGML text output (contains results as well)
+     */
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();        
+        testPerformance = newPerformance();
+        AExample ex = examples.get(0);
+        Widget bestWidget = null;
+        try{
+            ExampleProcessor model = new ExampleProcessor(
+                    ex, modelFeatures, false, lopts, 0, complexity);
+            model.call();
+            model = null;
+            bestWidget = model.bestWidget;
+        }
+        catch(Exception e){}        
+        System.out.println(widgetToFullString(ex, bestWidget));
+        return widgetToSGMLOutput(ex, bestWidget);
+    }
+    
     public Params getBaselineModelParams()
     {
         return baselineModelParams;
@@ -465,6 +488,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         private LearnOptions lopts;
         private final FullStatFig complexity;
         private final boolean calculateOracle;
+        private Widget bestWidget;
         
         public ExampleProcessor(AExample ex, HashMap<Feature, Double> features,
                                 boolean calculateOracle, LearnOptions lopts, 
@@ -485,20 +509,36 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     (DiscriminativeInferState) createInferState(
                     (Example)ex, 1, lopts, iter, calculateOracle);            
             // create hypergraph - precompute local features on the fly
-            inferState.createHypergraph();                                            
-            inferState.setFeatures(features);
             inferState.setCalculateOracle(calculateOracle);
+            inferState.createHypergraph();                                            
+            inferState.setFeatures(features);            
             inferState.doInference();
             // update statistics
             synchronized(complexity)
             {
                 complexity.add(inferState.getComplexity());
             }
-            if(!calculateOracle)
+            // process results
+            if(opts.modelType == Options.ModelType.discriminativeTrain && !calculateOracle)
                 synchronized(trainPerformance)
                 {
                     trainPerformance.add(inferState.stats());
                 }
+            if(opts.modelType == Options.ModelType.generate)
+                synchronized(testPerformance)
+                {
+                    testPerformance.add(inferState.stats());
+                    testPerformance.add(ex, inferState.bestWidget);
+                    bestWidget = inferState.bestWidget;
+                    if(testPredOut != null)
+                    {
+                        testPredOut.println(widgetToSGMLOutput(ex, inferState.bestWidget));                        
+                    }
+                    if(testFullPredOut != null)
+                    {
+                        testFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
+                    }
+            }
             return null;
         }
     }

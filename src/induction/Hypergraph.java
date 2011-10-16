@@ -748,7 +748,9 @@ public class Hypergraph<Widget> {
   
   public HyperpathResult<Widget> oracleOneBestViterbi(Widget widget, Random random)
   {
-        computeOracleMaxScores(); // viterbi
+        computeTopologicalOrdering();
+//        computeOracleMaxScores(); // viterbi
+        computeInsideMaxScores(true);
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
