@@ -39,8 +39,9 @@ public class DiscriminativeTrainWeatherTest
     {
          String args = "-modelType discriminativeTrain -inputLists test/testWeatherGovEvents "
                     + "-Options.stage1.numIters 15 "
-                    + "-inputFileExt events -dontOutputParams -generativeModelParamsFile "
-                    + "results/output/weatherGov/alignments/"
+                    + "-inputFileExt events "
+                    + "-dontOutputParams "            
+                    + "-generativeModelParamsFile results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -dontCrossPunctuation -allowNoneEvent "
 //                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "
