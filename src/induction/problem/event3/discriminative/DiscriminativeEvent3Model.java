@@ -214,11 +214,21 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             case stepwise : batchSize = lopts.miniBatchSize; cooling = true; break;    
             default: case incremental: batchSize = 1;
         }
+        // percy's cooling
         GradientBasedOptimizer optimizer = new DefaultPerceptron(
                 perceptronSumModel, perceptronAverageModel, 
                 examples.size(), 
                 batchSize,
-                lopts.convergePass, lopts.initTemperature);
+                lopts.convergePass, 
+                lopts.stepSizeReductionPower,
+                lopts.initTemperature);
+        //zli's cooling (set initTemperature to 0.1)
+//        GradientBasedOptimizer optimizer = new DefaultPerceptron(
+//                perceptronSumModel, perceptronAverageModel, 
+//                examples.size(), 
+//                batchSize,
+//                lopts.convergePass, 
+//                lopts.initTemperature);
         // we need the cooling scheduling in case we do stepwise updating
         if(!cooling)
             optimizer.setNoCooling();

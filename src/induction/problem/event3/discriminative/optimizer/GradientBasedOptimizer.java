@@ -53,24 +53,32 @@ public abstract class GradientBasedOptimizer
      */
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize)
     {
-        this(trainSize, batchUpdateSize, 1, 0.1, 1.0, true);
+        this(trainSize, batchUpdateSize, 1, 0.1, 1.0, trainSize * 1 / batchUpdateSize, true);
     }
     
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize, int convergePass, 
                                   double initGain)
     {
-        this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, true);
+        this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, 
+             trainSize * convergePass * 1.0 / batchUpdateSize, true);
+    }
+    
+    public GradientBasedOptimizer(int trainSize, int batchUpdateSize, int convergePass, double coolingSchedule,
+                                  double initGain)
+    {
+        this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, coolingSchedule, true);
     }
 
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize, 
                                   int convergePass, double initGain, 
-                                  double sigma, boolean isMinimizeScore)
+                                  double sigma, double coolingSchedule, 
+                                  boolean isMinimizeScore)
     {
         TRAIN_SIZE = trainSize;
         BATCH_UPDATE_SIZE = batchUpdateSize;
         CONVERGE_PASS = convergePass;
         INITIAL_GAIN = initGain;
-        COOLING_SCHEDULE_T = TRAIN_SIZE * CONVERGE_PASS * 1.0 / BATCH_UPDATE_SIZE;
+        COOLING_SCHEDULE_T = coolingSchedule;
 
         SIGMA = sigma;
         REG_CONSTANT_RATIO = BATCH_UPDATE_SIZE * 1.0 / (TRAIN_SIZE * SIGMA * SIGMA);
@@ -158,7 +166,8 @@ public abstract class GradientBasedOptimizer
         }
         else
         {
-            return INITIAL_GAIN * COOLING_SCHEDULE_T / (COOLING_SCHEDULE_T + iterNumber);
+//            return INITIAL_GAIN * COOLING_SCHEDULE_T / (COOLING_SCHEDULE_T + iterNumber);
+            return 1.0 / Math.pow(iterNumber + 2, COOLING_SCHEDULE_T);
         }
     }
 

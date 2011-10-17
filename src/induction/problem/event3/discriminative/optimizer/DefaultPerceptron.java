@@ -40,9 +40,25 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     
     public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
                              HashMap<Feature, Double[]> averageModel, int trainSize, 
-                             int batchUpdateSize, int convergePass, double initGain)
+                             int batchUpdateSize, int convergePass, 
+                             double initGain)
     {
         super(trainSize, batchUpdateSize, convergePass, initGain);
+        globalTableSumModel = sumModel;
+        globalTableAverageModel = averageModel;
+        if (globalTableSumModel == null || globalTableAverageModel == null)
+        {
+            LogInfo.error("model table is null");
+            System.exit(0);
+        }
+    }
+    
+    public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
+                             HashMap<Feature, Double[]> averageModel, int trainSize, 
+                             int batchUpdateSize, int convergePass, double coolingSchedule, 
+                             double initGain)
+    {
+        super(trainSize, batchUpdateSize, convergePass, coolingSchedule, initGain);
         globalTableSumModel = sumModel;
         globalTableAverageModel = averageModel;
         if (globalTableSumModel == null || globalTableAverageModel == null)
@@ -54,9 +70,9 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
                              HashMap<Feature, Double[]> averageModel, int trainSize, 
                              int batchUpdateSize, int convergePass, double initGain, 
-                             double sigma, boolean isMinimizeScore)
+                             double sigma, double coolingSchedule, boolean isMinimizeScore)
     {
-        super(trainSize, batchUpdateSize, convergePass, initGain, sigma, isMinimizeScore);
+        super(trainSize, batchUpdateSize, convergePass, initGain, sigma, coolingSchedule, isMinimizeScore);
         globalTableSumModel = sumModel;
         globalTableAverageModel = averageModel;
         if (globalTableSumModel == null || globalTableAverageModel == null)

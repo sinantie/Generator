@@ -18,7 +18,8 @@ public class DefaultCRF extends GradientBasedOptimizer {
 	
 	
 	public DefaultCRF(HashMap<Feature, Double> model, int train_size, int batch_update_size, int converge_pass, double init_gain, double sigma, boolean is_minimize_score){
-		super(train_size, batch_update_size, converge_pass, init_gain,  sigma, is_minimize_score);
+		super(train_size, batch_update_size, converge_pass, init_gain,  sigma, 
+                        train_size * converge_pass * 1.0 / batch_update_size, is_minimize_score);
 		modelTbl = model;
 		if(modelTbl==null || modelTbl.size()<=0){System.out.println("model table is null or empty"); System.exit(0);}	
 	}		
