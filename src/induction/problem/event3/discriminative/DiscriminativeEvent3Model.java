@@ -144,7 +144,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         {
             ObjectOutputStream oos = new ObjectOutputStream(
                     new FileOutputStream(Execution.getFile(name + 
-                    "discriminative.params.obj")));
+                    ".discriminative.params.obj")));
             oos.writeObject(params.getVecs());
             oos.close();
         }
@@ -205,10 +205,23 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // initialise model
         HashMap<Feature, Double> perceptronSumModel = new HashMap();
         HashMap<Feature, Double[]> perceptronAverageModel = new HashMap();
+        
+        int batchSize;
+        boolean cooling = false;
+        switch(lopts.learningScheme)
+        {            
+            case batch : batchSize = examples.size(); break;    
+            case stepwise : batchSize = lopts.miniBatchSize; cooling = true; break;    
+            default: case incremental: batchSize = 1;
+        }
         GradientBasedOptimizer optimizer = new DefaultPerceptron(
                 perceptronSumModel, perceptronAverageModel, 
-                examples.size(), lopts.batchUpdateSize);
-        
+                examples.size(), 
+                batchSize,
+                lopts.convergePass, lopts.initTemperature);
+        // we need the cooling scheduling in case we do stepwise updating
+        if(!cooling)
+            optimizer.setNoCooling();
         for(int iter = 0; iter < lopts.numIters; iter++) // for t = 1...T do
         {
             FullStatFig complexity = new FullStatFig(); // Complexity inference
@@ -315,7 +328,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 //            reset_baseline_feat();            
             oracleFeatures.clear();
             modelFeatures.clear();
-            numProcessedExamples = 0;						
+            numProcessedExamples = 0;            
+            synchronized(trainPerformance)
+            {
+                ((DiscriminativePerformance)trainPerformance).add();
+            }
         }
     }
     

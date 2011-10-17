@@ -26,7 +26,10 @@ public class DiscriminativeParams extends Params
     @Override
     public String output()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String out = "";
+        out += forEachProb(baselineWeight, getLabels(1, "baseline", null));
+        out += super.output();
+        return out;
     }
     
 }

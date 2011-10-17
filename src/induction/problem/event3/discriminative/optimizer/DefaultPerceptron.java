@@ -1,6 +1,7 @@
 package induction.problem.event3.discriminative.optimizer;
 
 import fig.basic.LogInfo;
+import induction.Utils;
 import induction.problem.event3.discriminative.Feature;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,6 +37,20 @@ public class DefaultPerceptron extends GradientBasedOptimizer
             System.exit(0);
         }
     }
+    
+    public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
+                             HashMap<Feature, Double[]> averageModel, int trainSize, 
+                             int batchUpdateSize, int convergePass, double initGain)
+    {
+        super(trainSize, batchUpdateSize, convergePass, initGain);
+        globalTableSumModel = sumModel;
+        globalTableAverageModel = averageModel;
+        if (globalTableSumModel == null || globalTableAverageModel == null)
+        {
+            LogInfo.error("model table is null");
+            System.exit(0);
+        }
+    }
     public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
                              HashMap<Feature, Double[]> averageModel, int trainSize, 
                              int batchUpdateSize, int convergePass, double initGain, 
@@ -60,11 +75,11 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     public void updateModel(HashMap<Feature, Double> oracleFeatures, HashMap<Feature, Double> modelFeatures)
     {
         numModelChanges++;
-        LogInfo.logs("Update the perceptron model " + numModelChanges);
+        Utils.logs("Update the perceptron model " + numModelChanges);
         HashMap<Feature, Double> gradient = getGradient(oracleFeatures, modelFeatures);
         //Support.print_hash_tbl(gradient);
         double updateGain = computeGain(numModelChanges);
-        LogInfo.logs("Update gain is " + updateGain + "; gradient table size " + gradient.size());
+        Utils.logs("Update gain is " + updateGain + "; gradient table size " + gradient.size());
         updateSumModel(globalTableSumModel, gradient, updateGain);
         updateAverageModel(globalTableSumModel, globalTableAverageModel, gradient, numModelChanges);
     }
@@ -134,7 +149,7 @@ public class DefaultPerceptron extends GradientBasedOptimizer
      */
     public void forceUpdateAverageModel()
     {
-        LogInfo.logs("force average update is called");
+        Utils.logs("force average update is called");
         updateAverageModel(globalTableSumModel, globalTableAverageModel, 
                            globalTableSumModel, numModelChanges); // update all features
 

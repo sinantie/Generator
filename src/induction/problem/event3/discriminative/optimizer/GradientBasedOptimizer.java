@@ -1,6 +1,7 @@
 package induction.problem.event3.discriminative.optimizer;
 
 import fig.basic.LogInfo;
+import induction.Utils;
 import induction.problem.event3.discriminative.Feature;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public abstract class GradientBasedOptimizer
     // default is with regularization; (perceptron does not use this)
     private boolean noRegularization = false;
     // default is with cooling
-    private boolean noCooling = false;
+    protected boolean noCooling = false;
 
     public void setNoRegularization()
     {
@@ -54,6 +55,12 @@ public abstract class GradientBasedOptimizer
     {
         this(trainSize, batchUpdateSize, 1, 0.1, 1.0, true);
     }
+    
+    public GradientBasedOptimizer(int trainSize, int batchUpdateSize, int convergePass, 
+                                  double initGain)
+    {
+        this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, true);
+    }
 
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize, 
                                   int convergePass, double initGain, 
@@ -69,14 +76,14 @@ public abstract class GradientBasedOptimizer
         REG_CONSTANT_RATIO = BATCH_UPDATE_SIZE * 1.0 / (TRAIN_SIZE * SIGMA * SIGMA);
 
         IS_MINIMIZE_SCORE = isMinimizeScore;
-        LogInfo.logs("TRAIN_SIZE: " + TRAIN_SIZE);
-        LogInfo.logs("BATCH_UPDATE_SIZE: " + BATCH_UPDATE_SIZE);
-        LogInfo.logs("CONVERGE_PASS: " + CONVERGE_PASS);
-        LogInfo.logs("INITIAL_GAIN: " + INITIAL_GAIN);
-        LogInfo.logs("COOLING_SCHEDULE_T: " + COOLING_SCHEDULE_T);
-        LogInfo.logs("SIGMA: " + SIGMA);
-        LogInfo.logs("REG_CONSTANT_RATIO: " + REG_CONSTANT_RATIO);
-        LogInfo.logs("IS_MINIMIZE_SCORE: " + IS_MINIMIZE_SCORE);
+        LogInfo.logsForce("TRAIN_SIZE: " + TRAIN_SIZE + "\n" + 
+                   "BATCH_UPDATE_SIZE: " + BATCH_UPDATE_SIZE + "\n" + 
+                   "CONVERGE_PASS: " + CONVERGE_PASS + "\n" + 
+                   "INITIAL_GAIN: " + INITIAL_GAIN + "\n" + 
+                   "COOLING_SCHEDULE_T: " + COOLING_SCHEDULE_T + "\n" + 
+                   "SIGMA: " + SIGMA + "\n" + 
+                   "REG_CONSTANT_RATIO: " + REG_CONSTANT_RATIO + "\n" + 
+                   "IS_MINIMIZE_SCORE: " + IS_MINIMIZE_SCORE);
     }
 
     public abstract void initModel(double minValue, double maxValue);// random start

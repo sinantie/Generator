@@ -148,7 +148,8 @@ public class ProbVec implements Serializable
 
     public double[] getProbs()
     {
-        return Utils.div(Arrays.copyOf(counts, counts.length), sum);
+        // in the discriminative model we save weights not probabilities, so no need to normalise
+        return sum == 0 ? counts : Utils.div(Arrays.copyOf(counts, counts.length), sum);
     }
 
 //    public Set<Pair> getProbsSorted()

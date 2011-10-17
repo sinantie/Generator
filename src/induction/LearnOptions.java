@@ -4,8 +4,7 @@ import fig.basic.*;
 
 public class LearnOptions {
   // Learning
-  @Option(gloss="Number of training iterations") public int numIters = 0;
-  @Option(gloss="Batch Update Size (Perceptron only)") public int batchUpdateSize = 30;
+  @Option(gloss="Number of training iterations") public int numIters = 0;  
   @Option(gloss="Online") public boolean online = false;
   @Option(gloss="Incremental EM (keep around suff stats)") public boolean incremental = false;
   @Option(gloss="Hard EM") public boolean hardUpdate = false;
@@ -21,5 +20,8 @@ public class LearnOptions {
   @Option public Options.AlignmentModel alignmentModel = Options.AlignmentModel.m1;
 
   @Option public boolean miniBatches = false;
-  @Option public int miniBatchSize = 100;
+  @Option public int miniBatchSize = 30;
+  @Option public int convergePass = 1;  
+  public enum LearningScheme { incremental, stepwise, batch };
+  @Option public LearningScheme learningScheme = LearningScheme.incremental;
 }

@@ -3,6 +3,8 @@ package induction.problem.event3.discriminative;
 import induction.problem.AExample;
 import induction.problem.APerformance;
 import induction.problem.event3.Widget;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -10,7 +12,8 @@ import induction.problem.event3.Widget;
  */
 public class DiscriminativePerformance extends APerformance<Widget>
 {
-
+    List<Double> gradientList = new ArrayList<Double>();
+    
     public DiscriminativePerformance()
     {
     }    
