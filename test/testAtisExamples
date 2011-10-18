@@ -1,3 +1,14 @@
+Example_210
+list daily flights from denver to boston
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:--	@when:daily
+0 0 1 2
+Example_209
+while i'm in pittsburgh what ground transportation is available
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:pittsburgh	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
 Example_54
 is fare code b the same as business class
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:business	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--

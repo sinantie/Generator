@@ -15,13 +15,13 @@ import org.junit.Test;
  *
  * @author konstas
  */
-public class DiscriminativeTrainWeatherTest
+public class DiscriminativeTrainAtisTest
 {
     LearnOptions lopts;
     String name;
     DiscriminativeEvent3Model model;
 
-    public DiscriminativeTrainWeatherTest() {
+    public DiscriminativeTrainAtisTest() {
     }
 
     @BeforeClass
@@ -37,24 +37,27 @@ public class DiscriminativeTrainWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType discriminativeTrain -inputLists test/testWeatherGovEvents "
+         String args = "-modelType discriminativeTrain -inputLists test/testAtisExamples "
+//         String args = "-modelType discriminativeTrain -inputLists data/atis/train/atis5000.sents.full "
                     + "-Options.stage1.numIters 15 "
                     + "-Options.stage1.learningScheme incremental "
+                    + "-examplesInSingleFile "
                     + "-inputFileExt events "
                     + "-dontOutputParams "            
-                    + "-generativeModelParamsFile results/output/weatherGov/alignments/"
-                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+                    + "-generativeModelParamsFile results/output/atis/alignments/"
+                    + "model_3/prior_0.01/stage1.params.obj "
                     + "-disallowConsecutiveRepeatFields -dontCrossPunctuation -allowNoneEvent "
 //                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "
                  
-                    + "-kBest 20 "
-                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
+                 
+                    + "-kBest 40 "
+                    + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
 //                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
-                    + "-lengthPredictionStartIndex 4 ";
+                    + "-lengthPredictionStartIndex 4";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
