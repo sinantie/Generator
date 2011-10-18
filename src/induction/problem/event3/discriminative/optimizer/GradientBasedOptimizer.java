@@ -53,20 +53,20 @@ public abstract class GradientBasedOptimizer
      */
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize)
     {
-        this(trainSize, batchUpdateSize, 1, 0.1, 1.0, trainSize * 1 / batchUpdateSize, true);
+        this(trainSize, batchUpdateSize, 1, 0.1, 1.0, trainSize * 1 / batchUpdateSize, false);
     }
     
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize, int convergePass, 
                                   double initGain)
     {
         this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, 
-             trainSize * convergePass * 1.0 / batchUpdateSize, true);
+             trainSize * convergePass * 1.0 / batchUpdateSize, false);
     }
     
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize, int convergePass, double coolingSchedule,
                                   double initGain)
     {
-        this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, coolingSchedule, true);
+        this(trainSize, batchUpdateSize, convergePass, initGain, 1.0, coolingSchedule, false);
     }
 
     public GradientBasedOptimizer(int trainSize, int batchUpdateSize, 
@@ -105,6 +105,8 @@ public abstract class GradientBasedOptimizer
 
     public abstract void setFeatureWeight(Feature feat, double weight);
 
+    public abstract double getGradientNorm();
+    
     public int getBatchSize()
     {
         return BATCH_UPDATE_SIZE;

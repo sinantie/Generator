@@ -3,6 +3,7 @@ package induction.problem.event3.discriminative;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
+import induction.LearnOptions.LearningScheme;
 import induction.problem.AInferState;
 import induction.problem.event3.params.Params;
 import fig.basic.Indexer;
@@ -177,7 +178,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         switch(opts.modelType)
         {
-            case discriminativeTrain: return new DiscriminativePerformance();
+            case discriminativeTrain: return new DiscriminativePerformance(this);
             default: case generate : return new GenerationPerformance(this);
         }        
     }
@@ -241,64 +242,42 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             trainPerformance = existsTrain ? newPerformance() : null;
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
-            {
-//                // create an inference state model
-//                DiscriminativeInferState inferState = (DiscriminativeInferState) createInferState(
-//                        examples.get(i), 1, null, 1, lopts, iter);
-//                // create hypergraph - precompute local features on the fly
-//                inferState.createHypergraph();                                
+            {                
+//                Collection<ExampleProcessor> list = new ArrayList(2);
 //                // perform reranking on the hypergraph. During the recursive call
 //                // in order to extract D_1 (top derivation) update the modelFeatures
 //                // map, i.e. compute f(y^). We will need this for the perceptron updates
-//                inferState.setFeatures(modelFeatures);
-//                inferState.doInference();
+//                list.add(new ExampleProcessor(
+//                        examples.get(i), modelFeatures, false, lopts, iter, complexity));
 //                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
-//                inferState.setFeatures(oracleFeatures);
-//                inferState.setCalculateOracle(true);
-//                inferState.doInference();
-//                // update statistics
-//                synchronized(complexity)
-//                {
-//                    complexity.add(inferState.getComplexity());
-//                }                
-//                synchronized(trainPerformance)
-//                {
-//                    trainPerformance.add(inferState.stats());
-//                }
+//                list.add(new ExampleProcessor(
+//                        examples.get(i), oracleFeatures, true, lopts, iter, complexity));
+//                Utils.parallelForeach(opts.numThreads, list);
+//                list.clear();
+                System.out.println(examples.get(i).getName());
+                try{
+                    ExampleProcessor model = new ExampleProcessor(
+                            examples.get(i), modelFeatures, false, lopts, iter, complexity);
+                    model.call();
+                    model = null;
                 
-                Collection<ExampleProcessor> list = new ArrayList(2);
-                // perform reranking on the hypergraph. During the recursive call
-                // in order to extract D_1 (top derivation) update the modelFeatures
-                // map, i.e. compute f(y^). We will need this for the perceptron updates
-                list.add(new ExampleProcessor(
-                        examples.get(i), modelFeatures, false, lopts, iter, complexity));
-                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
-                list.add(new ExampleProcessor(
-                        examples.get(i), oracleFeatures, true, lopts, iter, complexity));
-                Utils.parallelForeach(opts.numThreads, list);
-                list.clear();
-//                try{
-//                    ExampleProcessor model = new ExampleProcessor(
-//                            examples.get(i), modelFeatures, false, lopts, iter, complexity);
-//                    model.call();
-//                    model = null;
-                
-//                    ExampleProcessor oracle = new ExampleProcessor(
-//                            examples.get(i), oracleFeatures, true, lopts, iter, complexity);
-//                    oracle.call();
-//                    oracle = null;
-//                }                
-//                catch(Exception e){
-//                    e.printStackTrace();
-//                    LogInfo.error(e);
-//                }
+                    ExampleProcessor oracle = new ExampleProcessor(
+                            examples.get(i), oracleFeatures, true, lopts, iter, complexity);
+                    oracle.call();
+                    oracle = null;
+                }                
+                catch(Exception e){
+                    e.printStackTrace();
+                    LogInfo.error(e);
+                }
                 
                 numProcessedExamples++;
                 // update perceptron if necessary (batch update)
                 updateOptimizer(false, optimizer);
             } // for (all examples)
             // purge any unprocessed examples
-            updateOptimizer(true, optimizer);
+            if(lopts.learningScheme == LearningScheme.stepwise)
+                updateOptimizer(true, optimizer);
             // update the internal average model
             ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
             
@@ -341,7 +320,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             numProcessedExamples = 0;            
             synchronized(trainPerformance)
             {
-                ((DiscriminativePerformance)trainPerformance).add();
+                ((DiscriminativePerformance)trainPerformance).add(optimizer.getGradientNorm());
             }
         }
     }
@@ -550,6 +529,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 synchronized(trainPerformance)
                 {
                     trainPerformance.add(inferState.stats());
+                    trainPerformance.add(ex, inferState.bestWidget);
                 }
             if(opts.modelType == Options.ModelType.generate)
                 synchronized(testPerformance)

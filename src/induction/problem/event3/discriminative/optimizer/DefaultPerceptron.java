@@ -24,6 +24,8 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     // (2) last iter-id; (3) the last sum-model parammter 
     HashMap<Feature, Double[]> globalTableAverageModel = null;
 
+    private double gradientNorm;
+    
     public DefaultPerceptron(HashMap<Feature, Double> sumModel, 
                              HashMap<Feature, Double[]> averageModel, int trainSize, 
                              int batchUpdateSize)
@@ -91,11 +93,12 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     public void updateModel(HashMap<Feature, Double> oracleFeatures, HashMap<Feature, Double> modelFeatures)
     {
         numModelChanges++;
-        Utils.logs("Update the perceptron model " + numModelChanges);
+//        Utils.logs("Update the perceptron model " + numModelChanges);
         HashMap<Feature, Double> gradient = getGradient(oracleFeatures, modelFeatures);
         //Support.print_hash_tbl(gradient);
         double updateGain = computeGain(numModelChanges);
-        Utils.logs("Update gain is " + updateGain + "; gradient table size " + gradient.size());
+//        Utils.logs("Update gain is " + updateGain + "; gradient table size " + gradient.size());
+        gradientNorm = gradient.size();
         updateSumModel(globalTableSumModel, gradient, updateGain);
         updateAverageModel(globalTableSumModel, globalTableAverageModel, gradient, numModelChanges);
     }
@@ -165,7 +168,7 @@ public class DefaultPerceptron extends GradientBasedOptimizer
      */
     public void forceUpdateAverageModel()
     {
-        Utils.logs("force average update is called");
+//        Utils.logs("force average update is called");
         updateAverageModel(globalTableSumModel, globalTableAverageModel, 
                            globalTableSumModel, numModelChanges); // update all features
 
@@ -187,6 +190,12 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     public HashMap getSumModel()
     {
         return globalTableSumModel;
+    }
+
+    @Override
+    public double getGradientNorm()
+    {
+        return gradientNorm;
     }
 
     public void setFeatureWeight(Feature feat, double weight)

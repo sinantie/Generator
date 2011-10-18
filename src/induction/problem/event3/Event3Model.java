@@ -791,6 +791,13 @@ public abstract class Event3Model extends WordModel
                             text, null, null, text.length,
                             new SemParseWidget(trueMrTokens)));
                     }
+                    else if(opts.modelType == Options.ModelType.discriminativeTrain)
+                    {
+                        examples.add(new Example(this, name, events, text,
+                                                       labels, lineStartIndices,
+                                                       text.length,
+                                           new GenWidget(trueEvents, text)));
+                    }
                     else
                     {
                         examples.add(new Example(this, name, events, text,
@@ -814,6 +821,13 @@ public abstract class Event3Model extends WordModel
                     {
                         examples.add(new Example(this, name, events,
                             text, null, null, text.length, null));
+                    }
+                    else if(opts.modelType == Options.ModelType.discriminativeTrain)
+                    {
+                        examples.add(new Example(this, name, events, text,
+                                                       labels, lineStartIndices,
+                                                       text.length,
+                                           new GenWidget(text)));
                     }
                     else
                     {

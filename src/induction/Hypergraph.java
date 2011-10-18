@@ -742,7 +742,7 @@ public class Hypergraph<Widget> {
         chooser.widget = widget;
         chooser.choose = true;
         chooser.random = random;
-        chooser.recurseRerank(startNodeInfo, true);
+        chooser.recurseRerank(startNodeInfo, false);
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
@@ -1297,7 +1297,9 @@ public class Hypergraph<Widget> {
         nodeInfo.logMaxScore = score;
         nodeInfo.bestEdge = chosenIndex;      
     } // for
-    assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";    
+      System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
+//    assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
+    assert startNodeInfo.bestEdge != -1 : "No best edge attached to start node";
   }
     
   /**

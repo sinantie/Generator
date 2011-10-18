@@ -143,7 +143,7 @@ public class DiscriminativeInferState extends Event3InferState
     {
         
         super.initInferState(model);
-        // used for oracle only
+//        // used for oracle only
         words = ex.getText();
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
@@ -301,7 +301,7 @@ public class DiscriminativeInferState extends Event3InferState
     
     protected double getBaselineScore(double baseWeight)
     {
-        return getCount(((DiscriminativeParams)params).baselineWeight, 0) + getLogProb(baseWeight);
+        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * getLogProb(baseWeight);
     }
     
     protected EventTypeParams getBaselineEventTypeParams(int event)

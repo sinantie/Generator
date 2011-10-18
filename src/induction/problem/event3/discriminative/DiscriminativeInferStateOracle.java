@@ -1,8 +1,6 @@
 package induction.problem.event3.discriminative;
 
-import induction.problem.event3.generative.generation.*;
 import edu.uci.ics.jung.graph.Graph;
-import fig.basic.LogInfo;
 import fig.basic.StopWatchSet;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
@@ -14,7 +12,6 @@ import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
-import induction.problem.Pair;
 import induction.problem.ProbVec;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Event3Model;
