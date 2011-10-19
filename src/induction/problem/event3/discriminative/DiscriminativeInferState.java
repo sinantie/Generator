@@ -301,7 +301,8 @@ public class DiscriminativeInferState extends Event3InferState
     
     protected double getBaselineScore(double baseWeight)
     {
-        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * getLogProb(baseWeight);
+//        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * getLogProb(baseWeight);
+        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * Math.log(baseWeight);
     }
     
     protected EventTypeParams getBaselineEventTypeParams(int event)
@@ -338,12 +339,12 @@ public class DiscriminativeInferState extends Event3InferState
             final NumFieldParams baseFParams = getBaselineNumFieldParams(event, field);
             final ProbVec weightProbVec = modelFParams.methodChoices;
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; int method = Parameters.M_ROUNDUP;
+                double baseParam; int method = Parameters.M_ROUNDUP;
                 public double getWeight() {
-                    double baseParam = get(baseFParams.methodChoices, method);
-                    baseScore = getBaselineScore(baseParam); 
+                    baseParam = get(baseFParams.methodChoices, method);
                     return calculateOracle ?
-                            baseParam : getCount(weightProbVec, method) + baseScore;
+                            baseParam : getCount(weightProbVec, method) + 
+                            getBaselineScore(baseParam); 
                 }
                 public Pair getWeightLM(int rank) {
                     if(rank > 0)
@@ -356,7 +357,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = roundUp(v);
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -365,12 +366,12 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             });
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; int method = Parameters.M_ROUNDDOWN;
+                double baseParam; int method = Parameters.M_ROUNDDOWN;
                 public double getWeight() {
-                    double baseParam = get(baseFParams.methodChoices, method);
-                    baseScore = getBaselineScore(baseParam); 
+                    baseParam = get(baseFParams.methodChoices, method);
                     return calculateOracle ?
-                            baseParam : getCount(weightProbVec, method) + baseScore;
+                            baseParam : getCount(weightProbVec, method) + 
+                            getBaselineScore(baseParam);
                 }
                 public Pair getWeightLM(int rank) {
                     if(rank > 0)
@@ -383,7 +384,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = roundDown(v);
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -392,12 +393,12 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             });
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; int method = Parameters.M_ROUNDCLOSE;
+                double baseParam; int method = Parameters.M_ROUNDCLOSE;
                 public double getWeight() {
-                    double baseParam = get(baseFParams.methodChoices, method);
-                    baseScore = getBaselineScore(baseParam); 
+                    baseParam = get(baseFParams.methodChoices, method);
                     return calculateOracle ?
-                            baseParam : getCount(weightProbVec, method) + baseScore;
+                            baseParam : getCount(weightProbVec, method) + 
+                            getBaselineScore(baseParam); 
                 }
                 public Pair getWeightLM(int rank) {
                     if(rank > 0)
@@ -410,7 +411,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = Parameters.M_ROUNDCLOSE;
                     widget.getNums()[i] = roundClose(v);
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -419,12 +420,12 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             });
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; int method = Parameters.M_IDENTITY;
+                double baseParam; int method = Parameters.M_IDENTITY;
                 public double getWeight() {
-                    double baseParam = get(baseFParams.methodChoices, method);
-                    baseScore = getBaselineScore(baseParam); 
+                    baseParam = get(baseFParams.methodChoices, method); 
                     return calculateOracle ?
-                            baseParam : getCount(weightProbVec, method) + baseScore;
+                            baseParam : getCount(weightProbVec, method) + 
+                            getBaselineScore(baseParam);
                 }
                 public Pair getWeightLM(int rank) {
                     if(rank > 0)
@@ -437,7 +438,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = v;
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -446,15 +447,15 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             });
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; int method = Parameters.M_NOISEUP;
+                double baseParam; int method = Parameters.M_NOISEUP;
                 final double CONT = get(modelFParams.rightNoiseChoices, Parameters.S_CONTINUE);
                 final double STOP = get(modelFParams.rightNoiseChoices, Parameters.S_STOP);
                 final int NOISE_MINUS_ONE = (int) Math.round(CONT / STOP);
                 public double getWeight() {
-                    double baseParam = get(baseFParams.methodChoices, method);
-                    baseScore = getBaselineScore(baseParam);
+                    baseParam = get(baseFParams.methodChoices, method);
                     return calculateOracle ?
-                            baseParam : getCount(weightProbVec, method) + baseScore;
+                            baseParam : getCount(weightProbVec, method) + 
+                            getBaselineScore(baseParam);
                 }
                 public Pair getWeightLM(int rank) {
                     if(rank > 0)
@@ -467,7 +468,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = NOISE_MINUS_ONE + 1 + v;
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -476,15 +477,15 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             });
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; int method = Parameters.M_NOISEDOWN;
+                double baseParam; int method = Parameters.M_NOISEDOWN;
                 final double CONT = get(modelFParams.leftNoiseChoices, Parameters.S_CONTINUE);
                 final double STOP = get(modelFParams.leftNoiseChoices, Parameters.S_STOP);
                 final int MINUS_NOISE_MINUS_ONE = (int) Math.round(CONT / STOP);
                 public double getWeight() {
-                    double baseParam = get(baseFParams.methodChoices, method);
-                    baseScore = getBaselineScore(baseParam);                    
+                    baseParam = get(baseFParams.methodChoices, method);
                     return calculateOracle ?
-                            baseParam : getCount(weightProbVec, method) + baseScore;
+                            baseParam : getCount(weightProbVec, method) + 
+                            getBaselineScore(baseParam);
                 }
                 public Pair getWeightLM(int rank) {
                     if(rank > 0)
@@ -497,7 +498,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = (-MINUS_NOISE_MINUS_ONE) - 1 + v;
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -523,12 +524,12 @@ public class DiscriminativeInferState extends Event3InferState
             {
                 final int w = wIter;
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseScore; ProbVec weightProbVec;
+                double baseParam; ProbVec weightProbVec;
                 public double getWeight() {
-                    double baseParam = get(baseFParams.emissions[v], w);
-                    baseScore = getBaselineScore(baseParam);
+                    baseParam = get(baseFParams.emissions[v], w);
                     weightProbVec = modelFParams.emissions[v];
-                    return calculateOracle ? baseParam : getCount(weightProbVec, w) + baseScore;
+                    return calculateOracle ? baseParam : getCount(weightProbVec, w) + 
+                            getBaselineScore(baseParam);
                 }
                 public Pair getWeightLM(int rank)
                 {
@@ -542,7 +543,7 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     widget.getText()[i] = word;
                     Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
                 });
@@ -578,13 +579,13 @@ public class DiscriminativeInferState extends Event3InferState
                 { 
                     final int w = wIter;
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseScore; ProbVec weightProbVec;
+                        double baseParam; ProbVec weightProbVec;
                         public double getWeight() {
-                            double baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
-                            baseScore = getBaselineScore(baseParam);
+                            baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
                             weightProbVec = modelEventTypeParams.noneFieldEmissions;
                             return calculateOracle ?
-                                    baseParam : getCount(weightProbVec, w) + baseScore;
+                                    baseParam : getCount(weightProbVec, w) + 
+                                    getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget)
@@ -599,7 +600,7 @@ public class DiscriminativeInferState extends Event3InferState
                         {
                             widget.getText()[i] = word;
                             Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                            increaseCounts(featuresArray, baseScore);
+                            increaseCounts(featuresArray, getLogProb(baseParam));
                             return widget;
                         }
                     });
@@ -636,16 +637,15 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     final int w = wIter;
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseScore;
+                        double baseParam;
                         public double getWeight() {
-                            double baseParam = get(baseEventTypeParams.genChoices[field], 
+                            baseParam = get(baseEventTypeParams.genChoices[field], 
                                     Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);
-                            baseScore = getBaselineScore(baseParam);
                             return calculateOracle ?
                                     baseParam :
                                     getCount(modelEventTypeParams.genChoices[field], 
                                     Parameters.G_FIELD_GENERIC) + getCount(params.genericEmissions, w) +
-                                    baseScore;
+                                    getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {                            
@@ -666,7 +666,7 @@ public class DiscriminativeInferState extends Event3InferState
                                         Parameters.G_FIELD_GENERIC),
                                 new Feature(params.genericEmissions, w)                                
                             };
-                            increaseCounts(featuresArray, baseScore);
+                            increaseCounts(featuresArray, getLogProb(baseParam));
                             return widget;
                         }
                         });
@@ -780,18 +780,17 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     hypergraph.addEdge(node, genField(i, j, c, event, f),
                                        new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseScore;
+                        double baseParam;
                         public double getWeight() { // final field-phrase before boundary   
-                                double baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter) *
+                                baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter) *
                                        get(baseEventTypeParams.fieldChoices[fIter],
                                            baseEventTypeParams.boundary_f);
-                                baseScore = getBaselineScore(baseParam);
                                 return calculateOracle ?
                                         baseParam :
                                         getCount(modelEventTypeParams.fieldChoices[f0], fIter) +
                                         getCount(modelEventTypeParams.fieldChoices[fIter],
                                             modelEventTypeParams.boundary_f) +
-                                        baseScore;
+                                        getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
@@ -804,7 +803,7 @@ public class DiscriminativeInferState extends Event3InferState
                                 new Feature(modelEventTypeParams.fieldChoices[fIter],
                                             modelEventTypeParams.boundary_f)                                    
                             };
-                            increaseCounts(featuresArray, baseScore);
+                            increaseCounts(featuresArray, getLogProb(baseParam));
                             return widget;
                         }
 
@@ -830,13 +829,13 @@ public class DiscriminativeInferState extends Event3InferState
                     hypergraph.addEdge(node, genField(i, j, c, event, f),
                                        genFields(j, end, c, event, remember_f, new_efs),
                                        new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseScore; ProbVec weightProbVec;                   
+                        double baseParam; ProbVec weightProbVec;                   
                         public double getWeight() {                            
-                            double baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter);
-                            baseScore = getBaselineScore(baseParam);
+                            baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter);                           
                             weightProbVec = modelEventTypeParams.fieldChoices[f0];
                             return calculateOracle ?
-                                    baseParam : getCount(weightProbVec, fIter) + baseScore;                            
+                                    baseParam : getCount(weightProbVec, fIter) + 
+                                    getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {                            
@@ -845,7 +844,7 @@ public class DiscriminativeInferState extends Event3InferState
                                 widget.getFields()[c][k] = fIter;
                             }
                             Feature[] featuresArray = {new Feature(weightProbVec, fIter)};
-                            increaseCounts(featuresArray, baseScore);
+                            increaseCounts(featuresArray, getLogProb(baseParam));
                             return widget;
                         }
 
@@ -929,14 +928,14 @@ public class DiscriminativeInferState extends Event3InferState
             {
                 final int w = wIter;
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                    double baseScore; ProbVec weightProbVec;
+                    double baseParam; ProbVec weightProbVec;
                     public double getWeight() 
                     {
-                        double baseParam = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
-                        baseScore = getBaselineScore(baseParam);
+                        baseParam = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
                         weightProbVec = params.trackParams[c].getNoneEventTypeEmissions();
                         return calculateOracle ? 
-                                 baseParam : getCount(weightProbVec, w) + baseScore;
+                                 baseParam : getCount(weightProbVec, w) + 
+                                 getBaselineScore(baseParam);
                     }
                     public Pair getWeightLM(int rank) // used for k-best
                     {
@@ -951,7 +950,7 @@ public class DiscriminativeInferState extends Event3InferState
                     {
                         widget.getText()[i] = word;
                         Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                        increaseCounts(featuresArray, baseScore);
+                        increaseCounts(featuresArray, getLogProb(baseParam));
                         return widget;
                     }
                 });
@@ -967,15 +966,14 @@ public class DiscriminativeInferState extends Event3InferState
         if(hypergraph.addSumNode(node))
         {   // Transition to boundary_t
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<Widget>() {
-                double baseScore; ProbVec weightProbVec;
+                double baseParam; ProbVec weightProbVec;
                 int index = modelCParams.boundary_t;
                 public double getWeight() {
-                    double baseParam;
                     weightProbVec = modelCParams.getEventTypeChoices()[index];                    
                     baseParam = get(baseCParams.getEventTypeChoices()[t0], index);
-                    baseScore = getBaselineScore(baseParam);    
                     return calculateOracle ? baseParam :
-                            getCount(weightProbVec, index) + baseScore;                        
+                            getCount(weightProbVec, index) + 
+                            getBaselineScore(baseParam);
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {                    
@@ -995,7 +993,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public Widget chooseLM(Widget widget, int word)
                 {
                     Feature[] featuresArray = {new Feature(weightProbVec, index)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     return widget;
                 }
             });
@@ -1028,19 +1026,19 @@ public class DiscriminativeInferState extends Event3InferState
               hypergraph.addEdge(node,
                   genNoneEventWords(i, j, c), recurseNode,
                   new Hypergraph.HyperedgeInfo<Widget>() {
-                      double baseScore; ProbVec weightProbVec;
+                      double baseParam; ProbVec weightProbVec;
                       int index = modelCParams.boundary_t;
                       public double getWeight() {                         
-                          double baseWeight = get(baseCParams.getEventTypeChoices()[t0], 
+                          baseParam = get(baseCParams.getEventTypeChoices()[t0], 
                                  baseCParams.none_t);
-                          baseScore = getBaselineScore(baseWeight);
                           weightProbVec = modelCParams.getEventTypeChoices()[t0];
                           return calculateOracle ? 
-                                 baseWeight :
+                                 baseParam :
                                   // pecreptron weight * 1 (omitted, since 
                                  // it is equivalent to the count of the 
                                  // alignment inferState rule)
-                                 getCount(weightProbVec, index) + baseScore;
+                                 getCount(weightProbVec, index) + 
+                                 getBaselineScore(baseParam);
                          
                       }
                       public void setPosterior(double prob) {}
@@ -1050,7 +1048,7 @@ public class DiscriminativeInferState extends Event3InferState
                               widget.getEvents()[c][k] = Parameters.none_e;
                           }
                           Feature[] featuresArray = {new Feature(weightProbVec, index)};
-                          increaseCounts(featuresArray, baseScore);
+                          increaseCounts(featuresArray, getLogProb(baseParam));
                           return widget;
                       }
                   });                            
@@ -1073,15 +1071,15 @@ public class DiscriminativeInferState extends Event3InferState
                                               eventTypeParams.getDontcare_efs()), 
                                               recurseNode,
                             new Hypergraph.HyperedgeInfo<Widget>() {
-                      double baseScore; ProbVec weightProbVec;
+                      double baseParam; ProbVec weightProbVec;
                       public double getWeight()
                       {                         
-                          double baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
-                                  (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
-                          baseScore = getBaselineScore(baseParam);
+                          baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                  (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);                          
                           weightProbVec = modelCParams.getEventTypeChoices()[t0];
                           return calculateOracle ? baseParam : 
-                                  getCount(weightProbVec, eventTypeIndex) + baseScore;                         
+                                  getCount(weightProbVec, eventTypeIndex) + 
+                                  getBaselineScore(baseParam);                         
                       }
                       public void setPosterior(double prob) {}
                       public Widget choose(Widget widget) {
@@ -1090,7 +1088,7 @@ public class DiscriminativeInferState extends Event3InferState
                               widget.getEvents()[c][k] = eventId;
                           }                          
                           Feature[] featuresArray = {new Feature(weightProbVec, eventTypeIndex)};
-                          increaseCounts(featuresArray, baseScore);
+                          increaseCounts(featuresArray, getLogProb(baseParam));
                           return widget;
                       }
                   });                  

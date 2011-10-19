@@ -58,6 +58,7 @@ public abstract class AInferState
     
     public double getLogProb(double prob)
     {
+        System.out.print(prob + " ");
 //        return Math.abs(Math.log(prob));
         return Math.log(prob);
     }

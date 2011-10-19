@@ -1298,7 +1298,7 @@ public class Hypergraph<Widget> {
         nodeInfo.bestEdge = chosenIndex;      
     } // for
       System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
-//    assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
+    assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
     assert startNodeInfo.bestEdge != -1 : "No best edge attached to start node";
   }
     

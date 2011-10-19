@@ -260,7 +260,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                             examples.get(i), modelFeatures, false, lopts, iter, complexity);
                     model.call();
                     model = null;
-                
+                    System.out.println("");
                     ExampleProcessor oracle = new ExampleProcessor(
                             examples.get(i), oracleFeatures, true, lopts, iter, complexity);
                     oracle.call();
