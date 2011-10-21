@@ -2,9 +2,14 @@ package induction.runtime;
 
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import fig.exec.Execution;
+import induction.BigDouble;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -37,6 +42,31 @@ public class DiscriminativeTrainAtisTest
     @Before
     public void setUp() 
     {
+//        double[] ds = {
+//            0.00750711406931216,
+//            3.814224416714681E-6,
+//            2.5277453964121733E-6,
+//            2.525145033878648E-6,
+//            2.5259994115003247E-6,
+//            2.525145228975861E-6,
+//            2.525295174902077E-6,
+//            2.5252147223873492E-6,
+//            2.528298464298493E-6,
+//            0.400084988972228
+//                      };
+//        double prod = 1.0, logSum = 0.0;
+//        for(Double d : ds)
+//        {
+//            prod *= d;
+//            logSum += Math.log(d);
+//        }
+//        System.out.println("product = " + prod);
+//        System.out.println("logSum = " + logSum);
+//        System.out.println("logProduct = " + Math.log(prod));
+//        
+//        BigDouble bd = BigDouble.fromDouble(7.519856925725315E-48);
+//        System.out.println(bd.toLogDouble());
+//        System.exit(0);
          String args = "-modelType discriminativeTrain -inputLists test/testAtisExamples "
 //         String args = "-modelType discriminativeTrain -inputLists data/atis/train/atis5000.sents.full "
                     + "-Options.stage1.numIters 15 "
@@ -85,5 +115,5 @@ public class DiscriminativeTrainAtisTest
     {
         System.out.println("run");        
         System.out.println(model.testDiscriminativeLearn(name, lopts));
-    }
+    } 
 }
