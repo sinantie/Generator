@@ -611,22 +611,21 @@ public class DiscriminativeInferState extends Event3InferState
                 // G_FIELD_VALUE: generate based on field value
                 hypergraph.addEdge(node, genFieldValue(i, c, event, field),
                         new Hypergraph.HyperedgeInfo<Widget>() {
-                double baseScore; ProbVec weightProbVec;
+                double baseParam; ProbVec weightProbVec;
                 public double getWeight() {
-                    double baseParam = get(baseEventTypeParams.genChoices[field], 
-                            Parameters.G_FIELD_VALUE);
-                    baseScore = getBaselineScore(baseParam);
+                    baseParam = get(baseEventTypeParams.genChoices[field], 
+                            Parameters.G_FIELD_VALUE);                    
                     weightProbVec = modelEventTypeParams.genChoices[field];
                     return calculateOracle ?
                             baseParam :
                             getCount(weightProbVec, Parameters.G_FIELD_VALUE) +
-                            baseScore;  
+                            getBaselineScore(baseParam);
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
                     Feature[] featuresArray = {new Feature(weightProbVec, 
                             Parameters.G_FIELD_VALUE)};
-                    increaseCounts(featuresArray, baseScore);
+                    increaseCounts(featuresArray, getLogProb(baseParam));
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
                 }
@@ -1172,6 +1171,15 @@ public class DiscriminativeInferState extends Event3InferState
         
     protected void selectEnd(int j, EventsNode node, int i, int t0)
     {
-        hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
+        hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true),
+                new Hypergraph.HyperedgeInfo<Widget>() {
+                    public double getWeight() {
+                        return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                    }
+                    public void setPosterior(double prob) { }
+                    public Widget choose(Widget widget) {
+                        return widget;
+                    }
+                });
     }
 }

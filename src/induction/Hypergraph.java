@@ -76,7 +76,8 @@ public class Hypergraph<Widget> {
   }
 
   private class NullHyperedgeInfo<Widget> implements HyperedgeInfo<Widget> {
-    public double getWeight() { return 1; }
+    public double getWeight() { 
+        return 1; }
     public void setPosterior(double prob) { }
     public Widget choose(Widget widget) { return widget; }
     //public Widget choose(Widget widget, double v) { return widget; }
@@ -756,7 +757,7 @@ public class Hypergraph<Widget> {
         chooser.widget = widget;
         chooser.choose = true;
         chooser.random = random;
-        chooser.recurseRerank(startNodeInfo, false);
+        chooser.recurse(startNodeInfo);
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
@@ -1283,7 +1284,7 @@ public class Hypergraph<Widget> {
         for(int k = 0; k < nodeInfo.edges.size(); k++)
         {
             Hyperedge edge = nodeInfo.edges.get(k);
-            double sum = edge.logWeight;
+            double sum = edge.logWeight;            
             for(NodeInfo info : edge.dest)
             {
                 sum += info.logMaxScore;
