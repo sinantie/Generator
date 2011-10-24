@@ -45,9 +45,9 @@ public class StagedInductionAtisTest
     {
          String args = "-modelType event3 -Options.stage1.numIters 1 -testInputLists "
                 + "test/testAtisExamples -examplesInSingleFile -inputFileExt events "
-                + "-initNoise 0 -initType staged -stagedParamsFile "
+                + "-initType staged -stagedParamsFile "
                 + "results/output/atis/alignments/"
-                + "model_3/15_iter_no_null_no_smooth_STOP/stage1.params.obj "
+                + "model_3/15_iter_no_null_smooth_0001_STOP/stage1.params.obj "
                 + "-dontCrossPunctuation -modelUnkWord -disallowConsecutiveRepeatFields";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();

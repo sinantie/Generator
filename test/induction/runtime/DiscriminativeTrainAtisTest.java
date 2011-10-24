@@ -72,13 +72,13 @@ public class DiscriminativeTrainAtisTest
                     + "-Options.stage1.numIters 15 "
                     + "-Options.stage1.learningScheme incremental "
                     + "-examplesInSingleFile "
-                    + "-inputFileExt events "
+                    + "-inputFileExt events "                    
                     + "-dontOutputParams "            
-//                    + "-generativeModelParamsFile results/output/atis/alignments/"
-//                    + "model_3/prior_0.01/stage1.params.obj "
                     + "-generativeModelParamsFile results/output/atis/alignments/"
-                    + "model_3/15_iter_no_null_smooth_0001_STOP/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -dontCrossPunctuation -allowNoneEvent "
+                    + "model_3/prior_0.01/stage1.params.obj "
+//                    + "-generativeModelParamsFile results/output/atis/alignments/"
+//                    + "model_3/15_iter_no_null_smooth_0001_STOP/stage1.params.obj "
+                    + "-disallowConsecutiveRepeatFields -dontCrossPunctuation "
 //                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "
                  
                  

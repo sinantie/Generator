@@ -1,6 +1,10 @@
-Example_210
-list daily flights from denver to boston
-.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+Example_1_test
+what flights go from dallas to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
 .id:1	.type:search	@of:--	@typed:lambda	@what:flight
-.id:2	.type:when	@dep-ar:--	@when:daily
-0 0 1 2
+0 0 1
+Example_1
+what flights go from dallas to baltimore
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1

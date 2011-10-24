@@ -117,6 +117,7 @@ public class Options {
   @Option(gloss="ngram model input file") public String ngramModelFile;
   @Option(gloss="n-gram size (default=3)") public int ngramSize = 3;
   @Option(gloss="n-gram wrapper (default=srilm)") public NgramWrapper ngramWrapper = NgramWrapper.srilm;
+  @Option(gloss="numbers should be treated as symbols, rather than converted to <num> (default=false)") public boolean numAsSymbol = false;
   @Option(gloss="allow none-event (default=false)") public boolean allowNoneEvent = false;
   @Option(gloss="condition on none-event (default=true)") public boolean conditionNoneEvent = false;
   @Option(gloss="allow consecutive events (default=false)") public boolean allowConsecutiveEvents = false;

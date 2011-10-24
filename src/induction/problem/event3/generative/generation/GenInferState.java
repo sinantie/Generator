@@ -113,7 +113,8 @@ public class GenInferState extends InferState
                 vocabulary.getIndex("ELIDED_SYMBOL"),
                 vocabulary.getIndex("<s>"),
                 vocabulary.getIndex("</s>"),
-                opts.ngramWrapper != Options.NgramWrapper.roark,
+//                opts.ngramWrapper != Options.NgramWrapper.roark,
+                opts.numAsSymbol,
                 vocabulary, ex, graph);
 //        for(int i = 0; i < hypergraph.wordIndexer.size(); i++)
 //        {

@@ -491,7 +491,7 @@ public abstract class AModel
         }
     }
 
-    private String summary(int i)
+    public String summary(int i)
     {
         if (isTrain(i))
             return "train: "+trainPerformance.summary();
@@ -549,13 +549,12 @@ public abstract class AModel
         {
             processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
             if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
+            {
                 Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
-                         Utils.fmt(examples.size()), summary(i));
-            if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
-                Execution.putOutput("currExample", i);
-//            processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
-            if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
+                         Utils.fmt(examples.size()), summary(i));            
+                Execution.putOutput("currExample", i);            
                 LogInfo.end_track();
+            }
             return null;
         }
     }

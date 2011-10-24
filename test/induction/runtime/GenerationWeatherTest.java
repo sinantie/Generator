@@ -54,11 +54,12 @@ public class GenerationWeatherTest
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
+                    + "-numAsSymbol "
 //                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
                     + "-lengthPredictionStartIndex 4 "
-                    + "-oracleReranker "
-                    + "-omitEmptyEvents";
+                    + "-oracleReranker";
+//                    + "-omitEmptyEvents";
 //                    + "-useGoldStandardOnly";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();

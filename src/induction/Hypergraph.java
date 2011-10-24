@@ -343,7 +343,7 @@ public class Hypergraph<Widget> {
                               temp.matches("-\\p{Digit}+|" + // negative numbers
                                      "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
                                      "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
-                                     ? "<num>" : temp;  
+                                     ? "<num>" : temp;
             }
 
             return ngramModel.getProb(ngramStr);
@@ -1298,7 +1298,7 @@ public class Hypergraph<Widget> {
         nodeInfo.logMaxScore = score;
         nodeInfo.bestEdge = chosenIndex;      
     } // for
-      System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
+//      System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
     assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
     assert startNodeInfo.bestEdge != -1 : "No best edge attached to start node";
   }

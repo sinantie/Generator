@@ -126,7 +126,7 @@ public class DiscriminativeInferState extends Event3InferState
         {
             increaseCount(f, 1);            
         }
-        increaseCount(baselineFeature, baseScore);
+//        increaseCount(baselineFeature, baseScore);
     }
     
     protected void increaseCount(Feature feat, double increment)
@@ -224,7 +224,7 @@ public class DiscriminativeInferState extends Event3InferState
                 opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("ELIDED_SYMBOL"),
                 opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("<s>"),
                 opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("</s>"),
-                opts.ngramWrapper != Options.NgramWrapper.roark,
+                opts.numAsSymbol,
                 vocabulary, ex, graph);                       
         hypergraph.addSumNode(startSymbol);        
         this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
@@ -302,7 +302,8 @@ public class DiscriminativeInferState extends Event3InferState
     protected double getBaselineScore(double baseWeight)
     {
 //        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * getLogProb(baseWeight);
-        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * Math.log(baseWeight);
+        return 1.0 * Math.abs(getLogProb(baseWeight));
+//        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * Math.log(baseWeight);
     }
     
     protected EventTypeParams getBaselineEventTypeParams(int event)

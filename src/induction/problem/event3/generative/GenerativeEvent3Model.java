@@ -403,7 +403,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 lopts, 0, complexity);
 //        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
         testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
 //        int i = 0;
 //        for(Example ex: examples)
 //        {

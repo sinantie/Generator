@@ -243,32 +243,32 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             
             for(int i = 0; i < examples.size(); i++) // for i = 1...N do
             {                
-//                Collection<ExampleProcessor> list = new ArrayList(2);
-//                // perform reranking on the hypergraph. During the recursive call
-//                // in order to extract D_1 (top derivation) update the modelFeatures
-//                // map, i.e. compute f(y^). We will need this for the perceptron updates
-//                list.add(new ExampleProcessor(
-//                        examples.get(i), modelFeatures, false, lopts, iter, complexity));
-//                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
-//                list.add(new ExampleProcessor(
-//                        examples.get(i), oracleFeatures, true, lopts, iter, complexity));
-//                Utils.parallelForeach(opts.numThreads, list);
-//                list.clear();
-                System.out.println(examples.get(i).getName());
-                try{
-                    ExampleProcessor model = new ExampleProcessor(
-                            examples.get(i), modelFeatures, false, lopts, iter, complexity);
-                    model.call();
-                    model = null;
-                    ExampleProcessor oracle = new ExampleProcessor(
-                            examples.get(i), oracleFeatures, true, lopts, iter, complexity);
-                    oracle.call();
-                    oracle = null;
-                }                
-                catch(Exception e){
-                    e.printStackTrace();
-                    LogInfo.error(e);
-                }
+                Collection<ExampleProcessor> list = new ArrayList(2);
+                // perform reranking on the hypergraph. During the recursive call
+                // in order to extract D_1 (top derivation) update the modelFeatures
+                // map, i.e. compute f(y^). We will need this for the perceptron updates
+                list.add(new ExampleProcessor(
+                        examples.get(i), i, modelFeatures, false, lopts, iter, complexity));
+                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
+                list.add(new ExampleProcessor(
+                        examples.get(i), i, oracleFeatures, true, lopts, iter, complexity));
+                Utils.parallelForeach(opts.numThreads, list);
+                list.clear();
+//                System.out.println(examples.get(i).getName());
+//                try{
+//                    ExampleProcessor model = new ExampleProcessor(
+//                            examples.get(i), modelFeatures, false, lopts, iter, complexity);
+//                    model.call();
+//                    model = null;
+//                    ExampleProcessor oracle = new ExampleProcessor(
+//                            examples.get(i), oracleFeatures, true, lopts, iter, complexity);
+//                    oracle.call();
+//                    oracle = null;
+//                }                
+//                catch(Exception e){
+//                    e.printStackTrace();
+//                    LogInfo.error(e);
+//                }
                 
                 numProcessedExamples++;
                 // update perceptron if necessary (batch update)
@@ -278,8 +278,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             if(lopts.learningScheme == LearningScheme.stepwise)
                 updateOptimizer(true, optimizer);
             // update the internal average model
+//            LogInfo.logsForce("baseline before avging " + ((DiscriminativeParams)params).baselineWeight.getCount(0));
             ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
-            
+//            ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
+//            LogInfo.logsForce("baseline after avging " + ((DiscriminativeParams)params).baselineWeight.getCount(0));
             record(String.valueOf(iter), name, complexity);            
             LogInfo.end_track();
             Record.end();
@@ -291,7 +293,6 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     trainPerformance.record("train");
                 LogInfo.end_track();
             }
-            iter++;
             if (Execution.shouldBail())
                 lopts.numIters = iter;
         } // for (all iterations)       
@@ -368,7 +369,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         for(int i = 0; i < examples.size(); i++)
         {
             list.add(new ExampleProcessor(
-                    examples.get(i), modelFeatures, false, lopts, 0, complexity));
+                    examples.get(i), i, modelFeatures, false, lopts, 0, complexity));
 //            try{
 //            ExampleProcessor model = new ExampleProcessor(
 //                    examples.get(i), modelFeatures, false, lopts, 0, complexity);
@@ -425,7 +426,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         Widget bestWidget = null;
         try{
             ExampleProcessor model = new ExampleProcessor(
-                    ex, modelFeatures, false, lopts, 0, complexity);
+                    ex, 0, modelFeatures, false, lopts, 0, complexity);
             model.call();
             model = null;
             bestWidget = model.bestWidget;
@@ -488,18 +489,19 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     protected class ExampleProcessor extends MyCallable
     {
         private AExample ex;
-        private int iter;
+        private int iter, i;
         private HashMap<Feature, Double> features;
         private LearnOptions lopts;
         private final FullStatFig complexity;
         private final boolean calculateOracle;
         private Widget bestWidget;
         
-        public ExampleProcessor(AExample ex, HashMap<Feature, Double> features,
+        public ExampleProcessor(AExample ex, int i, HashMap<Feature, Double> features,
                                 boolean calculateOracle, LearnOptions lopts, 
                                 int iter, FullStatFig complexity)
         {            
             this.ex = ex;
+            this.i = i;
             this.features = features;
             this.lopts = lopts;
             this.iter = iter;
@@ -529,6 +531,13 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 {
                     trainPerformance.add(inferState.stats());
                     trainPerformance.add(ex, inferState.bestWidget);
+                    if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
+                    {
+                        Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
+                                 Utils.fmt(examples.size()), summary(i));
+                        Execution.putOutput("currExample", i);
+                        LogInfo.end_track();
+                    }
                 }
             if(opts.modelType == Options.ModelType.generate)
                 synchronized(testPerformance)
@@ -544,7 +553,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     {
                         testFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
                     }
-            }
+            }            
             return null;
         }
     }
