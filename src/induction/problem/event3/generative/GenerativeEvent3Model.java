@@ -401,6 +401,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         AExample ex = examples.get(0);
         AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
+        testPerformance.add(inferState.stats());
 //        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
         testPerformance.add(ex, inferState.bestWidget);
 //        System.out.println(widgetToFullString(ex, inferState.bestWidget));

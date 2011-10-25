@@ -174,7 +174,7 @@ public class InferState extends Event3InferState
 //            HyperpathResult<Widget> result = hypergraph.fetchSampleHyperpath(opts.initRandom, newWidget());
             bestWidget = (Widget)result.widget;
             logVZ = result.logWeight;
-            System.out.println("logVZ = "+logVZ);
+//            System.out.println("logVZ = "+logVZ);
         }
         else
         {

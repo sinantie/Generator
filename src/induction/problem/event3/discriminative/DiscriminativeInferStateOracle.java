@@ -97,7 +97,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                     public Widget choose(Widget widget)
                     {
                         Feature[] featuresArray = {new Feature(params.genericLabelChoices, label)};
-                        increaseCounts(featuresArray, getLogProb(baseParam));
+                        increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                         return widget;
                     }
                 });
@@ -148,7 +148,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             public void setPosterior(double prob) { }
             public Widget choose(Widget widget) {                        
                 Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                increaseCounts(featuresArray, getLogProb(baseParam));
+                increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                 return widget;
             }                    
         });
@@ -193,7 +193,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                         Feature[] featuresArray = {new Feature(weightProbVec, method), 
                                                    new Feature(modelFParams.rightNoiseChoices, Parameters.S_STOP),
                                                    new Feature(modelFParams.rightNoiseChoices, Parameters.S_CONTINUE)};
-                        increaseCounts(featuresArray, getLogProb(baseParam));
+                        increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
 //                        increaseCount(new Feature(modelFParams.rightNoiseChoices, Parameters.S_CONTINUE), noise-1);                                                
                         return widget;
                     }
@@ -216,7 +216,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                         Feature[] featuresArray = {new Feature(weightProbVec, method), 
                                                    new Feature(modelFParams.leftNoiseChoices, Parameters.S_STOP),
                                                    new Feature(modelFParams.leftNoiseChoices, Parameters.S_CONTINUE)};
-                        increaseCounts(featuresArray, getLogProb(baseParam));
+                        increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
 //                        increaseCount(new Feature(modelFParams.leftNoiseChoices, Parameters.S_CONTINUE), -noise-1);
                         return widget;
                     }
@@ -246,7 +246,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                 public void setPosterior(double prob) { }
                 public Widget choose(Widget widget) {                                 
                     Feature[] featuresArray = {new Feature(modelFParams.emissions[v], w)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                     return widget;   
                 }            
             });
@@ -277,7 +277,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                     public Widget choose(Widget widget)
                     {                            
                         Feature[] featuresArray = {new Feature(modelEventTypeParams.noneFieldEmissions, w)};
-                        increaseCounts(featuresArray, getLogProb(baseParam));
+                        increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                         return widget;
                     }                    
                 });
@@ -298,7 +298,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                     Feature[] featuresArray = {
                         new Feature(modelEventTypeParams.genChoices[field], 
                         Parameters.G_FIELD_VALUE)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
                 }
@@ -319,7 +319,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                                     Parameters.G_FIELD_GENERIC),
                             new Feature(params.genericEmissions, w)
                         };
-                        increaseCounts(featuresArray, getLogProb(baseParam));
+                        increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                         return widget;
                     }                    
                     });
@@ -348,7 +348,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                 public Widget choose(Widget widget) 
                 {                                             
                     Feature[] featuresArray = {new Feature(params.trackParams[c].getNoneEventTypeEmissions(), w)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                     return widget;
                 }                
             });
@@ -373,7 +373,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {                    
                     Feature[] featuresArray = {new Feature(modelCParams.getEventTypeChoices()[index], index)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, getLogProb(baseParam) / ex.N());
                     return widget;
                 }                                
             });

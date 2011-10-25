@@ -1187,7 +1187,7 @@ public class Hypergraph<Widget> {
             Hyperedge edge = nodeInfo.edges.get(k);
             if(viterbi) 
             {             
-                score.updateMax_mult3(edge.weight, edge.dest.get(0).maxScore, edge.dest.get(1).maxScore);
+                if(score.updateMax_mult3(edge.weight, edge.dest.get(0).maxScore, edge.dest.get(1).maxScore))
                 {
                     chosenIndex = k;
                 }
