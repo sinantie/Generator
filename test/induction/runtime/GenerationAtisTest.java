@@ -42,12 +42,12 @@ public class GenerationAtisTest
                     + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
                     + "results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 40 "
+                    + "-disallowConsecutiveRepeatFields -kBest 1 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
-                    + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
+//                    + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0";
@@ -58,7 +58,7 @@ public class GenerationAtisTest
         model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
         model.logStats();
-        opts.outputIterFreq = opts.stage1.numIters;
+//        opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
     }
