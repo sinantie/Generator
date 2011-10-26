@@ -1,7 +1,7 @@
 #!/bin/bash
 
 inputLists=data/atis/train/atis5000.sents.full
-execPoolDir=results/output/atis/generation/discriminative
+execDir=results/output/atis/generation/discriminative/calculate_baseline_weight_norm
 numIters=15
 numThreads=2
 baselineModel=results/output/atis/alignments/model_3/prior_0.01/stage1.params.obj
@@ -13,7 +13,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.DiscriminativeInduction
 -examplesInSingleFile \
 -modeltype discriminativeTrain \
 -inputLists ${inputLists} \
--execPoolDir ${execPoolDir} \
+-execDir ${execDir} \
 -Options.stage1.numIters ${numIters} \
 -Options.stage1.learningScheme incremental \
 -inputFileExt events \
