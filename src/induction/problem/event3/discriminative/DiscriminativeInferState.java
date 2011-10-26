@@ -143,14 +143,7 @@ public class DiscriminativeInferState extends Event3InferState
     {
         
         super.initInferState(model);
-//        // used for oracle only
-        words = ex.getText();
-        nums = new int[words.length];
-        for(int w = 0; w < nums.length; w++)
-        {
-            nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
-        }
-        labels = ex.getLabels();
+
         this.vocabulary = ((Event3Model)model).getWordIndexer();
     }
         
@@ -216,16 +209,23 @@ public class DiscriminativeInferState extends Event3InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
-                opts.reorderType, opts.allowConsecutiveEvents,
-                opts.oracleReranker,
-                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("<num>"),
-                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("ELIDED_SYMBOL"),
-                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("<s>"),
-                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("</s>"),
-                opts.numAsSymbol,
-                vocabulary, ex, graph);                       
+        if(opts.modelType == Options.ModelType.generate)
+            hypergraph.setupForGeneration(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+                    opts.reorderType, opts.allowConsecutiveEvents,
+                    opts.oracleReranker,
+                    /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+                    -1,
+                    -1,
+                    -1,
+                    -1,
+//                    vocabulary.getIndex("<num>"),
+//                    vocabulary.getIndex("ELIDED_SYMBOL"),
+//                    vocabulary.getIndex("<s>"),
+//                    vocabulary.getIndex("</s>"),
+                    opts.numAsSymbol,
+                    vocabulary, ex, graph);
+        else
+            hypergraph.setNumbersAsSymbol(opts.numAsSymbol);
         hypergraph.addSumNode(startSymbol);        
         this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
         {
@@ -299,9 +299,14 @@ public class DiscriminativeInferState extends Event3InferState
         // Do nothing, we don't use or update counts in this class
     }
     
+    protected double normalisedLog(double d)
+    {
+        return getLogProb(d) / ex.N();
+    }
+    
     protected double getBaselineScore(double baseWeight)
     {
-        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * (getLogProb(baseWeight) /ex.N());
+        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * normalisedLog(baseWeight);
 //        return 1.0 * Math.abs(getLogProb(baseWeight));
 //        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * Math.log(baseWeight);
     }
@@ -350,7 +355,7 @@ public class DiscriminativeInferState extends Event3InferState
                 widget.getNumMethods()[c][i] = method;
                 widget.getNums()[i] = value;
                 Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                increaseCounts(featuresArray, getLogProb(baseParam));
+                increaseCounts(featuresArray, normalisedLog(baseParam));
                 return widget;
             }
             public GenWidget chooseLM(GenWidget widget, int word)
@@ -396,7 +401,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = NOISE_MINUS_ONE + 1 + v;
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -424,7 +429,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = (-MINUS_NOISE_MINUS_ONE) - 1 + v;
                     Feature[] featuresArray = {new Feature(weightProbVec, method)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseParam));
                     return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
@@ -469,7 +474,7 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     widget.getText()[i] = word;
                     Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseParam));
                     return widget;
                 }
                 });
@@ -526,7 +531,7 @@ public class DiscriminativeInferState extends Event3InferState
                         {
                             widget.getText()[i] = word;
                             Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                            increaseCounts(featuresArray, getLogProb(baseParam));
+                            increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
                         }
                     });
@@ -551,7 +556,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public Widget choose(Widget widget) {
                     Feature[] featuresArray = {new Feature(weightProbVec, 
                             Parameters.G_FIELD_VALUE)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseParam));
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
                 }
@@ -591,7 +596,7 @@ public class DiscriminativeInferState extends Event3InferState
                                         Parameters.G_FIELD_GENERIC),
                                 new Feature(params.genericEmissions, w)                                
                             };
-                            increaseCounts(featuresArray, getLogProb(baseParam));
+                            increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
                         }
                         });
@@ -728,7 +733,7 @@ public class DiscriminativeInferState extends Event3InferState
                                 new Feature(modelEventTypeParams.fieldChoices[fIter],
                                             modelEventTypeParams.boundary_f)                                    
                             };
-                            increaseCounts(featuresArray, getLogProb(baseParam));
+                            increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
                         }
 
@@ -769,7 +774,7 @@ public class DiscriminativeInferState extends Event3InferState
                                 widget.getFields()[c][k] = fIter;
                             }
                             Feature[] featuresArray = {new Feature(weightProbVec, fIter)};
-                            increaseCounts(featuresArray, getLogProb(baseParam));
+                            increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
                         }
 
@@ -875,7 +880,7 @@ public class DiscriminativeInferState extends Event3InferState
                     {
                         widget.getText()[i] = word;
                         Feature[] featuresArray = {new Feature(weightProbVec, w)};
-                        increaseCounts(featuresArray, getLogProb(baseParam));
+                        increaseCounts(featuresArray, normalisedLog(baseParam));
                         return widget;
                     }
                 });
@@ -918,7 +923,7 @@ public class DiscriminativeInferState extends Event3InferState
                 public Widget chooseLM(Widget widget, int word)
                 {
                     Feature[] featuresArray = {new Feature(weightProbVec, index)};
-                    increaseCounts(featuresArray, getLogProb(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseParam));
                     return widget;
                 }
             });
@@ -973,7 +978,7 @@ public class DiscriminativeInferState extends Event3InferState
                               widget.getEvents()[c][k] = Parameters.none_e;
                           }
                           Feature[] featuresArray = {new Feature(weightProbVec, index)};
-                          increaseCounts(featuresArray, getLogProb(baseParam));
+                          increaseCounts(featuresArray, normalisedLog(baseParam));
                           return widget;
                       }
                   });                            
@@ -1013,7 +1018,7 @@ public class DiscriminativeInferState extends Event3InferState
                               widget.getEvents()[c][k] = eventId;
                           }                          
                           Feature[] featuresArray = {new Feature(weightProbVec, eventTypeIndex)};
-                          increaseCounts(featuresArray, getLogProb(baseParam));
+                          increaseCounts(featuresArray, normalisedLog(baseParam));
                           return widget;
                       }
                   });                  

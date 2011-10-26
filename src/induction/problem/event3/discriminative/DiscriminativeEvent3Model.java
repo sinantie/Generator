@@ -428,7 +428,6 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             ExampleProcessor model = new ExampleProcessor(
                     ex, 0, modelFeatures, false, lopts, 0, complexity);
             model.call();
-            model = null;
             bestWidget = model.bestWidget;
         }
         catch(Exception e){}        
@@ -516,10 +515,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     (DiscriminativeInferState) createInferState(
                     (Example)ex, 1, lopts, iter, calculateOracle);            
             // create hypergraph - precompute local features on the fly
-            inferState.setCalculateOracle(calculateOracle);
-            inferState.createHypergraph();                                            
-            inferState.setFeatures(features);            
+            inferState.setCalculateOracle(calculateOracle);       
+            try{
+            inferState.createHypergraph();                        
+            inferState.setFeatures(features);                        
             inferState.doInference();
+            }
+            catch(Exception e)
+            {
+                System.out.println("Error in example: " + ex.getName());
+                e.printStackTrace();
+            }
             // update statistics
             synchronized(complexity)
             {

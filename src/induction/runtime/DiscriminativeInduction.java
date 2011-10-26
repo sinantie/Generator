@@ -34,7 +34,7 @@ public class DiscriminativeInduction implements Runnable
         LogInfo.end_track();
         Record.end();
                 
-        opts.outputIterFreq = opts.stage1.numIters;
+//        opts.outputIterFreq = opts.stage1.numIters;
         if(opts.modelType == Options.ModelType.precompute)
         {
 //            model.init(InitType.supervised, null, "stage1");

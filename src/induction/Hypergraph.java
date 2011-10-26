@@ -426,6 +426,11 @@ public class Hypergraph<Widget> {
             graph.addVertex(startNode);
   }
 
+    public void setNumbersAsSymbol(boolean numbersAsSymbol)
+    {
+        this.numbersAsSymbol = numbersAsSymbol;
+    }
+
   public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, int NUM,
