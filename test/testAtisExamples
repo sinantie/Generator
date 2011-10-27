@@ -1,3 +1,8 @@
+Example_441
+tell me all the airports near westchester county
+.id:0	.type:airport	@from:--	@location:westchester_county	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
 Example_423
 find flight from phoenix to detroit on monday
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:detroit	@year:--

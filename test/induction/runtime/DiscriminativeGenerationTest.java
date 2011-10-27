@@ -39,7 +39,7 @@ public class DiscriminativeGenerationTest
     public void setUp()
     {
         String args = "-modelType generate -inputLists test/testAtisExamples "
-//         String args = "-modelType discriminativeTrain -inputLists data/atis/train/atis5000.sents.full "                   
+//         String args = "-modelType generate -inputLists data/atis/test/atis-test.txt "                   
                     + "-examplesInSingleFile "
                     + "-inputFileExt events "                    
                     + "-dontOutputParams "            
