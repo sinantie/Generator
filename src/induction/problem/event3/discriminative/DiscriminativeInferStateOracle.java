@@ -228,7 +228,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
     
     @Override
     protected CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
-    {
+    {        
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
         {

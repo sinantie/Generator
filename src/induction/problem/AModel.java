@@ -173,7 +173,10 @@ public abstract class AModel
         if(opts.lengthPredictionModelFile != null)
         {
             Utils.begin_track("Loading Length Prediction Model...");
-            lengthPredictor = new WekaWrapper(opts.stagedParamsFile,
+            lengthPredictor = new WekaWrapper(
+                    opts.generativeModelParamsFile == null ?
+                            opts.stagedParamsFile : 
+                            opts.generativeModelParamsFile,
                     opts.lengthPredictionModelFile,
                     opts.lengthPredictionStartIndex,
                     opts.lengthPredictionFeatureType, WekaWrapper.Mode.TEST);

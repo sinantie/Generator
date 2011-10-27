@@ -431,6 +431,11 @@ public class Hypergraph<Widget> {
         this.numbersAsSymbol = numbersAsSymbol;
     }
 
+    public void setInferState(AInferState inferState)
+    {
+        this.inferState = inferState;
+    }
+
   public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, int NUM,

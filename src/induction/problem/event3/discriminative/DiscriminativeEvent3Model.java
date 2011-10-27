@@ -425,8 +425,15 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         AExample ex = examples.get(0);
         Widget bestWidget = null;
         try{
+//            for(int i = 0; i < examples.size(); i++)
+//            {
+//                ExampleProcessor model = new ExampleProcessor(
+//                    examples.get(i), i, modelFeatures, false, lopts, 0, complexity);
+//                model.call();
+//                bestWidget = model.bestWidget;
+//            }                                    
             ExampleProcessor model = new ExampleProcessor(
-                    ex, 0, modelFeatures, false, lopts, 0, complexity);
+                ex, 0, modelFeatures, false, lopts, 0, complexity);
             model.call();
             bestWidget = model.bestWidget;
         }

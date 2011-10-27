@@ -225,7 +225,10 @@ public class DiscriminativeInferState extends Event3InferState
                     opts.numAsSymbol,
                     vocabulary, ex, graph);
         else
+        {
+            hypergraph.setInferState(this);
             hypergraph.setNumbersAsSymbol(opts.numAsSymbol);
+        }
         hypergraph.addSumNode(startSymbol);        
         this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
         {
@@ -441,17 +444,24 @@ public class DiscriminativeInferState extends Event3InferState
         return node;
     }   
     
-    protected CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
+    protected Object genCatFieldValueNode(final int i, int c, final int event, final int field)
     {
+        final CatFieldParams modelFParams = getCatFieldParams(event, field);
+        final CatFieldParams baseFParams = getBaselineCatFieldParams(event, field);
+        // Consider generating words(i) from category v
+        final int v = getValue(event, field);
+        // (for generation only) in case the test set contains values that are not in the training set
+        if (v >= modelFParams.emissions.length)
+        {
+            return hypergraph.invalidNode;
+        }
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
-        {
-            final CatFieldParams modelFParams = getCatFieldParams(event, field);
-            final CatFieldParams baseFParams = getBaselineCatFieldParams(event, field);
-            // Consider generating words(i) from category v
-            final int v = getValue(event, field);
+        {            
             // add hyperedge for each word. COSTLY!
-            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+            final int maxWordIndex = modelFParams.emissions[v].getCounts().length;
+//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+            for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
             {
                 final int w = wIter;
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
@@ -506,7 +516,9 @@ public class DiscriminativeInferState extends Event3InferState
             if(field == modelEventTypeParams.none_f)
             {
                 // add hyperedge for each word. COSTLY!
-                for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+                final int maxWordIndex = modelEventTypeParams.noneFieldEmissions.getCounts().length;
+//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+                for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
                 { 
                     final int w = wIter;
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
@@ -563,7 +575,9 @@ public class DiscriminativeInferState extends Event3InferState
                 });
                 // G_FIELD_GENERIC: generate based on event type               
                 // add hyperedge for each word. COSTLY!
-                for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+                final int maxWordIndex = params.genericEmissions.getCounts().length;
+//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+                for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
                 {
                     final int w = wIter;
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
@@ -719,7 +733,7 @@ public class DiscriminativeInferState extends Event3InferState
                                         baseParam :
                                         getCount(modelEventTypeParams.fieldChoices[f0], fIter) +
                                         getCount(modelEventTypeParams.fieldChoices[fIter],
-                                            modelEventTypeParams.boundary_f) +
+                                                 modelEventTypeParams.boundary_f) +
                                         getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
@@ -854,7 +868,9 @@ public class DiscriminativeInferState extends Event3InferState
         if(hypergraph.addSumNode(node))
         {
             // add hyperedge for each word. COSTLY!
-            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+            final int maxWordIndex = params.trackParams[c].getNoneEventTypeEmissions().getCounts().length;
+//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
+            for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
             {
                 final int w = wIter;
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
