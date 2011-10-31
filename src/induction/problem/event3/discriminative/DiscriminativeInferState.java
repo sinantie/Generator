@@ -1019,7 +1019,7 @@ public class DiscriminativeInferState extends Event3InferState
                             new Hypergraph.HyperedgeInfo<Widget>() {
                       double baseParam; ProbVec weightProbVec;
                       public double getWeight()
-                      {                         
+                      {
                           baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
                                   (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);                          
                           weightProbVec = modelCParams.getEventTypeChoices()[t0];
