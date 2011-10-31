@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 
@@ -52,12 +54,17 @@ import java.util.Map;
  */
 public class DiscriminativeEvent3Model extends Event3Model implements Serializable
 {  
+    /**
+     * Parameters of the baseline model
+     */
     Params baselineModelParams;
     /**
      * maps that contain the total feature counts extracted from the Viterbi search
      * of the oracle model and the model under train
      */
     HashMap<Feature, Double> oracleFeatures, modelFeatures;
+    
+    HashSet<List<Integer>> ngramSet;    
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
@@ -67,7 +74,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         super(opts);        
         oracleFeatures = new HashMap<Feature, Double>();
-        modelFeatures = new HashMap<Feature, Double>();
+        modelFeatures = new HashMap<Feature, Double>();        
     }
 
     @Override
@@ -106,6 +113,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             ObjectInputStream ois = new ObjectInputStream(
                     new FileInputStream(opts.generativeModelParamsFile));
             wordIndexer = ((Indexer<String>) ois.readObject());
+            // build a list of all the bigrams, trigrams
+            populateNgramSets();            
             labelIndexer = ((Indexer<String>) ois.readObject());
             eventTypes = (EventType[]) ois.readObject();
             eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
@@ -138,6 +147,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return generativeParams;
     }
 
+    /**
+     * Populate the sets of bigrams and trigrams using the observations given from
+     * an external .arpa style ngram file. Instead of storing actual String ngrams
+     * use the internal representation of integers, from the <code>wordIndexer</code>
+     * object.
+     */
+    private void populateNgramSets()
+    {
+        
+    }
+    
     @Override
     protected void saveParams(String name)
     {
@@ -332,18 +352,15 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     public void generate(String name, LearnOptions lopts)
     {
-        opts.alignmentModel = lopts.alignmentModel; // HACK
-        if(!opts.fullPredRandomBaseline)
-        {
-            Utils.begin_track("Loading Language Model: " + name);
-            if(opts.ngramWrapper == NgramWrapper.kylm)
-                ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-            else if(opts.ngramWrapper == NgramWrapper.srilm)
-                ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-            else if(opts.ngramWrapper == NgramWrapper.roark)
-                ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
-            LogInfo.end_track();
-        }
+        opts.alignmentModel = lopts.alignmentModel; // HACK 
+//        Utils.begin_track("Loading Language Model...");
+//        if(opts.ngramWrapper == NgramWrapper.kylm)
+//            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+//        else if(opts.ngramWrapper == NgramWrapper.srilm)
+//            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+//        else if(opts.ngramWrapper == NgramWrapper.roark)
+//            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+//        LogInfo.end_track();
         // Complexity inference (number of hypergraph nodes)
         FullStatFig complexity = new FullStatFig();
         testPerformance = newPerformance();       
@@ -397,7 +414,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         record("results", name, complexity);
         Record.end();
         LogInfo.end_track();
-    }
+    }        
     
     /**
      * helper method for testing the discriminative learning scheme. 

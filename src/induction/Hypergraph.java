@@ -68,8 +68,12 @@ public class Hypergraph<Widget> {
     public induction.problem.Pair getWeightLM(int rank);
     public Widget chooseLM(Widget widget, int word);
   }
-  public interface HyperedgeInfoBigram<Widget> extends AHyperedgeInfo<Widget> {
-    public double getWeightBigram(int word1, int word2);
+  /**
+   * Interface that supports calculation of edge weights during viterbi search
+   * @param <Widget> 
+   */  
+  public interface HyperedgeInfoOnline<Widget> extends AHyperedgeInfo<Widget> {
+    public double getOnlineWeight();
   }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
@@ -1294,7 +1298,9 @@ public class Hypergraph<Widget> {
         for(int k = 0; k < nodeInfo.edges.size(); k++)
         {
             Hyperedge edge = nodeInfo.edges.get(k);
-            double sum = edge.logWeight;            
+            double sum = edge.logWeight + 
+                    (edge.info instanceof HyperedgeInfoOnline ? 
+                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight() : 0.0);
             for(NodeInfo info : edge.dest)
             {
                 sum += info.logMaxScore;

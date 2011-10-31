@@ -13,6 +13,8 @@ public class DiscriminativeParams extends Params
 {
 //    Params alignWeights;
     public ProbVec baselineWeight;
+    public ProbVec bigramWeights;
+    public ProbVec trigramWeights;
     
     public DiscriminativeParams(Event3Model model, Options opts)
     {

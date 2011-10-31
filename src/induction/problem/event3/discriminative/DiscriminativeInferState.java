@@ -971,21 +971,25 @@ public class DiscriminativeInferState extends Event3InferState
               Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
               hypergraph.addEdge(node,
                   genNoneEventWords(i, j, c), recurseNode,
-                  new Hypergraph.HyperedgeInfo<Widget>() {
-                      double baseParam; ProbVec weightProbVec;
-                      int index = modelCParams.boundary_t;
+                  new Hypergraph.HyperedgeInfoOnline<Widget>() {
+                      double baseParam; ProbVec alignWeightProbVec;
+                      int boundaryIndex = modelCParams.boundary_t;
                       public double getWeight() {                         
                           baseParam = get(baseCParams.getEventTypeChoices()[t0], 
                                  baseCParams.none_t);
-                          weightProbVec = modelCParams.getEventTypeChoices()[t0];
+                          alignWeightProbVec = modelCParams.getEventTypeChoices()[t0];
                           return calculateOracle ? 
                                  baseParam :
                                   // pecreptron weight * 1 (omitted, since 
                                  // it is equivalent to the count of the 
                                  // alignment inferState rule)
-                                 getCount(weightProbVec, index) + 
+                                 getCount(alignWeightProbVec, boundaryIndex) + 
                                  getBaselineScore(baseParam);
                          
+                      }
+                      public double getOnlineWeight()
+                      {
+                          return 0.0;
                       }
                       public void setPosterior(double prob) {}
                       public Widget choose(Widget widget) {
@@ -993,7 +997,7 @@ public class DiscriminativeInferState extends Event3InferState
                           {
                               widget.getEvents()[c][k] = Parameters.none_e;
                           }
-                          Feature[] featuresArray = {new Feature(weightProbVec, index)};
+                          Feature[] featuresArray = {new Feature(alignWeightProbVec, boundaryIndex)};
                           increaseCounts(featuresArray, normalisedLog(baseParam));
                           return widget;
                       }
@@ -1017,14 +1021,14 @@ public class DiscriminativeInferState extends Event3InferState
                                               eventTypeParams.getDontcare_efs()), 
                                               recurseNode,
                             new Hypergraph.HyperedgeInfo<Widget>() {
-                      double baseParam; ProbVec weightProbVec;
+                      double baseParam; ProbVec alignWeightProbVec;
                       public double getWeight()
                       {
                           baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
                                   (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);                          
-                          weightProbVec = modelCParams.getEventTypeChoices()[t0];
+                          alignWeightProbVec = modelCParams.getEventTypeChoices()[t0];
                           return calculateOracle ? baseParam : 
-                                  getCount(weightProbVec, eventTypeIndex) + 
+                                  getCount(alignWeightProbVec, eventTypeIndex) + 
                                   getBaselineScore(baseParam);                         
                       }
                       public void setPosterior(double prob) {}
@@ -1033,7 +1037,7 @@ public class DiscriminativeInferState extends Event3InferState
                           {
                               widget.getEvents()[c][k] = eventId;
                           }                          
-                          Feature[] featuresArray = {new Feature(weightProbVec, eventTypeIndex)};
+                          Feature[] featuresArray = {new Feature(alignWeightProbVec, eventTypeIndex)};
                           increaseCounts(featuresArray, normalisedLog(baseParam));
                           return widget;
                       }

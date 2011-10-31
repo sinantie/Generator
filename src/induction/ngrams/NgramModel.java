@@ -1,5 +1,12 @@
 package induction.ngrams;
 
+import fig.basic.Indexer;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+
 /**
  *
  * @author konstas
@@ -30,5 +37,23 @@ public abstract class NgramModel
     private double unLogBase2(double value)
     {
         return Math.pow(2, value);
+    }
+    
+    private static HashSet<List<Integer>> readNgramFromArpaFile(String modelFile, 
+            int N, Indexer vocabulary)
+    {
+        HashSet<List<Integer>> set = null;
+        File f = new File(modelFile);
+        if(f.exists())
+        {
+            try
+            {
+                FileReader fr = new FileReader(f);
+                
+                fr.close();
+            }
+            catch(IOException ioe){   }
+        }        
+        return set;
     }
 }
