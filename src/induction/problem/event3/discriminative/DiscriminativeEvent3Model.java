@@ -1,5 +1,6 @@
 package induction.problem.event3.discriminative;
 
+import com.sun.xml.internal.fastinfoset.vocab.Vocabulary;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
@@ -13,11 +14,9 @@ import fig.record.Record;
 import induction.LearnOptions;
 import induction.MyCallable;
 import induction.Options;
-import induction.Options.NgramWrapper;
 import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
-import induction.ngrams.RoarkNgramWrapper;
-import induction.ngrams.SrilmNgramWrapper;
+import induction.ngrams.NgramModel;
 import induction.problem.AExample;
 import induction.problem.AParams;
 import induction.problem.APerformance;
@@ -42,9 +41,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -64,7 +63,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      */
     HashMap<Feature, Double> oracleFeatures, modelFeatures;
     
-    HashSet<List<Integer>> ngramSet;    
+    Map<List<Integer>, Integer> wordBigramMap;    
+    Map<List<Integer>, Integer> wordTrigramMap;    
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
@@ -114,7 +114,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     new FileInputStream(opts.generativeModelParamsFile));
             wordIndexer = ((Indexer<String>) ois.readObject());
             // build a list of all the bigrams, trigrams
-            populateNgramSets();            
+            populateNgramMaps();            
             labelIndexer = ((Indexer<String>) ois.readObject());
             eventTypes = (EventType[]) ois.readObject();
             eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
@@ -153,9 +153,36 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      * use the internal representation of integers, from the <code>wordIndexer</code>
      * object.
      */
-    private void populateNgramSets()
+    private void populateNgramMaps()
     {
-        
+        wordBigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer);
+        wordTrigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer);
+    }
+
+    public String[] getWordNgramLabels(int N)
+    {
+        Map<List<Integer>, Integer> ngrams = N == 2 ? wordBigramMap : wordTrigramMap;
+        String labels[] = new String[ngrams.size()];
+        for(Entry<List<Integer>, Integer> entry : ngrams.entrySet())
+        {
+            StringBuilder str = new StringBuilder();
+            for(Integer index : entry.getKey())
+            {
+                str.append(wordToString(index)).append(" ");
+            }
+            labels[entry.getValue()] = str.toString().trim();
+        }
+        return labels;
+    }
+    
+    public Map<List<Integer>, Integer> getWordBigramMap()
+    {
+        return wordBigramMap;
+    }    
+    
+    public Map<List<Integer>, Integer> getWordTrigramMap()
+    {
+        return wordTrigramMap;
     }
     
     @Override

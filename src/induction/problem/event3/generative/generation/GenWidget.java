@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,8 +84,8 @@ public class GenWidget extends Widget
     public int[] getText()
     {
         return text;
-    }
-
+    }  
+    
     public double[] getScores()
     {
         return scores;

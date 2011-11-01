@@ -73,7 +73,7 @@ public class Hypergraph<Widget> {
    * @param <Widget> 
    */  
   public interface HyperedgeInfoOnline<Widget> extends AHyperedgeInfo<Widget> {
-    public double getOnlineWeight();
+    public double getOnlineWeight(Widget widget);
   }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
@@ -751,7 +751,7 @@ public class Hypergraph<Widget> {
   public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
-        computeLogMaxScores(); // viterbi using log scores
+        computeLogMaxScores(widget); // viterbi using log scores
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
@@ -1287,7 +1287,7 @@ public class Hypergraph<Widget> {
 //    assert !startNodeInfo.maxScore.isZero() : "Max score = 0";    
 //  }
   
-  private void computeLogMaxScores() {
+  private void computeLogMaxScores(Widget widget) {
     if(this.startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY) return; // Already computed    
     for(int i = topologicalOrdering.size()-1; i >= 0; i--) 
     {
@@ -1300,7 +1300,7 @@ public class Hypergraph<Widget> {
             Hyperedge edge = nodeInfo.edges.get(k);
             double sum = edge.logWeight + 
                     (edge.info instanceof HyperedgeInfoOnline ? 
-                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight() : 0.0);
+                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight(widget) : 0.0);
             for(NodeInfo info : edge.dest)
             {
                 sum += info.logMaxScore;
