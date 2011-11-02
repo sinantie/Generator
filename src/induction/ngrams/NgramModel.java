@@ -44,8 +44,17 @@ public abstract class NgramModel
         return Math.pow(2, value);
     }
     
+    /**
+     * Read ngrams from an .arpa file into a map, against a vocabulary of words to
+     * integers
+     * @param modelFile the filename of the .arpa file
+     * @param N the size of the ngrams
+     * @param vocabulary the indexer of words to integers
+     * @param dontIncludeStartEndSymbol whether to consider ngrams that contain <s> and </s>
+     * @return a map of the indices of the ngrams
+     */
     public static Map<List<Integer>, Integer> readNgramsFromArpaFile(String modelFile, 
-            int N, Indexer<String> vocabulary)
+            int N, Indexer<String> vocabulary, boolean dontIncludeStartEndSymbol)
     {
         Map<List<Integer>, Integer> map = null;
         File f = new File(modelFile);
@@ -72,7 +81,7 @@ public abstract class NgramModel
                 if(nSizeExists)
                 {                    
                     map = new HashMap<List<Integer>, Integer>();
-                    // go to the correct position interface the file
+                    // go to the correct position in the file
                     while(!line.contains("\\"+N+"-grams:"))
                         line = fr.readLine();                    
                         
@@ -81,20 +90,19 @@ public abstract class NgramModel
                     while(!line.equals("\\"+(N+1)+"-grams:") &&
                           !line.equals("\\end\\"))                        
                     {
-                        if(!line.equals(""))
+                        if(!line.equals(""))                           
                         {
-                            String[] ar = line.split("[\t ]");
-                            List<Integer> list = new ArrayList<Integer>(N);
-                            for(int i = 1; i < N + 1; i++)
+                            if(!dontIncludeStartEndSymbol || 
+                                !(line.contains("<s>") || line.contains("</s>")))
                             {
-                                try {
-                                list.add(vocabulary.getIndex(ar[i]));
-                                }catch(Exception e)
+                                String[] ar = line.split("[\t ]");
+                                List<Integer> list = new ArrayList<Integer>(N);
+                                for(int i = 1; i < N + 1; i++)
                                 {
-                                    System.out.println("execption!!");
+                                    list.add(vocabulary.getIndex(ar[i]));                                 
                                 }
+                                map.put(list, pos++);
                             }
-                            map.put(list, pos++);
                         } // if
                         line = fr.readLine();
                     } // while                    
@@ -106,19 +114,35 @@ public abstract class NgramModel
         return map;
     }
     
+    /**
+     * Get a list of the indices of the ngrams in a sentence, against a map of 
+     * ngrams loaded previously.
+     * @param ngrams a map of ngrams. The value of the map is a unique integer
+     * @param N the size of n-grams
+     * @param i the start index to look for in the sentence
+     * @param j the end index
+     * @param text the sentence in integer mapping
+     * @return  a list of the indices of the ngrams in the sentence
+     */
     public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngrams, 
-            int N, int i, int j, int[] text)
+            int N, int i, int j, List<Integer> text)
     {
         List<Integer> indices = new ArrayList<Integer>();
         if(j - i >= N - 1)
         {
-            for(int k = i; k < j - (N - 1); k++)
+            for(int k = i; k <= j - (N - 1); k++)
             {                    
-                Integer index = ngrams.get(ArrayUtils.asList(Arrays.copyOfRange(text, k, k + N - 1)));
+                Integer index = ngrams.get(text.subList(k, k + N));
                 if(index != null)
                     indices.add(index);
             }
         }
         return indices;
+    }
+    
+    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngrams, 
+            int N, List<Integer> text)
+    {
+        return getNgramIndices(ngrams, N, 0, text.size() - 1, text);
     }
 }

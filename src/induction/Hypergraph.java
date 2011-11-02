@@ -72,8 +72,8 @@ public class Hypergraph<Widget> {
    * Interface that supports calculation of edge weights during viterbi search
    * @param <Widget> 
    */  
-  public interface HyperedgeInfoOnline<Widget> extends AHyperedgeInfo<Widget> {
-    public double getOnlineWeight(Widget widget);
+  public interface HyperedgeInfoOnline<Widget> extends HyperedgeInfo<Widget> {
+    public double getOnlineWeight(List<Integer> text);
   }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
@@ -205,6 +205,28 @@ public class Hypergraph<Widget> {
             getSucc(mask);
         }
 
+        public Derivation(Hyperedge edge)
+        {
+            words = new ArrayList<Integer>();
+            this.edge = edge;
+            /* leaf derivation - axiom. Get the best-first value from the
+               underlying multinomial distribution*/
+            if(edge.dest.get(0) == endNodeInfo && edge.dest.get(1) == endNodeInfo)
+            {
+                derArray = null;
+                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightLM(-1);
+                if(p.label != null)
+                {
+                    this.words.add(new Integer((Integer)p.label));
+                }
+            }
+            else
+            {
+                for(NodeInfo nodeInfo : edge.dest)
+                    this.words.addAll(nodeInfo.derivations.get(0).words);
+            }
+        }
+        
         private void getSucc(int[] kBestMask)
         {
             /* leaf derivation - axiom. Get the best-first value from the
@@ -1263,30 +1285,6 @@ public class Hypergraph<Widget> {
     }
   }
 
-//  private void computeLogMaxScores() {
-//    if(this.startNodeInfo.maxScore != null) return; // Already computed    
-//
-//    for(int i = topologicalOrdering.size()-1; i >= 0; i--) {
-//      NodeInfo nodeInfo = topologicalOrdering.get(i);
-//      BigDouble score = nodeInfo.maxScore = BigDouble.invalid();
-//      if(nodeInfo == endNodeInfo) { score.setToZero(); continue; }
-//          score.setToZero();
-//          int chosenIndex = -1;
-//          for(int k = 0; k < nodeInfo.edges.size(); k++)
-//          {
-//            Hyperedge edge = nodeInfo.edges.get(k);            
-//            score.updateMax_sum3(edge.weight, 
-//                                 edge.dest.get(0).maxScore, 
-//                                 edge.dest.get(1).maxScore);
-//            {
-//                chosenIndex = k;
-//            }            
-//            nodeInfo.bestEdge = chosenIndex;           
-//          }               
-//    } // for
-//    assert !startNodeInfo.maxScore.isZero() : "Max score = 0";    
-//  }
-  
   private void computeLogMaxScores(Widget widget) {
     if(this.startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY) return; // Already computed    
     for(int i = topologicalOrdering.size()-1; i >= 0; i--) 
@@ -1298,9 +1296,12 @@ public class Hypergraph<Widget> {
         for(int k = 0; k < nodeInfo.edges.size(); k++)
         {
             Hyperedge edge = nodeInfo.edges.get(k);
+            List<Integer> words = new ArrayList();
+            for(NodeInfo node : edge.dest)
+                words.addAll(node.derivations.get(0).words);
             double sum = edge.logWeight + 
                     (edge.info instanceof HyperedgeInfoOnline ? 
-                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight(widget) : 0.0);
+                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight(words) : 0.0);
             for(NodeInfo info : edge.dest)
             {
                 sum += info.logMaxScore;
@@ -1312,7 +1313,8 @@ public class Hypergraph<Widget> {
             }          
         } // for
         nodeInfo.logMaxScore = score;
-        nodeInfo.bestEdge = chosenIndex;      
+        nodeInfo.bestEdge = chosenIndex;
+        nodeInfo.derivations.add(new Derivation(nodeInfo.edges.get(chosenIndex)));
     } // for
 //      System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
     assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
