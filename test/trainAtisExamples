@@ -1,0 +1,6 @@
+Example_1
+list all the flights that arrive at general mitchell international from various cities
+.id:0	.type:city	@from:any	@location:--	@services:--	@stop:--	@to:--
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:any	@manufacturer:--	@price:--	@stop:--	@to:mke	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1 2
