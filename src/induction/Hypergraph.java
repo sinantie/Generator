@@ -121,7 +121,8 @@ public class Hypergraph<Widget> {
           // model's parameters, which are probabilities, hence no log manipulation is necessary.
           // So, in the latter case along with all other instances stick to using
           // probabilities only.
-          if(inferState instanceof DiscriminativeInferState && !((DiscriminativeInferState)inferState).isCalculateOracle())
+          if(inferState instanceof DiscriminativeInferState && 
+                  !((DiscriminativeInferState)inferState).isCalculateOracle())
           {
               this.weight = null;
               logWeight = ((HyperedgeInfo)info).getWeight();
@@ -252,37 +253,12 @@ public class Hypergraph<Widget> {
                 }
                 for(int i = 0; i < kBestMask.length; i++)
                 {
-//                    try{
                     d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
-//                    }
-//                    catch(Exception e)
-//                    {
-//                        System.out.println(edge.dest);
-//                        e.printStackTrace();
-//                    }
                 }
-//                if(edge.info instanceof HyperedgeInfoBigram) // we need to get the word bigram probability of the children derivations
-//                {
-//                    assert(kBestMask.length == 2);
-//                    int firstWordOfChild2 = edge.dest.get(1).derivations.get(kBestMask[1]).words.get(0);
-//                    int lastWordOfChild1 = -1;
-//                    // check whether we are at a situation with one non-terminal on the right hand side (F -> W)
-//                    if(edge.dest.get(0) != endNodeInfo)
-//                    {
-//                        ArrayList<Integer> wordsOfChild1 = edge.dest.get(0).derivations.get(kBestMask[0]).words;
-//                        lastWordOfChild1 = wordsOfChild1.get(wordsOfChild1.size() - 1);
-//                    }
-//                    weightArray[weightArray.length - 2] =
-//                            BigDouble.fromDouble(((HyperedgeInfoBigram)edge.info).
-//                            getWeightBigram(lastWordOfChild1, firstWordOfChild2));
-//                }
-//                else
-                {
-                    weightArray[weightArray.length - 2] = edge.weight;  // edge weight
-                }
+                weightArray[weightArray.length - 2] = edge.weight;  // edge weight            
                 weightArray[weightArray.length - 1] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
                 // compute P_LM and +LM item (store in words list) (see Chiang, 2007)
                 if(input.size() >= M)
@@ -746,7 +722,7 @@ public class Hypergraph<Widget> {
                     kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order
                 }
             }            
-        }
+        } // for
         if(oracleReranker) // Perform oracle reranking, against BLEU-4 score
         {
             BatchBleuScorer bleuScorer = new BatchBleuScorer();
@@ -773,7 +749,7 @@ public class Hypergraph<Widget> {
   public HyperpathResult<Widget> rerankOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
-        computeLogMaxScores(widget); // viterbi using log scores
+        computeLogMaxScores(); // viterbi using log scores
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.viterbi = true;
         chooser.widget = widget;
@@ -1285,7 +1261,7 @@ public class Hypergraph<Widget> {
     }
   }
 
-  private void computeLogMaxScores(Widget widget) {
+  private void computeLogMaxScores() {
     if(this.startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY) return; // Already computed    
     for(int i = topologicalOrdering.size()-1; i >= 0; i--) 
     {
@@ -1296,12 +1272,13 @@ public class Hypergraph<Widget> {
         for(int k = 0; k < nodeInfo.edges.size(); k++)
         {
             Hyperedge edge = nodeInfo.edges.get(k);
-            List<Integer> words = new ArrayList();
-            for(NodeInfo node : edge.dest)
-                words.addAll(node.derivations.get(0).words);
-            double sum = edge.logWeight + 
-                    (edge.info instanceof HyperedgeInfoOnline ? 
-                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight(words) : 0.0);
+            double sum = edge.logWeight;
+//            List<Integer> words = new ArrayList();
+//            for(NodeInfo node : edge.dest)
+//                words.addAll(node.derivations.get(0).words);            
+//            double sum = edge.logWeight + 
+//                    (edge.info instanceof HyperedgeInfoOnline ? 
+//                        ((HyperedgeInfoOnline)edge.info).getOnlineWeight(words) : 0.0);
             for(NodeInfo info : edge.dest)
             {
                 sum += info.logMaxScore;
@@ -1314,7 +1291,6 @@ public class Hypergraph<Widget> {
         } // for
         nodeInfo.logMaxScore = score;
         nodeInfo.bestEdge = chosenIndex;
-        nodeInfo.derivations.add(new Derivation(nodeInfo.edges.get(chosenIndex)));
     } // for
 //      System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
     assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
