@@ -43,15 +43,15 @@ import induction.problem.event3.params.TrackParams;
 public class DiscriminativeInferStateOracle extends DiscriminativeInferState
 {        
     public DiscriminativeInferStateOracle(DiscriminativeEvent3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec, NgramModel ngramModel)
+            Params counts, InferSpec ispec, NgramModel ngramModel, boolean useKBest)
     {
-        super(model, ex, params, counts, ispec, ngramModel);        
+        super(model, ex, params, counts, ispec, ngramModel, useKBest);
     }
 
     public DiscriminativeInferStateOracle(DiscriminativeEvent3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec, NgramModel ngramModel, Graph graph)
+            Params counts, InferSpec ispec, NgramModel ngramModel, boolean useKBest, Graph graph)
     {
-        super(model, ex, params, counts, ispec, ngramModel, graph);
+        super(model, ex, params, counts, ispec, ngramModel, useKBest, graph);
     }   
     
     @Override

@@ -507,12 +507,13 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         InferSpec ispec = new InferSpec(1, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter);
+        boolean useKBest = opts.kBest > 1;
         if(calculateOracle)
             return new DiscriminativeInferStateOracle(
-                    this, ex, (Params)params, null, ispec, ngramModel);
+                    this, ex, (Params)params, null, ispec, ngramModel, useKBest);
         else 
             return new DiscriminativeInferState(
-                    this, ex, (Params)params, null, ispec, ngramModel);
+                    this, ex, (Params)params, null, ispec, ngramModel, useKBest);
 
     }
     
@@ -520,20 +521,22 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                        InferSpec ispec)
     {
+        boolean useKBest = opts.kBest > 1;
         Example ex = (Example)aex;
         Params weights = (Params)aweights;
         Params counts = (Params)acounts;        
-        return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);
+        return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel, useKBest);
     }
 
     @Override
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                            InferSpec ispec, Graph graph)
     {
+        boolean useKBest = opts.kBest > 1;
         Example ex = (Example)aex;
         Params weights = (Params)aweights;
         Params counts = (Params)acounts;
-        return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel);        
+        return new DiscriminativeInferState(this, ex, weights, counts, ispec, ngramModel, useKBest, graph);        
     }
 
     protected class ExampleProcessor extends MyCallable

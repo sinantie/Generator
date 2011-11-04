@@ -83,6 +83,10 @@ public class DiscriminativeInferState extends Event3InferState
      */     
     boolean calculateOracle = false; 
     /**
+     * Use k-best Viterbi in order to estimate parameters. Used mainly in the emission of terminals
+     */
+    boolean useKBest = false;
+    /**
      * map of the count of features extracted during the Viterbi search.
      * It has to be set first to the corresponding map (inferState under train, or oracle)
      * before doing the recursive call to extract D_1 (top derivation)
@@ -91,18 +95,19 @@ public class DiscriminativeInferState extends Event3InferState
     WordNode startSymbol = new WordNode(-1, 0, -1, -1);
     
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec, NgramModel ngramModel)
+            Params counts, InferSpec ispec, NgramModel ngramModel, boolean useKBest)
     {
         super(model, ex, params, counts, ispec);
         this.ngramModel = ngramModel;
+        this.useKBest = useKBest;
         this.baseline = model.getBaselineModelParams();
         this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);               
     }
 
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
-            Params counts, InferSpec ispec, NgramModel ngramModel, Graph graph)
+            Params counts, InferSpec ispec, NgramModel ngramModel, boolean useKBest, Graph graph)
     {
-        this(model, ex, params, counts, ispec, ngramModel);
+        this(model, ex, params, counts, ispec, ngramModel, useKBest);
         this.graph = graph;
     }
 
@@ -302,8 +307,16 @@ public class DiscriminativeInferState extends Event3InferState
         }
         else
         {
-            StopWatchSet.begin("rerank 1-best Viterbi");
-            result = hypergraph.rerankOneBestViterbi(newWidget(), opts.initRandom);
+            if(useKBest)
+            {
+                StopWatchSet.begin("rerank k-best Viterbi");
+                result = hypergraph.rerankKBestViterbi(newWidget(), opts.initRandom);
+            }
+            else
+            {
+                StopWatchSet.begin("rerank 1-best Viterbi");
+                result = hypergraph.rerankOneBestViterbi(newWidget(), opts.initRandom);
+            }            
         }
         StopWatchSet.end();
         bestWidget = (Widget) result.widget;
@@ -492,39 +505,69 @@ public class DiscriminativeInferState extends Event3InferState
         }
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
-        {            
-            // add hyperedge for each word. COSTLY!
-            final int maxWordIndex = modelFParams.emissions[v].getCounts().length - 2; // don't consider start and end symbol here
-            for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
-            {
-                final int w = wIter;
+        {
+            if(useKBest)
+            {                                
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                 double baseParam; ProbVec alignWeights;
                 public double getWeight() {
-                    baseParam = get(baseFParams.emissions[v], w);
-                    alignWeights = modelFParams.emissions[v];
-                    return calculateOracle ? baseParam : getCount(alignWeights, w) + 
-                            getBaselineScore(baseParam);
+                    return 0.0d;
                 }
                 public Pair getWeightLM(int rank)
                 {
-//                    return getAtRank(modelFParams.emissions[v], rank);
-                    return new Pair(-1, w);
+                    baseParam = get(baseFParams.emissions[v], rank);
+                    alignWeights = modelFParams.emissions[v];
+                    return getCount(alignWeights, w) + getBaselineScore(baseParam);
+                    return getAtRank(modelFParams.emissions[v], rank);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {                    
-                    return chooseLM(widget, w);
+                    return widget;
                 }
                 public GenWidget chooseLM(GenWidget widget, int word)
                 {
                     widget.getText()[i] = word;
-                    Feature[] featuresArray = {new Feature(alignWeights, w)};
+                    Feature[] featuresArray = {new Feature(alignWeights, word)};
                     increaseCounts(featuresArray, normalisedLog(baseParam));
                     return widget;
                 }
-                });
-            }            
-        }
+                });               
+            }
+            else
+            {
+                // add hyperedge for each word. COSTLY!
+                final int maxWordIndex = modelFParams.emissions[v].getCounts().length - 2; // don't consider start and end symbol here
+                for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
+                {
+                    final int w = wIter;
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                    double baseParam; ProbVec alignWeights;
+                    public double getWeight() {
+                        baseParam = get(baseFParams.emissions[v], w);
+                        alignWeights = modelFParams.emissions[v];
+                        return calculateOracle ? baseParam : getCount(alignWeights, w) + 
+                                getBaselineScore(baseParam);
+                    }
+                    public Pair getWeightLM(int rank)
+                    {
+                        return getAtRank(modelFParams.emissions[v], rank);
+                    }
+                    public void setPosterior(double prob) { }
+                    public GenWidget choose(GenWidget widget) {                    
+                        return chooseLM(widget, w);
+                    }
+                    public GenWidget chooseLM(GenWidget widget, int word)
+                    {
+                        widget.getText()[i] = word;
+                        Feature[] featuresArray = {new Feature(alignWeights, w)};
+                        increaseCounts(featuresArray, normalisedLog(baseParam));
+                        return widget;
+                    }
+                    });
+                } // for            
+            }
+            
+        } // if
         return node;
     }
 

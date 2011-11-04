@@ -759,6 +759,25 @@ public class Hypergraph<Widget> {
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
+  public HyperpathResult<Widget> rerankKBestViterbi(Widget widget, Random random)
+  {
+        computeTopologicalOrdering();
+        NodeInfo v;
+        for(int i = topologicalOrdering.size()-1; i >= 0; i--)
+        {
+            v = topologicalOrdering.get(i);
+            if(v != endNodeInfo)
+            {                
+                kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order                
+            }            
+        } // for
+        HyperpathChooser chooser = new HyperpathChooser();
+        chooser.widget = widget;
+        chooser.choose = true;
+        chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0));
+        return new HyperpathResult(chooser.widget, chooser.logWeight);
+  }
+  
   public HyperpathResult<Widget> oracleOneBestViterbi(Widget widget, Random random)
   {
         computeTopologicalOrdering();
