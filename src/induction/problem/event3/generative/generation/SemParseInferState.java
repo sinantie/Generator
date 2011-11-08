@@ -158,7 +158,7 @@ public class SemParseInferState extends GenInferState
             public double getWeight() {
                 return 1.0d;
             }
-            public Pair getWeightLM(int rank)
+            public Pair getWeightAtRank(int rank)
             {
                 int length = fparams.valueEmissions[w].getCounts().length;
                 Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
@@ -171,7 +171,7 @@ public class SemParseInferState extends GenInferState
             }
             public void setPosterior(double prob) { }
             public GenWidget choose(GenWidget widget) { return widget; }
-            public GenWidget chooseLM(GenWidget widget, int word)
+            public GenWidget chooseWord(GenWidget widget, int word)
             {
                 widget.getText()[i] = ex.events.get(event).getFields()[field].
                         parseValue(-1, vocabulary.getObject(word));
@@ -203,14 +203,14 @@ public class SemParseInferState extends GenInferState
                     }
                     public void setPosterior(double prob) { }
                     public GenWidget choose(GenWidget widget) { return widget; }
-                    public Pair getWeightLM(int rank)
+                    public Pair getWeightAtRank(int rank)
                     {
                         Pair p = getAtRank(eventTypeParams.noneFieldEmissions, rank);
 //                        p.label = vocabulary.getIndex("(none)");
                         p.label = null;
                         return p;
                     }
-                    public GenWidget chooseLM(GenWidget widget, int word)
+                    public GenWidget chooseWord(GenWidget widget, int word)
                     {
                         widget.getText()[i] = -1;
                         return widget;
@@ -241,7 +241,7 @@ public class SemParseInferState extends GenInferState
 //                    }
 //                    public void setPosterior(double prob) { }
 //                    public GenWidget choose(GenWidget widget) { return widget; }
-//                    public Pair getWeightLM(int rank)
+//                    public Pair getWeightAtRank(int rank)
 //                    {
 //                        Pair p =  getAtRank(params.genericEmissions, rank);
 //                        p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
@@ -249,7 +249,7 @@ public class SemParseInferState extends GenInferState
 //                        p.label = null;
 //                        return p;
 //                    }
-//                    public GenWidget chooseLM(GenWidget widget, int word)
+//                    public GenWidget chooseWord(GenWidget widget, int word)
 //                    {
 ////                        System.out.println("generic");
 //                        widget.gens[c][i] = Parameters.G_FIELD_GENERIC;
@@ -270,7 +270,7 @@ public class SemParseInferState extends GenInferState
         {
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                 public double getWeight() { return 1.0; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
 //                    return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
                     Pair p = getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
@@ -280,7 +280,7 @@ public class SemParseInferState extends GenInferState
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[i] = -1;
                     return widget;
@@ -321,12 +321,12 @@ public class SemParseInferState extends GenInferState
                       return widget;
                     }
                     @Override
-                    public Pair getWeightLM(int rank)
+                    public Pair getWeightAtRank(int rank)
                     {
                         return new Pair(getWeight(), vocabulary.getIndex("none_e"));
                     }
                     @Override
-                    public GenWidget chooseLM(GenWidget widget, int word)
+                    public GenWidget chooseWord(GenWidget widget, int word)
                     {
                         return widget;
                     }
@@ -365,14 +365,14 @@ public class SemParseInferState extends GenInferState
                           return widget;
                         }
                         @Override
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         {
                             return new Pair(getWeight(),
                                     new Integer((Integer)vocabulary.getIndex(
                                     e.getEventTypeName().toLowerCase())));
                         }
                         @Override
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             return widget;
                         }

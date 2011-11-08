@@ -148,7 +148,7 @@ public class GenInferState extends InferState
             {
                 public double getWeight()
                 { return 1;}
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank > 0)
                         return null;
@@ -159,14 +159,14 @@ public class GenInferState extends InferState
                  public GenWidget choose(GenWidget widget)
                 { return widget; }
 
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 { return widget; }
             });
 //            this.hypergraph.addEdge(endSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
 //            {
 //                public double getWeight()
 //                { return 1;}
-//                public Pair getWeightLM(int rank)
+//                public Pair getWeightAtRank(int rank)
 //                {
 //                    if(rank > 0)
 //                        return null;
@@ -177,7 +177,7 @@ public class GenInferState extends InferState
 //                public GenWidget choose(GenWidget widget)
 //                { return widget; }
 //
-//                public GenWidget chooseLM(GenWidget widget, int word)
+//                public GenWidget chooseWord(GenWidget widget, int word)
 //                { return widget; }
 //            });
             ArrayList<Object> list = new ArrayList(opts.ngramSize);
@@ -240,7 +240,7 @@ public class GenInferState extends InferState
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_ROUNDUP);
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
@@ -252,7 +252,7 @@ public class GenInferState extends InferState
                     widget.getNums()[i] = roundUp(v);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getNumMethods()[c][i] = Parameters.M_ROUNDUP;
                     widget.getNums()[i] = roundUp(v);
@@ -263,7 +263,7 @@ public class GenInferState extends InferState
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_ROUNDDOWN);
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
@@ -275,7 +275,7 @@ public class GenInferState extends InferState
                     widget.getNums()[i] = roundDown(v);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getNumMethods()[c][i] = Parameters.M_ROUNDDOWN;
                     widget.getNums()[i] = roundDown(v);
@@ -287,7 +287,7 @@ public class GenInferState extends InferState
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_ROUNDCLOSE);
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
@@ -299,7 +299,7 @@ public class GenInferState extends InferState
                     widget.getNums()[i] = roundClose(v);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getNumMethods()[c][i] = Parameters.M_ROUNDCLOSE;
                     widget.getNums()[i] = roundClose(v);
@@ -311,7 +311,7 @@ public class GenInferState extends InferState
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_IDENTITY);
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices,
@@ -323,7 +323,7 @@ public class GenInferState extends InferState
                     widget.getNums()[i] = v;
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getNumMethods()[c][i] = Parameters.M_IDENTITY;
                     widget.getNums()[i] = v;
@@ -342,7 +342,7 @@ public class GenInferState extends InferState
 //                               Parameters.S_CONTINUE), NOISE_MINUS_ONE) *
 //                               get(fparams.rightNoiseChoices, Parameters.S_STOP);
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices, Parameters.M_NOISEUP),
@@ -359,7 +359,7 @@ public class GenInferState extends InferState
                     widget.getNums()[i] = NOISE_MINUS_ONE + 1 + v;
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getNumMethods()[c][i] = Parameters.M_NOISEUP;
                     widget.getNums()[i] = NOISE_MINUS_ONE + 1 + v;
@@ -378,7 +378,7 @@ public class GenInferState extends InferState
 //                               Parameters.S_CONTINUE), MINUS_NOISE_MINUS_ONE) *
 //                               get(fparams.leftNoiseChoices, Parameters.S_STOP);
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(fparams.methodChoices, Parameters.M_NOISEDOWN),
@@ -395,7 +395,7 @@ public class GenInferState extends InferState
                     widget.getNums()[i] = (-MINUS_NOISE_MINUS_ONE) - 1 + v;
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getNumMethods()[c][i] = Parameters.M_NOISEDOWN;
                     widget.getNums()[i] = (-MINUS_NOISE_MINUS_ONE) - 1 + v;
@@ -438,13 +438,13 @@ public class GenInferState extends InferState
                 public double getWeight() {
                     return 1.0d;
                 }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {                    
                     return getAtRank(fparams.emissions[v], rank);                    
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[i] = word;
                     return widget;
@@ -493,11 +493,11 @@ public class GenInferState extends InferState
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) { return widget; }
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         {
                              return getAtRank(eventTypeParams.noneFieldEmissions, rank);
                         }
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             widget.getText()[i] = word;
                             return widget;
@@ -546,13 +546,13 @@ public class GenInferState extends InferState
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) { return widget; }
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         {
                             Pair p =  getAtRank(params.genericEmissions, rank);
                             p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
                             return p;
                         }
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             widget.getText()[i] = word;
                             return widget;
@@ -688,7 +688,7 @@ public class GenInferState extends InferState
 //                                else
 //                                    return get(eventTypeParams.fieldChoices[f0], eventTypeParams.boundary_f);
 //                            }
-//                            public Pair getWeightLM(int rank)
+//                            public Pair getWeightAtRank(int rank)
 //                            {
 //                                return new Pair(getWeight(), null);
 //                            }
@@ -697,7 +697,7 @@ public class GenInferState extends InferState
 //
 //                                return widget;
 //                            }
-//                            public GenWidget chooseLM(GenWidget widget, int word)
+//                            public GenWidget chooseWord(GenWidget widget, int word)
 //                            {
 ////                                System.out.print(i + " " + Event3Model.wordToString(word));
 //                                widget.text[i] = word;
@@ -778,7 +778,7 @@ public class GenInferState extends InferState
                         }
 
                         @Override                        
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         { // semantic parsing only
                             return new Pair(getWeight(),
                                     fIter < ex.events.get(event).getF() ?
@@ -788,7 +788,7 @@ public class GenInferState extends InferState
                         }
 
                         @Override
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             return widget;
                         }
@@ -819,7 +819,7 @@ public class GenInferState extends InferState
                         }
 
                         @Override
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         { // semantic parsing only
                             return new Pair(getWeight(), 
                                     fIter < ex.events.get(event).getF() ?
@@ -829,7 +829,7 @@ public class GenInferState extends InferState
                         }
 
                         @Override
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             return widget;
                         }
@@ -861,11 +861,11 @@ public class GenInferState extends InferState
                                 return get(eventTypeParams.filters, Parameters.B_FALSE);
                         }
                         public void setPosterior(double prob) {}
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         {
                             return new Pair(getWeight(), null);
                         }
-                        public GenWidget chooseLM(GenWidget widget, int word) {return widget;}
+                        public GenWidget chooseWord(GenWidget widget, int word) {return widget;}
                         public GenWidget choose(GenWidget widget) {return widget;}
                     });
                 } // for
@@ -954,13 +954,13 @@ public class GenInferState extends InferState
         {
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                 public double getWeight() { return 1.0; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[i] = word;
                     return widget;
@@ -990,7 +990,7 @@ public class GenInferState extends InferState
                 }
 
                 @Override
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank > 0)
                         return null;
@@ -999,7 +999,7 @@ public class GenInferState extends InferState
                 }
 
                 @Override
-                public Widget chooseLM(Widget widget, int word)
+                public Widget chooseWord(Widget widget, int word)
                 {
                     return widget;
                 }
@@ -1198,7 +1198,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1209,7 +1209,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs01Temp.getI()] = word;
                     return widget;
@@ -1219,7 +1219,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1230,7 +1230,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs12Temp.getI()] = word;
                     return widget;
@@ -1240,7 +1240,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1251,7 +1251,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs23Temp.getI()] = word;
                     return widget;
@@ -1261,7 +1261,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1272,7 +1272,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs01Wind.getI()] = word;
                     return widget;
@@ -1282,7 +1282,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1293,7 +1293,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs12Wind.getI()] = word;
                     return widget;
@@ -1303,7 +1303,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1314,7 +1314,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs23Wind.getI()] = word;
                     return widget;
@@ -1324,7 +1324,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1335,7 +1335,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs02Temp.getI()] = word;
                     return widget;
@@ -1345,7 +1345,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1356,7 +1356,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs02Wind.getI()] = word;
                     return widget;
@@ -1366,7 +1366,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1377,7 +1377,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs03Temp.getI()] = word;
                     return widget;
@@ -1387,7 +1387,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1398,7 +1398,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs03Wind.getI()] = word;
                     return widget;
@@ -1408,7 +1408,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1419,7 +1419,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs13Temp.getI()] = word;
                     return widget;
@@ -1429,7 +1429,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     Pair p = null;
                     switch(rank)
@@ -1440,7 +1440,7 @@ public class GenInferState extends InferState
                     }
                     return p;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[fs13Wind.getI()] = word;
                     return widget;
@@ -1498,7 +1498,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank == 0)
                     {
@@ -1509,7 +1509,7 @@ public class GenInferState extends InferState
                         return new Pair(0.5, Event3Model.getWordIndex("mainly"));
                     }
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[word1.getI()] = word;
                     return widget;
@@ -1519,7 +1519,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank == 0)
                     {
@@ -1530,7 +1530,7 @@ public class GenInferState extends InferState
                         return new Pair(0.4, Event3Model.getWordIndex("after"));
                     }
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[word2.getI()] = word;
                     return widget;
@@ -1540,7 +1540,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank == 0)
                     {
@@ -1551,7 +1551,7 @@ public class GenInferState extends InferState
                         return new Pair(0.01, Event3Model.getWordIndex("midnight"));
                     }
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[word3.getI()] = word;
                     return widget;
@@ -1561,7 +1561,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank == 0)
                     {
@@ -1572,7 +1572,7 @@ public class GenInferState extends InferState
                         return new Pair(0.00018, Event3Model.getWordIndex("cold"));
                     }
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[word4.getI()] = word;
                     return widget;
@@ -1582,7 +1582,7 @@ public class GenInferState extends InferState
                 public double getWeight() { return 1.0; }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank == 0)
                     {
@@ -1593,7 +1593,7 @@ public class GenInferState extends InferState
                         return new Pair(0.5, Event3Model.getWordIndex("low"));
                     }
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[word4.getI()] = word;
                     return widget;

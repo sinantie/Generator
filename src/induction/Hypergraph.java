@@ -65,8 +65,8 @@ public class Hypergraph<Widget> {
     public double getWeight();
   }
   public interface HyperedgeInfoLM<Widget> extends HyperedgeInfo<Widget> {
-    public induction.problem.Pair getWeightLM(int rank);
-    public Widget chooseLM(Widget widget, int word);
+    public induction.problem.Pair getWeightAtRank(int rank);
+    public Widget chooseWord(Widget widget, int word);
   }
   /**
    * Interface that supports calculation of edge weights during viterbi search
@@ -215,7 +215,7 @@ public class Hypergraph<Widget> {
             if(edge.dest.get(0) == endNodeInfo && edge.dest.get(1) == endNodeInfo)
             {
                 derArray = null;
-                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightLM(-1);
+                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightAtRank(-1);
                 if(p.label != null)
                 {
                     this.words.add(new Integer((Integer)p.label));
@@ -235,7 +235,7 @@ public class Hypergraph<Widget> {
             if(edge.dest.get(0) == endNodeInfo && edge.dest.get(1) == endNodeInfo)
             {
                 derArray = null;
-                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightLM(kBestMask[0]);
+                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightAtRank(kBestMask[0]);
                 this.weight = BigDouble.fromDouble(p.value);
                 if(p.label != null)
                 {
@@ -249,7 +249,7 @@ public class Hypergraph<Widget> {
                 BigDouble[] weightArray = new BigDouble[kBestMask.length + 2];
                 if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
                 {
-                    input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightLM(0).label));
+                    input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightAtRank(0).label));
                 }
                 for(int i = 0; i < kBestMask.length; i++)
                 {
@@ -1506,7 +1506,7 @@ public class Hypergraph<Widget> {
               if(!derivation.words.isEmpty())
               {
                   widget = (Widget) ((HyperedgeInfoLM)derivation.edge.info).
-                          chooseLM(widget, derivation.words.get(0));
+                          chooseWord(widget, derivation.words.get(0));
 //                  System.out.println(derivation.edge);
               }
               return;

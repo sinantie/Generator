@@ -224,7 +224,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
         {
             public double getWeight()
             { return 1;}
-            public Pair getWeightLM(int rank)
+            public Pair getWeightAtRank(int rank)
             {
                 if(rank > 0)
                     return null;
@@ -235,7 +235,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
              public GenWidget choose(GenWidget widget)
             { return widget; }
 
-            public GenWidget chooseLM(GenWidget widget, int word)
+            public GenWidget chooseWord(GenWidget widget, int word)
             { return widget; }
         });
         ArrayList<Object> list = new ArrayList(opts.ngramSize);
@@ -333,7 +333,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     return calculateOracle ?
                             baseParam : getCount(weightProbVec, method) + baseScore;
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(modelFParams.methodChoices,
@@ -347,7 +347,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     increaseCounts(featuresArray, baseScore);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     return choose(widget);
                 }
@@ -360,7 +360,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     return calculateOracle ?
                             baseParam : getCount(weightProbVec, method) + baseScore;
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(modelFParams.methodChoices,
@@ -374,7 +374,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     increaseCounts(featuresArray, baseScore);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     return choose(widget);
                 }
@@ -387,7 +387,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     return calculateOracle ?
                             baseParam : getCount(weightProbVec, method) + baseScore;
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(modelFParams.methodChoices,
@@ -401,7 +401,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     increaseCounts(featuresArray, baseScore);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     return choose(widget);
                 }
@@ -414,7 +414,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     return calculateOracle ?
                             baseParam : getCount(weightProbVec, method) + baseScore;
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(modelFParams.methodChoices,
@@ -428,7 +428,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     increaseCounts(featuresArray, baseScore);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     return choose(widget);
                 }
@@ -444,7 +444,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     return calculateOracle ?
                             baseParam : getCount(weightProbVec, method) + baseScore;
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(modelFParams.methodChoices, method),
@@ -458,7 +458,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     increaseCounts(featuresArray, baseScore);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     return choose(widget);
                 }
@@ -474,7 +474,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     return calculateOracle ?
                             baseParam : getCount(weightProbVec, method) + baseScore;
                 }
-                public Pair getWeightLM(int rank) {
+                public Pair getWeightAtRank(int rank) {
                     if(rank > 0)
                         return null;
                     return new Pair(get(modelFParams.methodChoices, method),
@@ -488,7 +488,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     increaseCounts(featuresArray, baseScore);
                     return widget;
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     return choose(widget);
                 }
@@ -518,15 +518,15 @@ public class DiscriminativeInferStateOld extends Event3InferState
                     weightProbVec = modelFParams.emissions[v];
                     return calculateOracle ? baseParam : getCount(weightProbVec, w) + baseScore;
                 }
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     return getAtRank(modelFParams.emissions[v], rank);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {                    
-                    return chooseLM(widget, w);
+                    return chooseWord(widget, w);
                 }
-                public GenWidget chooseLM(GenWidget widget, int word)
+                public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[i] = word;
                     Feature[] featuresArray = {new Feature(weightProbVec, w)};
@@ -577,13 +577,13 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget)
                         {                            
-                            return chooseLM(widget, w);
+                            return chooseWord(widget, w);
                         }
-                        public Pair getWeightLM(int rank) // used for k-best
+                        public Pair getWeightAtRank(int rank) // used for k-best
                         {
                              return getAtRank(modelEventTypeParams.noneFieldEmissions, rank);
                         }
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             widget.getText()[i] = word;
                             Feature[] featuresArray = {new Feature(weightProbVec, w)};
@@ -637,15 +637,15 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {                            
-                            return chooseLM(widget, w);
+                            return chooseWord(widget, w);
                         }
-                        public Pair getWeightLM(int rank) // used for k-best
+                        public Pair getWeightAtRank(int rank) // used for k-best
                         {
                             Pair p =  getAtRank(baseline.genericEmissions, rank);
                             p.value *= get(baseEventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
                             return p;
                         }
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             widget.getText()[i] = word;
                             widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
@@ -796,7 +796,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         }
 
                         @Override
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         { // semantic parsing only
                             return new Pair(getWeight(),
                                     fIter < ex.events.get(event).getF() ?
@@ -806,7 +806,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         }
 
                         @Override
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             return widget;
                         }
@@ -850,7 +850,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         }
 
                         @Override
-                        public Pair getWeightLM(int rank)
+                        public Pair getWeightAtRank(int rank)
                         { // semantic parsing only
                             return new Pair(getWeight(), 
                                     fIter < ex.events.get(event).getF() ?
@@ -860,7 +860,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         }
 
                         @Override
-                        public GenWidget chooseLM(GenWidget widget, int word)
+                        public GenWidget chooseWord(GenWidget widget, int word)
                         {
                             return widget;
                         }
@@ -938,16 +938,16 @@ public class DiscriminativeInferStateOld extends Event3InferState
                         return calculateOracle ? 
                                  baseParam : getCount(weightProbVec, w) + baseScore;
                     }
-                    public Pair getWeightLM(int rank) // used for k-best
+                    public Pair getWeightAtRank(int rank) // used for k-best
                     {
                         return getAtRank(baseline.trackParams[c].getNoneEventTypeEmissions(), rank);
                     }
                     public void setPosterior(double prob) { }
                     public GenWidget choose(GenWidget widget) 
                     {                         
-                        return chooseLM(widget, w);
+                        return chooseWord(widget, w);
                     }
-                    public GenWidget chooseLM(GenWidget widget, int word)
+                    public GenWidget chooseWord(GenWidget widget, int word)
                     {
                         widget.getText()[i] = word;
                         Feature[] featuresArray = {new Feature(weightProbVec, w)};
@@ -983,11 +983,11 @@ public class DiscriminativeInferStateOld extends Event3InferState
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {                    
-                    return chooseLM(widget, -1);
+                    return chooseWord(widget, -1);
                 }
 
                 @Override
-                public Pair getWeightLM(int rank)
+                public Pair getWeightAtRank(int rank)
                 {
                     if(rank > 0)
                         return null;
@@ -996,7 +996,7 @@ public class DiscriminativeInferStateOld extends Event3InferState
                 }
 
                 @Override
-                public Widget chooseLM(Widget widget, int word)
+                public Widget chooseWord(Widget widget, int word)
                 {
                     Feature[] featuresArray = {new Feature(weightProbVec, index)};
                     increaseCounts(featuresArray, baseScore);
