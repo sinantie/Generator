@@ -3,6 +3,7 @@ package induction.problem.event3.params;
 import induction.problem.AParams;
 import induction.problem.ProbVec;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Wrapper class for all the emission multinomials, i.e. Categorical Field Values,
@@ -15,11 +16,11 @@ import java.util.List;
  */
 public class EmissionParams extends AParams
 {
-    ProbVec[] noneFieldEmissions;
-    List<List<ProbVec[]>> catEmissions;
+    Map<Integer, ProbVec> noneFieldEmissions;
+    Map<Integer, List<ProbVec[]>> catEmissions;
     ProbVec noneEventTypeEmissions, genericEmissions;
     
-    public EmissionParams(List<List<ProbVec[]>> catEmissions, ProbVec[] noneFieldEmissions,
+    public EmissionParams(Map<Integer, List<ProbVec[]>> catEmissions, Map<Integer, ProbVec> noneFieldEmissions,
                           ProbVec noneEventTypeEmissions, ProbVec genericEmissions)
     {
         this.catEmissions = catEmissions;
@@ -28,11 +29,26 @@ public class EmissionParams extends AParams
         this.genericEmissions = genericEmissions;
     }
 
-    public List<List<ProbVec[]>> getCatEmissions()
+    public Map<Integer, List<ProbVec[]>> getCatEmissions()
     {
         return catEmissions;
     }
-        
+
+    public Map<Integer, ProbVec> getNoneFieldEmissions()
+    {
+        return noneFieldEmissions;
+    }
+
+    public ProbVec getGenericEmissions()
+    {
+        return genericEmissions;
+    }
+
+    public ProbVec getNoneEventTypeEmissions()
+    {
+        return noneEventTypeEmissions;
+    }
+            
     @Override
     public String output()
     {

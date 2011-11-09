@@ -191,6 +191,7 @@ public class Hypergraph<Widget> {
         ArrayList<Derivation> derArray;
         ArrayList<Integer> words;
         BigDouble weight;
+        double logWeight;
         int[] mask;
         Collection<Integer> eventTypeSet, fieldSet;
 
@@ -203,7 +204,10 @@ public class Hypergraph<Widget> {
             this.mask = mask;
             this.eventTypeSet = eventTypeSet;
             this.fieldSet = fieldSet;
-            getSucc(mask);
+            if(discriminative)
+                getSuccDiscriminative(mask);
+            else
+                getSucc(mask);
         }
 
         public Derivation(Hyperedge edge)
@@ -291,6 +295,74 @@ public class Hypergraph<Widget> {
             } // else
         }
 
+        private void getSuccDiscriminative(int[] kBestMask)
+        {
+            /* leaf derivation - axiom. Get the best-first value from the
+               underlying multinomial distribution*/
+            if(edge.dest.get(0) == endNodeInfo && edge.dest.get(1) == endNodeInfo)
+            {
+                derArray = null;
+                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightAtRank(kBestMask[0]);
+                this.logWeight = p.value;
+                if(p.label != null)
+                {
+                    this.words.add(new Integer((Integer)p.label));
+                }
+            }
+            else
+            {
+                Derivation d;                
+                ArrayList<Integer> input = new ArrayList();
+//                double[] weightArray = new double[kBestMask.length + 2];
+                if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
+                {
+                    input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightAtRank(0).label));
+                }
+                for(int i = 0; i < kBestMask.length; i++)
+                {
+                    d = edge.dest.get(i).derivations.get(kBestMask[i]);
+                    derArray.add(d);
+//                    weightArray[i] = d.logWeight;
+                    this.logWeight += d.logWeight; // add weight of children
+                    input.addAll(d.words);
+                }
+                this.logWeight += edge.logWeight;  // add local features
+                // local + non-local features log weight (see 'sf' example, Table 1, Chiang 2007 
+                // and EVAL(e,J) function in pseudocode 3, Huang 2008)
+//                weightArray[weightArray.length - 1] = 0;
+                // compute EVAL(e,J) and +LM item (store in words list) (see Chiang, 2007)
+                if(input.size() >= M)
+                {
+                    // add non-local features
+                    for(int i = M - 1; i < input.size(); i++) // function p in Chiang 2007
+                    {
+                        if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
+                        {
+//                            weightArray[weightArray.length - 1].mult(
+//                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
+                            this.logWeight += ((HyperedgeInfoOnline)edge.info).
+                                    getOnlineWeight(input.subList(i - M + 1, i + 1));
+                        }
+                    } // for
+                    for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
+                    {
+                        words.add(input.get(i));
+                    }
+                    words.add(ELIDED_SYMBOL);
+                    for(int i = input.size() - M + 1; i < input.size(); i++)
+                    {
+                        words.add(input.get(i));
+                    }
+                } // if
+                else
+                {                    
+                    words = input; // 2nd branch of function q in Chiang 2007
+                } // LM
+//                for(double tempWeight : weightArray)                    
+//                    this.logWeight += tempWeight;                
+            } // else
+        }
+        
         @Override
         public int compareTo(Object o)
         {
@@ -387,7 +459,8 @@ public class Hypergraph<Widget> {
   private Options.ModelType modelType;
   private Graph graph;
   // discriminative stuff
-  AInferState inferState;
+  private AInferState inferState;
+  private boolean discriminative;
   // Start and end nodes
   private final Object startNode = addNodeAndReturnIt("START", NodeType.sum); // use sum or prod versions
   public final Object endNode = addNodeAndReturnIt("END", NodeType.sum);
@@ -405,6 +478,7 @@ public class Hypergraph<Widget> {
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
         this.inferState = inferState;
+        discriminative = this.inferState instanceof DiscriminativeInferState;
         this.debug = debug;
         // Need this because the pc sets might be inconsistent with the types
         this.allowEmptyNodes = allowEmptyNodes;

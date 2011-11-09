@@ -24,7 +24,6 @@ import induction.problem.event3.Constants;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3InferState;
 import induction.problem.event3.Event3Model;
-import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
@@ -46,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class describes a hypregraph representation of the problem. The main
@@ -234,8 +234,8 @@ public class DiscriminativeInferState extends Event3InferState
         int W = Event3Model.W() - 2; // ignore <s> and </s>
 //        EventType[] eventTypes = ((Event3Model)model).getEventTypes();
         // treat catEmissions and noneFieldEmissions
-        List<List<ProbVec[]>> localFieldEmissions = new ArrayList<List<ProbVec[]>>(T);
-        ProbVec[] localNoneFieldEmissions = new ProbVec[T];         
+        Map<Integer, List<ProbVec[]>> localFieldEmissions = new HashMap<Integer, List<ProbVec[]>>();
+        Map<Integer, ProbVec> localNoneFieldEmissions = new HashMap<Integer, ProbVec>();         
         for(final Event event : ex.events.values())       
 //        for(int e = 0; e < T; e++)
         {
@@ -259,12 +259,13 @@ public class DiscriminativeInferState extends Event3InferState
                     fieldEmissions.add(f, emissions);
                 } // if
             } // for
-            localFieldEmissions.add(fieldEmissions);
+            localFieldEmissions.put(e, fieldEmissions);
             // treat noneFieldEmissions
-            localNoneFieldEmissions[e] = ProbVec.zeros(W);
-            localNoneFieldEmissions[e].addCount(params.eventTypeParams[e].noneFieldEmissions, 1);
-            localNoneFieldEmissions[e].addCount(getBaselineScore(baseline.eventTypeParams[e].noneFieldEmissions), 1);
-            localNoneFieldEmissions[e].setSortedIndices();
+            ProbVec noneFieldEmissions = ProbVec.zeros(W);
+            noneFieldEmissions.addCount(params.eventTypeParams[e].noneFieldEmissions, 1);
+            noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[e].noneFieldEmissions), 1);
+            noneFieldEmissions.setSortedIndices();
+            localNoneFieldEmissions.put(e, noneFieldEmissions);
         } // for
         // treat noneEventTypeEmissions
         ProbVec localNoneEventTypeEmissions = ProbVec.zeros(W);
@@ -292,6 +293,10 @@ public class DiscriminativeInferState extends Event3InferState
                 get(field)[value];
     }
     
+    protected ProbVec getResortedNoneFieldEmissions(int eventTypeIndex)
+    {
+        return emissionsParams.getNoneFieldEmissions().get(eventTypeIndex);
+    }
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {
         if(useKBest)
@@ -597,17 +602,13 @@ public class DiscriminativeInferState extends Event3InferState
             if(useKBest)
             {                                
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
-                public double getWeight() {
-                    return 0.0d;
-                }
+                public double getWeight() {return 0.0d;}
                 public Pair getWeightAtRank(int rank)
                 {                   
                     return getAtRank(getResortedCatFieldEmissions(event, field, v), rank);
                 }
                 public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) {                    
-                    return widget;
-                }
+                public GenWidget choose(GenWidget widget) {return widget;}
                 public GenWidget chooseWord(GenWidget widget, int word)
                 {
                     widget.getText()[i] = word;
@@ -615,7 +616,7 @@ public class DiscriminativeInferState extends Event3InferState
                     increaseCounts(featuresArray, normalisedLog(get(baseFParams.emissions[v], word)));
                     return widget;
                 }
-                });               
+                });
             }
             else
             {
@@ -672,38 +673,59 @@ public class DiscriminativeInferState extends Event3InferState
         {
             if(field == modelEventTypeParams.none_f)
             {
-                // add hyperedge for each word. COSTLY!
-                final int maxWordIndex = modelEventTypeParams.noneFieldEmissions.getCounts().length - 2; // don't consider start and end symbol here
-//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
-                for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
-                { 
-                    final int w = wIter;
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseParam; ProbVec alignWeights;
-                        public double getWeight() {
-                            baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
-                            alignWeights = modelEventTypeParams.noneFieldEmissions;
-                            return getCount(alignWeights, w) + getBaselineScore(baseParam);
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget)
-                        {                            
-                            return chooseWord(widget, w);
-                        }
-                        public Pair getWeightAtRank(int rank) // used for k-best
-                        {
-                             return getAtRank(modelEventTypeParams.noneFieldEmissions, rank);
-                        }
-                        public GenWidget chooseWord(GenWidget widget, int word)
-                        {
-                            widget.getText()[i] = word;
-                            Feature[] featuresArray = {new Feature(alignWeights, w)};
-                            increaseCounts(featuresArray, normalisedLog(baseParam));
-                            return widget;
-                        }
+                if(useKBest)
+                {
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                    public double getWeight() {
+                        return 0.0d;
+                    }
+                    public Pair getWeightAtRank(int rank)
+                    {                   
+                        return getAtRank(getResortedNoneFieldEmissions(eventTypeIndex), rank);
+                    }
+                    public void setPosterior(double prob) { }
+                    public GenWidget choose(GenWidget widget) {                    
+                        return widget;
+                    }
+                    public GenWidget chooseWord(GenWidget widget, int word)
+                    {
+                        widget.getText()[i] = word;
+                        Feature[] featuresArray = {new Feature(modelEventTypeParams.noneFieldEmissions, word)};
+                        increaseCounts(featuresArray, normalisedLog(get(baseEventTypeParams.noneFieldEmissions, word)));
+                        return widget;
+                    }
                     });
-                } // for
-            } // if
+                }
+                else
+                {
+                    // add hyperedge for each word. COSTLY!
+                    final int maxWordIndex = modelEventTypeParams.noneFieldEmissions.getCounts().length - 2; // don't consider start and end symbol here
+                    for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
+                    { 
+                        final int w = wIter;
+                        hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                            double baseParam; ProbVec alignWeights;
+                            public double getWeight() {
+                                baseParam = get(baseEventTypeParams.noneFieldEmissions, w);
+                                alignWeights = modelEventTypeParams.noneFieldEmissions;
+                                return getCount(alignWeights, w) + getBaselineScore(baseParam);
+                            }
+                            public void setPosterior(double prob) { }
+                            public GenWidget choose(GenWidget widget)
+                            {                            
+                                widget.getText()[i] = w;
+                                Feature[] featuresArray = {new Feature(alignWeights, w)};
+                                increaseCounts(featuresArray, normalisedLog(baseParam));
+                                return widget;
+                            }
+                            public Pair getWeightAtRank(int rank) // used for k-best
+                            {return null;}
+                            public GenWidget chooseWord(GenWidget widget, int word)
+                            {return widget;}
+                        });
+                    } // for
+                } // else                
+            } // if none_f
             else
             {
                 // G_FIELD_VALUE: generate based on field value
@@ -728,45 +750,68 @@ public class DiscriminativeInferState extends Event3InferState
                 });
                 // G_FIELD_GENERIC: generate based on event type               
                 // add hyperedge for each word. COSTLY!
-                final int maxWordIndex = params.genericEmissions.getCounts().length - 2; // don't consider start and end symbol here
-//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
-                for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
+                if(useKBest)
                 {
-                    final int w = wIter;
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        double baseParam;
-                        public double getWeight() {
-                            baseParam = get(baseEventTypeParams.genChoices[field], 
-                                    Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);
-                            return  getCount(modelEventTypeParams.genChoices[field], 
-                                    Parameters.G_FIELD_GENERIC) + getCount(params.genericEmissions, w) +
-                                    getBaselineScore(baseParam);
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget) {                            
-                            return chooseWord(widget, w);
-                        }
-                        public Pair getWeightAtRank(int rank) // used for k-best
-                        {
-                            Pair p =  getAtRank(baseline.genericEmissions, rank);
-                            p.value *= get(baseEventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-                            return p;
-                        }
-                        public GenWidget chooseWord(GenWidget widget, int word)
-                        {
-                            widget.getText()[i] = word;
-                            widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
-                            Feature[] featuresArray = {
-                                new Feature(modelEventTypeParams.genChoices[field], 
-                                        Parameters.G_FIELD_GENERIC),
-                                new Feature(params.genericEmissions, w)                                
-                            };
-                            increaseCounts(featuresArray, normalisedLog(baseParam));
-                            return widget;
-                        }
-                        });
-                } // for
-            } // else
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                    public double getWeight() {return 0.0d;}
+                    public Pair getWeightAtRank(int rank)
+                    {                   
+                        Pair p = getAtRank(emissionsParams.getGenericEmissions(), rank);
+                        p.value += get(modelEventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+                        return p;
+                    }
+                    public void setPosterior(double prob) { }
+                    public GenWidget choose(GenWidget widget) {return widget;}
+                    public GenWidget chooseWord(GenWidget widget, int word)
+                    {
+                        widget.getText()[i] = word;                        
+                        widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
+                        Feature[] featuresArray = {
+                            new Feature(modelEventTypeParams.genChoices[field], 
+                                    Parameters.G_FIELD_GENERIC),
+                            new Feature(params.genericEmissions, word)
+                        };
+                        increaseCounts(featuresArray, normalisedLog(get(baseEventTypeParams.genChoices[field], 
+                                        Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, word)));
+                        return widget;
+                    }
+                    });
+                } // if
+                else
+                {
+                    final int maxWordIndex = params.genericEmissions.getCounts().length - 2; // don't consider start and end symbol here
+                    for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
+                    {
+                        final int w = wIter;
+                        hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                            double baseParam;
+                            public double getWeight() {
+                                baseParam = get(baseEventTypeParams.genChoices[field], 
+                                        Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);
+                                return  getCount(modelEventTypeParams.genChoices[field], 
+                                        Parameters.G_FIELD_GENERIC) + getCount(params.genericEmissions, w) +
+                                        getBaselineScore(baseParam);
+                            }
+                            public void setPosterior(double prob) { }
+                            public GenWidget choose(GenWidget widget) {                            
+                                widget.getText()[i] = w;
+                                widget.getGens()[c][i] = Parameters.G_FIELD_GENERIC;
+                                Feature[] featuresArray = {
+                                    new Feature(modelEventTypeParams.genChoices[field], 
+                                            Parameters.G_FIELD_GENERIC),
+                                    new Feature(params.genericEmissions, w)                                
+                                };
+                                increaseCounts(featuresArray, normalisedLog(baseParam));
+                                return widget;
+                            }
+                            public Pair getWeightAtRank(int rank) // used for k-best
+                            {return null;}
+                            public GenWidget chooseWord(GenWidget widget, int word)
+                            {return widget;}
+                            });
+                    } // for
+                } // else                
+            } // else field f
         }
         return node;
     }     
@@ -1010,41 +1055,58 @@ public class DiscriminativeInferState extends Event3InferState
         WordNode node = new WordNode(i, c, ((Event3Model)model).none_t(), -1);
         if(hypergraph.addSumNode(node))
         {
-            // add hyperedge for each word. COSTLY!
-            final int maxWordIndex = params.trackParams[c].getNoneEventTypeEmissions().getCounts().length - 2; // don't consider start and end symbol here
-//            for(int wIter = 0; wIter < (opts.modelUnkWord ? vocabulary.size() : vocabulary.size() - 1); wIter++)
-            for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
+            if(useKBest)
             {
-                final int w = wIter;
-                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                    double baseParam; ProbVec weights;
-                    public double getWeight() 
-                    {
-                        baseParam = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
-                        weights = params.trackParams[c].getNoneEventTypeEmissions();
-                        return calculateOracle ? 
-                                 baseParam : getCount(weights, w) + 
-                                 getBaselineScore(baseParam);
-                    }
-                    public Pair getWeightAtRank(int rank) // used for k-best
-                    {
-                        return getAtRank(baseline.trackParams[c].getNoneEventTypeEmissions(), rank);
-                    }
-                    public void setPosterior(double prob) { }
-                    public GenWidget choose(GenWidget widget) 
-                    {                         
-                        return chooseWord(widget, w);
-                    }
-                    public GenWidget chooseWord(GenWidget widget, int word)
-                    {
-                        widget.getText()[i] = word;
-                        Feature[] featuresArray = {new Feature(weights, w)};
-                        increaseCounts(featuresArray, normalisedLog(baseParam));
-                        return widget;
-                    }
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                public double getWeight() {return 0.0d;}
+                public Pair getWeightAtRank(int rank)
+                {                   
+                    return getAtRank(emissionsParams.getNoneEventTypeEmissions(), rank);
+                }
+                public void setPosterior(double prob) { }
+                public GenWidget choose(GenWidget widget) {return widget;}
+                public GenWidget chooseWord(GenWidget widget, int word)
+                {
+                    widget.getText()[i] = word;
+                    Feature[] featuresArray = {new Feature(params.trackParams[c].getNoneEventTypeEmissions(), word)};
+                    increaseCounts(featuresArray, normalisedLog(get(baseline.trackParams[c].getNoneEventTypeEmissions(), word)));
+                    return widget;
+                }
                 });
-            } // for
-        }
+            }
+            else
+            {
+                // add hyperedge for each word. COSTLY!
+                final int maxWordIndex = params.trackParams[c].getNoneEventTypeEmissions().getCounts().length - 2; // don't consider start and end symbol here
+                for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
+                {
+                    final int w = wIter;
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                        double baseParam; ProbVec weights;
+                        public double getWeight() 
+                        {
+                            baseParam = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
+                            weights = params.trackParams[c].getNoneEventTypeEmissions();
+                            return getCount(weights, w) + getBaselineScore(baseParam);
+                        }
+                        public Pair getWeightAtRank(int rank) // used for k-best
+                        {
+                            return getAtRank(baseline.trackParams[c].getNoneEventTypeEmissions(), rank);
+                        }
+                        public void setPosterior(double prob) { }
+                        public GenWidget choose(GenWidget widget) 
+                        {                         
+                           widget.getText()[i] = w;
+                           Feature[] featuresArray = {new Feature(weights, w)};
+                           increaseCounts(featuresArray, normalisedLog(baseParam));
+                           return widget;
+                        }
+                        public GenWidget chooseWord(GenWidget widget, int word)
+                        {return widget;}
+                    });
+                } // for
+            } // else            
+        } // if
         return node;
     }
 
@@ -1075,7 +1137,6 @@ public class DiscriminativeInferState extends Event3InferState
                     if(rank > 0)
                         return null;
                     return new Pair(getWeight(), vocabulary.getIndex("</s>"));
-//                    return new Pair(1.0, vocabulary.getIndex("</s>"));
                 }
 
                 @Override
@@ -1090,8 +1151,10 @@ public class DiscriminativeInferState extends Event3InferState
         return node;
     }
 
-    // Generate track c in i...j (t0 is previous event type for track 0);
-    // allowNone and allowReal specify what event types we can use
+    /**
+     * Generate track c in i...j (t0 is previous event type for track 0);
+     * allowNone and allowReal specify what event types we can use
+     */ 
     protected Object genTrack(final int i, final int j, final int t0, final int c,
                        boolean allowNone, boolean allowReal)
     {        
@@ -1211,8 +1274,10 @@ public class DiscriminativeInferState extends Event3InferState
         return node;
     }
 
-    // Generate segmentation of i...N into event types; previous event type is t0
-    // Incorporate eventType distributions
+    /**
+     * Generate segmentation of i...N into event types; previous event type is t0
+     * Incorporate eventType distributions
+     */ 
     protected Object genEvents(int i, int t0)
     {
         
