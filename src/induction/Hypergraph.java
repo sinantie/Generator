@@ -341,7 +341,8 @@ public class Hypergraph<Widget> {
                         {
 //                            weightArray[weightArray.length - 1].mult(
 //                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
-                            ngrams.add(input.subList(i - M + 1, i + 1));                            
+                            ngrams.add(input.subList(i - M + 1, i + 1));  
+//                            this.logWeight += Math.log(getLMProb(input.subList(i - M + 1, i + 1)));
                         }
                     } // for
                     this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);
@@ -823,7 +824,7 @@ public class Hypergraph<Widget> {
             HyperpathChooser chooser = new HyperpathChooser();
             chooser.widget = widget;
             chooser.choose = true;
-            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0));
+            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0), !discriminative);
             return new HyperpathResult(chooser.widget, chooser.logWeight);
         }
     }
@@ -856,7 +857,7 @@ public class Hypergraph<Widget> {
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.widget = widget;
         chooser.choose = true;
-        chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0));
+        chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0), false);
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
@@ -890,7 +891,7 @@ public class Hypergraph<Widget> {
             chooser.choose = true;
             this.k = k;
             // get the k-best derivation
-            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k));
+            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), true);
             predStr = GenerationPerformance.widgetToString((GenWidget)chooser.widget);
             // score it
             score = bleuScorer.evaluateBleu(predStr, trueStr);
@@ -1396,71 +1397,7 @@ public class Hypergraph<Widget> {
 //      System.out.println("start.maxScore: " + startNodeInfo.logMaxScore);
     assert startNodeInfo.logMaxScore > Double.NEGATIVE_INFINITY : "Max score = -Infinity";  
     assert startNodeInfo.bestEdge != -1 : "No best edge attached to start node";
-  }
-    
-  /**
-   * Used for discriminative re-ranking.
-   * Re-compute the Viterbi score for each hypernode. We assume that for each node
-   * that emits terminals (i.e. has two endNode children), we have added a
-   * hyperedge which is lexicalised (i.e. conditioned on the words/numbers of
-   * the observed text). Since we are performing Viterbi search on the oracle
-   * hypergraph, for each node that emits terminals, we pick the hyperedge that
-   * corresponds to the the word/number of the gold-standard text.
-   */
-  private void computeOracleMaxScores() {
-//    if(this.startNodeInfo.maxScore != null) return; // Already computed
-
-    for(int i = topologicalOrdering.size()-1; i >= 0; i--) 
-    {
-      NodeInfo nodeInfo = topologicalOrdering.get(i);
-      BigDouble score = nodeInfo.maxScore = BigDouble.invalid();
-      
-      if(nodeInfo == endNodeInfo) { score.setToOne(); continue; }
-      
-      score.setToZero();
-      int chosenIndex = -1;
-      // in case of nodes that emit terminals, skip choosing the max score of the children
-      if(nodeInfo.edges.get(0).dest.get(0) == endNodeInfo && 
-         nodeInfo.edges.get(0).dest.get(1) == endNodeInfo)
-      {
-          chosenIndex = ((DiscriminativeInferState)inferState).
-                  getOracleEdgeIndex((Node)nodeInfo.node);
-          if(chosenIndex > -1)
-          {
-              Hyperedge edge = nodeInfo.edges.get(chosenIndex);
-              score.updateMax_mult3(
-                    BigDouble.fromDouble(((HyperedgeInfo)edge.info).getWeight()),
-                    edge.dest.get(0).maxScore, edge.dest.get(1).maxScore);
-          }
-          else
-              nodeInfo.maxScore = null;
-          nodeInfo.bestEdge = chosenIndex;
-      } // if
-      else
-      {
-          for(int k = 0; k < nodeInfo.edges.size(); k++)
-          {
-            Hyperedge edge = nodeInfo.edges.get(k);
-            if(edge.dest.get(0).maxScore == null || edge.dest.get(1).maxScore == null)
-            {
-                int a = 0;
-                continue;
-            }
-            // call getWeight on each edge again, in order to force the use
-            // of the baseline inferState's parameters (it will work only if we have 
-            // already dictated the inferState to calculate the oracle scores)
-            if(score.updateMax_mult3(
-                    BigDouble.fromDouble(((HyperedgeInfo)edge.info).getWeight()),
-                    edge.dest.get(0).maxScore, edge.dest.get(1).maxScore))
-            {
-                chosenIndex = k;
-            }            
-            nodeInfo.bestEdge = chosenIndex;
-          } // for
-      } // else      
-    } // for
-    assert !startNodeInfo.maxScore.isZero() : "Max score = 0";    
-  }
+  }      
   
   public void fetchPosteriors(boolean viterbi) {
     if(viterbi) fetchPosteriorsMax(); // Only need to call setPosteriors on the best widget
@@ -1581,7 +1518,7 @@ public class Hypergraph<Widget> {
     boolean setPosterior;
     double logWeight; // Likelihood of the weight of the hyperpath chosen
 
-    private void recurseKBest(Derivation derivation)
+      private void recurseKBest(Derivation derivation, boolean calculateLogVZ)
       {
           if(derivation.derArray == null) // choose terminal nodes
           {
@@ -1589,19 +1526,20 @@ public class Hypergraph<Widget> {
               {
                   widget = (Widget) ((HyperedgeInfoLM)derivation.edge.info).
                           chooseWord(widget, derivation.words.get(0));
-//                  System.out.println(derivation.edge);
+    //                  System.out.println(derivation.edge);
               }
               return;
           }
-        
+
          // choose intermediate non-terminal nodes
           widget = (Widget)derivation.edge.info.choose(widget);
-//          System.out.println(derivation.edge);
-//          if(setPosterior) derivation.edge.info.setPosterior(1.0);
-          logWeight += derivation.weight.toLogDouble();
+    //          System.out.println(derivation.edge);
+    //          if(setPosterior) derivation.edge.info.setPosterior(1.0);
+          if(calculateLogVZ)
+              logWeight += derivation.weight.toLogDouble();
           for(Derivation d : derivation.derArray)
           {
-              recurseKBest(d);
+              recurseKBest(d, calculateLogVZ);
           }
       }    
     

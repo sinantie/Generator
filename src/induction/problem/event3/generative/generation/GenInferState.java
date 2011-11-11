@@ -13,7 +13,6 @@ import induction.BigDouble;
 import induction.Hypergraph;
 import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
-import induction.Options;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;

@@ -1,13 +1,11 @@
 package induction.ngrams;
 
-import edu.stanford.nlp.util.ArrayUtils;
 import fig.basic.Indexer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,11 +140,7 @@ public abstract class NgramModel
     
     /**
      * Get a list of the indices of the ngrams in a whole sentence, against a map of 
-     * ngrams loaded previously.
-     * @param ngrams
-     * @param N
-     * @param text
-     * @return 
+     * ngrams loaded previously.     
      */
     public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngrams, 
             int N, List<Integer> text)
@@ -163,5 +157,27 @@ public abstract class NgramModel
     public static Integer getNgramIndex(Map<List<Integer>, Integer> ngrams, List<Integer> text)
     {
         return ngrams.get(text);
+    }
+    
+    public static double getLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
+            boolean numbersAsSymbol, List<Integer> ngram)
+    {
+//            if(modelType == ModelType.semParse)
+//                return 1.0; // we currently don't support LM for semantic parsing
+        String[] ngramStr = new String[ngram.size()];
+        String temp = "";
+        for(int i = 0; i < ngram.size(); i++)
+        {
+            temp = vocabulary.getObject(ngram.get(i));
+            // ngram inferState needs to convert numbers to symbol <num>
+            // syntax parser can process numbers
+            ngramStr[i] = numbersAsSymbol &&
+                          temp.matches("-\\p{Digit}+|" + // negative numbers
+                                 "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
+                                 "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
+                                 ? "<num>" : temp;
+        }
+
+        return ngramModel.getProb(ngramStr);
     }
 }

@@ -17,11 +17,15 @@ import induction.problem.event3.Constants;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
+import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class describes a hypregraph representation of the problem. The main
@@ -126,6 +130,19 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         StopWatchSet.begin("oracle 1-best Viterbi");
         result = hypergraph.oracleOneBestViterbi(newWidget(), opts.initRandom);                    
         StopWatchSet.end();
+        if(useKBest)
+        {
+            // compute ngram features (we can do it offline, since the gold standard text is given)
+            List<Integer> text = new ArrayList();
+            for(int i = 0; i < opts.ngramSize - 1; i++)            
+                text.add(vocabulary.getIndex("<s>"));
+            for(Integer word : ex.getText())
+                text.add(word);
+            text.add(vocabulary.getIndex("</s>"));
+            List<Integer> ngramIndices = NgramModel.getNgramIndices(
+                    ((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+        }        
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);        
     }

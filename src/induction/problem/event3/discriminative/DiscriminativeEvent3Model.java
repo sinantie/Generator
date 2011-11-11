@@ -1,6 +1,5 @@
 package induction.problem.event3.discriminative;
 
-import com.sun.xml.internal.fastinfoset.vocab.Vocabulary;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.IOUtils;
@@ -30,6 +29,7 @@ import induction.problem.event3.Widget;
 import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
+import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -73,7 +73,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      * perform k-best Viterbi, which entails using non-local features
      */
     boolean useKBest;
-    
+    /**
+     * The original size of the vocabulary, defined by the wordIndexer stored in the
+     * serialised object of the generative model. This number stays invariable.
+     */
+    int vocabularySize;
     public DiscriminativeEvent3Model(Options opts)
     {
         super(opts);        
@@ -118,6 +122,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             ObjectInputStream ois = new ObjectInputStream(
                     new FileInputStream(opts.generativeModelParamsFile));
             wordIndexer = ((Indexer<String>) ois.readObject());
+            vocabularySize = Event3Model.W();
             if(useKBest)
                 // build a list of all the ngrams            
                 populateNgramMaps();            
@@ -161,7 +166,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      */
     private void populateNgramMaps()
     {
-        wordBigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
+//        wordBigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
         wordNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer, false);
     }
 
@@ -603,6 +608,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     {
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
+                        LogInfo.logs(GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }
