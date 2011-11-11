@@ -14,7 +14,7 @@ public class DiscriminativeParams extends Params
 //    Params alignWeights;
     public ProbVec baselineWeight;
     public ProbVec bigramWeights;
-    public ProbVec trigramWeights;
+    public ProbVec ngramWeights;
     private DiscriminativeEvent3Model model;
     
     public DiscriminativeParams(DiscriminativeEvent3Model model, Options opts)
@@ -25,11 +25,13 @@ public class DiscriminativeParams extends Params
 //        addVec(alignWeights.getVecs());
         baselineWeight = ProbVec.zeros(1);
         addVec("baseline", baselineWeight);
-        bigramWeights = ProbVec.zeros(model.getWordBigramMap().size());
-        addVec("bigramWeights", bigramWeights);
-        trigramWeights = ProbVec.zeros(model.getWordTrigramMap().size());
-        addVec("trigramWeights", trigramWeights);
-        
+        if(model.isUseKBest())
+        {
+            bigramWeights = ProbVec.zeros(model.getWordBigramMap().size());
+            addVec("bigramWeights", bigramWeights);
+            ngramWeights = ProbVec.zeros(model.getWordNgramMap().size());
+            addVec("ngramWeights", ngramWeights);
+        }        
     }
     
     @Override
@@ -37,10 +39,13 @@ public class DiscriminativeParams extends Params
     {
         String out = "";
         out += forEachProb(baselineWeight, getLabels(1, "baseline", null));
-        out += forEachProb(bigramWeights, getLabels(model.getWordBigramMap().size(), 
+        if(model.isUseKBest())
+        {
+            out += forEachProb(bigramWeights, getLabels(model.getWordBigramMap().size(), 
                 "bigramWeights", model.getWordNgramLabels(2)));
-        out += forEachProb(trigramWeights, getLabels(model.getWordTrigramMap().size(), 
-                "trigramWeights", model.getWordNgramLabels(3)));
+            out += forEachProb(ngramWeights, getLabels(model.getWordNgramMap().size(), 
+                "ngramWeights", model.getWordNgramLabels(3)));
+        }       
         out += super.output();
         return out;
     }

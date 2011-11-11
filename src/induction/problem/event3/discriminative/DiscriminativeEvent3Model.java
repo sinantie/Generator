@@ -64,17 +64,22 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     HashMap<Feature, Double> oracleFeatures, modelFeatures;
     
     Map<List<Integer>, Integer> wordBigramMap;    
-    Map<List<Integer>, Integer> wordTrigramMap;    
+    Map<List<Integer>, Integer> wordNgramMap;    
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
     int numProcessedExamples = 0;
+    /**
+     * perform k-best Viterbi, which entails using non-local features
+     */
+    boolean useKBest;
     
     public DiscriminativeEvent3Model(Options opts)
     {
         super(opts);        
         oracleFeatures = new HashMap<Feature, Double>();
-        modelFeatures = new HashMap<Feature, Double>();        
+        modelFeatures = new HashMap<Feature, Double>();      
+        useKBest = opts.kBest > 1;
     }
 
     @Override
@@ -113,8 +118,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             ObjectInputStream ois = new ObjectInputStream(
                     new FileInputStream(opts.generativeModelParamsFile));
             wordIndexer = ((Indexer<String>) ois.readObject());
-            // build a list of all the bigrams, trigrams
-            populateNgramMaps();            
+            if(useKBest)
+                // build a list of all the ngrams            
+                populateNgramMaps();            
             labelIndexer = ((Indexer<String>) ois.readObject());
             eventTypes = (EventType[]) ois.readObject();
             eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
@@ -156,12 +162,12 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     private void populateNgramMaps()
     {
         wordBigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
-        wordTrigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer, false);
+        wordNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer, false);
     }
 
     public String[] getWordNgramLabels(int N)
     {
-        Map<List<Integer>, Integer> ngrams = N == 2 ? wordBigramMap : wordTrigramMap;
+        Map<List<Integer>, Integer> ngrams = N == 2 ? wordBigramMap : wordNgramMap;
         String labels[] = new String[ngrams.size()];
         for(Entry<List<Integer>, Integer> entry : ngrams.entrySet())
         {
@@ -174,15 +180,20 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         }
         return labels;
     }
+
+    public boolean isUseKBest()
+    {
+        return useKBest;
+    }
     
     public Map<List<Integer>, Integer> getWordBigramMap()
     {
         return wordBigramMap;
     }    
     
-    public Map<List<Integer>, Integer> getWordTrigramMap()
+    public Map<List<Integer>, Integer> getWordNgramMap()
     {
-        return wordTrigramMap;
+        return wordNgramMap;
     }
     
     @Override
@@ -507,7 +518,6 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         InferSpec ispec = new InferSpec(1, !lopts.hardUpdate, true, lopts.hardUpdate,
                       false, lopts.mixParamsCounts, lopts.useVarUpdates,
                       stepSize, iter);
-        boolean useKBest = opts.kBest > 1;
         if(calculateOracle)
             return new DiscriminativeInferStateOracle(
                     this, ex, (Params)params, null, ispec, ngramModel, useKBest);
@@ -520,8 +530,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                        InferSpec ispec)
-    {
-        boolean useKBest = opts.kBest > 1;
+    {        
         Example ex = (Example)aex;
         Params weights = (Params)aweights;
         Params counts = (Params)acounts;        
@@ -531,8 +540,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected AInferState newInferState(AExample aex, AParams aweights, AParams acounts,
                                            InferSpec ispec, Graph graph)
-    {
-        boolean useKBest = opts.kBest > 1;
+    {     
         Example ex = (Example)aex;
         Params weights = (Params)aweights;
         Params counts = (Params)acounts;

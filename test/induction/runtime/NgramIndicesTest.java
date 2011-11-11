@@ -81,7 +81,7 @@ public class NgramIndicesTest
         List<Integer> text = new ArrayList();
         for(int i = 0; i < textStr.length; i++)
             text.add(Event3Model.getWordIndex(textStr[i]));
-        List list = NgramModel.getNgramIndices(discModel.getWordTrigramMap(), 3, text);
+        List list = NgramModel.getNgramIndices(discModel.getWordNgramMap(), 3, text);
         System.out.println(list);
         
     }

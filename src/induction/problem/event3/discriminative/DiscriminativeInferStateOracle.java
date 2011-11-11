@@ -275,11 +275,11 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget)
-                    {                            
+                    {
                         Feature[] featuresArray = {new Feature(modelEventTypeParams.noneFieldEmissions, w)};
                         increaseCounts(featuresArray, normalisedLog(baseParam));
                         return widget;
-                    }                    
+                    }
                 });
             } // if
             else

@@ -105,21 +105,17 @@ public class GenInferState extends InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),
-                vocabulary.getIndex("<s>"),
-                vocabulary.getIndex("</s>"),
+//                vocabulary.getIndex("<s>"),
+//                vocabulary.getIndex("</s>"),
 //                opts.ngramWrapper != Options.NgramWrapper.roark,
                 opts.numAsSymbol,
                 vocabulary, ex, graph);
-//        for(int i = 0; i < hypergraph.wordIndexer.size(); i++)
-//        {
-//            System.out.println(String.format("%d -> %s", i, hypergraph.wordIndexer.getObject(i)));
-//        }
 
         if(opts.fullPredRandomBaseline)
         {

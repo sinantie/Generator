@@ -140,9 +140,28 @@ public abstract class NgramModel
         return indices;
     }
     
+    /**
+     * Get a list of the indices of the ngrams in a whole sentence, against a map of 
+     * ngrams loaded previously.
+     * @param ngrams
+     * @param N
+     * @param text
+     * @return 
+     */
     public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngrams, 
             int N, List<Integer> text)
     {
         return getNgramIndices(ngrams, N, 0, text.size() - 1, text);
+    }
+    
+    /**
+     * Get the index of the ngram in <code>text</code>
+     * @param ngrams
+     * @param text
+     * @return 
+     */
+    public static Integer getNgramIndex(Map<List<Integer>, Integer> ngrams, List<Integer> text)
+    {
+        return ngrams.get(text);
     }
 }

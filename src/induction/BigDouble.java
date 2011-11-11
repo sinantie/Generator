@@ -291,24 +291,24 @@ public class BigDouble {
     }
     return maxi;
   }
-
+  
     public int compareTo(BigDouble d)
     {
         if(this.E > d.E) {
-            return -1;
+            return 1;
         }
         else if(this.E < d.E) {
-            return 1;
+            return -1;
         }
         else
         {
           if(this.M > d.M)
           {
-              return -1;
+              return 1;
           }
           else if(this.M < d.M)
           {
-              return 1;
+              return -1;
           }
           return 0;
         }

@@ -209,14 +209,14 @@ public class DiscriminativeInferStateOld extends Event3InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setupForGeneration(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("<num>"),
                 opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("ELIDED_SYMBOL"),
-                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("<s>"),
-                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("</s>"),
+//                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("<s>"),
+//                opts.modelType == Options.ModelType.discriminativeTrain ? -1 : vocabulary.getIndex("</s>"),
                 opts.ngramWrapper != Options.NgramWrapper.roark,
                 vocabulary, ex, graph);                       
         hypergraph.addSumNode(startSymbol);        

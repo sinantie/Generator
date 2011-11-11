@@ -42,7 +42,7 @@ public class GenerationAtisTest
                     + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
                     + "results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 1 "
+                    + "-disallowConsecutiveRepeatFields -kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "

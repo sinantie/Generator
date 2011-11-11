@@ -2,7 +2,7 @@
 
 inputLists=data/atis/test/atis-test.txt
 #inputLists=test/testAtisExamples
-execDir=results/output/atis/generation/discriminative/calculate_baseline_weight_norm_gen
+execDir=results/output/atis/generation/discriminative/calculate_baseline_weight_norm_gen_all
 numThreads=2
 stagedParamsFile=results/output/atis/generation/discriminative/calculate_baseline_weight_norm/stage1.discriminative.params.obj
 baselineModel=results/output/atis/alignments/model_3/prior_0.01/stage1.params.obj
@@ -27,7 +27,7 @@ dist/stanford-postagger-2010-05-26.jar -Djava.library.path=lib/wrappers inductio
 -reorderType eventType \
 -maxPhraseLength 5 \
 -binariseAtWordLevel \
--ngramSize 3 
+-ngramSize 3
 #-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model \
 #-lengthPredictionFeatureType COUNTS \
 #-lengthPredictionStartIndex 2 \

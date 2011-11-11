@@ -334,16 +334,17 @@ public class Hypergraph<Widget> {
                 if(input.size() >= M)
                 {
                     // add non-local features
+                    List<List<Integer>> ngrams = new ArrayList();
                     for(int i = M - 1; i < input.size(); i++) // function p in Chiang 2007
                     {
                         if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
                         {
 //                            weightArray[weightArray.length - 1].mult(
 //                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
-                            this.logWeight += ((HyperedgeInfoOnline)edge.info).
-                                    getOnlineWeight(input.subList(i - M + 1, i + 1));
+                            ngrams.add(input.subList(i - M + 1, i + 1));                            
                         }
                     } // for
+                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);
                     for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
                     {
                         words.add(input.get(i));
@@ -363,11 +364,18 @@ public class Hypergraph<Widget> {
             } // else
         }
         
+        /**
+         * Compare two derivations. Note, if the current derivation has a larger weight 
+         * than the other, return -1. I.e. we sort in descending order.
+         * @param o
+         * @return 
+         */
         @Override
         public int compareTo(Object o)
         {
-            Derivation d = (Derivation)o;
-            return this.weight.compareTo(d.weight);
+            Derivation d = (Derivation)o;            
+            return -(discriminative ? Double.compare(this.logWeight, d.logWeight): 
+                                           this.weight.compareTo(d.weight));
         }
       
         /**
@@ -431,7 +439,7 @@ public class Hypergraph<Widget> {
             {
                 out += vocabulary.getObject(words.get(i)) + " ";
             }
-            out += "(" + weight + ")";
+            out += "(" + (discriminative ? logWeight : weight) + ")";
             if(eventTypeSet == null)
                 return out;
             out += " [";
@@ -448,7 +456,7 @@ public class Hypergraph<Widget> {
   private ArrayList<NodeInfo> topologicalOrdering;
 
   // kBest stuff
-  public  int K, M, NUM, ELIDED_SYMBOL, START_SYMBOL, END_SYMBOL;
+  public  int K, M, NUM, ELIDED_SYMBOL;
   public Options.ReorderType reorderType;
   private enum Reorder {eventType, event, field, ignore};
   public NgramModel ngramModel;
@@ -469,12 +477,11 @@ public class Hypergraph<Widget> {
   private final NodeInfo endNodeInfo = getNodeInfoOrFail(endNode);
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
 
-  public  void setupForGeneration(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
+  public  void setup(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
                                         boolean oracleReranker, int NUM,
-                                        int ELIDED_SYMBOL, int START_SYMBOL,
-                                        int END_SYMBOL, boolean numbersAsSymbol,
+                                        int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
         this.inferState = inferState;
@@ -492,8 +499,6 @@ public class Hypergraph<Widget> {
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
-        this.START_SYMBOL = START_SYMBOL;
-        this.END_SYMBOL = END_SYMBOL;
         this.numbersAsSymbol = numbersAsSymbol;
         this.vocabulary = wordIndexer;
         this.ex = ex;
@@ -518,23 +523,26 @@ public class Hypergraph<Widget> {
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
-        this.debug = debug;
-        // Need this because the pc sets might be inconsistent with the types
-        this.allowEmptyNodes = allowEmptyNodes;
-        this.modelType = modelType;
-        this.K = K;
-        this.M = 2;
-        this.reorderType = reorderType;
-        this.allowConsecutiveEvents = allowConsecutiveEvents;
-        /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-        this.NUM = NUM;
-        this.ELIDED_SYMBOL = ELIDED_SYMBOL;
-        this.numbersAsSymbol = numbersAsSymbol;
-        this.vocabulary = wordIndexer;
-        this.ex = ex;
-        this.graph = graph;
-        if(graph != null)
-            graph.addVertex(startNode);
+      setup(null, debug, modelType, allowEmptyNodes, K, null, 2, reorderType, 
+                         allowConsecutiveEvents, false, NUM, ELIDED_SYMBOL, 
+                         numbersAsSymbol, wordIndexer, ex, graph);
+//        this.debug = debug;
+//        // Need this because the pc sets might be inconsistent with the types
+//        this.allowEmptyNodes = allowEmptyNodes;
+//        this.modelType = modelType;
+//        this.K = K;
+//        this.M = 2;
+//        this.reorderType = reorderType;
+//        this.allowConsecutiveEvents = allowConsecutiveEvents;
+//        /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+//        this.NUM = NUM;
+//        this.ELIDED_SYMBOL = ELIDED_SYMBOL;
+//        this.numbersAsSymbol = numbersAsSymbol;
+//        this.vocabulary = wordIndexer;
+//        this.ex = ex;
+//        this.graph = graph;
+//        if(graph != null)
+//            graph.addVertex(startNode);
   }
 
   // Things we're going to compute

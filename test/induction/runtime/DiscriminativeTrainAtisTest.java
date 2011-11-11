@@ -54,7 +54,7 @@ public class DiscriminativeTrainAtisTest
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
-                    + "-ngramSize 3 ";
+                    + "-ngramSize 3";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
