@@ -1,7 +1,7 @@
 #!/bin/bash
 
 inputLists=data/atis/train/atis5000.sents.full
-execDir=results/output/atis/generation/discriminative/calculate_baseline_weight_norm
+execDir=results/output/atis/generation/discriminative/calculate_baseline_ngrams_weight_norm
 numIters=15
 numThreads=2
 baselineModel=results/output/atis/alignments/model_3/prior_0.01/stage1.params.obj
@@ -27,6 +27,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.DiscriminativeInduction
 -allowConsecutiveEvents \
 -reorderType eventType \
 -maxPhraseLength 5 \
--binariseAtWordLevel
+-binariseAtWordLevel \
+-kBest 40
 #-allowNoneEvent \
 #-conditionNoneEvent

@@ -198,9 +198,9 @@ public class DiscriminativeInferState extends Event3InferState
         for(final Event event : ex.events.values())       
 //        for(int e = 0; e < T; e++)
         {
-            int e = event.getEventTypeIndex();
+            int eventTypeIndex = event.getEventTypeIndex();
+            int eventId = event.getId();
             // treat catEmissions
-//            EventType eventType = eventTypes[e];
             List<ProbVec[]> fieldEmissions = new ArrayList<ProbVec[]>(event.getF());
             for(int f = 0; f < event.getF(); f++)
             {
@@ -210,21 +210,21 @@ public class DiscriminativeInferState extends Event3InferState
                     ProbVec[] emissions = ProbVec.zeros2(field.getV(), W);
                     for(int v = 0; v < field.getV(); v++)
                     {                        
-                        emissions[v].addCount(getCatFieldParams(e, f).emissions[v], 1);
+                        emissions[v].addCount(getCatFieldParams(eventId, f).emissions[v], 1);
                         emissions[v].addCount(getBaselineScore(
-                                getBaselineCatFieldParams(e, f).emissions[v]), 1);
+                                getBaselineCatFieldParams(eventId, f).emissions[v]), 1);
                         emissions[v].setSortedIndices();
                     } // for
                     fieldEmissions.add(f, emissions);
                 } // if
             } // for
-            localFieldEmissions.put(e, fieldEmissions);
+            localFieldEmissions.put(eventTypeIndex, fieldEmissions);
             // treat noneFieldEmissions
             ProbVec noneFieldEmissions = ProbVec.zeros(W);
-            noneFieldEmissions.addCount(params.eventTypeParams[e].noneFieldEmissions, 1);
-            noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[e].noneFieldEmissions), 1);
+            noneFieldEmissions.addCount(params.eventTypeParams[eventTypeIndex].noneFieldEmissions, 1);
+            noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[eventTypeIndex].noneFieldEmissions), 1);
             noneFieldEmissions.setSortedIndices();
-            localNoneFieldEmissions.put(e, noneFieldEmissions);
+            localNoneFieldEmissions.put(eventTypeIndex, noneFieldEmissions);
         } // for
         // treat noneEventTypeEmissions
         ProbVec localNoneEventTypeEmissions = ProbVec.zeros(W);
