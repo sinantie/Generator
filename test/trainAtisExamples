@@ -1,3 +1,9 @@
+Example_1
+list all the flights that arrive at general mitchell international from various cities
+.id:0	.type:city	@from:any	@location:--	@services:--	@stop:--	@to:--
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:any	@manufacturer:--	@price:--	@stop:--	@to:mke	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1 2
 Example_2
 give me the flights leaving denver august ninth coming back to boston
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
@@ -5,3 +11,50 @@ give me the flights leaving denver august ninth coming back to boston
 .id:2	.type:day_number	@day_number:9	@dep_ar_ret:departure
 .id:3	.type:month	@dep_ar_ret:departure	@month:august
 0 0 1 2 3
+Example_3
+what flights from tacoma to orlando on saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tacoma	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_4
+what is the most expensive one way fare from boston to atlanta on american airlines
+.id:1	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:2	.type:search	@of:flight	@typed:max	@what:fare
+0 1 2
+Example_5
+what flights return from denver to philadelphia on a saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:philadelphia	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_6
+can you list all flights from chicago to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_7
+show me the flights from denver that go to pittsburgh and then atlanta
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:pittsburgh	@to:atlanta	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_8
+i'd like to see flights from baltimore to atlanta that arrive before noon and i'd like to see flights from denver to atlanta that arrive before noon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:5	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1200	@typed:<
+.id:3	.type:condition	@arg1:arrival_time	@arg2:1200	@typed:<
+.id:4	.type:condition	@arg1:flight	@arg2:--	@typed:or
+0 0 1 2 3 4 5
+Example_9
+do you have an 819 flight from denver to san francisco
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:--	@dep_ar:departure	@time:819
+0 0 1 2
+Example_10
+can you list all round trip flights from orlando to kansas city and then to minneapolis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:kansas_city	@to:minneapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
