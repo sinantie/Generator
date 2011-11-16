@@ -115,14 +115,14 @@ public abstract class NgramModel
     /**
      * Get a list of the indices of the ngrams in a sentence, against a map of 
      * ngrams loaded previously.
-     * @param ngrams a map of ngrams. The value of the map is a unique integer
+     * @param ngramsMap a map of ngrams. The value of the map is a unique integer
      * @param N the size of n-grams
      * @param i the start index to look for in the sentence
      * @param j the end index
      * @param text the sentence in integer mapping
      * @return  a list of the indices of the ngrams in the sentence
      */
-    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngrams, 
+    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, 
             int N, int i, int j, List<Integer> text)
     {
         List<Integer> indices = new ArrayList<Integer>();
@@ -130,7 +130,7 @@ public abstract class NgramModel
         {
             for(int k = i; k <= j - (N - 1); k++)
             {                    
-                Integer index = ngrams.get(text.subList(k, k + N));
+                Integer index = ngramsMap.get(text.subList(k, k + N));
                 if(index != null)
                     indices.add(index);
             }
@@ -142,24 +142,40 @@ public abstract class NgramModel
      * Get a list of the indices of the ngrams in a whole sentence, against a map of 
      * ngrams loaded previously.     
      */
-    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngrams, 
+    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, 
             int N, List<Integer> text)
     {
-        return getNgramIndices(ngrams, N, 0, text.size() - 1, text);
+        return getNgramIndices(ngramsMap, N, 0, text.size() - 1, text);
+    }
+    
+    /**
+     * Get a list of the indices of the ngrams from a list of ngrams, against a map of 
+     * ngrams loaded previously.     
+     */
+    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, List<List<Integer>> ngrams)
+    {
+        List<Integer> indices = new ArrayList<Integer>();
+        for(List<Integer> ngram : ngrams)
+        {
+            Integer index = ngramsMap.get(ngram);
+            if(index != null)
+                indices.add(index);
+        }            
+        return indices;
     }
     
     /**
      * Get the index of the ngram in <code>text</code>
-     * @param ngrams
+     * @param ngramsMap
      * @param text
      * @return 
      */
-    public static Integer getNgramIndex(Map<List<Integer>, Integer> ngrams, List<Integer> text)
+    public static Integer getNgramIndex(Map<List<Integer>, Integer> ngramsMap, List<Integer> text)
     {
-        return ngrams.get(text);
+        return ngramsMap.get(text);
     }
     
-    public static double getLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
+    public static double getNgramLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
             boolean numbersAsSymbol, List<Integer> ngram)
     {
 //            if(modelType == ModelType.semParse)
@@ -179,5 +195,18 @@ public abstract class NgramModel
         }
 
         return ngramModel.getProb(ngramStr);
+    }
+    
+    public static double getSentenceLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
+            boolean numbersAsSymbol, int N, List<Integer> text)
+    {
+        double res = 0.0;
+//        for(int k = 0; k <= j - (N - 1); k++)
+//        {                    
+//            Integer index = ngrams.get(text.subList(k, k + N));
+//            if(index != null)
+//                indices.add(index);
+//        }
+        return res;
     }
 }

@@ -13,9 +13,12 @@ import fig.record.Record;
 import induction.LearnOptions;
 import induction.MyCallable;
 import induction.Options;
+import induction.Options.NgramWrapper;
 import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.NgramModel;
+import induction.ngrams.RoarkNgramWrapper;
+import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
 import induction.problem.AParams;
 import induction.problem.APerformance;
@@ -393,14 +396,14 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public void generate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel; // HACK 
-//        Utils.begin_track("Loading Language Model...");
-//        if(opts.ngramWrapper == NgramWrapper.kylm)
-//            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-//        else if(opts.ngramWrapper == NgramWrapper.srilm)
-//            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-//        else if(opts.ngramWrapper == NgramWrapper.roark)
-//            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
-//        LogInfo.end_track();
+        Utils.begin_track("Loading Language Model...");
+        if(opts.ngramWrapper == NgramWrapper.kylm)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        else if(opts.ngramWrapper == NgramWrapper.srilm)
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+        else if(opts.ngramWrapper == NgramWrapper.roark)
+            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+        LogInfo.end_track();
         // Complexity inference (number of hypergraph nodes)
         FullStatFig complexity = new FullStatFig();
         testPerformance = newPerformance();       
@@ -482,17 +485,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         AExample ex = examples.get(0);
         Widget bestWidget = null;
         try{
-//            for(int i = 0; i < examples.size(); i++)
-//            {
-//                ExampleProcessor model = new ExampleProcessor(
-//                    examples.get(i), i, modelFeatures, false, lopts, 0, complexity);
-//                model.call();
-//                bestWidget = model.bestWidget;
-//            }                                    
-            ExampleProcessor model = new ExampleProcessor(
-                ex, 0, modelFeatures, false, lopts, 0, complexity);
-            model.call();
-            bestWidget = model.bestWidget;
+            for(int i = 0; i < examples.size(); i++)
+            {
+                ExampleProcessor model = new ExampleProcessor(
+                    examples.get(i), i, modelFeatures, false, lopts, 0, complexity);
+                model.call();
+                bestWidget = model.bestWidget;
+            }                                    
+//            ExampleProcessor model = new ExampleProcessor(
+//                ex, 0, modelFeatures, false, lopts, 0, complexity);
+//            model.call();
+//            bestWidget = model.bestWidget;
         }
         catch(Exception e){}        
         System.out.println(widgetToFullString(ex, bestWidget));

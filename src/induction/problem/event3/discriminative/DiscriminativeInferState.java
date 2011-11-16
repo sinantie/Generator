@@ -11,6 +11,7 @@ import induction.problem.event3.params.Params;
 import induction.problem.event3.params.Parameters;
 import induction.Hypergraph;
 import induction.Hypergraph.HyperpathResult;
+import induction.Options.ModelType;
 import induction.ngrams.NgramModel;
 import induction.Utils;
 import induction.problem.AModel;
@@ -209,10 +210,14 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     CatFieldParams modelFieldParams = getCatFieldParams(eventId, f);
                     CatFieldParams baseFieldParams = getBaselineCatFieldParams(eventId, f);
-                    ProbVec[] emissions = ProbVec.zeros2(field.getV(), W);
-                    for(int v = 0; v < field.getV(); v++)
-                    {
-                        
+                    // we keep track of the number of values from the model parameters, 
+                    // rather than from the example, as in the test dataset there
+                    // might be extra (unseen) values, for which we have no trained data.                    
+//                    ProbVec[] emissions = ProbVec.zeros2(field.getV(), W);
+                    ProbVec[] emissions = ProbVec.zeros2(modelFieldParams.emissions.length, W);
+//                    for(int v = 0; v < field.getV(); v++)
+                    for(int v = 0; v < modelFieldParams.emissions.length; v++)
+                    {                        
                         emissions[v].addCount(modelFieldParams.emissions[v], 1);
                         emissions[v].addCount(getBaselineScore(baseFieldParams.emissions[v]), 1);
                         emissions[v].setSortedIndices();
@@ -318,10 +323,9 @@ public class DiscriminativeInferState extends Event3InferState
             {
                 return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
             }
-            public double getOnlineWeight(List<Integer> text)
+            public double getOnlineWeight(List<List<Integer>> ngrams)
             {
-                List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                return getOnlineNgramWeights(ngrams);
             }
             public void setPosterior(double prob)
             { }
@@ -351,16 +355,19 @@ public class DiscriminativeInferState extends Event3InferState
                 StopWatchSet.begin("rerank k-best Viterbi");
 //                result = hypergraph.rerankKBestViterbi(newWidget(), opts.initRandom);
                 result = hypergraph.kBestViterbi(newWidget());
-                // compute ngram features (we can do it  in the end, since we have created the resulting output text)
-                List<Integer> text = new ArrayList();
-                for(int i = 0; i < opts.ngramSize - 1; i++)            
-                    text.add(vocabulary.getIndex("<s>"));
-                for(Integer word: ((GenWidget)result.widget).getText())
-                    text.add(word);
-                text.add(vocabulary.getIndex("</s>"));
-                List<Integer> ngramIndices = NgramModel.getNgramIndices(
+                if(opts.modelType == ModelType.discriminativeTrain)
+                {
+                    // compute ngram features (we can do it  in the end, since we have created the resulting output text)
+                    List<Integer> text = new ArrayList();
+                    for(int i = 0; i < opts.ngramSize - 1; i++)            
+                        text.add(vocabulary.getIndex("<s>"));
+                    for(Integer word: ((GenWidget)result.widget).getText())
+                        text.add(word);
+                    text.add(vocabulary.getIndex("</s>"));                
+                    List<Integer> ngramIndices = NgramModel.getNgramIndices(
                         ((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+                }                
             }
             else
             {
@@ -423,6 +430,12 @@ public class DiscriminativeInferState extends Event3InferState
             for(Integer index : weightIndices)
                 list.add(new Feature(weights, index));
         return list;
+    }
+    
+    protected double getOnlineNgramWeights(List<List<Integer>> ngrams)
+    {
+        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), ngrams);
+        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
     }
     
     protected EventTypeParams getBaselineEventTypeParams(int event)
@@ -800,9 +813,8 @@ public class DiscriminativeInferState extends Event3InferState
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
-                    public double getOnlineWeight(List<Integer> text){
-                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                    public double getOnlineWeight(List<List<Integer>> ngrams){
+                        return getOnlineNgramWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -828,9 +840,8 @@ public class DiscriminativeInferState extends Event3InferState
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
-                    public double getOnlineWeight(List<Integer> text){
-                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                    public double getOnlineWeight(List<List<Integer>> ngrams){
+                        return getOnlineNgramWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -911,10 +922,9 @@ public class DiscriminativeInferState extends Event3InferState
                                                  modelEventTypeParams.boundary_f) +
                                         getBaselineScore(baseParam);
                         }
-                        public double getOnlineWeight(List<Integer> text)
+                        public double getOnlineWeight(List<List<Integer>> ngrams)
                         {
-                            List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                            return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                           return getOnlineNgramWeights(ngrams);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
@@ -949,11 +959,9 @@ public class DiscriminativeInferState extends Event3InferState
                                     getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
-                        public double getOnlineWeight(List<Integer> text)
+                        public double getOnlineWeight(List<List<Integer>> ngrams)
                         {
-                            List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                            return
-                                 getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                           return getOnlineNgramWeights(ngrams);
                         }
                         public GenWidget choose(GenWidget widget) {                            
                             for(int k = i; k < j; k++)
@@ -991,9 +999,8 @@ public class DiscriminativeInferState extends Event3InferState
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
-                    public double getOnlineWeight(List<Integer> text){
-                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                    public double getOnlineWeight(List<List<Integer>> ngrams){
+                        return getOnlineNgramWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -1019,9 +1026,8 @@ public class DiscriminativeInferState extends Event3InferState
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
-                    public double getOnlineWeight(List<Integer> text){
-                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                    public double getOnlineWeight(List<List<Integer>> ngrams){
+                        return getOnlineNgramWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -1175,11 +1181,9 @@ public class DiscriminativeInferState extends Event3InferState
                                  getBaselineScore(baseParam);
                          
                       }
-                      public double getOnlineWeight(List<Integer> text)
+                      public double getOnlineWeight(List<List<Integer>> ngrams)
                       {
-                          List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 
-                                                          3, text);
-                          return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                          return getOnlineNgramWeights(ngrams);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {
@@ -1224,11 +1228,9 @@ public class DiscriminativeInferState extends Event3InferState
                                   getCount(alignWeights, eventTypeIndex) + 
                                   getBaselineScore(baseParam);                         
                       }
-                      public double getOnlineWeight(List<Integer> text)
+                      public double getOnlineWeight(List<List<Integer>> ngrams)
                       {
-                          List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 
-                                                          3, text);
-                          return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                          return getOnlineNgramWeights(ngrams);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {
@@ -1332,9 +1334,8 @@ public class DiscriminativeInferState extends Event3InferState
                 public double getWeight() {
                     return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                 }
-                public double getOnlineWeight(List<Integer> text){
-                    List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                    return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                public double getOnlineWeight(List<List<Integer>> ngrams){
+                    return getOnlineNgramWeights(ngrams);
                 }
                 public void setPosterior(double prob) { }
                 public Widget choose(Widget widget) {

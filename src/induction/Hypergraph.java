@@ -73,7 +73,7 @@ public class Hypergraph<Widget> {
    * @param <Widget> 
    */  
   public interface HyperedgeInfoOnline<Widget> extends HyperedgeInfo<Widget> {
-    public double getOnlineWeight(List<Integer> text);
+    public double getOnlineWeight(List<List<Integer>> ngrams);
   }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
@@ -339,8 +339,7 @@ public class Hypergraph<Widget> {
                     {
                         if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
                         {
-//                            weightArray[weightArray.length - 1].mult(
-//                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
+//                          // subList returns [i, j), j exclusive
                             ngrams.add(input.subList(i - M + 1, i + 1));  
 //                            this.logWeight += Math.log(getLMProb(input.subList(i - M + 1, i + 1)));
                         }
@@ -393,23 +392,40 @@ public class Hypergraph<Widget> {
 
         private String getSubGeneration()
         {
-            String out = "";
+            StringBuilder out = new StringBuilder();
             if(derArray == null) // choose terminal nodes
               {
-                  if(words.size() > 0)
+                  if(!words.isEmpty())
                   {
-                     out += vocabulary.getObject(words.get(0)) + " ";
-//                     System.out.println(out);
-                      return out;
-
+//                     out.append(vocabulary.getObject(words.get(0))).append(" ");
+                     out.append(words.get(0)).append(" ");                     
+                     return out.toString();                     
                   }
               }
               for(Derivation d : derArray)
               {
-                  out += d.getSubGeneration();
+                  out.append(d.getSubGeneration());
               }
-              return out;
+              return out.toString();
         }
+//        private String getSubGeneration()
+//        {
+//            String out = "";
+//            if(derArray == null) // choose terminal nodes
+//              {
+//                  if(words.size() > 0)
+//                  {
+//                     out += vocabulary.getObject(words.get(0)) + " ";
+//                      return out;
+//
+//                  }
+//              }
+//              for(Derivation d : derArray)
+//              {
+//                  out += d.getSubGeneration();
+//              }
+//              return out;
+//        }
 
         private double getLMProb(List<Integer> ngram)
         {
