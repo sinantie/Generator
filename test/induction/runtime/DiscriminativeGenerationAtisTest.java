@@ -15,13 +15,13 @@ import org.junit.Test;
  *
  * @author konstas
  */
-public class DiscriminativeGenerationTest
+public class DiscriminativeGenerationAtisTest
 {
     LearnOptions lopts;
     String name;
     DiscriminativeEvent3Model model;
     
-    public DiscriminativeGenerationTest()
+    public DiscriminativeGenerationAtisTest()
     {
     }
 
@@ -40,15 +40,15 @@ public class DiscriminativeGenerationTest
     {
         String args = "-modelType generate -inputLists test/testAtisExamples "
 //         String args = "-modelType generate -inputLists data/atis/test/atis-test.txt "                   
-                    + "-examplesInSingleFile "
+                    + "-examplesInSingleFile -numThreads 1 "
                     + "-inputFileExt events "                    
                     + "-dontOutputParams "            
                     + "-generativeModelParamsFile results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
                     + "-stagedParamsFile results/output/atis/generation/discriminative/"
-                    + "calculate_baseline_weight_norm/stage1.discriminative.params.obj "
+                    + "calculate_baseline_ngrams_weight_norm/stage1.discriminative.params.obj "
                     + "-disallowConsecutiveRepeatFields "                 
-//                    + "-kBest 40 "
+                    + "-kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "

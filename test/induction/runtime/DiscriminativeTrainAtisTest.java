@@ -39,7 +39,7 @@ public class DiscriminativeTrainAtisTest
     {
          String args = "-modelType discriminativeTrain -inputLists test/trainAtisExamples "
 //         String args = "-modelType discriminativeTrain -inputLists data/atis/train/atis5000.sents.full "
-                    + "-Options.stage1.numIters 15 "
+                    + "-Options.stage1.numIters 18 -numThreads 1 "
                     + "-Options.stage1.learningScheme incremental "
                     + "-examplesInSingleFile "
                     + "-inputFileExt events "                    
