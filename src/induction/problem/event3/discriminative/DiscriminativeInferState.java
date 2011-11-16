@@ -193,7 +193,7 @@ public class DiscriminativeInferState extends Event3InferState
 //        int W = Event3Model.W() - 2; // ignore <s> and </s>
 //        EventType[] eventTypes = ((Event3Model)model).getEventTypes();
         // treat catEmissions and noneFieldEmissions
-        Map<Integer, List<ProbVec[]>> localFieldEmissions = new HashMap<Integer, List<ProbVec[]>>();
+        Map<Integer, Map<Integer, ProbVec[]>> localFieldEmissions = new HashMap<Integer, Map<Integer, ProbVec[]>>();
         Map<Integer, ProbVec> localNoneFieldEmissions = new HashMap<Integer, ProbVec>();         
         for(final Event event : ex.events.values())       
 //        for(int e = 0; e < T; e++)
@@ -201,21 +201,23 @@ public class DiscriminativeInferState extends Event3InferState
             int eventTypeIndex = event.getEventTypeIndex();
             int eventId = event.getId();
             // treat catEmissions
-            List<ProbVec[]> fieldEmissions = new ArrayList<ProbVec[]>(event.getF());
+            Map<Integer, ProbVec[]> fieldEmissions = new HashMap<Integer, ProbVec[]>(event.getF());
             for(int f = 0; f < event.getF(); f++)
             {
                 Field field = event.getFields()[f];
                 if(field instanceof CatField)
                 {
+                    CatFieldParams modelFieldParams = getCatFieldParams(eventId, f);
+                    CatFieldParams baseFieldParams = getBaselineCatFieldParams(eventId, f);
                     ProbVec[] emissions = ProbVec.zeros2(field.getV(), W);
                     for(int v = 0; v < field.getV(); v++)
-                    {                        
-                        emissions[v].addCount(getCatFieldParams(eventId, f).emissions[v], 1);
-                        emissions[v].addCount(getBaselineScore(
-                                getBaselineCatFieldParams(eventId, f).emissions[v]), 1);
+                    {
+                        
+                        emissions[v].addCount(modelFieldParams.emissions[v], 1);
+                        emissions[v].addCount(getBaselineScore(baseFieldParams.emissions[v]), 1);
                         emissions[v].setSortedIndices();
                     } // for
-                    fieldEmissions.add(f, emissions);
+                    fieldEmissions.put(f, emissions);
                 } // if
             } // for
             localFieldEmissions.put(eventTypeIndex, fieldEmissions);
@@ -311,18 +313,15 @@ public class DiscriminativeInferState extends Event3InferState
         this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
                        new Hypergraph.HyperedgeInfoOnline<GenWidget>()
         {
-            List<Integer> bigramIndices, ngramIndices;
+//            List<Integer> ngramIndices;
             public double getWeight()
             {
                 return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
             }
             public double getOnlineWeight(List<Integer> text)
             {
-//                bigramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordBigramMap(), 
-//                                              2, text);
-                ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                return //getNgramWeights(((DiscriminativeParams)params).bigramWeights, bigramIndices) + 
-                     getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
             }
             public void setPosterior(double prob)
             { }
@@ -333,7 +332,7 @@ public class DiscriminativeInferState extends Event3InferState
 //                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                 return widget;
             }
-        });       
+        });
     }            
 
     @Override
@@ -797,18 +796,18 @@ public class DiscriminativeInferState extends Event3InferState
                                    genWord(begin, c, event, field),
                                    genField(begin + 1, end, c, event, field),
                                    new Hypergraph.HyperedgeInfoOnline<Widget>() {
-                    List<Integer> ngramIndices;
+//                    List<Integer> ngramIndices;
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<Integer> text){
-                        ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
                         return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
-                        if(useKBest)
-                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+//                        if(useKBest)
+//                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                         return widget;
                     }
                 });
@@ -825,18 +824,18 @@ public class DiscriminativeInferState extends Event3InferState
                 }
                 hypergraph.addEdge(node, list, new Hypergraph.HyperedgeInfoOnline<Widget>()
                 {
-                    List<Integer> ngramIndices;
+//                    List<Integer> ngramIndices;
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<Integer> text){
-                        ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
                         return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
-                        if(useKBest)
-                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+//                        if(useKBest)
+//                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                         return widget;
                     }
                 });
@@ -900,7 +899,7 @@ public class DiscriminativeInferState extends Event3InferState
                     hypergraph.addEdge(node, genField(i, j, c, event, f),
                                        new Hypergraph.HyperedgeInfoOnline<GenWidget>() {
                         double baseParam;
-                        List<Integer> bigramIndices, ngramIndices;
+//                        List<Integer> ngramIndices;
                         public double getWeight() { // final field-phrase before boundary   
                                 baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter) *
                                        get(baseEventTypeParams.fieldChoices[fIter],
@@ -914,11 +913,8 @@ public class DiscriminativeInferState extends Event3InferState
                         }
                         public double getOnlineWeight(List<Integer> text)
                         {
-//                            bigramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordBigramMap(), 
-//                                                          2, text);
-                            ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                            return //getNgramWeights(((DiscriminativeParams)params).bigramWeights, bigramIndices) + 
-                                 getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                            List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                            return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
@@ -932,7 +928,6 @@ public class DiscriminativeInferState extends Event3InferState
                                             modelEventTypeParams.boundary_f)                                    
                             };
                             increaseCounts(featuresArray, normalisedLog(baseParam));
-//                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).bigramWeights, bigramIndices));
 //                            if(useKBest)
 //                                increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                             return widget;
@@ -945,7 +940,7 @@ public class DiscriminativeInferState extends Event3InferState
                                        genFields(j, end, c, event, remember_f, new_efs),
                                        new Hypergraph.HyperedgeInfoOnline<GenWidget>() {
                         double baseParam; ProbVec weights;  
-                        List<Integer> bigramIndices, trigramIndices;
+//                        List<Integer> ngramIndices;
                         public double getWeight() {                            
                             baseParam = get(baseEventTypeParams.fieldChoices[f0], fIter);                           
                             weights = modelEventTypeParams.fieldChoices[f0];
@@ -956,11 +951,9 @@ public class DiscriminativeInferState extends Event3InferState
                         public void setPosterior(double prob) { }
                         public double getOnlineWeight(List<Integer> text)
                         {
-//                            bigramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordBigramMap(), 
-//                                                          2, text);
-                            trigramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                            return //getNgramWeights(((DiscriminativeParams)params).bigramWeights, bigramIndices) + 
-                                 getNgramWeights(((DiscriminativeParams)params).ngramWeights, trigramIndices);                                 
+                            List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                            return
+                                 getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
                         }
                         public GenWidget choose(GenWidget widget) {                            
                             for(int k = i; k < j; k++)
@@ -969,9 +962,8 @@ public class DiscriminativeInferState extends Event3InferState
                             }
                             Feature[] featuresArray = {new Feature(weights, fIter)};
                             increaseCounts(featuresArray, normalisedLog(baseParam));
-//                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).bigramWeights, bigramIndices));
 //                            if(useKBest)
-//                                increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, trigramIndices));
+//                                increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                             return widget;
                         }                      
                     });
@@ -995,12 +987,12 @@ public class DiscriminativeInferState extends Event3InferState
                                    genNoneWord(i, c),
                                    genNoneEventWords(i + 1, j, c),
                                    new Hypergraph.HyperedgeInfoOnline<Widget>() {
-                    List<Integer> ngramIndices;
+//                    List<Integer> ngramIndices;
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<Integer> text){
-                        ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
                         return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
                     }
                     public void setPosterior(double prob) { }
@@ -1023,12 +1015,12 @@ public class DiscriminativeInferState extends Event3InferState
                 }
                 hypergraph.addEdge(node, list, new Hypergraph.HyperedgeInfoOnline<Widget>()
                 {
-                    List<Integer> ngramIndices;
+//                    List<Integer> ngramIndices;
                     public double getWeight() {
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<Integer> text){
-                        ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
                         return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
                     }
                     public void setPosterior(double prob) { }
@@ -1116,8 +1108,7 @@ public class DiscriminativeInferState extends Event3InferState
                     alignWeights = modelCParams.getEventTypeChoices()[index];                    
                     baseParam = get(baseCParams.getEventTypeChoices()[t0], index);
                     return calculateOracle ? baseParam :
-                            getCount(alignWeights, index) + 
-                            getBaselineScore(baseParam);
+                            getCount(alignWeights, index) + getBaselineScore(baseParam);
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {                    
@@ -1170,8 +1161,7 @@ public class DiscriminativeInferState extends Event3InferState
                   genNoneEventWords(i, j, c), recurseNode,
                   new Hypergraph.HyperedgeInfoOnline<GenWidget>() {
                       double baseParam; ProbVec alignWeights;
-                      int boundaryIndex = modelCParams.boundary_t;
-                      List<Integer> bigramIndices, ngramIndices;
+//                      List<Integer> ngramIndices;
                       public double getWeight() {                         
                           baseParam = get(baseCParams.getEventTypeChoices()[t0], 
                                  baseCParams.none_t);
@@ -1181,18 +1171,15 @@ public class DiscriminativeInferState extends Event3InferState
                                   // pecreptron weight * 1 (omitted, since 
                                  // it is equivalent to the count of the 
                                  // alignment inferState rule)
-                                 getCount(alignWeights, boundaryIndex) + 
+                                 getCount(alignWeights, modelCParams.boundary_t) + 
                                  getBaselineScore(baseParam);
                          
                       }
                       public double getOnlineWeight(List<Integer> text)
                       {
-//                          bigramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordBigramMap(), 
-//                                                          2, text);
-                          ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 
+                          List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 
                                                           3, text);
-                          return //getNgramWeights(((DiscriminativeParams)params).bigramWeights, bigramIndices) + 
-                                 getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                          return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {
@@ -1200,9 +1187,8 @@ public class DiscriminativeInferState extends Event3InferState
                           {
                               widget.getEvents()[c][k] = Parameters.none_e;
                           }
-                          Feature[] featuresArray = {new Feature(alignWeights, boundaryIndex)};
+                          Feature[] featuresArray = {new Feature(alignWeights, modelCParams.boundary_t)};
                           increaseCounts(featuresArray, normalisedLog(baseParam));
-//                          increaseCounts(getNgramFeatures(((DiscriminativeParams)params).bigramWeights, bigramIndices));
 //                          if(useKBest)
 //                              increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                           return widget;
@@ -1228,7 +1214,7 @@ public class DiscriminativeInferState extends Event3InferState
                                               recurseNode,
                             new Hypergraph.HyperedgeInfoOnline<GenWidget>() {
                       double baseParam; ProbVec alignWeights;
-                      List<Integer> bigramIndices, ngramIndices;
+//                      List<Integer> ngramIndices;
                       public double getWeight()
                       {
                           baseParam = get(baseCParams.getEventTypeChoices()[t0], eventTypeIndex) *
@@ -1240,12 +1226,9 @@ public class DiscriminativeInferState extends Event3InferState
                       }
                       public double getOnlineWeight(List<Integer> text)
                       {
-//                          bigramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordBigramMap(), 
-//                                                          2, text);
-                          ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 
+                          List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 
                                                           3, text);
-                          return// getNgramWeights(((DiscriminativeParams)params).bigramWeights, bigramIndices) + 
-                                 getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+                          return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {
@@ -1254,8 +1237,7 @@ public class DiscriminativeInferState extends Event3InferState
                               widget.getEvents()[c][k] = eventId;
                           }                          
                           Feature[] featuresArray = {new Feature(alignWeights, eventTypeIndex)};
-                          increaseCounts(featuresArray, normalisedLog(baseParam));
-                          //increaseCounts(getNgramFeatures(((DiscriminativeParams)params).bigramWeights, bigramIndices));
+                          increaseCounts(featuresArray, normalisedLog(baseParam));                          
 //                          if(useKBest)
 //                              increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                           return widget;
@@ -1345,21 +1327,21 @@ public class DiscriminativeInferState extends Event3InferState
     {
         int c = 0; // assume we only have 1 track (TODO: may need to remove that)
         hypergraph.addEdge(node, genTrack(i, j, t0, c, opts.allowNoneEvent, true),
-                new Hypergraph.HyperedgeInfoOnline<Widget>() {
-                    List<Integer> ngramIndices;
-                    public double getWeight() {
-                        return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
-                    }
-                    public double getOnlineWeight(List<Integer> text){
-                        ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
-                    }
-                    public void setPosterior(double prob) { }
-                    public Widget choose(Widget widget) {
+            new Hypergraph.HyperedgeInfoOnline<Widget>() {
+//                List<Integer> ngramIndices;
+                public double getWeight() {
+                    return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
+                }
+                public double getOnlineWeight(List<Integer> text){
+                    List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
+                    return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);
+                }
+                public void setPosterior(double prob) { }
+                public Widget choose(Widget widget) {
 //                        if(useKBest)
 //                            increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
-                        return widget;
-                    }
-                });
+                    return widget;
+                }
+            });
     }
 }

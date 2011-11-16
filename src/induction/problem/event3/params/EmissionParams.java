@@ -17,10 +17,10 @@ import java.util.Map;
 public class EmissionParams extends AParams
 {
     Map<Integer, ProbVec> noneFieldEmissions;
-    Map<Integer, List<ProbVec[]>> catEmissions;
+    Map<Integer, Map<Integer, ProbVec[]>> catEmissions;
     ProbVec noneEventTypeEmissions, genericEmissions;
     
-    public EmissionParams(Map<Integer, List<ProbVec[]>> catEmissions, Map<Integer, ProbVec> noneFieldEmissions,
+    public EmissionParams(Map<Integer, Map<Integer, ProbVec[]>> catEmissions, Map<Integer, ProbVec> noneFieldEmissions,
                           ProbVec noneEventTypeEmissions, ProbVec genericEmissions)
     {
         this.catEmissions = catEmissions;
@@ -29,7 +29,7 @@ public class EmissionParams extends AParams
         this.genericEmissions = genericEmissions;
     }
 
-    public Map<Integer, List<ProbVec[]>> getCatEmissions()
+    public Map<Integer, Map<Integer, ProbVec[]>> getCatEmissions()
     {
         return catEmissions;
     }

@@ -341,10 +341,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             if(lopts.learningScheme == LearningScheme.stepwise)
                 updateOptimizer(true, optimizer);
             // update the internal average model
-//            LogInfo.logsForce("baseline before avging " + ((DiscriminativeParams)params).baselineWeight.getCount(0));
             ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
-//            ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
-//            LogInfo.logsForce("baseline after avging " + ((DiscriminativeParams)params).baselineWeight.getCount(0));
             record(String.valueOf(iter), name, complexity);            
             LogInfo.end_track();
             Record.end();
