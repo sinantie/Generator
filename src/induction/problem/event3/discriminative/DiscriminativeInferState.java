@@ -366,7 +366,7 @@ public class DiscriminativeInferState extends Event3InferState
                     text.add(vocabulary.getIndex("</s>"));                
                     List<Integer> ngramIndices = NgramModel.getNgramIndices(
                         ((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));                   
                 }                
             }
             else
@@ -378,6 +378,7 @@ public class DiscriminativeInferState extends Event3InferState
         StopWatchSet.end();
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);
+        System.out.println(baselineFeature.getValue());
         if(!calculateOracle)
         {
             logVZ = result.logWeight;

@@ -1274,7 +1274,7 @@ public class Hypergraph<Widget> {
                 destination.push(i);
         }
     }
-
+    Set<String> subGenerations = new HashSet<String>(K);
     /**
      * Perform hypothesis recombination on the sorted {@link List} <code>list</code>
      * of derivations. Checks whether two derivations have the same sub-generation
@@ -1284,8 +1284,8 @@ public class Hypergraph<Widget> {
     private void doHypothesisRecombination(List<Derivation> list)
     {
         if(list.size() < 2) return;
-
-        Set<String> subGenerations = new HashSet<String>(list.size());
+        subGenerations.clear();
+//        Set<String> subGenerations = new HashSet<String>(list.size());
         for (Iterator<Derivation> iter = list.listIterator(); iter.hasNext(); )
         {
             String subGeneration = iter.next().getSubGeneration();

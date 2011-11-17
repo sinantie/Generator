@@ -143,7 +143,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                     ((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
             increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
         }        
-        bestWidget = (Widget) result.widget;
+        bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        
     }
     
