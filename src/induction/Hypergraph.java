@@ -1,8 +1,8 @@
 package induction;
 
+import java.lang.String;
 import induction.problem.event3.discriminative.DiscriminativeInferState;
 import induction.problem.AInferState;
-import induction.problem.event3.nodes.Node;
 import induction.ngrams.NgramModel;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.generation.GenWidget;
@@ -1285,17 +1285,47 @@ public class Hypergraph<Widget> {
     {
         if(list.size() < 2) return;
 
-//        for (Iterator<Derivation> i = list.listIterator(); i.hasNext(); )
-        for (int i = 0; i < list.size(); i++)
+        Set<String> subGenerations = new HashSet<String>(list.size());
+        for (Iterator<Derivation> iter = list.listIterator(); iter.hasNext(); )
         {
-            Derivation ref = list.get(i);
-            for (Iterator<Derivation> j = list.listIterator(i + 1); j.hasNext(); )
-            {
-                if(ref.isEquivalentTo(j.next()))
-                    j.remove();
-            }
+            String subGeneration = iter.next().getSubGeneration();
+            if(subGenerations.contains(subGeneration))
+                iter.remove();
+            else
+                subGenerations.add(subGeneration);
         }
+        
+//        for (Derivation d : list)
+//            subGenerations.add(d.getSubGeneration());        
+//        for (int i = 0; i < subGenerations.size(); i++)
+//        {
+//            int j = i + 1;
+//            for (Iterator<String> iter = subGenerations.listIterator(i + 1); iter.hasNext(); )
+//            {
+//                if(subGenerations.get(i).equals(iter.next()))
+//                {
+//                    iter.remove();
+//                    list.remove(j);
+//                }
+//                j++;
+//            }
+//        }
     }
+//    private void doHypothesisRecombination(List<Derivation> list)
+//    {
+//        if(list.size() < 2) return;
+//
+////        for (Iterator<Derivation> i = list.listIterator(); i.hasNext(); )
+//        for (int i = 0; i < list.size(); i++)
+//        {
+//            Derivation ref = list.get(i);
+//            for (Iterator<Derivation> j = list.listIterator(i + 1); j.hasNext(); )
+//            {
+//                if(ref.isEquivalentTo(j.next()))
+//                    j.remove();
+//            }
+//        }
+//    }
 
   private void computeInsideMaxScores(boolean viterbi) {
     if(viterbi && this.startNodeInfo.maxScore != null) return; // Already computed
