@@ -58,3 +58,60 @@ can you list all round trip flights from orlando to kansas city and then to minn
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:kansas_city	@to:minneapolis	@year:--
 .id:1	.type:search	@of:--	@typed:lambda	@what:flight
 0 0 1
+Example_11
+show me the united flights from denver to baltimore
+.id:0	.type:flight	@aircraft_code:--	@airline:ua	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_12
+i would like a us air flight from toronto to san diego with a stopover in denver please
+.id:0	.type:flight	@aircraft_code:--	@airline:us	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:denver	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_13
+are there any nonstop flights leaving from denver arriving in baltimore on july seventh
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:nonstop	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:month	@dep_ar_ret:arrival	@month:july
+.id:3	.type:day_number	@day_number:7	@dep_ar_ret:arrival
+0 0 1 2 3
+Example_14
+how can i get from boston to atlanta and back in the same day and have the most hours on the ground in atlanta
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:atlanta	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:2	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:6	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+.id:8	.type:search	@of:departure_time	@typed:argmax	@what:flight
+0 0 2 6 8
+Example_15
+are there any flights between pittsburgh and baltimore using a j31 aircraft
+.id:0	.type:flight	@aircraft_code:j31	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_16
+what does d/s stand for for meals
+.id:0	.type:const	@typed:restriction	@value:d_s
+0 0
+Example_17
+pittsburgh to boston saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_18
+what are the flights from charlotte to atlanta returning on tuesday july thirteenth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:tuesday	@dep_ar_ret:return
+.id:3	.type:day_number	@day_number:13	@dep_ar_ret:return
+.id:4	.type:month	@dep_ar_ret:return	@month:july
+0 0 1 2 3 4
+Example_19
+i need the cost of a ticket going from denver to baltimore a first class ticket on united airlines
+.id:1	.type:flight	@aircraft_code:--	@airline:ua	@class_type:first	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_20
+is there a flight between san francisco and boston with a stopover at dallas fort worth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_francisco	@manufacturer:--	@price:--	@stop:dallas	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
