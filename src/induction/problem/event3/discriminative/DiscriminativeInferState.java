@@ -378,7 +378,7 @@ public class DiscriminativeInferState extends Event3InferState
         StopWatchSet.end();
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);
-        System.out.println(baselineFeature.getValue());
+//        System.out.println(baselineFeature.getValue());
         if(!calculateOracle)
         {
             logVZ = result.logWeight;
@@ -397,21 +397,22 @@ public class DiscriminativeInferState extends Event3InferState
         return getLogProb(d) / ex.N();
     }
     
-    protected double getBaselineScore(double baseWeight)
+    protected double getBaselineScore(double baseProb)
     {
-        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * normalisedLog(baseWeight);
+        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * normalisedLog(baseProb);
 //        return 1.0 * Math.abs(getLogProb(baseWeight));
 //        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * Math.log(baseWeight);
     }        
     
     protected ProbVec getBaselineScore(ProbVec probVec)
     {
-       double[] probVecCounts = probVec.getCounts();
+//       double[] baseProbs = probVec.getCounts();
+       double[] baseProbs = probVec.getProbs();
        double baseWeight = getCount(((DiscriminativeParams)params).baselineWeight, 0);
-       ProbVec pv = ProbVec.zeros(probVecCounts.length);
-       for(int  i = 0; i < probVecCounts.length; i++)
+       ProbVec pv = ProbVec.zeros(baseProbs.length);
+       for(int  i = 0; i < baseProbs.length; i++)
        {
-           pv.set(i, baseWeight * normalisedLog(probVecCounts[i]));
+           pv.set(i, baseWeight * normalisedLog(baseProbs[i]));
        }           
        return pv;
     }
@@ -604,11 +605,11 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     final int w = wIter;
                     hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                    double baseParam; ProbVec alignWeights;
+                    double baseProb; ProbVec alignWeights;
                     public double getWeight() {
-                        baseParam = get(baseFParams.emissions[v], w);
+                        baseProb = get(baseFParams.emissions[v], w);
                         alignWeights = modelFParams.emissions[v];
-                        return getCount(alignWeights, w) + getBaselineScore(baseParam);
+                        return getCount(alignWeights, w) + getBaselineScore(baseProb);
                     }
                     public Pair getWeightAtRank(int rank)
                     {return null;}
@@ -616,7 +617,7 @@ public class DiscriminativeInferState extends Event3InferState
                     public GenWidget choose(GenWidget widget) {                    
                         widget.getText()[i] = w;
                         Feature[] featuresArray = {new Feature(alignWeights, w)};
-                        increaseCounts(featuresArray, normalisedLog(baseParam));
+                        increaseCounts(featuresArray, normalisedLog(baseProb));
                         return widget;
                     }
                     public GenWidget chooseWord(GenWidget widget, int word)
