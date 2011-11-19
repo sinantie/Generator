@@ -1,9 +1,9 @@
 data/weather-data-full/data/virginia/glen_allen/2009-02-08-1.events
-#data/weather-data-full/data/tennessee/cleveland/2009-02-10-1.events
-#data/weather-data-full/data/texas/kilgore/2009-02-08-1.events
-#data/weather-data-full/data/texas/richardson/2009-02-07-1.events
-#data/weather-data-full/data/alabama/tillmans_corner/2009-02-09-1.events
-#data/weather-data-full/data/tennessee/middle_valley/2009-02-09-0.events
+data/weather-data-full/data/tennessee/cleveland/2009-02-10-1.events
+data/weather-data-full/data/texas/kilgore/2009-02-08-1.events
+data/weather-data-full/data/texas/richardson/2009-02-07-1.events
+data/weather-data-full/data/alabama/tillmans_corner/2009-02-09-1.events
+data/weather-data-full/data/tennessee/middle_valley/2009-02-09-0.events
 #test/middle_valley/2009-02-09-0.events
 #Mostly cloudy ,
 #with a low around 48 .

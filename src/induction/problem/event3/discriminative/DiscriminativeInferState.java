@@ -98,6 +98,8 @@ public class DiscriminativeInferState extends Event3InferState
      * thus resorting in best-first order. Used for non-local features only (k-best)
      */    
     EmissionParams emissionsParams;
+
+    Map<List<Integer>, Integer> wordNgramsMap;
     
     WordNode startSymbol = new WordNode(-1, 0, -1, -1);
     
@@ -108,7 +110,8 @@ public class DiscriminativeInferState extends Event3InferState
         this.ngramModel = ngramModel;
         this.useKBest = useKBest;
         this.baseline = model.getBaselineModelParams();
-        this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);               
+        this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
+        this.wordNgramsMap = ((DiscriminativeEvent3Model)model).getWordNgramMap();
     }
 
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
@@ -156,7 +159,7 @@ public class DiscriminativeInferState extends Event3InferState
         else
             features.put(feat, increment);
     }
-    
+        
     @Override
     protected void initInferState(AModel model)
     {
@@ -325,7 +328,7 @@ public class DiscriminativeInferState extends Event3InferState
             }
             public double getOnlineWeight(List<List<Integer>> ngrams)
             {
-                return getOnlineNgramWeights(ngrams);
+                return getNgramWeights(ngrams) + getLMWeights(ngrams);
             }
             public void setPosterior(double prob)
             { }
@@ -358,15 +361,7 @@ public class DiscriminativeInferState extends Event3InferState
                 if(opts.modelType == ModelType.discriminativeTrain)
                 {
                     // compute ngram features (we can do it  in the end, since we have created the resulting output text)
-                    List<Integer> text = new ArrayList();
-                    for(int i = 0; i < opts.ngramSize - 1; i++)            
-                        text.add(vocabulary.getIndex("<s>"));
-                    for(Integer word: ((GenWidget)result.widget).getText())
-                        text.add(word);
-                    text.add(vocabulary.getIndex("</s>"));                
-                    List<Integer> ngramIndices = NgramModel.getNgramIndices(
-                        ((DiscriminativeEvent3Model)model).getWordNgramMap(), 3, text);
-                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));                   
+                    increaseNgramLMCounts(((GenWidget)result.widget).getText());
                 }                
             }
             else
@@ -416,15 +411,7 @@ public class DiscriminativeInferState extends Event3InferState
        }           
        return pv;
     }
-    
-    protected double getNgramWeights(ProbVec weights, List<Integer> weightIndices)
-    {
-        double weight = 0.0;
-        for(Integer index : weightIndices)
-            weight += getCount(weights, index);
-        return weight;
-    }
-    
+        
     protected List<Feature> getNgramFeatures(ProbVec weights, List<Integer> weightIndices)
     {
         List<Feature> list = new ArrayList<Feature>();
@@ -434,12 +421,44 @@ public class DiscriminativeInferState extends Event3InferState
         return list;
     }
     
-    protected double getOnlineNgramWeights(List<List<Integer>> ngrams)
+    protected double getNgramWeights(List<List<Integer>> ngrams)
     {
-        List<Integer> ngramIndices = NgramModel.getNgramIndices(((DiscriminativeEvent3Model)model).getWordNgramMap(), ngrams);
-        return getNgramWeights(((DiscriminativeParams)params).ngramWeights, ngramIndices);                                 
+        List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
+        double weight = 0.0;
+        for(Integer index : ngramIndices)
+            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);
+        return weight;        
     }
     
+    /**
+     * compute the lm score for the ngrams given in the parameter
+     * @param ngrams a list of ngrams
+     * @return 
+     */
+    protected double getLMWeights(List<List<Integer>> ngrams)
+    {        
+        double weight = 0.0;
+        for(List<Integer> ngram : ngrams)
+            weight += getCount(((DiscriminativeParams)params).lmWeight, 0) * 
+                    Math.log(NgramModel.getNgramLMProb(ngramModel, vocabulary, opts.numAsSymbol, ngram));
+        return weight;
+    }
+    
+    protected void increaseNgramLMCounts(int[] textArray)
+    {        
+        List<Integer> text = new ArrayList();
+        for(int i = 0; i < opts.ngramSize - 1; i++)            
+            text.add(vocabulary.getIndex("<s>"));
+        for(Integer word: textArray)
+            text.add(word);
+        text.add(vocabulary.getIndex("</s>"));                
+        List<Integer> ngramIndices = NgramModel.getNgramIndices(
+            wordNgramsMap, 3, text);
+        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+        // compute lm feature
+        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0), 
+                Math.log(NgramModel.getSentenceLMProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
+    }
     protected EventTypeParams getBaselineEventTypeParams(int event)
     {
         return baseline.eventTypeParams[ex.events.get(event).getEventTypeIndex()];
@@ -816,7 +835,7 @@ public class DiscriminativeInferState extends Event3InferState
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<List<Integer>> ngrams){
-                        return getOnlineNgramWeights(ngrams);
+                        return getNgramWeights(ngrams) + getLMWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -843,7 +862,7 @@ public class DiscriminativeInferState extends Event3InferState
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<List<Integer>> ngrams){
-                        return getOnlineNgramWeights(ngrams);
+                        return getNgramWeights(ngrams) + getLMWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -926,7 +945,7 @@ public class DiscriminativeInferState extends Event3InferState
                         }
                         public double getOnlineWeight(List<List<Integer>> ngrams)
                         {
-                           return getOnlineNgramWeights(ngrams);
+                           return getNgramWeights(ngrams) + getLMWeights(ngrams);
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
@@ -963,7 +982,7 @@ public class DiscriminativeInferState extends Event3InferState
                         public void setPosterior(double prob) { }
                         public double getOnlineWeight(List<List<Integer>> ngrams)
                         {
-                           return getOnlineNgramWeights(ngrams);
+                           return getNgramWeights(ngrams) + getLMWeights(ngrams);
                         }
                         public GenWidget choose(GenWidget widget) {                            
                             for(int k = i; k < j; k++)
@@ -1002,7 +1021,7 @@ public class DiscriminativeInferState extends Event3InferState
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<List<Integer>> ngrams){
-                        return getOnlineNgramWeights(ngrams);
+                        return getNgramWeights(ngrams) + getLMWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -1029,7 +1048,7 @@ public class DiscriminativeInferState extends Event3InferState
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<List<Integer>> ngrams){
-                        return getOnlineNgramWeights(ngrams);
+                        return getNgramWeights(ngrams) + getLMWeights(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -1185,7 +1204,7 @@ public class DiscriminativeInferState extends Event3InferState
                       }
                       public double getOnlineWeight(List<List<Integer>> ngrams)
                       {
-                          return getOnlineNgramWeights(ngrams);
+                          return getNgramWeights(ngrams) + getLMWeights(ngrams);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {
@@ -1232,7 +1251,7 @@ public class DiscriminativeInferState extends Event3InferState
                       }
                       public double getOnlineWeight(List<List<Integer>> ngrams)
                       {
-                          return getOnlineNgramWeights(ngrams);
+                          return getNgramWeights(ngrams) + getLMWeights(ngrams);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {
@@ -1337,7 +1356,7 @@ public class DiscriminativeInferState extends Event3InferState
                     return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                 }
                 public double getOnlineWeight(List<List<Integer>> ngrams){
-                    return getOnlineNgramWeights(ngrams);
+                    return getNgramWeights(ngrams) + getLMWeights(ngrams);
                 }
                 public void setPosterior(double prob) { }
                 public Widget choose(Widget widget) {

@@ -257,7 +257,15 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     public void learn(String name, LearnOptions lopts)
     {
-        opts.alignmentModel = lopts.alignmentModel; // HACK        
+        opts.alignmentModel = lopts.alignmentModel; // HACK
+        Utils.begin_track("Loading Language Model...");
+        if(opts.ngramWrapper == NgramWrapper.kylm)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        else if(opts.ngramWrapper == NgramWrapper.srilm)
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+        else if(opts.ngramWrapper == NgramWrapper.roark)
+            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+        LogInfo.end_track();
         Record.begin(name);
         Utils.begin_track("Train: " + name);
         boolean existsTrain = false;

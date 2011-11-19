@@ -38,7 +38,7 @@ public class DiscriminativeTrainWeatherTest
     public void setUp() 
     {
          String args = "-modelType discriminativeTrain -inputLists test/testWeatherGovEvents "
-                    + "-Options.stage1.numIters 5 -numThreads 1 "
+                    + "-Options.stage1.numIters 15 -numThreads 1 "
                     + "-Options.stage1.learningScheme incremental "
                     + "-inputFileExt events "
                     + "-dontOutputParams "            

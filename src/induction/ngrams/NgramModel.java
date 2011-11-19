@@ -185,6 +185,8 @@ public abstract class NgramModel
         for(int i = 0; i < ngram.size(); i++)
         {
             temp = vocabulary.getObject(ngram.get(i));
+            if (temp.equals("<unk>"))
+                return 0;
             // ngram inferState needs to convert numbers to symbol <num>
             // syntax parser can process numbers
             ngramStr[i] = numbersAsSymbol &&
@@ -200,13 +202,11 @@ public abstract class NgramModel
     public static double getSentenceLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
             boolean numbersAsSymbol, int N, List<Integer> text)
     {
-        double res = 0.0;
-//        for(int k = 0; k <= j - (N - 1); k++)
-//        {                    
-//            Integer index = ngrams.get(text.subList(k, k + N));
-//            if(index != null)
-//                indices.add(index);
-//        }
+        double res = 1.0;
+        for(int k = 0; k <= text.size() - N; k++)
+        {                    
+            res *= getNgramLMProb(ngramModel, vocabulary, numbersAsSymbol, text.subList(k, k + N));            
+        }
         return res;
     }
 }
