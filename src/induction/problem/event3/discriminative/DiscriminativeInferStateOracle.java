@@ -17,14 +17,11 @@ import induction.problem.event3.Constants;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
-import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class describes a hypregraph representation of the problem. The main

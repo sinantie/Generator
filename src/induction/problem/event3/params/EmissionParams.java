@@ -2,7 +2,6 @@ package induction.problem.event3.params;
 
 import induction.problem.AParams;
 import induction.problem.ProbVec;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -22,15 +22,24 @@ public class RoarkNgramWrapper extends NgramModel
     }
 
     public double getProb(String[] ngramWords)
+    {        
+        return roark.parseString(parseConf, getStringFromNgram(ngramWords));
+    }
+
+    @Override
+    public double getLogProb10(String[] ngramWords)
+    {        
+        return Math.log10(getProb(ngramWords));
+    }
+    
+    private String getStringFromNgram(String[] ngramWords)
     {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for(String word : ngramWords)
         {
-            sb.append(word + " ");
+            sb.append(word).append(" ");
         }
-//        lp.parse(sb.toString());
-//        return unLogBase2(lp.getPCFGScore());
-        return roark.parseString(parseConf, sb.toString());
+        return sb.toString();
     }
     
     public static void main(String[] args)

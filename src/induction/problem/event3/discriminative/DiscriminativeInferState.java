@@ -110,7 +110,7 @@ public class DiscriminativeInferState extends Event3InferState
         this.ngramModel = ngramModel;
         this.useKBest = useKBest;
         this.baseline = model.getBaselineModelParams();
-        this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
+        this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);        
         this.wordNgramsMap = ((DiscriminativeEvent3Model)model).getWordNgramMap();
     }
 
@@ -360,15 +360,16 @@ public class DiscriminativeInferState extends Event3InferState
                 result = hypergraph.kBestViterbi(newWidget());
                 if(opts.modelType == ModelType.discriminativeTrain)
                 {
-                    // compute ngram features (we can do it  in the end, since we have created the resulting output text)
+                    // compute ngram features (we can do it  in the end,
+                    // since we have created the resulting output text)
                     increaseNgramLMCounts(((GenWidget)result.widget).getText());
-                }                
+                }
             }
             else
             {
                 StopWatchSet.begin("rerank 1-best Viterbi");
                 result = hypergraph.rerankOneBestViterbi(newWidget(), opts.initRandom);
-            }            
+            }
         }
         StopWatchSet.end();
         bestWidget = (Widget) result.widget;
@@ -378,7 +379,7 @@ public class DiscriminativeInferState extends Event3InferState
         {
             logVZ = result.logWeight;
             updateStats();
-        }        
+        }
     }
     
     @Override
@@ -390,6 +391,11 @@ public class DiscriminativeInferState extends Event3InferState
     protected double normalisedLog(double d)
     {
         return getLogProb(d) / ex.N();
+    }
+    
+    protected double normalise(double logD)
+    {
+        return logD / ex.N();
     }
     
     protected double getBaselineScore(double baseProb)
@@ -421,13 +427,20 @@ public class DiscriminativeInferState extends Event3InferState
         return list;
     }
     
+    /**
+     * compute the total weight of the non-local ngram features, from the list of
+     * ngrams given as a parameter
+     * @param ngrams
+     * @return 
+     */
     protected double getNgramWeights(List<List<Integer>> ngrams)
     {
         List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
         double weight = 0.0;
         for(Integer index : ngramIndices)
-            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);
+            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
         return weight;        
+//        return 0.0;        
     }
     
     /**
@@ -440,24 +453,30 @@ public class DiscriminativeInferState extends Event3InferState
         double weight = 0.0;
         for(List<Integer> ngram : ngrams)
             weight += getCount(((DiscriminativeParams)params).lmWeight, 0) * 
-                    Math.log(NgramModel.getNgramLMProb(ngramModel, vocabulary, opts.numAsSymbol, ngram));
+                    normalise(NgramModel.getNgramLMLogProb(ngramModel, vocabulary, 
+                              opts.numAsSymbol, ngram));
         return weight;
+//        return 0.0;
     }
     
+    /**
+     * increases the ngram and lm features of the model, given an indexed text 
+     * @param textArray 
+     */
     protected void increaseNgramLMCounts(int[] textArray)
     {        
         List<Integer> text = new ArrayList();
-        for(int i = 0; i < opts.ngramSize - 1; i++)            
+        for(int i = 0; i < opts.ngramSize - 1; i++)
             text.add(vocabulary.getIndex("<s>"));
         for(Integer word: textArray)
             text.add(word);
-        text.add(vocabulary.getIndex("</s>"));                
+        text.add(vocabulary.getIndex("</s>"));
         List<Integer> ngramIndices = NgramModel.getNgramIndices(
             wordNgramsMap, 3, text);
         increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
         // compute lm feature
-        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0), 
-                Math.log(NgramModel.getSentenceLMProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
+        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
+                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
     }
     protected EventTypeParams getBaselineEventTypeParams(int event)
     {
@@ -494,10 +513,11 @@ public class DiscriminativeInferState extends Event3InferState
                 return getCount(alignWeights, method) + getBaselineScore(baseParam); 
             }
             public Pair getWeightAtRank(int rank) {
-                return rank > 0 ? null : new Pair(get(alignWeights, method), vocabulary.getIndex("<num>"));
+                return rank > 0 ? null : new Pair(getCount(alignWeights, method), vocabulary.getIndex("<num>"));
             }
             public void setPosterior(double prob) { }
             public GenWidget choose(GenWidget widget) {
+                widget.getText()[i] = vocabulary.getIndex("<num>");
                 widget.getNumMethods()[c][i] = method;
                 widget.getNums()[i] = value;
                 Feature[] featuresArray = {new Feature(alignWeights, method)};
@@ -542,6 +562,7 @@ public class DiscriminativeInferState extends Event3InferState
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
+                    widget.getText()[i] = vocabulary.getIndex("<num>");
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = NOISE_MINUS_ONE + 1 + v;
                     Feature[] featuresArray = {new Feature(alignWeights, method)};
@@ -568,6 +589,7 @@ public class DiscriminativeInferState extends Event3InferState
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
+                    widget.getText()[i] = vocabulary.getIndex("<num>");
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = (-MINUS_NOISE_MINUS_ONE) - 1 + v;
                     Feature[] featuresArray = {new Feature(alignWeights, method)};

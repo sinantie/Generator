@@ -339,10 +339,15 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;
                     Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
+                    Feature lmFeature = new Feature(((DiscriminativeParams)params).lmWeight, 0);
                     
-                    System.out.println("oracle: " + oracleFeatures.get(baseFeature) +
+                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
                                        " - model: " + modelFeatures.get(baseFeature) + 
                                        " - sum: " + perceptronSumModel.get(baseFeature)                                       
+                                       );
+                    System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+                                       " - model: " + modelFeatures.get(lmFeature) + 
+                                       " - sum: " + perceptronSumModel.get(lmFeature)                                       
                                        );
                 }                
                 catch(Exception e){

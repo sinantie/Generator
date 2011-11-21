@@ -16,8 +16,16 @@ import java.util.Map;
  */
 public abstract class NgramModel
 {
+    private final double logOfBase10ToE = Math.log10(Math.E);
+    
     public abstract double getProb(String[] ngramWords);
  
+    public abstract double getLogProb10(String[] ngramWords);
+    
+    public double getLogProb(String[] ngramWords)
+    {
+        return getLogProb10(ngramWords) / logOfBase10ToE;
+    }
     /**
      * Converts a 10-base log probability to a normal probability in [0, 1]
      * @param value the log probability
@@ -175,7 +183,7 @@ public abstract class NgramModel
         return ngramsMap.get(text);
     }
     
-    public static double getNgramLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
+    public static double getNgramLMLogProb(NgramModel ngramModel, Indexer<String> vocabulary, 
             boolean numbersAsSymbol, List<Integer> ngram)
     {
 //            if(modelType == ModelType.semParse)
@@ -185,8 +193,8 @@ public abstract class NgramModel
         for(int i = 0; i < ngram.size(); i++)
         {
             temp = vocabulary.getObject(ngram.get(i));
-            if (temp.equals("<unk>"))
-                return 0;
+            if (temp.equals("<unk>")) // automatically reject the <unk> wildcard.
+                return -99;
             // ngram inferState needs to convert numbers to symbol <num>
             // syntax parser can process numbers
             ngramStr[i] = numbersAsSymbol &&
@@ -196,16 +204,16 @@ public abstract class NgramModel
                                  ? "<num>" : temp;
         }
 
-        return ngramModel.getProb(ngramStr);
+        return ngramModel.getLogProb(ngramStr);
     }
     
-    public static double getSentenceLMProb(NgramModel ngramModel, Indexer<String> vocabulary, 
+    public static double getSentenceLMLogProb(NgramModel ngramModel, Indexer<String> vocabulary, 
             boolean numbersAsSymbol, int N, List<Integer> text)
     {
         double res = 1.0;
         for(int k = 0; k <= text.size() - N; k++)
         {                    
-            res *= getNgramLMProb(ngramModel, vocabulary, numbersAsSymbol, text.subList(k, k + N));            
+            res += getNgramLMLogProb(ngramModel, vocabulary, numbersAsSymbol, text.subList(k, k + N));            
         }
         return res;
     }

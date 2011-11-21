@@ -114,14 +114,26 @@ public class KylmNgramWrapper extends NgramModel
     @Override
     public double getProb(String[] ngram)
     {
+        int[] ids = getIdsOfNgram(ngram);
+        return unLog(getNgramProb(ids, ngram.length - 1));
+    }
+
+    @Override
+    public double getLogProb10(String[] ngramWords)
+    {
+        int[] ids = getIdsOfNgram(ngramWords);
+        return getNgramProb(ids, ngramWords.length - 1);
+    }
+    
+    private int[] getIdsOfNgram(String[] ngram)
+    {
         int[] ids = new int[ngram.length];
         for(int i = 0; i < ngram.length; i++)
         {
             ids[i] = lm.getId(ngram[i]);
         }
-        return unLog(getNgramProb(ids, ngram.length - 1));
+        return ids;
     }
-
     public static void main(String[] args)
     {
 //        String in = "with a low around 70 , snow between -0.1 and 0.4 inches, at 5pm and -5 degrees";

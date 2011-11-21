@@ -1,6 +1,5 @@
 package induction;
 
-import java.lang.String;
 import induction.problem.event3.discriminative.DiscriminativeInferState;
 import induction.problem.AInferState;
 import induction.ngrams.NgramModel;
