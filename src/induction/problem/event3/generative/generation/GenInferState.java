@@ -402,7 +402,7 @@ public class GenInferState extends InferState
     }
 
     @Override
-    protected  CatFieldValueNode genCatFieldValueNode(final int i, int c, final int event, final int field)
+    protected  Object genCatFieldValueNode(final int i, int c, final int event, final int field)
     {
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
@@ -410,7 +410,11 @@ public class GenInferState extends InferState
             final CatFieldParams fparams = getCatFieldParams(event, field);
             // Consider generating words(i) from category v
             final int v = getValue(event, field);
-
+            // (for generation only) in case the test set contains values that are not in the training set
+            if (v >= fparams.emissions.length)
+            {
+                return hypergraph.invalidNode;
+            }
             if(opts.fullPredRandomBaseline)
             {
                     final int w = BigDouble.normalizeAndSample(opts.fullPredRandom,

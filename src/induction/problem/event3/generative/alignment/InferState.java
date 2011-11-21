@@ -326,7 +326,7 @@ public class InferState extends Event3InferState
         } // else
     }
     
-    protected CatFieldValueNode genCatFieldValueNode(int i, int c, int event, int field)
+    protected Object genCatFieldValueNode(int i, int c, int event, int field)
     {
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
