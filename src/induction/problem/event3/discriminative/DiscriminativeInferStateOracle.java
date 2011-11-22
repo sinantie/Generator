@@ -243,15 +243,15 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             final int v = getValue(event, field);            
             final int w = words[i];
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                double baseParam;
+                double baseProb;
                 public double getWeight() {
-                    baseParam = get(baseFParams.emissions[v], w);                    
-                    return baseParam;
+                    baseProb = get(baseFParams.emissions[v], w);                    
+                    return baseProb;
                 }            
                 public void setPosterior(double prob) { }
                 public Widget choose(Widget widget) {                                 
                     Feature[] featuresArray = {new Feature(modelFParams.emissions[v], w)};
-                    increaseCounts(featuresArray, normalisedLog(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseProb));
                     return widget;   
                 }            
             });
@@ -273,16 +273,16 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             if(field == modelEventTypeParams.none_f)
             {                
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                    double baseParam;
+                    double baseProb;
                     public double getWeight() {
-                        baseParam = get(baseEventTypeParams.noneFieldEmissions, w);                        
-                        return baseParam;
+                        baseProb = get(baseEventTypeParams.noneFieldEmissions, w);                        
+                        return baseProb;
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget)
                     {
                         Feature[] featuresArray = {new Feature(modelEventTypeParams.noneFieldEmissions, w)};
-                        increaseCounts(featuresArray, normalisedLog(baseParam));
+                        increaseCounts(featuresArray, normalisedLog(baseProb));
                         return widget;
                     }
                 });
@@ -292,29 +292,29 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                 // G_FIELD_VALUE: generate based on field value
                 hypergraph.addEdge(node, genFieldValue(i, c, event, field),
                         new Hypergraph.HyperedgeInfo<Widget>() {
-                double baseParam;
+                double baseProb;
                 public double getWeight() {
-                    baseParam = get(baseEventTypeParams.genChoices[field], 
+                    baseProb = get(baseEventTypeParams.genChoices[field], 
                             Parameters.G_FIELD_VALUE);                    
-                    return baseParam;  
+                    return baseProb;  
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
                     Feature[] featuresArray = {
                         new Feature(modelEventTypeParams.genChoices[field], 
                         Parameters.G_FIELD_VALUE)};
-                    increaseCounts(featuresArray, normalisedLog(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseProb));
                     widget.getGens()[c][i] = Parameters.G_FIELD_VALUE;
                     return widget;
                 }
                 });
                 // G_FIELD_GENERIC: generate based on event type
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                    double baseParam;
+                    double baseProb;
                     public double getWeight() {
-                        baseParam = get(baseEventTypeParams.genChoices[field], 
+                        baseProb = get(baseEventTypeParams.genChoices[field], 
                                 Parameters.G_FIELD_GENERIC) * get(baseline.genericEmissions, w);                        
-                        return baseParam;
+                        return baseProb;
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {                            
@@ -324,7 +324,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                                     Parameters.G_FIELD_GENERIC),
                             new Feature(params.genericEmissions, w)
                         };
-                        increaseCounts(featuresArray, normalisedLog(baseParam));
+                        increaseCounts(featuresArray, normalisedLog(baseProb));
                         return widget;
                     }                    
                     });
@@ -338,22 +338,20 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
     {
         WordNode node = new WordNode(i, c, ((Event3Model)model).none_t(), -1);
         if(hypergraph.addSumNode(node))
-        {
-            // add hyperedge for each word. COSTLY!            
+        {            
             final int w = words[i];
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                double baseParam; ProbVec weightProbVec;
+                double baseProb;
                 public double getWeight() 
                 {
-                    baseParam = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
-                    weightProbVec = params.trackParams[c].getNoneEventTypeEmissions();
-                    return baseParam;
+                    baseProb = get(baseline.trackParams[c].getNoneEventTypeEmissions(), w);
+                    return baseProb;
                 }                
                 public void setPosterior(double prob) { }
                 public Widget choose(Widget widget) 
                 {                                             
                     Feature[] featuresArray = {new Feature(params.trackParams[c].getNoneEventTypeEmissions(), w)};
-                    increaseCounts(featuresArray, normalisedLog(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseProb));
                     return widget;
                 }                
             });
@@ -369,16 +367,15 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         if(hypergraph.addSumNode(node))
         {   // Transition to boundary_t
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                double baseParam; 
-                int index = modelCParams.boundary_t;
+                double baseProb;                 
                 public double getWeight() {
-                    baseParam = get(baseCParams.getEventTypeChoices()[t0], index);
-                    return baseParam; 
+                    baseProb = get(baseCParams.getEventTypeChoices()[t0], modelCParams.boundary_t);
+                    return baseProb; 
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {                    
-                    Feature[] featuresArray = {new Feature(modelCParams.getEventTypeChoices()[index], index)};
-                    increaseCounts(featuresArray, normalisedLog(baseParam));
+                    Feature[] featuresArray = {new Feature(modelCParams.getEventTypeChoices()[modelCParams.boundary_t], modelCParams.boundary_t)};
+                    increaseCounts(featuresArray, normalisedLog(baseProb));
                     return widget;
                 }                                
             });
