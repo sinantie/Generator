@@ -129,7 +129,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         if(useKBest)
         {
             // compute ngram features (we can do it  in the end, since we have created the resulting output text)
-            increaseNgramLMCounts(ex.getText());
+//            increaseNgramLMCounts(ex.getText());
         }        
         bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        

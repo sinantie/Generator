@@ -199,7 +199,7 @@ public class DiscriminativeInferState extends Event3InferState
         int W = ((DiscriminativeEvent3Model)model).vocabularySize;
 //        int W = Event3Model.W() - 2; // ignore <s> and </s>
         if(iteration == 0)
-            ((DiscriminativeParams)params).baselineWeight.set(0, getCount(((DiscriminativeParams)baseline).baselineWeight, 1));
+            ((DiscriminativeParams)params).baselineWeight.set(0, 1);
         // treat catEmissions and noneFieldEmissions
         Map<Integer, Map<Integer, ProbVec[]>> localFieldEmissions = new HashMap<Integer, Map<Integer, ProbVec[]>>();
         Map<Integer, ProbVec> localNoneFieldEmissions = new HashMap<Integer, ProbVec>();         
@@ -366,7 +366,7 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     // compute ngram features (we can do it  in the end,
                     // since we have created the resulting output text)
-                    increaseNgramLMCounts(((GenWidget)result.widget).getText());
+//                    increaseNgramLMCounts(((GenWidget)result.widget).getText());
                 }
             }
             else
@@ -439,10 +439,10 @@ public class DiscriminativeInferState extends Event3InferState
      */
     protected double getNgramWeights(List<List<Integer>> ngrams)
     {
-        List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
-        double weight = 0.0;
-        for(Integer index : ngramIndices)
-            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
+//        List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
+//        double weight = 0.0;
+//        for(Integer index : ngramIndices)
+//            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
 //        return weight;        
         return 0.0;        
     }
@@ -456,7 +456,7 @@ public class DiscriminativeInferState extends Event3InferState
     {        
         double weight = 0.0;
         for(List<Integer> ngram : ngrams)
-            weight += getCount(((DiscriminativeParams)params).lmWeight, 0) * 
+            weight += //getCount(((DiscriminativeParams)params).lmWeight, 0) * 
                     normalise(NgramModel.getNgramLMLogProb(ngramModel, vocabulary, 
                               opts.numAsSymbol, ngram));
         return weight;
@@ -475,9 +475,9 @@ public class DiscriminativeInferState extends Event3InferState
         for(Integer word: textArray)
             text.add(word);
         text.add(vocabulary.getIndex("</s>"));
-//        List<Integer> ngramIndices = NgramModel.getNgramIndices(
-//            wordNgramsMap, 3, text);
-//        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+        List<Integer> ngramIndices = NgramModel.getNgramIndices(
+            wordNgramsMap, 3, text);
+        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
         // compute lm feature
         increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
                 normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
