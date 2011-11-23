@@ -334,6 +334,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 try{
                     ExampleProcessor model = new ExampleProcessor(
                             examples.get(i), i, modelFeatures, false, lopts, iter, complexity);
+
                     model.call();
                     model = null;
                     ExampleProcessor oracle = new ExampleProcessor(
@@ -341,17 +342,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-                                       " - model: " + modelFeatures.get(baseFeature) + 
-                                       " - sum: " + baseFeature.getValue()
-                                       );
-                    if(perceptronSumModel.containsKey(lmFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-                                           " - model: " + modelFeatures.get(lmFeature) + 
-                                           " - sum: " + lmFeature.getValue()
-                                           );
-                    else
-                        System.out.println();
+//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+//                                       " - model: " + modelFeatures.get(baseFeature) + 
+//                                       " - sum: " + baseFeature.getValue()
+//                                       );
+//                    if(perceptronSumModel.containsKey(lmFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+//                                           " - model: " + modelFeatures.get(lmFeature) + 
+//                                           " - sum: " + lmFeature.getValue()
+//                                           );
+//                    else
+//                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -384,7 +385,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // use average model weights instead of sum 
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
-        System.out.println("\n Global Avg: " + baseFeature.getValue());
+        
+        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + "\n" + 
+                ((DiscriminativeParams)params).outputDiscriminativeOnly());
+        
         if(!opts.dontOutputParams)
         {
             saveParams(name);

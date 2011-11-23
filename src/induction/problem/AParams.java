@@ -4,10 +4,7 @@ import fig.basic.LogInfo;
 import induction.Utils;
 import induction.problem.event3.Constants.TypeAdd;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -225,25 +222,36 @@ public abstract class AParams implements Serializable
     // Helper for output(): display probabilities in sorted order
     public String forEachProb(ProbVec v)
     {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         for(Pair p : v.getProbsSorted())
         {
 //            out += p.label + "\t" + Utils.fmt(p.value) + "\t" +
 //                    Utils.fmt(v.getOldSum() * p.value) + "\n";
-            out += p.label + "\t" + Utils.fmt(p.value) + "\n";
+            out.append(p.label).append("\t").append(Utils.fmt(p.value)).append("\n");
         }
-        return out;
+        return out.toString();
     }
 
     public String forEachProb(ProbVec v, String[] labels)
     {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         for(Pair<Integer> p : v.getProbsSorted())
         {
 //            out += labels[p.label] + "\t" + Utils.fmt(p.value) + "\t" +
 //                    Utils.fmt(v.getOldSum() * p.value) + "\n";
-            out += labels[p.label] + "\t" + Utils.fmt(p.value) + "\n";
+            out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
         }
-        return out;
+        return out.toString();
+    }
+    
+    public String forEachProbNonZero(ProbVec v, String[] labels)
+    {
+        StringBuilder out = new StringBuilder();
+        for(Pair<Integer> p : v.getProbsSorted())
+        {
+            if(p.value > 0)
+                out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
+        }
+        return out.toString();
     }
 }

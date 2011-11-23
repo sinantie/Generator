@@ -129,7 +129,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         if(useKBest)
         {
             // compute ngram features (we can do it  in the end, since we have created the resulting output text)
-//            increaseNgramLMCounts(ex.getText());
+            increaseNgramLMCounts(ex.getText());
         }        
         bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        
@@ -184,13 +184,13 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             if(noise > 0)
             {
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                    double baseParam; final int method = Parameters.M_NOISEUP;
+                    double baseProb; final int method = Parameters.M_NOISEUP;
                     public double getWeight() {                        
-                        baseParam = get(baseProbVec, method) * 0.5 *
+                        baseProb = get(baseProbVec, method) * 0.5 *
                                    Math.pow(get(baseFParams.rightNoiseChoices,
                                    Parameters.S_CONTINUE), noise-1) *
                                    get(baseFParams.rightNoiseChoices, Parameters.S_STOP);                        
-                        return baseParam;
+                        return baseProb;
                     }
                     public void setPosterior(double prob) {}
                     public Widget choose(Widget widget) {
@@ -198,7 +198,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                         Feature[] featuresArray = {new Feature(weightProbVec, method), 
                                                    new Feature(modelFParams.rightNoiseChoices, Parameters.S_STOP),
                                                    new Feature(modelFParams.rightNoiseChoices, Parameters.S_CONTINUE)};
-                        increaseCounts(featuresArray, normalisedLog(baseParam));
+                        increaseCounts(featuresArray, normalisedLog(baseProb));
 //                        increaseCount(new Feature(modelFParams.rightNoiseChoices, Parameters.S_CONTINUE), noise-1);                                                
                         return widget;
                     }
@@ -207,13 +207,13 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             else
             {
                 hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
-                    double baseParam; final int method = Parameters.M_NOISEDOWN;
+                    double baseProb; final int method = Parameters.M_NOISEDOWN;
                     public double getWeight() {
-                        baseParam = get(baseProbVec, method) *
+                        baseProb = get(baseProbVec, method) *
                                    Math.pow(get(baseFParams.leftNoiseChoices,
                                    Parameters.S_CONTINUE), -noise-1) *
                                    get(baseFParams.leftNoiseChoices, Parameters.S_STOP);                                                
-                        return baseParam;
+                        return baseProb;
                     }
                     public void setPosterior(double prob) {}
                     public Widget choose(Widget widget) {
@@ -221,7 +221,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                         Feature[] featuresArray = {new Feature(weightProbVec, method), 
                                                    new Feature(modelFParams.leftNoiseChoices, Parameters.S_STOP),
                                                    new Feature(modelFParams.leftNoiseChoices, Parameters.S_CONTINUE)};
-                        increaseCounts(featuresArray, normalisedLog(baseParam));
+                        increaseCounts(featuresArray, normalisedLog(baseProb));
 //                        increaseCount(new Feature(modelFParams.leftNoiseChoices, Parameters.S_CONTINUE), -noise-1);
                         return widget;
                     }

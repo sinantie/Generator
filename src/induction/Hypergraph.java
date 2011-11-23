@@ -343,7 +343,7 @@ public class Hypergraph<Widget> {
 //                            this.logWeight += Math.log(getLMProb(input.subList(i - M + 1, i + 1)));
                         }
                     } // for
-//                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);
+                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);
                     for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
                     {
                         words.add(input.get(i));

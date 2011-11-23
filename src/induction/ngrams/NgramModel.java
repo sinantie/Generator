@@ -210,7 +210,7 @@ public abstract class NgramModel
     public static double getSentenceLMLogProb(NgramModel ngramModel, Indexer<String> vocabulary, 
             boolean numbersAsSymbol, int N, List<Integer> text)
     {
-        double res = 1.0;
+        double res = 0.0;
         for(int k = 0; k <= text.size() - N; k++)
         {                    
             res += getNgramLMLogProb(ngramModel, vocabulary, numbersAsSymbol, text.subList(k, k + N));            

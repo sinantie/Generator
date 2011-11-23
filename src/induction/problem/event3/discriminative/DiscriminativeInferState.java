@@ -101,7 +101,7 @@ public class DiscriminativeInferState extends Event3InferState
 
     Map<List<Integer>, Integer> wordNgramsMap;
     
-    private int iteration;
+    private int iteration;    
     
     WordNode startSymbol = new WordNode(-1, 0, -1, -1);
     
@@ -114,7 +114,7 @@ public class DiscriminativeInferState extends Event3InferState
         this.baseline = model.getBaselineModelParams();
         this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);        
         this.wordNgramsMap = ((DiscriminativeEvent3Model)model).getWordNgramMap();
-        this.iteration = ispec.getIter();
+        this.iteration = ispec.getIter();        
     }
 
     public DiscriminativeInferState(DiscriminativeEvent3Model model, Example ex, Params params,
@@ -276,28 +276,14 @@ public class DiscriminativeInferState extends Event3InferState
         if(useKBest)
             resortDiscriminativeEmissions();
         // setup hypergraph preliminaries
-//        if(opts.modelType == Options.ModelType.generate)
-            hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
-                    opts.reorderType, opts.allowConsecutiveEvents,
-                    opts.oracleReranker,
-                    /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-//                    -1,
-//                    -1,                   
-                    vocabulary.getIndex("<num>"),
-                    vocabulary.getIndex("ELIDED_SYMBOL"),
-                    opts.numAsSymbol,
-                    vocabulary, ex, graph);
-//        else
-//        {
-//            hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize, 
-//                    opts.reorderType, opts.allowConsecutiveEvents, 
-//                    false, 
-//                    -1, -1,
-//                    opts.numAsSymbol, 
-//                    vocabulary, ex, graph);
-////            hypergraph.setInferState(this);
-////            hypergraph.setNumbersAsSymbol(opts.numAsSymbol);
-//        }
+        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+                opts.reorderType, opts.allowConsecutiveEvents,
+                opts.oracleReranker,
+                /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
+                vocabulary.getIndex("<num>"),
+                vocabulary.getIndex("ELIDED_SYMBOL"),
+                opts.numAsSymbol,
+                vocabulary, ex, graph);
         hypergraph.addSumNode(startSymbol);        
         this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()
         {
@@ -326,7 +312,6 @@ public class DiscriminativeInferState extends Event3InferState
         this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
                        new Hypergraph.HyperedgeInfoOnline<GenWidget>()
         {
-//            List<Integer> ngramIndices;
             public double getWeight()
             {
                 return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
@@ -339,7 +324,6 @@ public class DiscriminativeInferState extends Event3InferState
             { }
             public GenWidget choose(GenWidget widget)
             {
-//                increaseCounts(getNgramFeatures(((DiscriminativeParams)params).bigramWeights, bigramIndices));
 //                if(useKBest)
 //                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                 return widget;
@@ -367,7 +351,7 @@ public class DiscriminativeInferState extends Event3InferState
                 {
                     // compute ngram features (we can do it  in the end,
                     // since we have created the resulting output text)
-//                    increaseNgramLMCounts(((GenWidget)result.widget).getText());
+                    increaseNgramLMCounts(((GenWidget)result.widget).getText());
                 }
             }
             else
@@ -379,7 +363,6 @@ public class DiscriminativeInferState extends Event3InferState
         StopWatchSet.end();
         bestWidget = (Widget) result.widget;
 //            System.out.println(bestWidget);
-//        System.out.println(baselineFeature.getValue());
         if(!calculateOracle)
         {
             logVZ = result.logWeight;
@@ -405,16 +388,17 @@ public class DiscriminativeInferState extends Event3InferState
     
     protected double getBaselineScore(double baseProb)
     {
-//        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * normalisedLog(baseProb);
-        return 1.0 * normalisedLog(baseProb);
+//        return 0.0;
+        return getCount(((DiscriminativeParams)params).baselineWeight, 0) * normalisedLog(baseProb);
+//        return 48.00895964376265 * normalisedLog(baseProb);
     }        
     
     protected ProbVec getBaselineScore(ProbVec probVec)
     {
 //       double[] baseProbs = probVec.getCounts();
        double[] baseProbs = probVec.getProbs();
-//       double baseWeight = getCount(((DiscriminativeParams)params).baselineWeight, 0);
-       double baseWeight = 1.0;
+       double baseWeight = getCount(((DiscriminativeParams)params).baselineWeight, 0);
+//       double baseWeight = 48.00895964376265;
        ProbVec pv = ProbVec.zeros(baseProbs.length);
        for(int  i = 0; i < baseProbs.length; i++)
        {
@@ -440,12 +424,12 @@ public class DiscriminativeInferState extends Event3InferState
      */
     protected double getNgramWeights(List<List<Integer>> ngrams)
     {
-//        List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
-//        double weight = 0.0;
-//        for(Integer index : ngramIndices)
-//            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
-//        return weight;        
-        return 0.0;        
+        List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
+        double weight = 0.0;
+        for(Integer index : ngramIndices)
+            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
+        return weight;        
+//        return 0.0;        
     }
     
     /**
@@ -455,11 +439,11 @@ public class DiscriminativeInferState extends Event3InferState
      */
     protected double getLMWeights(List<List<Integer>> ngrams)
     {        
-        double weight = 0.0;
-        for(List<Integer> ngram : ngrams)
-            weight += //getCount(((DiscriminativeParams)params).lmWeight, 0) * 
-                    normalise(NgramModel.getNgramLMLogProb(ngramModel, vocabulary, 
-                              opts.numAsSymbol, ngram));
+//        double weight = 0.0;
+//        for(List<Integer> ngram : ngrams)
+//            weight += getCount(((DiscriminativeParams)params).lmWeight, 0) * 
+//                    normalise(NgramModel.getNgramLMLogProb(ngramModel, vocabulary, 
+//                              opts.numAsSymbol, ngram));
 //        return weight;
         return 0.0;
     }
@@ -480,8 +464,8 @@ public class DiscriminativeInferState extends Event3InferState
             wordNgramsMap, 3, text);
         increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
         // compute lm feature
-        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
-                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
+//        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
+//                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
     }
     protected EventTypeParams getBaselineEventTypeParams(int event)
     {
@@ -512,10 +496,10 @@ public class DiscriminativeInferState extends Event3InferState
                             final int value, final int c, final int i)
     {
         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-            double baseParam;
+            double baseProb;
             public double getWeight() {
-                baseParam = get(baseProbVec, method);
-                return getCount(alignWeights, method) + getBaselineScore(baseParam); 
+                baseProb = get(baseProbVec, method);
+                return getCount(alignWeights, method) + getBaselineScore(baseProb); 
             }
             public Pair getWeightAtRank(int rank) {
                 return rank > 0 ? null : new Pair(getCount(alignWeights, method), vocabulary.getIndex("<num>"));
@@ -526,7 +510,7 @@ public class DiscriminativeInferState extends Event3InferState
                 widget.getNumMethods()[c][i] = method;
                 widget.getNums()[i] = value;
                 Feature[] featuresArray = {new Feature(alignWeights, method)};
-                increaseCounts(featuresArray, normalisedLog(baseParam));
+                increaseCounts(featuresArray, normalisedLog(baseProb));
                 return widget;
             }
             public GenWidget chooseWord(GenWidget widget, int word)
@@ -553,13 +537,13 @@ public class DiscriminativeInferState extends Event3InferState
             addNumEdge(Parameters.M_ROUNDCLOSE, node, alignWeights, baseProbVec, roundClose(v), c, i);
             
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseParam; int method = Parameters.M_NOISEUP;
+                double baseProb; int method = Parameters.M_NOISEUP;
                 final double CONT = getCount(modelFParams.rightNoiseChoices, Parameters.S_CONTINUE);
                 final double STOP = getCount(modelFParams.rightNoiseChoices, Parameters.S_STOP);
                 final int NOISE_MINUS_ONE = (int) Math.round(CONT / STOP);
                 public double getWeight() {
-                    baseParam = get(baseFParams.methodChoices, method);
-                    return getCount(alignWeights, method) + getBaselineScore(baseParam);
+                    baseProb = get(baseFParams.methodChoices, method);
+                    return getCount(alignWeights, method) + getBaselineScore(baseProb);
                 }
                 public Pair getWeightAtRank(int rank) {
                     return rank > 0 ? null : new Pair(getCount(modelFParams.methodChoices, method),
@@ -571,7 +555,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = NOISE_MINUS_ONE + 1 + v;
                     Feature[] featuresArray = {new Feature(alignWeights, method)};
-                    increaseCounts(featuresArray, normalisedLog(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseProb));
                     return widget;
                 }
                 public GenWidget chooseWord(GenWidget widget, int word)
@@ -580,13 +564,13 @@ public class DiscriminativeInferState extends Event3InferState
                 }
             });
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                double baseParam; int method = Parameters.M_NOISEDOWN;
+                double baseProb; int method = Parameters.M_NOISEDOWN;
                 final double CONT = getCount(modelFParams.leftNoiseChoices, Parameters.S_CONTINUE);
                 final double STOP = getCount(modelFParams.leftNoiseChoices, Parameters.S_STOP);
                 final int MINUS_NOISE_MINUS_ONE = (int) Math.round(CONT / STOP);
                 public double getWeight() {
-                    baseParam = get(baseFParams.methodChoices, method);
-                    return getCount(alignWeights, method) + getBaselineScore(baseParam);
+                    baseProb = get(baseFParams.methodChoices, method);
+                    return getCount(alignWeights, method) + getBaselineScore(baseProb);
                 }
                 public Pair getWeightAtRank(int rank) {
                     return rank > 0 ? null : new Pair(getCount(modelFParams.methodChoices, method),
@@ -598,7 +582,7 @@ public class DiscriminativeInferState extends Event3InferState
                     widget.getNumMethods()[c][i] = method;
                     widget.getNums()[i] = (-MINUS_NOISE_MINUS_ONE) - 1 + v;
                     Feature[] featuresArray = {new Feature(alignWeights, method)};
-                    increaseCounts(featuresArray, normalisedLog(baseParam));
+                    increaseCounts(featuresArray, normalisedLog(baseProb));
                     return widget;
                 }
                 public GenWidget chooseWord(GenWidget widget, int word)

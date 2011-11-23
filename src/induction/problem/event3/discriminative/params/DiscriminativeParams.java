@@ -35,18 +35,23 @@ public class DiscriminativeParams extends Params
     @Override
     public String output()
     {
-        String out = "";
-        out += forEachProb(baselineWeight, getLabels(1, "baseline", null));
-        if(model.isUseKBest())
-        {
-            out += forEachProb(lmWeight, getLabels(1, "lm", null));
-//            out += forEachProb(bigramWeights, getLabels(model.getWordBigramMap().size(), 
-//                "bigramWeights", model.getWordNgramLabels(2)));
-            out += forEachProb(ngramWeights, getLabels(model.getWordNgramMap().size(), 
-                "ngramWeights ", model.getWordNgramLabels(3)));
-        }       
+        String out = outputDiscriminativeOnly();
         out += super.output();
         return out;
     }
     
+    public String outputDiscriminativeOnly()
+    {
+        String out = "";
+        out += forEachProbNonZero(baselineWeight, getLabels(1, "baseline", null));
+        if(model.isUseKBest())
+        {
+            out += forEachProbNonZero(lmWeight, getLabels(1, "lm", null));
+//            out += forEachProb(bigramWeights, getLabels(model.getWordBigramMap().size(), 
+//                "bigramWeights", model.getWordNgramLabels(2)));
+            out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
+                "ngramWeights ", model.getWordNgramLabels(3)));
+        }  
+        return out;
+    }
 }
