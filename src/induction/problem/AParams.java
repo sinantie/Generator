@@ -249,7 +249,7 @@ public abstract class AParams implements Serializable
         StringBuilder out = new StringBuilder();
         for(Pair<Integer> p : v.getProbsSorted())
         {
-            if(p.value > 0)
+            if(p.value != 0)
                 out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
         }
         return out.toString();
