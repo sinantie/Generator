@@ -115,3 +115,122 @@ is there a flight between san francisco and boston with a stopover at dallas for
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_francisco	@manufacturer:--	@price:--	@stop:dallas	@to:boston	@year:--
 .id:1	.type:search	@of:--	@typed:lambda	@what:flight
 0 0 1
+Example_21
+list the takeoffs and landings at general mitchell international
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:mke	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:4	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:mke	@year:--
+.id:2	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 3 4 2
+Example_22
+what flights are there from minneapolis to newark on continental
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:minneapolis	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_23
+is there limo service at pittsburgh airport
+.id:0	.type:ground_transportation	@from_airport:pit	@info:--	@to_city:--	@typed:limousine
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_24
+i need a flight from pittsburgh to los angeles thursday evening
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:evening
+.id:3	.type:day	@day:thursday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_25
+how much is a first class ticket from boston to san francisco
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:san_francisco	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_26
+in dallas fort worth i would like information on ground transportation
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:dallas	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_27
+what flights go from philadelphia to san francisco via dallas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:philadelphia	@manufacturer:--	@price:--	@stop:dallas	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_28
+i'd like flights on american airlines from philadelphia philadelphia to dallas arriving before 1145am
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:philadelphia	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1145	@typed:<
+0 0 1 2
+Example_29
+what airlines from washington dc to columbus
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:columbus	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:airline
+0 1 2
+Example_30
+what flights do you have in the morning of september twentieth on united airlines from pittsburgh to san francisco and a stopover in denver
+.id:0	.type:flight	@aircraft_code:--	@airline:ua	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:denver	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day_number	@day_number:20	@dep_ar_ret:departure
+.id:4	.type:month	@dep_ar_ret:departure	@month:september
+0 0 1 2 3 4
+Example_31
+what is the cost of a round trip flight from pittsburgh to atlanta beginning on april twenty fifth and returning on may sixth
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day_number	@day_number:25	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:april
+0 1 2 4 5
+Example_32
+i would like a flight from washington to boston leaving at 230 on august twentieth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:month	@dep_ar_ret:departure	@month:august
+.id:3	.type:time	@approx:--	@dep_ar:departure	@time:1430
+.id:4	.type:day_number	@day_number:20	@dep_ar_ret:departure
+0 0 1 2 3 4
+Example_33
+are there any nonstop flights from philadelphia to denver that arrive before 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:philadelphia	@manufacturer:--	@price:--	@stop:nonstop	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1700	@typed:<
+0 0 1 2
+Example_34
+i need a flight from baltimore to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_35
+i'd like to fly nonstop from atlanta to baltimore and get there at 7pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:atlanta	@manufacturer:--	@price:--	@stop:nonstop	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:--	@dep_ar:arrival	@time:1900
+0 0 1 2
+Example_36
+give me sunday nonstop flights from memphis to las vegas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:nonstop	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_37
+what is the type of aircraft for united flight 21
+.id:1	.type:flight	@aircraft_code:--	@airline:ua	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:21	@from:--	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:aircraft_code
+0 1 2
+Example_38
+can you give me information on transportation from the airport in philadelphia to downtown philadelphia
+.id:0	.type:ground_transportation	@from_airport:philadelphia	@info:--	@to_city:philadelphia	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_39
+list flights from phoenix to detroit on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:detroit	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_40
+what is the fare going from baltimore to boston one way on november seventh
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day_number	@day_number:7	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:november
+0 1 2 4 5

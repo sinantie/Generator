@@ -38,7 +38,7 @@ public class DiscriminativeGenerationAtisTest
     @Before
     public void setUp()
     {
-        String args = "-modelType generate -inputLists test/testAtisExamples "
+        String args = "-modelType generate -testInputLists test/testAtisExamples "
 //         String args = "-modelType generate -inputLists data/atis/test/atis-test.txt "                   
                     + "-examplesInSingleFile -numThreads 1 "
                     + "-inputFileExt events "                    
@@ -46,16 +46,17 @@ public class DiscriminativeGenerationAtisTest
                     + "-generativeModelParamsFile results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
                     + "-stagedParamsFile results/output/atis/generation/discriminative/"
-                    + "calculate_baseline_ngrams_weight_norm/stage1.discriminative.params.obj "
+                    + "calculate_baseline_ngrams_weight_norm_staged_ignore/stage1.discriminative.params.obj "
                     + "-disallowConsecutiveRepeatFields "                 
                     + "-kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
-//                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
+                    + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType COUNTS "
-                    + "-lengthPredictionStartIndex 2";
+                    + "-lengthPredictionStartIndex 2 "
+                    + "-lengthCompensation 0";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
