@@ -464,8 +464,8 @@ public class DiscriminativeInferState extends Event3InferState
             wordNgramsMap, 3, text);
         increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
         // compute lm feature
-//        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
-//                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
+        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
+                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
     }
     protected EventTypeParams getBaselineEventTypeParams(int event)
     {

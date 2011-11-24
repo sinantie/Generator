@@ -152,7 +152,8 @@ public class Options {
   @Option(gloss="don't save parameter files (for tests only)") public boolean dontOutputParams = false;  
   
   // Learning
-  @Option public InitType initType = InitType.random;
+//  @Option public InitType initType = InitType.random;
+  @Option public InitType initType;
   @Option public double initSmoothing = 0.01;
   @Option public double initNoise = 1e-3;
   @Option public Random initRandom = new Random(1);
@@ -164,7 +165,7 @@ public class Options {
   @OptionSet(name="stage2") public LearnOptions stage2 = new LearnOptions();
   @Option(gloss="Parameters object file") public String stagedParamsFile = "";
   @Option(gloss="Parameters object file of generative model (for discriminative training only") 
-  public String generativeModelParamsFile = "";
+  public String generativeModelParamsFile;
   @Option(gloss="Output every this number of iterations") public int outputIterFreq = 1;
   @Option(gloss="Output full predictions (for debugging)") public boolean outputFullPred = false;
   @Option(gloss="Output training objective and test predictions on current parameters") public boolean outputCurrentState = false;

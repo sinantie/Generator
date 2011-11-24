@@ -342,17 +342,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-//                                       " - model: " + modelFeatures.get(baseFeature) + 
-//                                       " - sum: " + baseFeature.getValue()
-//                                       );
-//                    if(perceptronSumModel.containsKey(lmFeature))
-//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-//                                           " - model: " + modelFeatures.get(lmFeature) + 
-//                                           " - sum: " + lmFeature.getValue()
-//                                           );
-//                    else
-//                        System.out.println();
+                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+                                       " - model: " + modelFeatures.get(baseFeature) + 
+                                       " - sum: " + baseFeature.getValue()
+                                       );
+                    if(perceptronSumModel.containsKey(lmFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+                                           " - model: " + modelFeatures.get(lmFeature) + 
+                                           " - sum: " + lmFeature.getValue()
+                                           );
+                    else
+                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -511,20 +511,23 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         AExample ex = examples.get(0);
         Widget bestWidget = null;
         try{
-            for(int i = 0; i < examples.size(); i++)
-            {
-                ExampleProcessor model = new ExampleProcessor(
-                    examples.get(i), i, modelFeatures, false, lopts, 0, complexity);
-                model.call();
-                bestWidget = model.bestWidget;
-            }                                    
-//            ExampleProcessor model = new ExampleProcessor(
-//                ex, 0, modelFeatures, false, lopts, 0, complexity);
-//            model.call();
-//            bestWidget = model.bestWidget;
+//            for(int i = 0; i < examples.size(); i++)
+//            {
+//                ExampleProcessor model = new ExampleProcessor(
+//                    examples.get(i), i, modelFeatures, false, lopts, 0, complexity);
+//                model.call();
+//                bestWidget = model.bestWidget;
+//            }                                    
+            ExampleProcessor model = new ExampleProcessor(
+                ex, 0, modelFeatures, false, lopts, 0, complexity);
+            model.call();
+            bestWidget = model.bestWidget;
+            System.out.println(widgetToFullString(ex, bestWidget));
         }
-        catch(Exception e){}        
-        System.out.println(widgetToFullString(ex, bestWidget));
+        catch(Exception e){
+            e.printStackTrace();
+        }        
+        
         return widgetToSGMLOutput(ex, bestWidget);
     }
     
