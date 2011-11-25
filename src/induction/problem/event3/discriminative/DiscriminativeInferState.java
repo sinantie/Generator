@@ -428,7 +428,7 @@ public class DiscriminativeInferState extends Event3InferState
         double weight = 0.0;
         for(Integer index : ngramIndices)
             weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
-        return weight;        
+        return weight;
 //        return 0.0;        
     }
     
@@ -441,7 +441,7 @@ public class DiscriminativeInferState extends Event3InferState
     {        
 //        double weight = 0.0;
 //        for(List<Integer> ngram : ngrams)
-//            weight += getCount(((DiscriminativeParams)params).lmWeight, 0) * 
+//            weight += //getCount(((DiscriminativeParams)params).lmWeight, 0) * 
 //                    normalise(NgramModel.getNgramLMLogProb(ngramModel, vocabulary, 
 //                              opts.numAsSymbol, ngram));
 //        return weight;
@@ -464,8 +464,8 @@ public class DiscriminativeInferState extends Event3InferState
             wordNgramsMap, 3, text);
         increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
         // compute lm feature
-        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
-                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
+//        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
+//                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
     }
     protected EventTypeParams getBaselineEventTypeParams(int event)
     {
@@ -974,7 +974,7 @@ public class DiscriminativeInferState extends Event3InferState
                             return widget;
                         }   
                    });
-                }
+                } // if
                 else
                 {
                     hypergraph.addEdge(node, genField(i, j, c, event, f),

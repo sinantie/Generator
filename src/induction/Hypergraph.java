@@ -872,7 +872,7 @@ public class Hypergraph<Widget> {
         HyperpathChooser chooser = new HyperpathChooser();
         chooser.widget = widget;
         chooser.choose = true;
-        chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0), false);
+        chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0), !discriminative);
         return new HyperpathResult(chooser.widget, chooser.logWeight);
   }
   
@@ -906,7 +906,7 @@ public class Hypergraph<Widget> {
             chooser.choose = true;
             this.k = k;
             // get the k-best derivation
-            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), true);
+            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), !discriminative);
             predStr = GenerationPerformance.widgetToString((GenWidget)chooser.widget);
             // score it
             score = bleuScorer.evaluateBleu(predStr, trueStr);
