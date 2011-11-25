@@ -57,6 +57,7 @@ public class DiscriminativeGenerationAtisTest
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0";
+//                    + "-oracleReranker";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
