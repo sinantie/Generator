@@ -32,7 +32,6 @@ import induction.problem.event3.Widget;
 import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
-import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -65,9 +64,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      * of the oracle model and the model under train
      */
     HashMap<Feature, Double> oracleFeatures, modelFeatures;
-    
-    Map<List<Integer>, Integer> wordBigramMap;    
-    Map<List<Integer>, Integer> wordNgramMap;    
+        
+    Map<List<Integer>, Integer> wordNgramMap, wordNegativeNgramMap;
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
@@ -87,6 +85,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         oracleFeatures = new HashMap<Feature, Double>();
         modelFeatures = new HashMap<Feature, Double>();      
         useKBest = opts.kBest > 1;
+        wordNegativeNgramMap = new HashMap();
     }
 
     @Override
@@ -169,13 +168,13 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      */
     private void populateNgramMaps()
     {
-//        wordBigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
+//        wordNegativeNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
         wordNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer, false);
     }
 
     public String[] getWordNgramLabels(int N)
     {
-        Map<List<Integer>, Integer> ngrams = N == 2 ? wordBigramMap : wordNgramMap;
+        Map<List<Integer>, Integer> ngrams = wordNgramMap;
         String labels[] = new String[ngrams.size()];
         for(Entry<List<Integer>, Integer> entry : ngrams.entrySet())
         {
@@ -194,9 +193,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return useKBest;
     }
     
-    public Map<List<Integer>, Integer> getWordBigramMap()
+    public Map<List<Integer>, Integer> getWordNegativeNgramMap()
     {
-        return wordBigramMap;
+        return wordNegativeNgramMap;
     }    
     
     public Map<List<Integer>, Integer> getWordNgramMap()

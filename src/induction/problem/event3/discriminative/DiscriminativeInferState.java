@@ -99,7 +99,7 @@ public class DiscriminativeInferState extends Event3InferState
      */    
     EmissionParams emissionsParams;
 
-    Map<List<Integer>, Integer> wordNgramsMap;
+    Map<List<Integer>, Integer> wordNgramsMap, wordNegativeNgramsMap;
     
     private int iteration;    
     
@@ -114,6 +114,7 @@ public class DiscriminativeInferState extends Event3InferState
         this.baseline = model.getBaselineModelParams();
         this.baselineFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);        
         this.wordNgramsMap = ((DiscriminativeEvent3Model)model).getWordNgramMap();
+        this.wordNegativeNgramsMap = ((DiscriminativeEvent3Model)model).getWordNegativeNgramMap();
         this.iteration = ispec.getIter();        
     }
 
@@ -416,6 +417,22 @@ public class DiscriminativeInferState extends Event3InferState
         return list;
     }
     
+    protected List<Feature> getNgramFeatures(Map<Integer, Double> weights, 
+                                             List<Integer> weightIndices, boolean augment)
+    {
+        List<Feature> list = new ArrayList<Feature>();
+        if(weightIndices != null)
+            for(Integer index : weightIndices)
+            {
+                if(augment && !weights.containsKey(index))                                    
+                {                    
+                    weights.put(index, 0.0);
+                }
+                list.add(new Feature(weights, index));
+            }                
+        return list;
+    }
+    
     /**
      * compute the total weight of the non-local ngram features, from the list of
      * ngrams given as a parameter
@@ -424,10 +441,15 @@ public class DiscriminativeInferState extends Event3InferState
      */
     protected double getNgramWeights(List<List<Integer>> ngrams)
     {
+        // deal with positive ngrams, i.e. ngrams that exist in the gold standard text
         List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
         double weight = 0.0;
         for(Integer index : ngramIndices)
-            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);        
+            weight += getCount(((DiscriminativeParams)params).ngramWeights, index);
+        // deal with negative ngrams, i.e. ngrams never seen in the gold standard text
+        List<Integer> ngramNegativeIndices = NgramModel.getNgramIndices(wordNegativeNgramsMap, ngrams);
+        for(Integer index : ngramNegativeIndices)
+            weight += ((DiscriminativeParams)params).getNgramNegativeWeights(index);
         return weight;
 //        return 0.0;        
     }
@@ -460,13 +482,28 @@ public class DiscriminativeInferState extends Event3InferState
         for(Integer word: textArray)
             text.add(word);
         text.add(vocabulary.getIndex("</s>"));
+        // deal with positive ngrams
         List<Integer> ngramIndices = NgramModel.getNgramIndices(
-            wordNgramsMap, 3, text);
-        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
+            wordNgramsMap, 3, text, false);
+        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));        
         // compute lm feature
 //        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
 //                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
     }
+    
+    protected void increaseNegativeNgramCounts(int[] textArray)
+    {
+        List<Integer> text = new ArrayList();
+        for(int i = 0; i < opts.ngramSize - 1; i++)
+            text.add(vocabulary.getIndex("<s>"));
+        for(Integer word: textArray)
+            text.add(word);
+        text.add(vocabulary.getIndex("</s>"));
+        // deal with negative ngrams
+        List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNegativeNgramsMap, 3, text, true);
+        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramNegativeWeights, ngramIndices, true));
+    }
+    
     protected EventTypeParams getBaselineEventTypeParams(int event)
     {
         return baseline.eventTypeParams[ex.events.get(event).getEventTypeIndex()];

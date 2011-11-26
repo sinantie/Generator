@@ -4,6 +4,8 @@ import induction.Options;
 import induction.problem.ProbVec;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import induction.problem.event3.params.Params;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The weights of the perceptron model
@@ -12,6 +14,8 @@ import induction.problem.event3.params.Params;
 public class DiscriminativeParams extends Params
 {
     public ProbVec baselineWeight, ngramWeights, lmWeight;
+    public Map<Integer, Double> ngramNegativeWeights;
+    
 //    public ProbVec bigramWeights;
     private DiscriminativeEvent3Model model;
     
@@ -20,18 +24,26 @@ public class DiscriminativeParams extends Params
         super(model, opts);
         this.model = model;
         baselineWeight = ProbVec.zeros(1);        
-        addVec("baseline", baselineWeight);
+        addVec("baseline", baselineWeight);        
         if(model.isUseKBest())
         {
-//            bigramWeights = ProbVec.zeros(model.getWordBigramMap().size());
+//            bigramWeights = ProbVec.zeros(model.getWordNegativeNgramMap().size());
 //            addVec("bigramWeights", bigramWeights);
             ngramWeights = ProbVec.zeros(model.getWordNgramMap().size());
             addVec("ngramWeights", ngramWeights);
             lmWeight = ProbVec.zeros(1);
             addVec("lmWeight", lmWeight);
+            ngramNegativeWeights = new HashMap<Integer, Double>();
         }        
     }
     
+    public Double getNgramNegativeWeights(int index)
+    {
+//        if(ngramNegativeWeights.containsKey(index))
+            return ngramNegativeWeights.get(index);
+//        ngramNegativeWeights.put(index, 0.0);
+//        return 0.0;
+    }
     @Override
     public String output()
     {
@@ -47,7 +59,7 @@ public class DiscriminativeParams extends Params
         if(model.isUseKBest())
         {
             out += forEachProbNonZero(lmWeight, getLabels(1, "lm", null));
-//            out += forEachProb(bigramWeights, getLabels(model.getWordBigramMap().size(), 
+//            out += forEachProb(bigramWeights, getLabels(model.getWordNegativeNgramMap().size(), 
 //                "bigramWeights", model.getWordNgramLabels(2)));
             out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
                 "ngramWeights ", model.getWordNgramLabels(3)));

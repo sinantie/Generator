@@ -152,26 +152,6 @@ public class ProbVec implements Serializable
         return sum == 0 ? counts : Utils.div(Arrays.copyOf(counts, counts.length), sum);
     }
 
-//    public Set<Pair> getProbsSorted()
-//    {
-//        int length = counts.length;
-//        double[] probVec = getProbs();
-//        TreeSet<Pair> pairs = new TreeSet<Pair>();
-//        // sort automatically by probability (pair.value)
-//        for(int i = 0; i < length; i++)
-//        {
-//            pairs.add(new Pair(probVec[i], labels[i]));
-//        }
-////        int i = 0;
-////        for(Pair p : pairs.descendingSet())
-////        {
-////            probVec[i] = p.value;
-////            labelsOut[i] = p.label;
-////            i++;
-////        }
-//        return pairs.descendingSet();
-//    }
-
     public Set<Pair<Integer>> getProbsSorted()
     {
         int length = counts.length;
@@ -183,13 +163,6 @@ public class ProbVec implements Serializable
         {
             pairs.add(new Pair(probVec[i], new Integer(i)));
         }
-//        int i = 0;
-//        for(Pair p : pairs.descendingSet())
-//        {
-//            probVec[i] = p.value;
-//            labelsOut[i] = p.label;
-//            i++;
-//        }
         return pairs.descendingSet();
     }
 

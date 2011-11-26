@@ -131,18 +131,25 @@ public abstract class NgramModel
      * @return  a list of the indices of the ngrams in the sentence
      */
     public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, 
-            int N, int i, int j, List<Integer> text)
+            int N, int i, int j, List<Integer> text, boolean augment)
     {
         List<Integer> indices = new ArrayList<Integer>();
         if(j - i >= N - 1)
         {
             for(int k = i; k <= j - (N - 1); k++)
-            {                    
-                Integer index = ngramsMap.get(text.subList(k, k + N));
+            {
+                List<Integer> ngram = text.subList(k, k + N);
+                Integer index = ngramsMap.get(ngram);
                 if(index != null)
                     indices.add(index);
-            }
-        }
+                else if(augment)
+                {
+                    int newIndex = ngramsMap.size();
+                    ngramsMap.put(ngram, newIndex);
+                    indices.add(newIndex);
+                }
+            } // for
+        } // if
         return indices;
     }
     
@@ -151,23 +158,24 @@ public abstract class NgramModel
      * ngrams loaded previously.     
      */
     public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, 
-            int N, List<Integer> text)
+            int N, List<Integer> text, boolean augment)
     {
-        return getNgramIndices(ngramsMap, N, 0, text.size() - 1, text);
+        return getNgramIndices(ngramsMap, N, 0, text.size() - 1, text, augment);
     }
     
     /**
      * Get a list of the indices of the ngrams from a list of ngrams, against a map of 
      * ngrams loaded previously.     
      */
-    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, List<List<Integer>> ngrams)
+    public static List<Integer> getNgramIndices(Map<List<Integer>, Integer> ngramsMap, 
+                                                List<List<Integer>> ngrams)
     {
         List<Integer> indices = new ArrayList<Integer>();
         for(List<Integer> ngram : ngrams)
         {
             Integer index = ngramsMap.get(ngram);
             if(index != null)
-                indices.add(index);
+                indices.add(index);            
         }            
         return indices;
     }
