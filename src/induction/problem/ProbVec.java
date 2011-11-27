@@ -17,7 +17,7 @@ import java.util.TreeSet;
  * The only reason for storing the oldSum is that for the aggressive online EM update, we need to scale a series
  * of updates by the same sum, but updating it affects the sum
  **/
-public class ProbVec implements Serializable
+public class ProbVec implements Serializable, Vec
 {
     static final long serialVersionUID = -8235238691651895455L;
     private double[] counts;
@@ -66,19 +66,22 @@ public class ProbVec implements Serializable
         return counts[i] / sum;
     }
 
+    @Override
     public double getCount(int i)
     {
         return counts[i];
     }
 
-    public ProbVec addCount(double x)
+    @Override
+    public Vec addCount(double x)
     {
         Utils.add(counts, x);
         sum += counts.length * x;
         return this;
     }
 
-    public ProbVec addCount(int i, double x)
+    @Override
+    public Vec addCount(int i, double x)
     {
         counts[i] += x;
         sum += x;
@@ -110,15 +113,17 @@ public class ProbVec implements Serializable
         return this;
     }
 
-    public ProbVec addCount(ProbVec vec, double x)
+    @Override
+    public Vec addCount(Vec vec, double x)
     {
-        Utils.add(counts, x, vec.counts);
-        sum += x * vec.sum;
+        ProbVec pv = (ProbVec)vec;
+        Utils.add(counts, x, pv.counts);
+        sum += x * pv.sum;
         return this;
     }
 
     // For the special aggressive online EM update
-    public ProbVec addProb(int i, double x)
+    public Vec addProb(int i, double x)
     {
         return addCount(i, x * oldSum);
     }
@@ -152,6 +157,7 @@ public class ProbVec implements Serializable
         return sum == 0 ? counts : Utils.div(Arrays.copyOf(counts, counts.length), sum);
     }
 
+    @Override
     public Set<Pair<Integer>> getProbsSorted()
     {
         int length = counts.length;
@@ -204,7 +210,7 @@ public class ProbVec implements Serializable
         return oldSum;
     }
 
-    public ProbVec expDigamma()
+    public Vec expDigamma()
     {
         if(sum > 0)
         {
@@ -214,7 +220,7 @@ public class ProbVec implements Serializable
         return this;
     }
 
-    public ProbVec normalise()
+    public Vec normalise()
     {
         if (sum == 0)
         {
@@ -244,11 +250,13 @@ public class ProbVec implements Serializable
         return computeSum();
     }
 
+    @Override
     public ProbVec set(double x)
     {
         Utils.set(counts, x);
         return computeSum();
     }
+    @Override
     public void set(int pos, double x)
     {
         assert pos < counts.length;

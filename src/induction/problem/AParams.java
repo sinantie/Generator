@@ -63,18 +63,18 @@ public abstract class AParams implements Serializable
     public void optimise(double smoothing)
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
-            v.addCount(smoothing).normalise();
+            ((ProbVec)v.addCount(smoothing)).normalise();
         }
     }
 
     public void optimiseVar(double smoothing)
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
-            v.addCount(smoothing).expDigamma();
+            ((ProbVec)v.addCount(smoothing)).expDigamma();
         }
     }
 

@@ -1,11 +1,10 @@
 package induction.problem.event3.discriminative.params;
 
 import induction.Options;
+import induction.problem.MapVec;
 import induction.problem.ProbVec;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import induction.problem.event3.params.Params;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The weights of the perceptron model
@@ -14,7 +13,7 @@ import java.util.Map;
 public class DiscriminativeParams extends Params
 {
     public ProbVec baselineWeight, ngramWeights, lmWeight;
-    public Map<Integer, Double> ngramNegativeWeights;
+    public MapVec ngramNegativeWeights;
     
 //    public ProbVec bigramWeights;
     private DiscriminativeEvent3Model model;
@@ -33,17 +32,17 @@ public class DiscriminativeParams extends Params
             addVec("ngramWeights", ngramWeights);
             lmWeight = ProbVec.zeros(1);
             addVec("lmWeight", lmWeight);
-            ngramNegativeWeights = new HashMap<Integer, Double>();
+            ngramNegativeWeights = new MapVec();
         }        
     }
     
-    public Double getNgramNegativeWeights(int index)
-    {
-//        if(ngramNegativeWeights.containsKey(index))
-            return ngramNegativeWeights.get(index);
-//        ngramNegativeWeights.put(index, 0.0);
-//        return 0.0;
-    }
+//    public Double getNgramNegativeWeights(int index)
+//    {
+////        if(ngramNegativeWeights.containsKey(index))
+//            return ngramNegativeWeights.get(index);
+////        ngramNegativeWeights.put(index, 0.0);
+////        return 0.0;
+//    }
     @Override
     public String output()
     {

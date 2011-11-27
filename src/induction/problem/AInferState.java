@@ -29,7 +29,7 @@ public abstract class AInferState
         this.trueInfer = ispec.isTrueUpdate();
     }
 
-    public double getCount(ProbVec v, int i)
+    public double getCount(Vec v, int i)
     {
         return v.getCount(i);
     }
@@ -83,7 +83,7 @@ public abstract class AInferState
     {
         return new ProbStats(ex.N(), logZ, logVZ, logCZ, elogZ, entropy, objective);
     }
-    public ProbVec update(ProbVec v, int i, double x)
+    public Vec update(ProbVec v, int i, double x)
     {
         //dbg("update " + fmt1(v.getProbs) + " " + i + " " + fmt(x))
         if (ispec.isMixParamsCounts())

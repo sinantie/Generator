@@ -1,30 +1,30 @@
 package induction.problem.event3.discriminative;
 
-import induction.problem.Vec;
+import induction.problem.ProbVec;
 
 /**
  *
  * @author konstas
  */
-public class Feature
+public class ProbFeature
 {
-    private Vec vec;
+    private ProbVec probVec;
     private int index;
-
-    public Feature(Vec probVec, int index)
+    
+    public ProbFeature(ProbVec probVec, int index)
     {
-        this.vec = probVec;
+        this.probVec = probVec;
         this.index = index;
     }
     
     public double getValue()
     {
-        return vec.getCount(index);
+        return probVec.getCount(index);
     }
     
     public void setValue(double value)
     {
-        vec.set(index, value);
+        probVec.set(index, value);
     }
     
     public void increment(double value)
@@ -43,8 +43,8 @@ public class Feature
         {
             return false;
         }
-        final Feature other = (Feature) obj;
-        if (this.vec != other.vec && (this.vec == null || !this.vec.equals(other.vec)))
+        final ProbFeature other = (ProbFeature) obj;
+        if (this.probVec != other.probVec && (this.probVec == null || !this.probVec.equals(other.probVec)))
         {
             return false;
         }
@@ -59,10 +59,8 @@ public class Feature
     public int hashCode()
     {
         int hash = 7;
-        hash = 83 * hash + (this.vec != null ? this.vec.hashCode() : 0);
+        hash = 83 * hash + (this.probVec != null ? this.probVec.hashCode() : 0);
         hash = 83 * hash + this.index;
         return hash;
     }
-    
-    
 }

@@ -17,8 +17,10 @@ import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
+import induction.problem.MapVec;
 import induction.problem.Pair;
 import induction.problem.ProbVec;
+import induction.problem.Vec;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3InferState;
@@ -353,6 +355,7 @@ public class DiscriminativeInferState extends Event3InferState
                     // compute ngram features (we can do it  in the end,
                     // since we have created the resulting output text)
                     increaseNgramLMCounts(((GenWidget)result.widget).getText());
+                    increaseNegativeNgramCounts(((GenWidget)result.widget).getText());
                 }
             }
             else
@@ -408,30 +411,22 @@ public class DiscriminativeInferState extends Event3InferState
        return pv;
     }
         
-    protected List<Feature> getNgramFeatures(ProbVec weights, List<Integer> weightIndices)
-    {
-        List<Feature> list = new ArrayList<Feature>();
-        if(weightIndices != null)
-            for(Integer index : weightIndices)
-                list.add(new Feature(weights, index));
-        return list;
-    }
-    
-    protected List<Feature> getNgramFeatures(Map<Integer, Double> weights, 
-                                             List<Integer> weightIndices, boolean augment)
+    protected List<Feature> getNgramFeatures(Vec weights, List<Integer> weightIndices, boolean augment)
     {
         List<Feature> list = new ArrayList<Feature>();
         if(weightIndices != null)
             for(Integer index : weightIndices)
             {
-                if(augment && !weights.containsKey(index))                                    
-                {                    
-                    weights.put(index, 0.0);
+                // special case of expandable count vectors, such as the negative ngrams.
+                // If we see a new ngram add in the list.
+                if(augment && weights.getCount(index) > Double.NEGATIVE_INFINITY)
+                {
+                    weights.addCount(index, 0.0);
                 }
                 list.add(new Feature(weights, index));
-            }                
+            }
         return list;
-    }
+    }        
     
     /**
      * compute the total weight of the non-local ngram features, from the list of
@@ -449,7 +444,7 @@ public class DiscriminativeInferState extends Event3InferState
         // deal with negative ngrams, i.e. ngrams never seen in the gold standard text
         List<Integer> ngramNegativeIndices = NgramModel.getNgramIndices(wordNegativeNgramsMap, ngrams);
         for(Integer index : ngramNegativeIndices)
-            weight += ((DiscriminativeParams)params).getNgramNegativeWeights(index);
+            weight += getCount(((DiscriminativeParams)params).ngramNegativeWeights, index);
         return weight;
 //        return 0.0;        
     }
@@ -485,7 +480,7 @@ public class DiscriminativeInferState extends Event3InferState
         // deal with positive ngrams
         List<Integer> ngramIndices = NgramModel.getNgramIndices(
             wordNgramsMap, 3, text, false);
-        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));        
+        increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices, false));        
         // compute lm feature
 //        increaseCount(new Feature(((DiscriminativeParams)params).lmWeight, 0),
 //                normalise(NgramModel.getSentenceLMLogProb(ngramModel, vocabulary, opts.numAsSymbol, 3, text)));
