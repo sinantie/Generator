@@ -64,7 +64,7 @@ public class DiscriminativeParams extends Params
 //                "bigramWeights", model.getWordNgramLabels(2)));
             out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
                 "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
-            out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNegativeNgramMap().size(), 
+            out += forEachProbNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
                 "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3)));
         }  
         return out;

@@ -138,7 +138,7 @@ public abstract class NgramModel
         {
             for(int k = i; k <= j - (N - 1); k++)
             {
-                List<Integer> ngram = text.subList(k, k + N);
+                List<Integer> ngram = new ArrayList<Integer>(text.subList(k, k + N));
                 Integer index = ngramsMap.get(ngram);
                 if(index != null)
                     indices.add(index);

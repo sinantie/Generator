@@ -23,7 +23,6 @@ import induction.problem.AExample;
 import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
-import induction.problem.ProbVec;
 import induction.problem.Vec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
@@ -34,6 +33,7 @@ import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.generative.generation.GenerationPerformance;
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -96,19 +96,36 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         baselineModelParams = loadGenerativeModelParams();
         
         Utils.begin_track("stagedInitParams");
+        try {
+        ObjectInputStream ois = ois = new ObjectInputStream(
+                    new FileInputStream(opts.stagedParamsFile));
         try
         {
-            Utils.log("Loading " + opts.stagedParamsFile);
-            ObjectInputStream ois = new ObjectInputStream(
-                    new FileInputStream(opts.stagedParamsFile));            
+            Utils.log("Loading " + opts.stagedParamsFile);            
             params = newParams();
             params.setVecs((Map<String, Vec>) ois.readObject());
             wordNegativeNgramMap = (Map<List<Integer>, Integer>) ois.readObject();
-            ois.close();
+//            ois.close();
+        }
+        catch(EOFException eof)
+        {
+            Utils.log("Suppressing loading error - no wordNegativeNgramMap object available");
         }
         catch(Exception ioe)
         {
             Utils.log("Error loading "+ opts.stagedParamsFile);
+            ioe.printStackTrace(LogInfo.stderr);
+//            ioe.printStackTrace();
+            Execution.finish();
+        }
+        finally
+        {
+            ois.close();
+        }
+        }
+        catch(IOException ioe)
+        {
+            Utils.log("Error opening "+ opts.stagedParamsFile);
             ioe.printStackTrace(LogInfo.stderr);
 //            ioe.printStackTrace();
             Execution.finish();
@@ -344,17 +361,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-                                       " - model: " + modelFeatures.get(baseFeature) + 
-                                       " - sum: " + baseFeature.getValue()
-                                       );
-                    if(perceptronSumModel.containsKey(lmFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-                                           " - model: " + modelFeatures.get(lmFeature) + 
-                                           " - sum: " + lmFeature.getValue()
-                                           );
-                    else
-                        System.out.println();
+//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+//                                       " - model: " + modelFeatures.get(baseFeature) + 
+//                                       " - sum: " + baseFeature.getValue()
+//                                       );
+//                    if(perceptronSumModel.containsKey(lmFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+//                                           " - model: " + modelFeatures.get(lmFeature) + 
+//                                           " - sum: " + lmFeature.getValue()
+//                                           );
+//                    else
+//                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -388,8 +405,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + "\n" + 
-                ((DiscriminativeParams)params).outputDiscriminativeOnly());
+//        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + "\n" + 
+//                ((DiscriminativeParams)params).outputDiscriminativeOnly());
         
         if(!opts.dontOutputParams)
         {
