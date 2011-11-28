@@ -47,7 +47,7 @@ public class DiscriminativeTrainWeatherTest
                     + "-disallowConsecutiveRepeatFields -dontCrossPunctuation -allowNoneEvent "
 //                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "
                  
-//                    + "-kBest 20 "
+                    + "-kBest 20 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "eventType -maxPhraseLength 5 -binariseAtWordLevel "
