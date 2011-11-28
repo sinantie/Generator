@@ -24,6 +24,7 @@ import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.ProbVec;
+import induction.problem.Vec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -101,7 +102,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             ObjectInputStream ois = new ObjectInputStream(
                     new FileInputStream(opts.stagedParamsFile));            
             params = newParams();
-            params.setVecs((Map<String, ProbVec>) ois.readObject());
+            params.setVecs((Map<String, Vec>) ois.readObject());
+            wordNegativeNgramMap = (Map<List<Integer>, Integer>) ois.readObject();
             ois.close();
         }
         catch(Exception ioe)
@@ -146,7 +148,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 fieldsMap.put(e.getEventTypeIndex(), fields);
             }
             generativeParams = new Params(this, opts);
-            generativeParams.setVecs((Map<String, ProbVec>) ois.readObject());
+            generativeParams.setVecs((Map<String, Vec>) ois.readObject());
             ois.close();
         }
         catch(Exception ioe)
@@ -172,9 +174,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         wordNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer, false);
     }
 
-    public String[] getWordNgramLabels(int N)
+    public String[] getWordNgramLabels(Map<List<Integer>, Integer> ngrams, int N)
     {
-        Map<List<Integer>, Integer> ngrams = wordNgramMap;
+//        Map<List<Integer>, Integer> ngrams = wordNgramMap;
         String labels[] = new String[ngrams.size()];
         for(Entry<List<Integer>, Integer> entry : ngrams.entrySet())
         {
@@ -212,6 +214,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     new FileOutputStream(Execution.getFile(name + 
                     ".discriminative.params.obj")));
             oos.writeObject(params.getVecs());
+            oos.writeObject(wordNegativeNgramMap);
             oos.close();
         }
         catch (IOException ex)

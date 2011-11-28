@@ -17,18 +17,18 @@ public abstract class AParams implements Serializable
 {
     static final long serialVersionUID = -8920104157808512229L;
 //    protected List<ProbVec> vecs;
-    protected Map<String, ProbVec> vecsMap;
+    protected Map<String, Vec> vecsMap;
 
     public AParams()
     {
 //        vecs = new ArrayList();
-        vecsMap = new HashMap<String, ProbVec>();
+        vecsMap = new HashMap<String, Vec>();
     }
 
     public void setUniform(double x)
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
             v.set(x);
         }
@@ -37,18 +37,18 @@ public abstract class AParams implements Serializable
     public void randomise(Random random, double noise)
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
-            v.set(random, noise, TypeAdd.RANDOM);
+            ((ProbVec)v).set(random, noise, TypeAdd.RANDOM);
         }
     }
 
     public void addNoise(Random random, double noise)
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
-            v.set(random, noise, TypeAdd.NOISE);
+            ((ProbVec)v).set(random, noise, TypeAdd.NOISE);
         }
     }
 
@@ -81,18 +81,18 @@ public abstract class AParams implements Serializable
     public void saveSum()
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
-            v.saveSum();
+            ((ProbVec)v).saveSum();
         }
     }
 
     public void div(double scale)
     {
 //        for(ProbVec v: vecs)
-        for(ProbVec v: vecsMap.values())
+        for(Vec v: vecsMap.values())
         {
-            v.div(scale);
+            ((ProbVec)v).div(scale);
         }
     }
 
@@ -103,14 +103,14 @@ public abstract class AParams implements Serializable
 //        {
 //            vecs.get(i).addCount(thatVecs.get(i), scale);
 //        }
-        final Map<String, ProbVec> thatVecsMap = that.vecsMap;
-        for(Entry<String, ProbVec> entry: vecsMap.entrySet())
+        final Map<String, Vec> thatVecsMap = that.vecsMap;
+        for(Entry<String, Vec> entry: vecsMap.entrySet())
         {
             entry.getValue().addCount(thatVecsMap.get(entry.getKey()), scale);
         }
     }
 
-    protected void addVec(String key, ProbVec vec)
+    protected void addVec(String key, Vec vec)
     {
         vecsMap.put(key, vec);
     }
@@ -120,7 +120,7 @@ public abstract class AParams implements Serializable
 //        vecs.add(vec);
 //    }
 
-    protected void addVec(String[] keys, ProbVec[] vec)
+    protected void addVec(String[] keys, Vec[] vec)
     {
         for(int i = 0; i < keys.length; i++)
         {
@@ -133,7 +133,7 @@ public abstract class AParams implements Serializable
 //        vecs.addAll(Arrays.asList(vec));
 //    }
 
-    protected void addVec(Map<String, ProbVec> vecsMap)
+    protected void addVec(Map<String, Vec> vecsMap)
     {
         this.vecsMap.putAll(vecsMap);
     }
@@ -143,7 +143,7 @@ public abstract class AParams implements Serializable
 //        vecs.addAll(vec);
 //    }
 
-    public Map<String, ProbVec> getVecs()
+    public Map<String, Vec> getVecs()
     {
         return vecsMap;
     }
@@ -153,15 +153,24 @@ public abstract class AParams implements Serializable
 //        return vecs;
 //    }
 
-    public void setVecs(Map<String, ProbVec> vecsMap)
+    public void setVecs(Map<String, Vec> vecsMap)
     {
-        ProbVec vIn, v;
-        for(Entry<String, ProbVec> entry: vecsMap.entrySet())
+        Vec vIn, v;
+        for(Entry<String, Vec> entry: vecsMap.entrySet())
         {
             vIn = entry.getValue();
             v = this.vecsMap.get(entry.getKey());
-            v.setData(vIn.getCounts(), vIn.getSum(),
-                                     vIn.getOldSum(), vIn.getLabels());
+            if(v instanceof ProbVec)
+            {
+                ProbVec probVecIn = (ProbVec)vIn;
+                ((ProbVec)v).setData(probVecIn.getCounts(), probVecIn.getSum(),
+                                     probVecIn.getOldSum(), probVecIn.getLabels());
+            }
+            else if(v instanceof MapVec)
+            {
+                MapVec mapVecIn = (MapVec)vIn;
+                ((MapVec)v).setData(mapVecIn.getCounts(), mapVecIn.getLabels());
+            }
             v.setSortedIndices();
         }
 //        for(int i = 0; i < vecs.size(); i++)
@@ -220,7 +229,7 @@ public abstract class AParams implements Serializable
     }
 
     // Helper for output(): display probabilities in sorted order
-    public String forEachProb(ProbVec v)
+    public String forEachProb(Vec v)
     {
         StringBuilder out = new StringBuilder();
         for(Pair p : v.getProbsSorted())
@@ -232,7 +241,7 @@ public abstract class AParams implements Serializable
         return out.toString();
     }
 
-    public String forEachProb(ProbVec v, String[] labels)
+    public String forEachProb(Vec v, String[] labels)
     {
         StringBuilder out = new StringBuilder();
         for(Pair<Integer> p : v.getProbsSorted())
@@ -244,7 +253,7 @@ public abstract class AParams implements Serializable
         return out.toString();
     }
     
-    public String forEachProbNonZero(ProbVec v, String[] labels)
+    public String forEachProbNonZero(Vec v, String[] labels)
     {
         StringBuilder out = new StringBuilder();
         for(Pair<Integer> p : v.getProbsSorted())

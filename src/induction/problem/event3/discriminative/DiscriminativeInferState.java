@@ -17,7 +17,6 @@ import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
-import induction.problem.MapVec;
 import induction.problem.Pair;
 import induction.problem.ProbVec;
 import induction.problem.Vec;

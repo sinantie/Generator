@@ -21,7 +21,7 @@ import induction.problem.AInferState;
 import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -125,7 +125,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             //eventTypesBuffer = (ArrayList<EventType>) ois.readObject();
             params = newParams();
 //            params.setVecs((List<ProbVec>) ois.readObject());
-            params.setVecs((Map<String, ProbVec>) ois.readObject());
+            params.setVecs((Map<String, Vec>) ois.readObject());
 //            }
             ois.close();
         }

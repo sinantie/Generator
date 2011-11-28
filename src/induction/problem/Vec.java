@@ -15,4 +15,5 @@ public interface Vec
     public Set<Pair<Integer>> getProbsSorted();
     public Vec set(double x);
     public void set(int pos, double x);
+    public void setSortedIndices();
 }

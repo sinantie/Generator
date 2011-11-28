@@ -94,6 +94,7 @@ public class MapVec implements Serializable, Vec
         return pairs.descendingSet();
     }
     
+    @Override
     public void setSortedIndices()
     {
         sortedIndices = new int[counts.size()];

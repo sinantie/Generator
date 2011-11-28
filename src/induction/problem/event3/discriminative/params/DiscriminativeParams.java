@@ -30,9 +30,11 @@ public class DiscriminativeParams extends Params
 //            addVec("bigramWeights", bigramWeights);
             ngramWeights = ProbVec.zeros(model.getWordNgramMap().size());
             addVec("ngramWeights", ngramWeights);
+            ngramNegativeWeights = new MapVec();
+            addVec("negativeNgramWeights", ngramNegativeWeights);
             lmWeight = ProbVec.zeros(1);
             addVec("lmWeight", lmWeight);
-            ngramNegativeWeights = new MapVec();
+            
         }        
     }
     
@@ -61,7 +63,9 @@ public class DiscriminativeParams extends Params
 //            out += forEachProb(bigramWeights, getLabels(model.getWordNegativeNgramMap().size(), 
 //                "bigramWeights", model.getWordNgramLabels(2)));
             out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
-                "ngramWeights ", model.getWordNgramLabels(3)));
+                "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
+            out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNegativeNgramMap().size(), 
+                "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3)));
         }  
         return out;
     }
