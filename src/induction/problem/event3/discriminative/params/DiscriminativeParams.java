@@ -33,9 +33,8 @@ public class DiscriminativeParams extends Params
             ngramNegativeWeights = new MapVec();
             addVec("negativeNgramWeights", ngramNegativeWeights);
             lmWeight = ProbVec.zeros(1);
-            addVec("lmWeight", lmWeight);
-            
-        }        
+            addVec("lmWeight", lmWeight);            
+        }
     }
     
 //    public Double getNgramNegativeWeights(int index)

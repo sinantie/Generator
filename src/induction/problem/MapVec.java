@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- *
+ * A sparse representation of feature counts, that is arbitrarily scaling up. 
+ * We don't need to set the length beforehand (not useful for probability vectors)
+ * 
  * @author konstas
  */
 public class MapVec implements Serializable, Vec
@@ -81,6 +83,14 @@ public class MapVec implements Serializable, Vec
     }
     
     @Override
+    public Vec addCount(Vec vec)
+    {
+        MapVec mv = (MapVec)vec;
+        counts.putAll(mv.counts);        
+        return this;
+    }
+    
+    @Override
     public Set<Pair<Integer>> getProbsSorted()
     {
         int length = counts.size();        
@@ -105,6 +115,7 @@ public class MapVec implements Serializable, Vec
         }
     }
     
+    @Override
     public Pair getAtRank(int rank)
     {
         return new Pair(counts.get(sortedIndices[rank]), sortedIndices[rank]);

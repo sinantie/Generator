@@ -122,18 +122,27 @@ public class ProbVec implements Serializable, Vec
         return this;
     }
 
+    @Override
+    public Vec addCount(Vec vec)
+    {
+        ProbVec pv = (ProbVec)vec;
+        Utils.add(counts, 1.0, pv.counts);
+        sum += pv.sum;
+        return this;
+    }
+    
     // For the special aggressive online EM update
     public Vec addProb(int i, double x)
     {
         return addCount(i, x * oldSum);
     }
 
-    public ProbVec addProbKeepNonNegative(int i, double x)
+    public Vec addProbKeepNonNegative(int i, double x)
     {
         return addCountKeepNonNegative(i, x * oldSum);
     }
 
-    public ProbVec addProb(double[] phi, double x)
+    public Vec addProb(double[] phi, double x)
     {
         return addCount(phi, x * oldSum);
     }
@@ -172,6 +181,7 @@ public class ProbVec implements Serializable, Vec
         return pairs.descendingSet();
     }
 
+    @Override
     public void setSortedIndices()
     {
         sortedIndices = new int[counts.length];
@@ -197,6 +207,7 @@ public class ProbVec implements Serializable, Vec
         return index;
     }
 
+    @Override
     public Pair getAtRank(int rank)
     {
         return new Pair(counts[sortedIndices[rank]], sortedIndices[rank]);
@@ -291,12 +302,7 @@ public class ProbVec implements Serializable, Vec
     public static ProbVec zeros(int n)
     {
         return new ProbVec(new double[n], 0, 0);
-    }
-
-    public static ProbVec zeros(int n, String[] labels)
-    {
-        return new ProbVec(new double[n], 0, 0, labels);
-    }
+    }   
 
     public static ProbVec[] zeros2(int n1, int n2)
     {
@@ -306,17 +312,7 @@ public class ProbVec implements Serializable, Vec
             result[i] = zeros(n2);
         }
         return result;
-    }
-
-    public static ProbVec[] zeros2(int n1, int n2, String[][] labels)
-    {
-        ProbVec[] result = new ProbVec[n1];
-        for(int i = 0; i < n1; i++)
-        {
-            result[i] = zeros(n2, labels[i]);
-        }
-        return result;
-    }
+    }    
 
     public static ProbVec[][] zeros3(int n1, int n2, int n3)
     {

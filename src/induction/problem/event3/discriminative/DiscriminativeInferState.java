@@ -227,8 +227,8 @@ public class DiscriminativeInferState extends Event3InferState
 //                    for(int v = 0; v < field.getV(); v++)
                     for(int v = 0; v < modelFieldParams.emissions.length; v++)
                     {                        
-                        emissions[v].addCount(modelFieldParams.emissions[v], 1);
-                        emissions[v].addCount(getBaselineScore(baseFieldParams.emissions[v]), 1);
+                        emissions[v].addCount(modelFieldParams.emissions[v]);
+                        emissions[v].addCount(getBaselineScore(baseFieldParams.emissions[v]));
                         emissions[v].setSortedIndices();
                     } // for
                     fieldEmissions.put(f, emissions);
@@ -237,21 +237,21 @@ public class DiscriminativeInferState extends Event3InferState
             localFieldEmissions.put(eventTypeIndex, fieldEmissions);
             // treat noneFieldEmissions
             ProbVec noneFieldEmissions = ProbVec.zeros(W);
-            noneFieldEmissions.addCount(params.eventTypeParams[eventTypeIndex].noneFieldEmissions, 1);
-            noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[eventTypeIndex].noneFieldEmissions), 1);
+            noneFieldEmissions.addCount(params.eventTypeParams[eventTypeIndex].noneFieldEmissions);
+            noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[eventTypeIndex].noneFieldEmissions));
             noneFieldEmissions.setSortedIndices();
             localNoneFieldEmissions.put(eventTypeIndex, noneFieldEmissions);            
         } // for
         // treat noneEventTypeEmissions
         ProbVec localNoneEventTypeEmissions = ProbVec.zeros(W);
-        localNoneEventTypeEmissions.addCount(params.trackParams[c].getNoneEventTypeEmissions(), 1);
+        localNoneEventTypeEmissions.addCount(params.trackParams[c].getNoneEventTypeEmissions());
         localNoneEventTypeEmissions.addCount(
-                getBaselineScore(baseline.trackParams[c].getNoneEventTypeEmissions()), 1);
+                getBaselineScore(baseline.trackParams[c].getNoneEventTypeEmissions()));
         localNoneEventTypeEmissions.setSortedIndices();
         //treat genericEmissions
         ProbVec localGenericEmissions = ProbVec.zeros(W);
-        localGenericEmissions.addCount(params.genericEmissions, 1);
-        localGenericEmissions.addCount(getBaselineScore(baseline.genericEmissions), 1);
+        localGenericEmissions.addCount(params.genericEmissions);
+        localGenericEmissions.addCount(getBaselineScore(baseline.genericEmissions));
         localGenericEmissions.setSortedIndices();
         
         emissionsParams = new EmissionParams(
@@ -685,8 +685,7 @@ public class DiscriminativeInferState extends Event3InferState
                     {return widget;}
                     });
                 } // for            
-            }
-            
+            }            
         } // if
         return node;
     }
