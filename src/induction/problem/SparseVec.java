@@ -132,16 +132,18 @@ public class SparseVec implements Vec
     {
         SparseVec sv = (SparseVec)vec;
         counts.add(sv.counts.mapMultiply(x));
-        sum += x * sv.sum;
+        sum += x * sv.getSum();
         return this;
     }
 
     @Override
     public Vec addCount(Vec vec)
     {
-        SparseVec sv = (SparseVec)vec;
-        counts.add(sv.counts);
-        sum += sv.sum;
+        if(vec instanceof SparseVec)
+            counts.add(((SparseVec)vec).counts); // this is likely more optimal
+        else
+            counts.add(vec.getCounts());        
+        sum += vec.getSum();
         return this;
     }
     
@@ -197,7 +199,7 @@ public void saveSum()
     public int getMax()
     {
         int index = -1;
-        double maxCount = -1.0d;
+        double maxCount = Double.NEGATIVE_INFINITY;
         for(int i = 0; i < size(); i++)
         {
             double entry = counts.getEntry(i);
@@ -327,12 +329,12 @@ public void saveSum()
     {
         return counts.getDimension();
     }
-    
+    @Deprecated
     public static Vec zeros(int n)
     {
         return new SparseVec(new OpenMapRealVector(n), 0, 0);
     }   
-
+    @Deprecated
     public static Vec[] zeros2(int n1, int n2)
     {
         Vec[] result = new SparseVec[n1];
@@ -342,7 +344,7 @@ public void saveSum()
         }
         return result;
     }    
-
+    @Deprecated
     public static Vec[][] zeros3(int n1, int n2, int n3)
     {
         Vec[][] result = new SparseVec[n1][n2];

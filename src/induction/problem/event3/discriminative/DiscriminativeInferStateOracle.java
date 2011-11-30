@@ -12,7 +12,7 @@ import induction.Hypergraph.HyperpathResult;
 import induction.ngrams.NgramModel;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
@@ -142,7 +142,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
     }       
     
     private void addNumEdge(final int method, final NumFieldValueNode node, 
-                            final ProbVec weightProbVec, final ProbVec baseProbVec)
+                            final Vec weightProbVec, final Vec baseProbVec)
     {
         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
             double baseParam;
@@ -169,8 +169,8 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         {           
             final NumFieldParams modelFParams = getNumFieldParams(event, field);
             final NumFieldParams baseFParams = getBaselineNumFieldParams(event, field);
-            final ProbVec weightProbVec = modelFParams.methodChoices;
-            final ProbVec baseProbVec = baseFParams.methodChoices;
+            final Vec weightProbVec = modelFParams.methodChoices;
+            final Vec baseProbVec = baseFParams.methodChoices;
             
             if (v == nums[i]) // M_IDENTITY
                 addNumEdge(Parameters.M_IDENTITY, node, weightProbVec, baseProbVec);

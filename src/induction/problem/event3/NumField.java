@@ -3,7 +3,7 @@ package induction.problem.event3;
 import induction.problem.event3.params.NumFieldParams;
 import induction.Utils;
 import induction.problem.AParams;
-import induction.problem.event3.Constants;
+import induction.problem.VecFactory;
 import java.io.Serializable;
 
 /**
@@ -45,9 +45,9 @@ public class NumField extends Field implements Serializable
     }
 
     @Override
-    public AParams newParams(String prefix)
+    public AParams newParams(VecFactory.Type vectorType, String prefix)
     {
-        return new NumFieldParams(prefix);
+        return new NumFieldParams(vectorType, prefix);
     }
 
     @Override

@@ -1,7 +1,8 @@
 package induction.problem.event3.params;
 
 import induction.problem.AParams;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
 import induction.problem.event3.EventType;
@@ -24,11 +25,11 @@ public class EventTypeParams extends AParams
     protected int[] allowed_fs;
     public int none_f, boundary_f;
 
-    public  ProbVec[] fieldChoices, genChoices, fieldNameEmissions, noneFieldBigramChoices;
+    public Vec[] fieldChoices, genChoices, fieldNameEmissions, noneFieldBigramChoices;
     public AParams[] fieldParams;
-    public ProbVec fieldSetChoices, noneFieldEmissions, filters;
+    public Vec fieldSetChoices, noneFieldEmissions, filters;
 
-    public EventTypeParams(Event3Model model, EventType eventType)
+    public EventTypeParams(Event3Model model, EventType eventType, VecFactory.Type vectorType)
     {
         super();
         this.model = model;
@@ -73,26 +74,22 @@ public class EventTypeParams extends AParams
         }
         dontcare_efs = (1 << (F2)) - 1; // All 11s
 
-         // f0, f -> choose field f given previous field f_0 (in event type t)
-        fieldChoices = ProbVec.zeros2(F+2, F+2);
-//        addVec(fieldChoices);
+         // f0, f -> choose field f given previous field f_0 (in event type t)        
+        fieldChoices = VecFactory.zeros2(vectorType, F+2, F+2);        
         addVec(getLabels(F+2, "fieldChoices " + typeToString + " ",
                           fieldToString), fieldChoices);
         // Distribution over field sets
-        fieldSetChoices = ProbVec.zeros(FS);
-//        addVec(fieldSetChoices);
+        fieldSetChoices = VecFactory.zeros(vectorType, FS);
         addVec("fieldSetChoices" + typeToString, fieldSetChoices);
         // w -> directly use word w (for none_f)
-        noneFieldEmissions = ProbVec.zeros(W);
-//        addVec(noneFieldEmissions);
+        noneFieldEmissions = VecFactory.zeros(vectorType, W);
         addVec("noneFieldEmissions" + typeToString, noneFieldEmissions);
         // f, g -> how to generate (g) a word in event f
-        genChoices = ProbVec.zeros2(F, Parameters.G);
-//        addVec(genChoices);
+        genChoices = VecFactory.zeros2(vectorType, F, Parameters.G);
         addVec(getLabels(F, "genChoices " + typeToString + " ",
                           fieldToString), genChoices);
         
-        noneFieldBigramChoices = ProbVec.zeros2(W, W);
+        noneFieldBigramChoices = VecFactory.zeros2(vectorType, W, W);
         addVec(getLabels(W, "noneFieldWordBiC " + typeToString + " ",
                           Event3Model.wordsToStringArray()), noneFieldBigramChoices);
 
@@ -102,12 +99,12 @@ public class EventTypeParams extends AParams
         fieldParams = new AParams[F];
         for(int f = 0; f < F; f++)
         {
-            fieldParams[f] = eventType.getFields()[f].newParams(typeToString + " " + fieldToString[f]);
+            fieldParams[f] = eventType.getFields()[f].newParams(vectorType, 
+                    typeToString + " " + fieldToString[f]);
             addVec(fieldParams[f].getVecs());
         }
         // whether this type should be generated or not
-        filters = ProbVec.zeros(Parameters.B);
-//        addVec(filters);
+        filters = VecFactory.zeros(vectorType, Parameters.B);
         addVec("filters" + typeToString, filters);
     }
 
@@ -169,7 +166,7 @@ public class EventTypeParams extends AParams
         String[][] labels = getLabels(F+2, F+2, "fieldC " + typeToString + " ",
                           fieldToString, fieldToString);
         int i = 0;
-        for(ProbVec v : fieldChoices)
+        for(Vec v : fieldChoices)
         {
             out += forEachProb(v, labels[i++]);
         }

@@ -1,7 +1,8 @@
 package induction.problem.event3.params;
 
 import induction.problem.AParams;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.Example;
 import java.io.Serializable;
@@ -13,16 +14,16 @@ import java.io.Serializable;
 public abstract class FieldParams extends AParams implements Serializable
 {
     static final long serialVersionUID = -4262178904641568053L;
-    public ProbVec[] wordBigramChoices;
+    public Vec[] wordBigramChoices;
     private int W;
     protected String prefix;
 
-    public FieldParams(String prefix)
+    public FieldParams(VecFactory.Type vectorType, String prefix)
     {
         super();
         this.W = GenerativeEvent3Model.W();
         this.prefix = prefix;
-        wordBigramChoices = ProbVec.zeros2(W, W);
+        wordBigramChoices = VecFactory.zeros2(vectorType, W, W);
         addVec(getLabels(W, "wordBi "  + prefix + " ",
                     GenerativeEvent3Model.wordsToStringArray()), wordBigramChoices);
     }

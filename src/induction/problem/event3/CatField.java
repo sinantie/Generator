@@ -4,6 +4,7 @@ import induction.problem.event3.params.CatFieldParams;
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.VecFactory;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import java.io.Serializable;
 
@@ -57,9 +58,9 @@ public class CatField extends Field implements Serializable
     }
 
     @Override
-    public AParams newParams(String prefix)
+    public AParams newParams(VecFactory.Type vectorType, String prefix)
     {
-        return new CatFieldParams(GenerativeEvent3Model.W(), prefix, this);
+        return new CatFieldParams(vectorType, GenerativeEvent3Model.W(), prefix, this);
     }
 
     @Override

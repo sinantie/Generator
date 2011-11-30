@@ -1,7 +1,8 @@
 package induction.problem.event3.params;
 
 import induction.problem.AParams;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 
 /**
@@ -11,43 +12,40 @@ import induction.problem.event3.Event3Model;
 public class TrackParams extends AParams
 {
     Event3Model model;
-    ProbVec[] eventTypeChoices, noneEventTypeBigramChoices;
-    ProbVec noneEventTypeEmissions;
+    Vec[] eventTypeChoices, noneEventTypeBigramChoices;
+    Vec noneEventTypeEmissions;
     private int T, W, c;
     public int none_t, boundary_t;
 
-    public TrackParams(Event3Model model, int c)
+    public TrackParams(Event3Model model, int c, VecFactory.Type vectorType)
     {
         super();
         this.model = model;
         this.T = model.getT(); this.W = Event3Model.W(); this.c = c;
         none_t = model.none_t();
         boundary_t = model.boundary_t();
-        // t_0, t -> choose event of type t given we were in type t_0
-        eventTypeChoices = ProbVec.zeros2(T + 2, T + 2);
-//        addVec(eventTypeChoices);
+        // t_0, t -> choose event of type t given we were in type t_0        
+        eventTypeChoices = VecFactory.zeros2(vectorType, T + 2, T + 2);        
         addVec(getLabels(T + 2, "eventTypeChoices["+c+"]", model.eventTypeStrArray()), eventTypeChoices);
         // w -> generate word w
-        noneEventTypeEmissions = ProbVec.zeros(W);
-//        addVec(noneEventTypeEmissions);
-        addVec("noneEventTypeEmissions["+c+"]", noneEventTypeEmissions);
-
-        noneEventTypeBigramChoices = ProbVec.zeros2(W, W);
+        noneEventTypeEmissions = VecFactory.zeros(vectorType, W);        
+        addVec("noneEventTypeEmissions["+c+"]", noneEventTypeEmissions);        
+        noneEventTypeBigramChoices = VecFactory.zeros2(vectorType, W, W);        
         addVec(getLabels(W, "noneFieldWordBiC["+c+"] ",
                           Event3Model.wordsToStringArray()), noneEventTypeBigramChoices);
     }
 
-    public ProbVec[] getEventTypeChoices()
+    public Vec[] getEventTypeChoices()
     {
         return eventTypeChoices;
     }
 
-    public ProbVec getNoneEventTypeEmissions()
+    public Vec getNoneEventTypeEmissions()
     {
         return noneEventTypeEmissions;
     }
 
-    public ProbVec[] getNoneEventTypeBigramChoices()
+    public Vec[] getNoneEventTypeBigramChoices()
     {
         return noneEventTypeBigramChoices;
     }
@@ -59,7 +57,7 @@ public class TrackParams extends AParams
         String[][] labels = getLabels(T+2, T+2, "eventTypeC [" + model.cstr(c) + "] ",
                 model.eventTypeStrArray(), model.eventTypeStrArray());
         int i = 0;
-        for(ProbVec v : eventTypeChoices)
+        for(Vec v : eventTypeChoices)
         {
             out += forEachProb(v, labels[i++]);
         }
@@ -76,5 +74,4 @@ public class TrackParams extends AParams
 //        }
         return out;
     }
-
 }

@@ -3,6 +3,7 @@ package induction.problem.event3;
 import induction.problem.event3.params.SymFieldParams;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.VecFactory;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
@@ -47,9 +48,9 @@ public class SymField extends Field
     }
 
     @Override
-    public AParams newParams(String prefix)
+    public AParams newParams(VecFactory.Type vectorType, String prefix)
     {
-        return new SymFieldParams(GenerativeEvent3Model.LB(), prefix);
+        return new SymFieldParams(vectorType, GenerativeEvent3Model.LB(), prefix);
     }
 
     @Override

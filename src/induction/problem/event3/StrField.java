@@ -3,6 +3,7 @@ package induction.problem.event3;
 import fig.basic.Indexer;
 import induction.Utils;
 import induction.problem.AParams;
+import induction.problem.VecFactory;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.StrFieldParams;
 import java.io.Serializable;
@@ -72,9 +73,9 @@ public class StrField extends Field implements Serializable
     }
 
     @Override
-    public AParams newParams(String prefix)
+    public AParams newParams(VecFactory.Type vectorType, String prefix)
     {
-        return new StrFieldParams(GenerativeEvent3Model.LB(), prefix);
+        return new StrFieldParams(vectorType, GenerativeEvent3Model.LB(), prefix);
     }
 
     @Override

@@ -147,6 +147,22 @@ public class MapVec implements Serializable, Vec
         counts.put(pos, x);
     }
 
+    public int getMax()
+    {
+        int index = -1;
+        double maxCount = Double.NEGATIVE_INFINITY;
+        for(Entry<Integer, Double> mapEntry : counts.entrySet())
+        {
+            double value = mapEntry.getValue();
+            if(value > maxCount)
+            {
+                index = mapEntry.getKey();
+                maxCount = value;
+            }
+        }
+        return index;
+    }
+    
     public int size()
     {
         return counts.size();
@@ -250,6 +266,12 @@ public class MapVec implements Serializable, Vec
 
     @Override
     public int sample(Random random)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setCountToObtainProb(int i, double p)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

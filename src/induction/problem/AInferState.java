@@ -63,7 +63,7 @@ public abstract class AInferState
         return Math.log(prob);
     }
     
-    public int getMax(ProbVec v)
+    public int getMax(Vec v)
     {
         return v.getMax();
     }

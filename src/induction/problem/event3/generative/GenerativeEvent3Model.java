@@ -22,6 +22,7 @@ import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -183,7 +184,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     @Override
     protected Params newParams()
     {
-        return new Params(this, opts);
+        return new Params(this, opts, VecFactory.Type.DENSE);
     }
 
     @Override
@@ -592,8 +593,6 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         {
             case generate: return new GenInferState(this, ex, params, counts, ispec, ngramModel, graph);
             case semParse: default: return new SemParseInferState(this, ex, params, counts, ispec, graph);
-        }
-        
+        }        
     }
-
 }

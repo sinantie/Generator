@@ -70,7 +70,7 @@ public class Parameters
   public static final int none_e = -1;
   // Sometimes the true event is not in our set, so we automatically get it wrong
   public static final int unreachable_e = -2;
-
+  
   public static boolean isRealEvent(int e)
   {
       return !(e == none_e || e == unreachable_e);

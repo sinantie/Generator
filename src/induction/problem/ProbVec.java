@@ -127,19 +127,17 @@ public class ProbVec implements Serializable, Vec
 
     @Override
     public Vec addCount(Vec vec, double x)
-    {
-        ProbVec pv = (ProbVec)vec;
-        Utils.add(counts, x, pv.counts);
-        sum += x * pv.sum;
+    {        
+        Utils.add(counts, x, vec.getCounts());
+        sum += x * vec.getSum();
         return this;
     }
 
     @Override
     public Vec addCount(Vec vec)
-    {
-        ProbVec pv = (ProbVec)vec;
-        Utils.add(counts, 1.0, pv.counts);
-        sum += pv.sum;
+    {        
+        Utils.add(counts, 1.0, vec.getCounts());
+        sum += vec.getSum();
         return this;
     }
     
@@ -209,7 +207,7 @@ public class ProbVec implements Serializable, Vec
     public int getMax()
     {
         int index = -1;
-        double maxCount = -1.0d;
+        double maxCount = Double.NEGATIVE_INFINITY;
         for(int i = 0; i < counts.length; i++)
         {
             if(counts[i] > maxCount)
@@ -318,12 +316,12 @@ public class ProbVec implements Serializable, Vec
         sum = Utils.sum(counts);
         return this;
     }
-
+    @Deprecated
     public static ProbVec zeros(int n)
     {
         return new ProbVec(new double[n], 0, 0);
     }   
-
+    @Deprecated
     public static ProbVec[] zeros2(int n1, int n2)
     {
         ProbVec[] result = new ProbVec[n1];
@@ -333,7 +331,7 @@ public class ProbVec implements Serializable, Vec
         }
         return result;
     }    
-
+    @Deprecated
     public static ProbVec[][] zeros3(int n1, int n2, int n3)
     {
         ProbVec[][] result = new ProbVec[n1][n2];

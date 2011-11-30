@@ -1,6 +1,7 @@
 package induction.problem.event3.params;
 
-import induction.problem.ProbVec;
+import induction.problem.Vec;
+import induction.problem.VecFactory;
 import java.io.Serializable;
 
 /**
@@ -9,30 +10,23 @@ import java.io.Serializable;
  */
 public class NumFieldParams extends FieldParams implements Serializable
 {
-    static final long serialVersionUID = 7731373078762243950L;
-    
-//    private String prefix;
-    public  ProbVec methodChoices, leftNoiseChoices, rightNoiseChoices;
-    private ProbVec[] filters;
+    static final long serialVersionUID = 7731373078762243950L;    
+    public  Vec methodChoices, leftNoiseChoices, rightNoiseChoices;
+    private Vec[] filters;
 
-    public NumFieldParams(String prefix)
+    public NumFieldParams(VecFactory.Type vectorType, String prefix)
     {
-        super(prefix);
-//        this.prefix = prefix;
+        super(vectorType, prefix);
 
-        methodChoices = ProbVec.zeros(Parameters.M); // m -> use method m to generate numbers
-//        addVec(methodChoices);
+        methodChoices = VecFactory.zeros(vectorType, Parameters.M); // m -> use method m to generate numbers
         addVec("numMethodChoices" + prefix, methodChoices);
-        leftNoiseChoices = ProbVec.zeros(Parameters.S); // s -> generate noise s
-//        addVec(leftNoiseChoices);
+        leftNoiseChoices = VecFactory.zeros(vectorType, Parameters.S); // s -> generate noise s
         addVec("numLNoiseChoices" + prefix, leftNoiseChoices);
-        rightNoiseChoices = ProbVec.zeros(Parameters.S);// s -> generate noise s
-//        addVec(rightNoiseChoices);
+        rightNoiseChoices = VecFactory.zeros(vectorType, Parameters.S);// s -> generate noise s
         addVec("numRNoiseChoices" + prefix, rightNoiseChoices);
         // h, b -> If the field value is in histogram bin h,
         // should we talk about this field?
-        filters = ProbVec.zeros2(Parameters.H, Parameters.B);
-//        addVec(filters);
+        filters = VecFactory.zeros2(vectorType, Parameters.H, Parameters.B);
         addVec(getLabels(Parameters.H, "numFilter " + prefix + " ",
                 Parameters.histToString), filters);
     }
@@ -53,7 +47,7 @@ public class NumFieldParams extends FieldParams implements Serializable
         String[][] labels = getLabels(Parameters.H, Parameters.B, "numFilter " + prefix + " ",
                 Parameters.histToString, Parameters.booleanToString);
         int i = 0;
-        for(ProbVec v : filters)
+        for(Vec v : filters)
         {
             out += forEachProb(v, labels[i++]);
         }

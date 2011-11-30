@@ -26,6 +26,7 @@ public interface Vec
     public Pair getAtRank(int rank);
     public double[] getCounts(); // for serialisation use only
     public String[] getLabels(); // for serialisation use only
+    public int getMax();
     public double getOldSum();
     public double[] getProbs();
     public Set<Pair<Integer>> getProbsSorted();
@@ -38,6 +39,7 @@ public interface Vec
     public Vec set(double x);
     public void set(int pos, double x);
     public Vec set(final Random random, final double noise, final Constants.TypeAdd type);    
+    public void setCountToObtainProb(int i, double p);
     public void setSortedIndices();
-    public int size();
+    public int size();    
 }

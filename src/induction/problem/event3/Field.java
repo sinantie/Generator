@@ -1,6 +1,7 @@
 package induction.problem.event3;
 
 import induction.problem.AParams;
+import induction.problem.VecFactory;
 import java.io.Serializable;
 
 /**
@@ -27,5 +28,5 @@ public abstract class Field implements Serializable
     public abstract int getV(); // number of possible values
     public abstract String valueToString(int v);
     public abstract int parseValue(int role, String str);
-    public abstract AParams newParams(String prefix);
+    public abstract AParams newParams(VecFactory.Type vectorType, String prefix);
 }

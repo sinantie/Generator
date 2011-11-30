@@ -2,7 +2,8 @@ package induction.problem.event3.discriminative.params;
 
 import induction.Options;
 import induction.problem.MapVec;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import induction.problem.event3.params.Params;
 
@@ -12,38 +13,29 @@ import induction.problem.event3.params.Params;
  */
 public class DiscriminativeParams extends Params
 {
-    public ProbVec baselineWeight, ngramWeights, lmWeight;
-    public MapVec ngramNegativeWeights;
+    public Vec baselineWeight, ngramWeights, lmWeight;
+    public Vec ngramNegativeWeights;
     
 //    public ProbVec bigramWeights;
     private DiscriminativeEvent3Model model;
     
-    public DiscriminativeParams(DiscriminativeEvent3Model model, Options opts)
+    public DiscriminativeParams(DiscriminativeEvent3Model model, Options opts, VecFactory.Type vectorType)
     {
-        super(model, opts);
+        super(model, opts, vectorType);
         this.model = model;
-        baselineWeight = ProbVec.zeros(1);        
+        baselineWeight = VecFactory.zeros(vectorType, 1);        
         addVec("baseline", baselineWeight);        
         if(model.isUseKBest())
         {
-//            bigramWeights = ProbVec.zeros(model.getWordNegativeNgramMap().size());
-//            addVec("bigramWeights", bigramWeights);
-            ngramWeights = ProbVec.zeros(model.getWordNgramMap().size());
+            ngramWeights = VecFactory.zeros(vectorType, model.getWordNgramMap().size());
             addVec("ngramWeights", ngramWeights);
             ngramNegativeWeights = new MapVec();
             addVec("negativeNgramWeights", ngramNegativeWeights);
-            lmWeight = ProbVec.zeros(1);
+            lmWeight = VecFactory.zeros(vectorType, 1);
             addVec("lmWeight", lmWeight);            
         }
     }
     
-//    public Double getNgramNegativeWeights(int index)
-//    {
-////        if(ngramNegativeWeights.containsKey(index))
-//            return ngramNegativeWeights.get(index);
-////        ngramNegativeWeights.put(index, 0.0);
-////        return 0.0;
-//    }
     @Override
     public String output()
     {
@@ -65,7 +57,7 @@ public class DiscriminativeParams extends Params
                 "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
             out += forEachProbNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
                 "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3)));
-        }  
+        }
         return out;
     }
 }

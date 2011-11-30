@@ -125,9 +125,12 @@ public abstract class AParams implements Serializable
         for(Entry<String, Vec> entry: vecsMap.entrySet())
         {
             vIn = entry.getValue();
-            v = this.vecsMap.get(entry.getKey());
-            v.copyDataFrom(vIn);
-            v.setSortedIndices();
+            if(this.vecsMap.containsKey(entry.getKey()))
+            {
+                v = this.vecsMap.get(entry.getKey());
+                v.copyDataFrom(vIn);
+                v.setSortedIndices();
+            }            
         }
     }
     

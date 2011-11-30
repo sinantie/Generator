@@ -2,8 +2,8 @@ package induction.problem.event3.params;
 
 import induction.Options;
 import induction.problem.AParams;
-import induction.problem.ProbVec;
 import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 
@@ -15,13 +15,13 @@ public class Params extends AParams
 {
     private int T, W, C;
     public Vec trackChoices, genericEmissions, genericLabelChoices;
-    public ProbVec[] eventTypeChoicesGivenWord;
+    public Vec[] eventTypeChoicesGivenWord;
     public TrackParams[] trackParams;
     public EventTypeParams[] eventTypeParams;
     private EventType[] eventTypes;
     private Event3Model model;
     private Options opts;
-    public Params(Event3Model model, Options opts)
+    public Params(Event3Model model, Options opts, VecFactory.Type vectorType)
     {
         super();
         this.opts = opts;
@@ -30,29 +30,25 @@ public class Params extends AParams
         C = model.getC();
         this.model = model;
         this.eventTypes = model.getEventTypes();
-        trackChoices = ProbVec.zeros(model.getPC());
-//        addVec(trackChoices);
+        trackChoices = VecFactory.zeros(vectorType, model.getPC());
         addVec("trackChoices", trackChoices);
         trackParams = new TrackParams[C];
         for(int c = 0; c < C; c++)
         {
-            trackParams[c] = new TrackParams(model, c);
+            trackParams[c] = new TrackParams(model, c, vectorType);
             addVec(trackParams[c].getVecs());
         }
         // ideally for function words
-        genericEmissions = ProbVec.zeros(W);
-//        addVec(genericEmissions);
+        genericEmissions = VecFactory.zeros(vectorType, W);       
         addVec("genericEmissions", genericEmissions);
         // Generate labels
-        genericLabelChoices = ProbVec.zeros(Event3Model.LB());
-//        addVec(genericLabelChoices);
+        genericLabelChoices = VecFactory.zeros(vectorType, Event3Model.LB());        
         addVec("genericLabelChoices", genericLabelChoices);
         // w, t -> probability of generating an event type given word
         // (not useful in practice)
         if(opts.includeEventTypeGivenWord)
-        {
-            eventTypeChoicesGivenWord = ProbVec.zeros2(W, T+1);
-    //        addVec(eventTypeChoicesGivenWord);
+        {            
+            eventTypeChoicesGivenWord = VecFactory.zeros2(vectorType, W, T+1);
             addVec(getLabels(W, "eventTypeChoicesGivenWord", Event3Model.wordsToStringArray()),
                     eventTypeChoicesGivenWord);
         }
@@ -61,7 +57,7 @@ public class Params extends AParams
         eventTypeParams = new EventTypeParams[T];
         for(int t = 0; t < T; t++)
         {
-            eventTypeParams[t] = new EventTypeParams(model, eventTypes[t] );
+            eventTypeParams[t] = new EventTypeParams(model, eventTypes[t], vectorType);
             addVec(eventTypeParams[t].getVecs());
         }
     }
@@ -73,16 +69,13 @@ public class Params extends AParams
         for(int t = 0; t < T + 2; t++)
         {
             for(int c = 0; c < C; c++)
-            {
-                // Select the none event more often
-//                trackParams[c].eventTypeChoices[t].addCount(model.none_t, opts.noneEventTypeSmoothing);
+            {                
                 // Select the none event more often
                 trackParams[c].getEventTypeChoices()[t].addCount(model.none_t(),
                         opts.noneEventTypeSmoothing);
 
                 if (!Double.isNaN(opts.fixedNoneEventTypeProb))
                 {
-//                    trackParams[c].eventTypeChoices[t].setCountToObtainProb(model.none_t, opts.fixedNoneEventTypeProb);
                     trackParams[c].getEventTypeChoices()[t].setCountToObtainProb(model.none_t(),
                             opts.fixedNoneEventTypeProb);
                 }
@@ -112,7 +105,7 @@ public class Params extends AParams
                             AParams fparams = eventTypeParams[t].fieldParams[f];
                             if(fparams instanceof CatFieldParams)
                             {
-                                for(ProbVec v: ((CatFieldParams)fparams).emissions)
+                                for(Vec v: ((CatFieldParams)fparams).emissions)
                                 {
                                     v.addCount(-smoothing);
                                 }
@@ -144,7 +137,7 @@ public class Params extends AParams
             String[][] labels = getLabels(W, T + 1, "eventTypeChoice|w ",
                     Event3Model.wordsToStringArray(), model.eventTypeStrArray());
             int i = 0;
-            for(ProbVec v: eventTypeChoicesGivenWord)
+            for(Vec v: eventTypeChoicesGivenWord)
             {
                 forEachProb(v, labels[i++]);
             }

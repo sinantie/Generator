@@ -1,6 +1,7 @@
 package induction.problem.event3.params;
 
-import induction.problem.ProbVec;
+import induction.problem.Vec;
+import induction.problem.VecFactory;
 import induction.problem.event3.CatField;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 
@@ -11,29 +12,27 @@ import induction.problem.event3.generative.GenerativeEvent3Model;
 public class CatFieldParams extends FieldParams
 {
     static final long serialVersionUID = 5817675789060800073L;
-    public ProbVec[] emissions, filters, valueEmissions;
+    public Vec[] emissions, filters, valueEmissions;
 //    private String prefix;
     private CatField field;
     private int W;
-    public CatFieldParams(int W, String prefix, CatField field)
+    public CatFieldParams(VecFactory.Type vectorType, int W, String prefix, CatField field)
     {
-        super(prefix);
+        super(vectorType, prefix);
         this.W = W;
 //        this.prefix = prefix;
         this.field = field;
         // v, w -> express value v with word w
-        emissions = ProbVec.zeros2(field.getV(), W);
-//        addVec(emissions);
+        emissions = VecFactory.zeros2(vectorType, field.getV(), W);
         addVec(getLabels(field.getV(), "catE " + prefix + " ",
                     field.valuesToStringArray()), emissions);
 
 // uncomment for semantic parsing
-        valueEmissions = ProbVec.zeros2(W, field.getV());
-        addVec(getLabels(W, "catVE " + prefix + " ",
-                    GenerativeEvent3Model.wordsToStringArray()), valueEmissions);
+//        valueEmissions = VecFactory.zeros2(vectorType, W, field.getV());
+//        addVec(getLabels(W, "catVE " + prefix + " ",
+//                    GenerativeEvent3Model.wordsToStringArray()), valueEmissions);
 
-        filters = ProbVec.zeros2(field.getV(), Parameters.B);
-//        addVec(filters);
+        filters = VecFactory.zeros2(vectorType, field.getV(), Parameters.B);
         addVec(getLabels(field.getV(), "catFilter " + prefix + " ",
                     field.valuesToStringArray()), filters);
     }
@@ -45,7 +44,7 @@ public class CatFieldParams extends FieldParams
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
-        for(ProbVec v: emissions)
+        for(Vec v: emissions)
         {
             out += forEachProb(v, labels[i++]);
         }
@@ -61,11 +60,10 @@ public class CatFieldParams extends FieldParams
         labels = getLabels(field.getV(), Parameters.B, "catFilter " + prefix + " ",
                     field.valuesToStringArray(), Parameters.booleanToString);
         i = 0;
-        for(ProbVec v: filters)
+        for(Vec v: filters)
         {
             out += forEachProb(v, labels[i++]);
         }
         return out;
     }
-
 }
