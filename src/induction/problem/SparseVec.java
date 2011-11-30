@@ -1,11 +1,18 @@
 package induction.problem;
 
+import fig.basic.LogInfo;
 import fig.prob.DirichletUtils;
 import induction.Utils;
+import induction.problem.event3.Constants;
+import induction.problem.event3.Constants.TypeAdd;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import org.apache.commons.math.FunctionEvaluationException;
+import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.linear.ArrayRealVector;
+import org.apache.commons.math.linear.OpenMapRealVector;
 import org.apache.commons.math.linear.SparseRealVector;
 
 /**
@@ -33,9 +40,9 @@ public class SparseVec implements Vec
         this.labels = labels;
     }
     
-    public SparseRealVector getCounts()
+    public double[] getCounts()
     {
-        return counts;
+        return counts.getData();
     }
     
     public double getSum() // for serialisation use only
@@ -48,13 +55,24 @@ public class SparseVec implements Vec
         return labels;
     }
     
-    public void setData(SparseRealVector counts, double sum, double oldSum, String[] labels) // for serialisation use only
+    @Override
+    public void copyDataFrom(Vec v)
     {
-        this.counts = counts;
-        this.sum = sum;
-        this.oldSum = oldSum;
-        this.labels = labels;
+        assert v instanceof SparseVec;
+        SparseVec sv = (SparseVec)v;
+        this.counts = sv.counts;
+        this.sum = sv.sum;
+        this.oldSum = sv.oldSum;
+        this.labels = sv.labels;
     }
+        
+//    public void setData(SparseRealVector counts, double sum, double oldSum, String[] labels) // for serialisation use only
+//    {
+//        this.counts = counts;
+//        this.sum = sum;
+//        this.oldSum = oldSum;
+//        this.labels = labels;
+//    }
     
     public double getProb(int i)
     {
@@ -71,7 +89,7 @@ public class SparseVec implements Vec
     public Vec addCount(double x)
     {
         counts.mapAddToSelf(x);
-        sum += counts.getDimension() * x;
+        sum += size() * x;
         return this;
     }
 
@@ -95,9 +113,8 @@ public class SparseVec implements Vec
     
     // Add a feature vector phi (usually, phi is indicator at some i
     public Vec addCount(double[] phi, double x)
-    {
-        Utils.add(phi, x, phi);
-        counts.add(phi);
+    {        
+        counts.add(new ArrayRealVector(phi).mapMultiplyToSelf(x));
         sum += x;
         return this;
     }
@@ -114,7 +131,8 @@ public class SparseVec implements Vec
     public Vec addCount(Vec vec, double x)
     {
         SparseVec sv = (SparseVec)vec;
-        counts.add(sv.counts.ebeMultiply(new ArrayRealVector(Utils.set(new double[counts.getDimension()], x))));
+        counts.add(sv.counts.mapMultiply(x));
+        sum += x * sv.sum;
         return this;
     }
 
@@ -143,7 +161,7 @@ public class SparseVec implements Vec
         return addCount(phi, x * oldSum);
     }
     
-    public void saveSum()
+public void saveSum()
     {
         oldSum = sum;
     }
@@ -159,7 +177,7 @@ public class SparseVec implements Vec
     public double[] getProbs()
     {
         // in the discriminative model we save weights not probabilities, so no need to normalise
-        return sum == 0 ? counts.getData() : Utils.div(Arrays.copyOf(counts.getData(), counts.getDimension()), sum);
+        return sum == 0 ? counts.getData() : Utils.div(Arrays.copyOf(counts.getData(), size()), sum);
     }
     
     @Override
@@ -168,7 +186,7 @@ public class SparseVec implements Vec
         
         TreeSet<Pair<Integer>> pairs = new TreeSet<Pair<Integer>>();
         // sort automatically by probability (pair.value)
-        for(int i = 0; i < counts.getDimension(); i++)
+        for(int i = 0; i < size(); i++)
         {
             // in the discriminative model we save weights not probabilities, so no need to normalise
             pairs.add(new Pair(sum == 0 ? counts.getEntry(i) : counts.getEntry(i) / sum, new Integer(i)));
@@ -180,7 +198,7 @@ public class SparseVec implements Vec
     {
         int index = -1;
         double maxCount = -1.0d;
-        for(int i = 0; i < counts.getDimension(); i++)
+        for(int i = 0; i < size(); i++)
         {
             double entry = counts.getEntry(i);
             if(entry > maxCount)
@@ -190,24 +208,12 @@ public class SparseVec implements Vec
             }
         }
         return index;
-    }
-    
-    @Override
-    public Vec set(double x)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void set(int pos, double x)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    }        
 
     @Override
     public void setSortedIndices()
     {
-        sortedIndices = new int[counts.getDimension()];
+        sortedIndices = new int[size()];
         int i = 0;
         for(Pair p: getProbsSorted())
         {
@@ -240,13 +246,110 @@ public class SparseVec implements Vec
     {
         if (sum == 0)
         {
-            Utils.set(counts, 1.0/counts.getDimension());
+            counts.set(1.0/size());
         }
         else
         {
-            Utils.div(counts, sum);
+            counts.mapDivideToSelf(sum);
         }
         sum = 1;
         return this;
+    }
+    
+    public Vec normalizeIfTooBig()
+    {
+        if (sum > 1e20)
+        {
+            normalise();
+        }
+        return this;
+    }
+    
+    public Vec set(final Random random, final double noise, final Constants.TypeAdd type)
+    {
+        try {
+            counts.mapToSelf(new UnivariateRealFunction() {
+                @Override
+                public double value(double d) throws FunctionEvaluationException
+                {
+                    return (type == TypeAdd.RANDOM) ? Math.pow(1 + random.nextDouble(), noise) :
+                                             random.nextDouble() * noise;
+                }
+            });
+        }
+        catch (FunctionEvaluationException ex) {
+            LogInfo.error(ex);
+        }
+        return computeSum();
+    }
+    
+    @Override
+    public Vec set(double x)
+    {
+        counts.set(x);
+        return computeSum();
+    }
+
+    @Override
+    public void set(int pos, double x)
+    {
+        assert pos < size();
+        counts.setEntry(pos, x);
+        computeSum();
+    }
+    
+    public Vec div(double x)
+    {
+        counts.mapDivideToSelf(x);
+        return computeSum();
+    }
+
+    public int sample(Random random)
+    {
+        final double target = random.nextDouble() * sum;
+        int i = -1;
+        double accum = 0.0;
+        while (accum < target)
+        {
+            i += 1;
+            accum += counts.getEntry(i);
+        }
+        return i;
+    }
+
+    public Vec computeSum()
+    {
+        sum = counts.getL1Norm();        
+        return this;
+    }
+
+    public int size()
+    {
+        return counts.getDimension();
+    }
+    
+    public static Vec zeros(int n)
+    {
+        return new SparseVec(new OpenMapRealVector(n), 0, 0);
+    }   
+
+    public static Vec[] zeros2(int n1, int n2)
+    {
+        Vec[] result = new SparseVec[n1];
+        for(int i = 0; i < n1; i++)
+        {
+            result[i] = zeros(n2);
+        }
+        return result;
+    }    
+
+    public static Vec[][] zeros3(int n1, int n2, int n3)
+    {
+        Vec[][] result = new SparseVec[n1][n2];
+        for(int i = 0; i < n1; i++)
+        {
+            result[i] = zeros2(n2, n3);
+        }
+        return result;
     }
 }

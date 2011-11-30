@@ -1,7 +1,7 @@
 package induction.problem.event3.params;
 
 import induction.problem.AParams;
-import induction.problem.ProbVec;
+import induction.problem.Vec;
 import java.util.Map;
 
 /**
@@ -15,12 +15,12 @@ import java.util.Map;
  */
 public class EmissionParams extends AParams
 {
-    Map<Integer, ProbVec> noneFieldEmissions;
-    Map<Integer, Map<Integer, ProbVec[]>> catEmissions;
-    ProbVec noneEventTypeEmissions, genericEmissions;
+    Map<Integer, Vec> noneFieldEmissions;
+    Map<Integer, Map<Integer, Vec[]>> catEmissions;
+    Vec noneEventTypeEmissions, genericEmissions;
     
-    public EmissionParams(Map<Integer, Map<Integer, ProbVec[]>> catEmissions, Map<Integer, ProbVec> noneFieldEmissions,
-                          ProbVec noneEventTypeEmissions, ProbVec genericEmissions)
+    public EmissionParams(Map<Integer, Map<Integer, Vec[]>> catEmissions, Map<Integer, Vec> noneFieldEmissions,
+                          Vec noneEventTypeEmissions, Vec genericEmissions)
     {
         this.catEmissions = catEmissions;
         this.noneFieldEmissions = noneFieldEmissions;
@@ -28,22 +28,22 @@ public class EmissionParams extends AParams
         this.genericEmissions = genericEmissions;
     }
 
-    public Map<Integer, Map<Integer, ProbVec[]>> getCatEmissions()
+    public Map<Integer, Map<Integer, Vec[]>> getCatEmissions()
     {
         return catEmissions;
     }
 
-    public Map<Integer, ProbVec> getNoneFieldEmissions()
+    public Map<Integer, Vec> getNoneFieldEmissions()
     {
         return noneFieldEmissions;
     }
 
-    public ProbVec getGenericEmissions()
+    public Vec getGenericEmissions()
     {
         return genericEmissions;
     }
 
-    public ProbVec getNoneEventTypeEmissions()
+    public Vec getNoneEventTypeEmissions()
     {
         return noneEventTypeEmissions;
     }

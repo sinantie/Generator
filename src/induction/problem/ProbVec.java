@@ -53,14 +53,24 @@ public class ProbVec implements Serializable, Vec
         return labels;
     }
 
-    public void setData(double[] counts, double sum, double oldSum, String[] labels) // for serialisation use only
-    {
-        this.counts = counts;
-        this.sum = sum;
-        this.oldSum = oldSum;
-        this.labels = labels;
-    }
+//    public void setData(double[] counts, double sum, double oldSum, String[] labels) // for serialisation use only
+//    {
+//        this.counts = counts;
+//        this.sum = sum;
+//        this.oldSum = oldSum;
+//        this.labels = labels;
+//    }
 
+    public void copyDataFrom(Vec v)
+    {
+        assert v instanceof ProbVec;
+        ProbVec pv = (ProbVec)v;
+        this.counts = pv.counts;
+        this.sum = pv.sum;
+        this.oldSum = pv.oldSum;
+        this.labels = pv.labels;
+    }
+    
     public double getProb(int i)
     {
         return counts[i] / sum;
@@ -88,7 +98,8 @@ public class ProbVec implements Serializable, Vec
         return this;
     }
 
-    public ProbVec addCountKeepNonNegative(int i, double x)
+    @Override
+    public Vec addCountKeepNonNegative(int i, double x)
     {
         // If adding would make it < 0, just set it to 0
         // This is mostly for numerical precision errors (it shouldn't go too much below 0)
@@ -106,7 +117,8 @@ public class ProbVec implements Serializable, Vec
     }
 
     // Add a feature vector phi (usually, phi is indicator at some i
-    public ProbVec addCount(double[] phi, double x)
+    @Override
+    public Vec addCount(double[] phi, double x)
     {
         Utils.add(counts, x, phi);
         sum += x;
@@ -132,11 +144,13 @@ public class ProbVec implements Serializable, Vec
     }
     
     // For the special aggressive online EM update
+    @Override
     public Vec addProb(int i, double x)
     {
         return addCount(i, x * oldSum);
     }
 
+    @Override
     public Vec addProbKeepNonNegative(int i, double x)
     {
         return addCountKeepNonNegative(i, x * oldSum);
@@ -245,7 +259,7 @@ public class ProbVec implements Serializable, Vec
         return this;
     }
 
-    public ProbVec normalizeIfTooBig()
+    public Vec normalizeIfTooBig()
     {
         if (sum > 1e20)
         {
@@ -272,6 +286,7 @@ public class ProbVec implements Serializable, Vec
     {
         assert pos < counts.length;
         counts[pos] = x;
+        computeSum();
     }
     
     public ProbVec div(double x)
@@ -293,6 +308,11 @@ public class ProbVec implements Serializable, Vec
         return i;
     }
 
+    public int size()
+    {
+        return counts.length;
+    }
+    
     public ProbVec computeSum()
     {
         sum = Utils.sum(counts);

@@ -1,9 +1,11 @@
 package induction.problem;
 
+import induction.problem.event3.Constants.TypeAdd;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -41,13 +43,22 @@ public class MapVec implements Serializable, Vec
         this.counts = counts;
         this.labels = labels;
     }
+
+    @Override
+    public void copyDataFrom(Vec v)
+    {
+        assert v instanceof MapVec;
+        MapVec mv = (MapVec)v;
+        this.counts = mv.counts;
+        this.labels = mv.labels;
+    }
     
     private Set<Integer> getKeys()
     {
         return counts.keySet();
     }
     
-    public Map<Integer, Double> getCounts()
+    public Map<Integer, Double> getMapCounts()
     {
         return counts;
     }
@@ -135,5 +146,111 @@ public class MapVec implements Serializable, Vec
 //        assert pos < counts.size();
         counts.put(pos, x);
     }
-        
+
+    public int size()
+    {
+        return counts.size();
+    }
+    
+    @Override
+    public Vec addCount(double[] phi, double x)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec addCountKeepNonNegative(int i, double x)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec addProb(int i, double x)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec addProb(double[] phi, double x)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec addProbKeepNonNegative(int i, double x)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec div(double x)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec expDigamma()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double[] getCounts()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double getOldSum()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double getProb(int i)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double getSum()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec normalise()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec normalizeIfTooBig()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void saveSum()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Vec set(Random random, double noise, TypeAdd type)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public double[] getProbs()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public int sample(Random random)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

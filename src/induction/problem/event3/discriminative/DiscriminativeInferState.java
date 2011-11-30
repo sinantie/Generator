@@ -19,6 +19,7 @@ import induction.problem.AParams;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.ProbVec;
+import induction.problem.SparseVec;
 import induction.problem.Vec;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Event;
@@ -203,15 +204,15 @@ public class DiscriminativeInferState extends Event3InferState
 //        if(iteration == 0)
 //            ((DiscriminativeParams)params).baselineWeight.set(0, 1);
         // treat catEmissions and noneFieldEmissions
-        Map<Integer, Map<Integer, ProbVec[]>> localFieldEmissions = new HashMap<Integer, Map<Integer, ProbVec[]>>();
-        Map<Integer, ProbVec> localNoneFieldEmissions = new HashMap<Integer, ProbVec>();        
+        Map<Integer, Map<Integer, Vec[]>> localFieldEmissions = new HashMap<Integer, Map<Integer, Vec[]>>();
+        Map<Integer, Vec> localNoneFieldEmissions = new HashMap<Integer, Vec>();
         for(final Event event : ex.events.values())       
 //        for(int e = 0; e < T; e++)
         {
             int eventTypeIndex = event.getEventTypeIndex();
             int eventId = event.getId();            
             // treat catEmissions
-            Map<Integer, ProbVec[]> fieldEmissions = new HashMap<Integer, ProbVec[]>(event.getF());
+            Map<Integer, Vec[]> fieldEmissions = new HashMap<Integer, Vec[]>(event.getF());
             for(int f = 0; f < event.getF(); f++)
             {
                 Field field = event.getFields()[f];
@@ -223,7 +224,7 @@ public class DiscriminativeInferState extends Event3InferState
                     // rather than from the example, as in the test dataset there
                     // might be extra (unseen) values, for which we have no trained data.                    
 //                    ProbVec[] emissions = ProbVec.zeros2(field.getV(), W);
-                    ProbVec[] emissions = ProbVec.zeros2(modelFieldParams.emissions.length, W);
+                    Vec[] emissions = SparseVec.zeros2(modelFieldParams.emissions.length, W);
 //                    for(int v = 0; v < field.getV(); v++)
                     for(int v = 0; v < modelFieldParams.emissions.length; v++)
                     {                        
@@ -236,20 +237,20 @@ public class DiscriminativeInferState extends Event3InferState
             } // for
             localFieldEmissions.put(eventTypeIndex, fieldEmissions);
             // treat noneFieldEmissions
-            ProbVec noneFieldEmissions = ProbVec.zeros(W);
+            Vec noneFieldEmissions = SparseVec.zeros(W);
             noneFieldEmissions.addCount(params.eventTypeParams[eventTypeIndex].noneFieldEmissions);
             noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[eventTypeIndex].noneFieldEmissions));
             noneFieldEmissions.setSortedIndices();
             localNoneFieldEmissions.put(eventTypeIndex, noneFieldEmissions);            
         } // for
         // treat noneEventTypeEmissions
-        ProbVec localNoneEventTypeEmissions = ProbVec.zeros(W);
+        Vec localNoneEventTypeEmissions = SparseVec.zeros(W);
         localNoneEventTypeEmissions.addCount(params.trackParams[c].getNoneEventTypeEmissions());
         localNoneEventTypeEmissions.addCount(
                 getBaselineScore(baseline.trackParams[c].getNoneEventTypeEmissions()));
         localNoneEventTypeEmissions.setSortedIndices();
         //treat genericEmissions
-        ProbVec localGenericEmissions = ProbVec.zeros(W);
+        Vec localGenericEmissions = SparseVec.zeros(W);
         localGenericEmissions.addCount(params.genericEmissions);
         localGenericEmissions.addCount(getBaselineScore(baseline.genericEmissions));
         localGenericEmissions.setSortedIndices();
@@ -261,14 +262,14 @@ public class DiscriminativeInferState extends Event3InferState
                 localGenericEmissions);
     }
     
-    protected ProbVec getResortedCatFieldEmissions(int event, int field, int value)
+    protected Vec getResortedCatFieldEmissions(int event, int field, int value)
     {
         return emissionsParams.getCatEmissions().
                 get(ex.events.get(event).getEventTypeIndex()).
                 get(field)[value];
     }
     
-    protected ProbVec getResortedNoneFieldEmissions(int eventTypeIndex)
+    protected Vec getResortedNoneFieldEmissions(int eventTypeIndex)
     {
         return emissionsParams.getNoneFieldEmissions().get(eventTypeIndex);
     }
@@ -396,18 +397,18 @@ public class DiscriminativeInferState extends Event3InferState
 //        return 48.00895964376265 * normalisedLog(baseProb);
     }        
     
-    protected ProbVec getBaselineScore(ProbVec probVec)
+    protected Vec getBaselineScore(Vec probVec)
     {
 //       double[] baseProbs = probVec.getCounts();
        double[] baseProbs = probVec.getProbs();
        double baseWeight = getCount(((DiscriminativeParams)params).baselineWeight, 0);
 //       double baseWeight = 48.00895964376265;
-       ProbVec pv = ProbVec.zeros(baseProbs.length);
+       Vec sv = SparseVec.zeros(baseProbs.length);
        for(int  i = 0; i < baseProbs.length; i++)
        {
-           pv.set(i, baseWeight * normalisedLog(baseProbs[i]));
+           sv.set(i, baseWeight * normalisedLog(baseProbs[i]));
        }           
-       return pv;
+       return sv;
     }
         
     protected List<Feature> getNgramFeatures(Vec weights, List<Integer> weightIndices, boolean augment)
@@ -661,7 +662,7 @@ public class DiscriminativeInferState extends Event3InferState
             else
             {
                 // add hyperedge for each word. COSTLY!
-                final int maxWordIndex = modelFParams.emissions[v].getCounts().length;// - 2; // don't consider start and end symbol here
+                final int maxWordIndex = modelFParams.emissions[v].size();// - 2; // don't consider start and end symbol here
                 for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
                 {
                     final int w = wIter;
@@ -738,7 +739,7 @@ public class DiscriminativeInferState extends Event3InferState
                 else
                 {
                     // add hyperedge for each word. COSTLY!
-                    final int maxWordIndex = modelEventTypeParams.noneFieldEmissions.getCounts().length;// - 2; // don't consider start and end symbol here
+                    final int maxWordIndex = modelEventTypeParams.noneFieldEmissions.size();// - 2; // don't consider start and end symbol here
                     for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
                     { 
                         final int w = wIter;
@@ -817,7 +818,7 @@ public class DiscriminativeInferState extends Event3InferState
                 } // if
                 else // add hyperedge for each word. COSTLY!
                 {
-                    final int maxWordIndex = params.genericEmissions.getCounts().length;// - 2; // don't consider start and end symbol here
+                    final int maxWordIndex = params.genericEmissions.size();// - 2; // don't consider start and end symbol here
                     for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
                     {
                         final int w = wIter;
@@ -1129,7 +1130,7 @@ public class DiscriminativeInferState extends Event3InferState
             else
             {
                 // add hyperedge for each word. COSTLY!
-                final int maxWordIndex = params.trackParams[c].getNoneEventTypeEmissions().getCounts().length;// - 2; // don't consider start and end symbol here
+                final int maxWordIndex = params.trackParams[c].getNoneEventTypeEmissions().size();// - 2; // don't consider start and end symbol here
                 for(int wIter = 0; wIter < (opts.modelUnkWord ? maxWordIndex : maxWordIndex - 1); wIter++)
                 {
                     final int w = wIter;

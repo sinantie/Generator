@@ -160,7 +160,7 @@ public class SemParseInferState extends GenInferState
             }
             public Pair getWeightAtRank(int rank)
             {
-                int length = fparams.valueEmissions[w].getCounts().length;
+                int length = fparams.valueEmissions[w].size();
                 Pair p = rank < length ? getAtRank(fparams.valueEmissions[w], rank) :
                     getAtRank(fparams.valueEmissions[w], length-1);
                 p.label = vocabulary.getIndex(ex.events.get(event).getFields()[field].

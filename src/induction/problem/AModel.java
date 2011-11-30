@@ -71,7 +71,7 @@ public abstract class AModel
         Execution.putLogRec("numExamples", examples.size());
     }
 
-    protected int genSample(ProbVec v)
+    protected int genSample(Vec v)
     {
         return v.sample(opts.genRandom);
     }

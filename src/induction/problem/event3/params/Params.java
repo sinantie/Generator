@@ -3,6 +3,7 @@ package induction.problem.event3.params;
 import induction.Options;
 import induction.problem.AParams;
 import induction.problem.ProbVec;
+import induction.problem.Vec;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 
@@ -13,7 +14,7 @@ import induction.problem.event3.EventType;
 public class Params extends AParams
 {
     private int T, W, C;
-    public ProbVec trackChoices, genericEmissions, genericLabelChoices;
+    public Vec trackChoices, genericEmissions, genericLabelChoices;
     public ProbVec[] eventTypeChoicesGivenWord;
     public TrackParams[] trackParams;
     public EventTypeParams[] eventTypeParams;

@@ -34,7 +34,7 @@ public abstract class AInferState
         return v.getCount(i);
     }
     
-    public double get(ProbVec v, int i)
+    public double get(Vec v, int i)
     {
         if (ispec.isUseVarUpdates())
         {
@@ -50,7 +50,7 @@ public abstract class AInferState
         }
     }
 
-    public double getLogProb(ProbVec v, int i)
+    public double getLogProb(Vec v, int i)
     {
 //        return Math.abs(Math.log(get(v, i)));
         return Math.log(get(v, i));
@@ -68,7 +68,7 @@ public abstract class AInferState
         return v.getMax();
     }
 
-    public Pair getAtRank(ProbVec v, int rank)
+    public Pair getAtRank(Vec v, int rank)
     {
         return v.getAtRank(rank);
     }
@@ -83,7 +83,7 @@ public abstract class AInferState
     {
         return new ProbStats(ex.N(), logZ, logVZ, logCZ, elogZ, entropy, objective);
     }
-    public Vec update(ProbVec v, int i, double x)
+    public Vec update(Vec v, int i, double x)
     {
         //dbg("update " + fmt1(v.getProbs) + " " + i + " " + fmt(x))
         if (ispec.isMixParamsCounts())
@@ -96,7 +96,7 @@ public abstract class AInferState
         }
     }
 
-    public ProbVec update(ProbVec v, double[] phi, double x)
+    public Vec update(Vec v, double[] phi, double x)
     {
         //dbg("update " + fmt1(v.getProbs) + " " + i + " " + fmt(x))
         if (ispec.isMixParamsCounts())
@@ -109,7 +109,7 @@ public abstract class AInferState
         }
     }
 
-    public ProbVec updateKeepNonNegative(ProbVec v, int i, double x)
+    public Vec updateKeepNonNegative(Vec v, int i, double x)
     {
         //dbg("update " + fmt1(v.getProbs) + " " + i + " " + fmt(x))
         if (ispec.isMixParamsCounts())
