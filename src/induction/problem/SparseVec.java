@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.linear.ArrayRealVector;
@@ -58,12 +60,15 @@ public class SparseVec implements Vec
     @Override
     public void copyDataFrom(Vec v)
     {
-        assert v instanceof SparseVec;
-        SparseVec sv = (SparseVec)v;
-        this.counts = sv.counts;
-        this.sum = sv.sum;
-        this.oldSum = sv.oldSum;
-        this.labels = sv.labels;
+        if(v instanceof SparseVec)        
+            this.counts = ((SparseVec)v).counts;
+        else
+        {
+            this.counts = VecFactory.copyFromArray(v.getCounts());
+        }
+        this.sum = v.getSum();
+        this.oldSum = v.getOldSum();
+        this.labels = v.getLabels();
     }
         
 //    public void setData(SparseRealVector counts, double sum, double oldSum, String[] labels) // for serialisation use only

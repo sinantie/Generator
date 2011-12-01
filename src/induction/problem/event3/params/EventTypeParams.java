@@ -6,6 +6,7 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
 import induction.problem.event3.EventType;
+import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 
 /**
  *
@@ -15,17 +16,19 @@ public class EventTypeParams extends AParams
 {
     private Event3Model model;
     private EventType eventType;
-    private final int W, F, FS, F2, onlyabsent_efs;
+    protected final int W, F, FS, F2, onlyabsent_efs;
     protected final int dontcare_efs;
     private final int EFS_ABSENT = 1; // 01
     private final int EFS_PRESENT = 2; // 10
     private final int EFS_DONTCARE = 3; // 11
-    private String[] fieldToString, fieldSetToString;
-    private String typeToString;
+    protected String[] fieldToString, fieldSetToString;
+    protected String typeToString;
     protected int[] allowed_fs;
     public int none_f, boundary_f;
-
-    public Vec[] fieldChoices, genChoices, fieldNameEmissions, noneFieldBigramChoices;
+    
+    
+    public Vec[] fieldChoices, genChoices, fieldNameEmissions, noneFieldBigramChoices;    
+    
     public AParams[] fieldParams;
     public Vec fieldSetChoices, noneFieldEmissions, filters;
 
@@ -105,9 +108,9 @@ public class EventTypeParams extends AParams
         }
         // whether this type should be generated or not
         filters = VecFactory.zeros(vectorType, Parameters.B);
-        addVec("filters" + typeToString, filters);
-    }
-
+        addVec("filters" + typeToString, filters);                
+    } 
+    
     public String efsstr(int efs)
     {
         return Constants.setstr(F2, efs);
@@ -195,7 +198,7 @@ public class EventTypeParams extends AParams
         }
         out += forEachProb(filters,
                getLabels(Parameters.B, "filter " + typeToString + " ",
-                          Parameters.booleanToString));
+                          Parameters.booleanToString));                
         return out;
     }   
 }

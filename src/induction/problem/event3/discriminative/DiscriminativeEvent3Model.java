@@ -256,7 +256,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected AParams newParams()
     {
-        return new DiscriminativeParams(this, opts, VecFactory.Type.SPARSE);
+        return new DiscriminativeParams(this, opts, VecFactory.Type.SPARSE, 10);
     }
 
     @Override

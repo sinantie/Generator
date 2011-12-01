@@ -16,12 +16,23 @@ public class DiscriminativeParams extends Params
     public Vec baselineWeight, ngramWeights, lmWeight;
     public Vec ngramNegativeWeights;
     
-//    public ProbVec bigramWeights;
     private DiscriminativeEvent3Model model;
     
     public DiscriminativeParams(DiscriminativeEvent3Model model, Options opts, VecFactory.Type vectorType)
     {
         super(model, opts, vectorType);
+        genParams(model, vectorType);
+    }
+    
+    public DiscriminativeParams(DiscriminativeEvent3Model model, Options opts, 
+                                VecFactory.Type vectorType, int maxNumOfWordsPerField)
+    {
+        super(model, opts, vectorType, maxNumOfWordsPerField);
+        genParams(model, vectorType);
+    }
+    
+    private void genParams(DiscriminativeEvent3Model model, VecFactory.Type vectorType)
+    {
         this.model = model;
         baselineWeight = VecFactory.zeros(vectorType, 1);        
         addVec("baseline", baselineWeight);        
@@ -51,8 +62,6 @@ public class DiscriminativeParams extends Params
         if(model.isUseKBest())
         {
             out += forEachProbNonZero(lmWeight, getLabels(1, "lm", null));
-//            out += forEachProb(bigramWeights, getLabels(model.getWordNegativeNgramMap().size(), 
-//                "bigramWeights", model.getWordNgramLabels(2)));
             out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
                 "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
             out += forEachProbNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 

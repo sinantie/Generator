@@ -6,6 +6,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
+import induction.problem.event3.discriminative.params.DiscriminativeEventTypeParams;
 
 /**
  *
@@ -24,6 +25,32 @@ public class Params extends AParams
     public Params(Event3Model model, Options opts, VecFactory.Type vectorType)
     {
         super();
+        genParams(model, opts, vectorType);
+
+        // t -> generate words for event type t
+        eventTypeParams = new EventTypeParams[T];
+        for(int t = 0; t < T; t++)
+        {
+            eventTypeParams[t] = new EventTypeParams(model, eventTypes[t], vectorType);
+            addVec(eventTypeParams[t].getVecs());
+        }
+    }
+    
+    public Params(Event3Model model, Options opts, VecFactory.Type vectorType, int maxNumOfWordsPerField)
+    {
+        super();
+        genParams(model, opts, vectorType);
+        // t -> generate words for event type t
+        eventTypeParams = new EventTypeParams[T];
+        for(int t = 0; t < T; t++)
+        {
+            eventTypeParams[t] = new DiscriminativeEventTypeParams(model, eventTypes[t], vectorType, maxNumOfWordsPerField);
+            addVec(eventTypeParams[t].getVecs());
+        }
+    }
+
+    private void genParams(Event3Model model, Options opts, VecFactory.Type vectorType)
+    {
         this.opts = opts;
         T = model.getT();
         W = Event3Model.W();
@@ -51,14 +78,6 @@ public class Params extends AParams
             eventTypeChoicesGivenWord = VecFactory.zeros2(vectorType, W, T+1);
             addVec(getLabels(W, "eventTypeChoicesGivenWord", Event3Model.wordsToStringArray()),
                     eventTypeChoicesGivenWord);
-        }
-
-        // t -> generate words for event type t
-        eventTypeParams = new EventTypeParams[T];
-        for(int t = 0; t < T; t++)
-        {
-            eventTypeParams[t] = new EventTypeParams(model, eventTypes[t], vectorType);
-            addVec(eventTypeParams[t].getVecs());
         }
     }
     

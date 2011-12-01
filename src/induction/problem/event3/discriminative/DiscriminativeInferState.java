@@ -28,6 +28,7 @@ import induction.problem.event3.Example;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
 import induction.problem.event3.Widget;
+import induction.problem.event3.discriminative.params.DiscriminativeEventTypeParams;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.EventsNode;
@@ -978,6 +979,7 @@ public class DiscriminativeInferState extends Event3InferState
                                         getCount(modelEventTypeParams.fieldChoices[f0], fIter) +
                                         getCount(modelEventTypeParams.fieldChoices[fIter],
                                                  modelEventTypeParams.boundary_f) +
+                                        getCount(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1) +
                                         getBaselineScore(baseParam);
                         }
                         public double getOnlineWeight(List<List<Integer>> ngrams)
@@ -993,7 +995,8 @@ public class DiscriminativeInferState extends Event3InferState
                             Feature[] featuresArray = {
                                 new Feature(modelEventTypeParams.fieldChoices[f0], fIter), 
                                 new Feature(modelEventTypeParams.fieldChoices[fIter],
-                                            modelEventTypeParams.boundary_f)                                    
+                                            modelEventTypeParams.boundary_f),
+                                new Feature(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1)
                             };
                             increaseCounts(featuresArray, normalisedLog(baseParam));
 //                            if(useKBest)
@@ -1013,6 +1016,7 @@ public class DiscriminativeInferState extends Event3InferState
                             weights = modelEventTypeParams.fieldChoices[f0];
                             return calculateOracle ?
                                     baseParam : getCount(weights, fIter) + 
+                                    getCount(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1) + 
                                     getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
@@ -1025,7 +1029,8 @@ public class DiscriminativeInferState extends Event3InferState
                             {
                                 widget.getFields()[c][k] = fIter;
                             }
-                            Feature[] featuresArray = {new Feature(weights, fIter)};
+                            Feature[] featuresArray = {new Feature(weights, fIter),
+                            new Feature(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1)};
                             increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
                         }                      

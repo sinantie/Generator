@@ -35,4 +35,9 @@ public class VecFactory
         }
         return result;
     }
+    
+    public static OpenMapRealVector copyFromArray(double[] values)
+    {
+        return new OpenMapRealVector(values);
+    }
 }
