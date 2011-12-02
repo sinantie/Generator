@@ -21,8 +21,7 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
         super(model, eventType, vectorType);
         this.maxNumOfWords = maxNumOfWords;        
         numberOfWordsPerField = VecFactory.zeros2(vectorType, F + 1, maxNumOfWords);            
-        addVec(getLabels(F+1, "numWordsC " + typeToString + " ",
-              fieldToString), numberOfWordsPerField);       
+        addVec(getLabels(F+1, "numWordsC " + typeToString + " ", fieldToString), numberOfWordsPerField);       
     }
 
     @Override

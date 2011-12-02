@@ -348,7 +348,7 @@ public class ProbVec implements Serializable, Vec
         ProbVec v1 = new ProbVec(a1, 3, 3);
         String[] labels = {"test1", "test2", "test3"};
         v1.labels = labels;
-        //double[] a2 = v1.getProbsSorted(labels);
+        Set<Pair<Integer>> a2 = v1.getProbsSorted();
         System.out.println("");
     }
 }

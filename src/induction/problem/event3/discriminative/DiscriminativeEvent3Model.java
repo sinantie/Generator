@@ -256,7 +256,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected AParams newParams()
     {
-        return new DiscriminativeParams(this, opts, VecFactory.Type.SPARSE, 10);
+        return new DiscriminativeParams(this, opts, VecFactory.Type.DENSE, 10);
     }
 
     @Override
@@ -362,17 +362,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-//                                       " - model: " + modelFeatures.get(baseFeature) + 
-//                                       " - sum: " + baseFeature.getValue()
-//                                       );
-//                    if(perceptronSumModel.containsKey(lmFeature))
-//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-//                                           " - model: " + modelFeatures.get(lmFeature) + 
-//                                           " - sum: " + lmFeature.getValue()
-//                                           );
-//                    else
-//                        System.out.println();
+                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+                                       " - model: " + modelFeatures.get(baseFeature) + 
+                                       " - sum: " + baseFeature.getValue()
+                                       );
+                    if(perceptronSumModel.containsKey(lmFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+                                           " - model: " + modelFeatures.get(lmFeature) + 
+                                           " - sum: " + lmFeature.getValue()
+                                           );
+                    else
+                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();

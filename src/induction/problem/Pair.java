@@ -1,5 +1,6 @@
 package induction.problem;
 
+import fig.basic.Fmt;
 import induction.problem.event3.Constants;
 
 /**
@@ -41,4 +42,11 @@ public class Pair<E> implements Comparable
         }
     }
 
+    @Override
+    public String toString()
+    {
+        return label.toString() + " (" + Fmt.D(value) + ")";
+    }
+    
+    
 }
