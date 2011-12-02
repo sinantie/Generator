@@ -60,7 +60,7 @@ public class DiscriminativeTrainAtisTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
         model = new DiscriminativeEvent3Model(opts);
-        model.init(InitType.staged, null, "stage1");
+        model.init(InitType.supervised, null, "stage1");
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
