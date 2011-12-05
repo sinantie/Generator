@@ -36,7 +36,8 @@ public class Params extends AParams
         }
     }
     
-    public Params(Event3Model model, Options opts, VecFactory.Type vectorType, int maxNumOfWordsPerField)
+    public Params(Event3Model model, Options opts,
+                  VecFactory.Type vectorType, int maxNumOfWordsPerField)
     {
         super();
         genParams(model, opts, vectorType);
@@ -44,7 +45,8 @@ public class Params extends AParams
         eventTypeParams = new EventTypeParams[T];
         for(int t = 0; t < T; t++)
         {
-            eventTypeParams[t] = new DiscriminativeEventTypeParams(model, eventTypes[t], vectorType, maxNumOfWordsPerField);
+            eventTypeParams[t] = new DiscriminativeEventTypeParams(model, eventTypes[t], 
+                    vectorType, maxNumOfWordsPerField);
             addVec(eventTypeParams[t].getVecs());
         }
     }
@@ -138,19 +140,29 @@ public class Params extends AParams
     }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
         String out = "";
-        out += forEachProb(trackChoices,
-                getLabels(model.getPC(), "trackC ", model.pcstrArray()));
+        if(paramsType == ParamsType.PROBS)
+            out += forEachProb(trackChoices,
+                    getLabels(model.getPC(), "trackC ", model.pcstrArray()));
+        else
+            out += forEachCount(trackChoices,
+                    getLabels(model.getPC(), "trackC ", model.pcstrArray()));
         for(AParams params : trackParams)
         {
-            out += params.output() + "\n";
+            out += params.output(paramsType) + "\n";
         }
-        out += forEachProb(genericEmissions,
-               getLabels(W, "genericE ", Event3Model.wordsToStringArray())) +
-               forEachProb(genericLabelChoices,
-               getLabels(Event3Model.LB(), "genericLabelC ", Event3Model.labelsToStringArray()));
+        if(paramsType == ParamsType.PROBS)
+            out += forEachProb(genericEmissions,
+                   getLabels(W, "genericE ", Event3Model.wordsToStringArray())) +
+                   forEachProb(genericLabelChoices,
+                   getLabels(Event3Model.LB(), "genericLabelC ", Event3Model.labelsToStringArray()));
+        else
+            out += forEachCount(genericEmissions,
+                   getLabels(W, "genericE ", Event3Model.wordsToStringArray())) +
+                   forEachCount(genericLabelChoices,
+                   getLabels(Event3Model.LB(), "genericLabelC ", Event3Model.labelsToStringArray()));
         if(opts.includeEventTypeGivenWord)
         {
             String[][] labels = getLabels(W, T + 1, "eventTypeChoice|w ",
@@ -158,13 +170,16 @@ public class Params extends AParams
             int i = 0;
             for(Vec v: eventTypeChoicesGivenWord)
             {
-                forEachProb(v, labels[i++]);
+                if(paramsType == ParamsType.PROBS)
+                    forEachProb(v, labels[i++]);
+                else
+                    forEachCount(v, labels[i++]);
             }
         }
         out += "\n";
         for(AParams params : eventTypeParams)
         {
-            out += params.output() + "\n";
+            out += params.output(paramsType) + "\n";
         }
         return out;
     }

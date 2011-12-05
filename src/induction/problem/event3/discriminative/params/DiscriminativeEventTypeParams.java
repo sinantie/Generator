@@ -25,7 +25,7 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
     }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
         String out = "";
         
@@ -39,9 +39,9 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
         int i = 0;
         for(Vec v : numberOfWordsPerField)
         {
-            out += forEachProb(v, labels[i++]);
+            out += forEachCount(v, labels[i++]);
         }        
-        out += super.output();
+        out += super.output(paramsType);
         return out;
     }
     

@@ -37,7 +37,7 @@ public abstract class FieldParams extends AParams implements Serializable
     { }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
         String out = "";
         String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",

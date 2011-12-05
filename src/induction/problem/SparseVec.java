@@ -5,12 +5,11 @@ import fig.prob.DirichletUtils;
 import induction.Utils;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Constants.TypeAdd;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.UnivariateRealFunction;
 import org.apache.commons.math.linear.ArrayRealVector;
@@ -21,7 +20,7 @@ import org.apache.commons.math.linear.SparseRealVector;
  *
  * @author konstas
  */
-public class SparseVec implements Vec
+public class SparseVec implements Serializable, Vec
 {
     static final long serialVersionUID = -2L;    
     private SparseRealVector counts;
@@ -189,18 +188,29 @@ public void saveSum()
     
     @Override
     public Set<Pair<Integer>> getProbsSorted()
+    {        
+        TreeSet<Pair<Integer>> pairs = new TreeSet<Pair<Integer>>();
+        // sort automatically by probability (pair.value)
+        for(int i = 0; i < size(); i++)
+        {            
+            pairs.add(new Pair(counts.getEntry(i) / sum, new Integer(i)));
+        }
+        return pairs.descendingSet();
+    }   
+    
+    @Override
+    public Set<Pair<Integer>> getCountsSorted()
     {
-        
         TreeSet<Pair<Integer>> pairs = new TreeSet<Pair<Integer>>();
         // sort automatically by probability (pair.value)
         for(int i = 0; i < size(); i++)
         {
             // in the discriminative model we save weights not probabilities, so no need to normalise
-            pairs.add(new Pair(sum == 0 ? counts.getEntry(i) : counts.getEntry(i) / sum, new Integer(i)));
+            pairs.add(new Pair(counts.getEntry(i), new Integer(i)));
         }
         return pairs.descendingSet();
     }
-
+    
     public int getMax()
     {
         int index = -1;
@@ -218,7 +228,7 @@ public void saveSum()
     }        
 
     @Override
-    public void setSortedIndices()
+    public void setProbSortedIndices()
     {
         sortedIndices = new int[size()];
         int i = 0;
@@ -228,6 +238,17 @@ public void saveSum()
         }
     }
 
+    @Override
+    public void setCountsSortedIndices()
+    {
+        sortedIndices = new int[size()];
+        int i = 0;
+        for(Pair p: getCountsSorted())
+        {
+            sortedIndices[i++] = (Integer)p.label;
+        }
+    }
+    
     @Override
     public Pair getAtRank(int rank)
     {
@@ -358,5 +379,17 @@ public void saveSum()
             result[i] = zeros2(n2, n3);
         }
         return result;
+    }
+    
+    public static void main(String[] args)
+    {
+        SparseVec sv = (SparseVec) zeros(3);
+        sv.set(0, 5);
+        sv.set(1, 10);
+//        sv.set(2, 15);
+        for(int i = 0; i < sv.size(); i++)
+        {
+            System.out.println(sv.getCount(i) + " - " + sv.getProb(i));
+        }
     }
 }

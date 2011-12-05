@@ -310,7 +310,8 @@ public class Hypergraph<Widget> {
             }
             else
             {
-                Derivation d;                
+                
+                Derivation d;
                 ArrayList<Integer> input = new ArrayList();
 //                double[] weightArray = new double[kBestMask.length + 2];
                 if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
@@ -407,24 +408,6 @@ public class Hypergraph<Widget> {
               }
               return out.toString();
         }
-//        private String getSubGeneration()
-//        {
-//            String out = "";
-//            if(derArray == null) // choose terminal nodes
-//              {
-//                  if(words.size() > 0)
-//                  {
-//                     out += vocabulary.getObject(words.get(0)) + " ";
-//                      return out;
-//
-//                  }
-//              }
-//              for(Derivation d : derArray)
-//              {
-//                  out += d.getSubGeneration();
-//              }
-//              return out;
-//        }
 
         private double getLMProb(List<Integer> ngram)
         {
@@ -542,23 +525,6 @@ public class Hypergraph<Widget> {
       setup(null, debug, modelType, allowEmptyNodes, K, null, 2, reorderType, 
                          allowConsecutiveEvents, false, NUM, ELIDED_SYMBOL, 
                          numbersAsSymbol, wordIndexer, ex, graph);
-//        this.debug = debug;
-//        // Need this because the pc sets might be inconsistent with the types
-//        this.allowEmptyNodes = allowEmptyNodes;
-//        this.modelType = modelType;
-//        this.K = K;
-//        this.M = 2;
-//        this.reorderType = reorderType;
-//        this.allowConsecutiveEvents = allowConsecutiveEvents;
-//        /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
-//        this.NUM = NUM;
-//        this.ELIDED_SYMBOL = ELIDED_SYMBOL;
-//        this.numbersAsSymbol = numbersAsSymbol;
-//        this.vocabulary = wordIndexer;
-//        this.ex = ex;
-//        this.graph = graph;
-//        if(graph != null)
-//            graph.addVertex(startNode);
   }
 
   // Things we're going to compute

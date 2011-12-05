@@ -12,6 +12,7 @@ import induction.Options;
 import induction.Options.InitType;
 import induction.Utils;
 import induction.WekaWrapper;
+import induction.problem.AParams.ParamsType;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public abstract class AModel
     @Override
     public void genExamples()
     {
-        params.output(Execution.getFile("gen.params"));
+        params.output(Execution.getFile("gen.params"), ParamsType.PROBS);
         Utils.begin_track("Generating %s examples", Utils.fmt(opts.genNumExamples));
         examples = new ArrayList(opts.genNumExamples);
         String[] examplesToString = new String[examples.size()];

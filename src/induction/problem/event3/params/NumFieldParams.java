@@ -32,24 +32,38 @@ public class NumFieldParams extends FieldParams implements Serializable
     }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
-        String out = super.output();
-        out += forEachProb(methodChoices,
-               getLabels(Parameters.M, "numMethodC " + prefix + " ",
-                          Parameters.numMethodsToString)) +
-               forEachProb(leftNoiseChoices,
-               getLabels(Parameters.S, "numLNoiseC " + prefix + " ",
-                          Parameters.noiseToString)) +
-               forEachProb(rightNoiseChoices,
-               getLabels(Parameters.S, "numRNoiseC " + prefix + " ",
-                          Parameters.noiseToString));
+        String out = super.output(paramsType);
+        if(paramsType == ParamsType.PROBS)
+            out += forEachProb(methodChoices,
+                   getLabels(Parameters.M, "numMethodC " + prefix + " ",
+                              Parameters.numMethodsToString)) +
+                   forEachProb(leftNoiseChoices,
+                   getLabels(Parameters.S, "numLNoiseC " + prefix + " ",
+                              Parameters.noiseToString)) +
+                   forEachProb(rightNoiseChoices,
+                   getLabels(Parameters.S, "numRNoiseC " + prefix + " ",
+                              Parameters.noiseToString));
+        else
+            out += forEachCount(methodChoices,
+                   getLabels(Parameters.M, "numMethodC " + prefix + " ",
+                              Parameters.numMethodsToString)) +
+                   forEachCount(leftNoiseChoices,
+                   getLabels(Parameters.S, "numLNoiseC " + prefix + " ",
+                              Parameters.noiseToString)) +
+                   forEachCount(rightNoiseChoices,
+                   getLabels(Parameters.S, "numRNoiseC " + prefix + " ",
+                              Parameters.noiseToString));
         String[][] labels = getLabels(Parameters.H, Parameters.B, "numFilter " + prefix + " ",
                 Parameters.histToString, Parameters.booleanToString);
         int i = 0;
         for(Vec v : filters)
         {
-            out += forEachProb(v, labels[i++]);
+            if(paramsType == ParamsType.PROBS)
+                out += forEachProb(v, labels[i++]);
+            else
+                out += forEachProb(v, labels[i++]);
         }
         return out;
     }    

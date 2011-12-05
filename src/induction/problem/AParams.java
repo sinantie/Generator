@@ -15,14 +15,15 @@ import java.util.Random;
  */
 public abstract class AParams implements Serializable
 {
+    public static enum ParamsType {PROBS, COUNTS};
     static final long serialVersionUID = -8920104157808512229L;
     protected Map<String, Vec> vecsMap;
 
     public AParams()
     {
         vecsMap = new HashMap<String, Vec>();
-    }
-
+    }   
+    
     public void setUniform(double x)
     {
         for(Vec v: vecsMap.values())
@@ -129,17 +130,17 @@ public abstract class AParams implements Serializable
             {
                 v = this.vecsMap.get(entry.getKey());
                 v.copyDataFrom(vIn);
-                v.setSortedIndices();
+                v.setProbSortedIndices();
             }            
         }
     }
     
-    public abstract String output();
+    public abstract String output(ParamsType paramsType);
 
-    public void output(String path)
+    public void output(String path, ParamsType paramsType)
     {
         Utils.begin_track("AParams.output(%s)", path);
-        Utils.write(path, output());
+        Utils.write(path, output(paramsType));
         LogInfo.end_track();
     }
 
@@ -189,10 +190,31 @@ public abstract class AParams implements Serializable
         return out.toString();
     }
     
+    public String forEachCount(Vec v, String[] labels)
+    {
+        StringBuilder out = new StringBuilder();
+        for(Pair<Integer> p : v.getCountsSorted())
+        {
+            out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
+        }
+        return out.toString();
+    }
+    
     public String forEachProbNonZero(Vec v, String[] labels)
     {
         StringBuilder out = new StringBuilder();
         for(Pair<Integer> p : v.getProbsSorted())
+        {
+            if(p.value != 0)
+                out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
+        }
+        return out.toString();
+    }
+    
+    public String forEachCountNonZero(Vec v, String[] labels)
+    {
+        StringBuilder out = new StringBuilder();
+        for(Pair<Integer> p : v.getCountsSorted())
         {
             if(p.value != 0)
                 out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");

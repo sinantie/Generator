@@ -49,7 +49,7 @@ public class EmissionParams extends AParams
     }
             
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

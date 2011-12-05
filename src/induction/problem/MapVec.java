@@ -104,6 +104,12 @@ public class MapVec implements Serializable, Vec
     @Override
     public Set<Pair<Integer>> getProbsSorted()
     {
+        return getCountsSorted();
+    }
+    
+    @Override
+    public Set<Pair<Integer>> getCountsSorted()
+    {
         int length = counts.size();        
 
         TreeSet<Pair<Integer>> pairs = new TreeSet<Pair<Integer>>();
@@ -116,11 +122,17 @@ public class MapVec implements Serializable, Vec
     }
     
     @Override
-    public void setSortedIndices()
+    public void setProbSortedIndices()
+    {
+        setCountsSortedIndices();
+    }
+    
+    @Override
+    public void setCountsSortedIndices()
     {
         sortedIndices = new int[counts.size()];
         int i = 0;
-        for(Pair p: getProbsSorted())
+        for(Pair p: getCountsSorted())
         {
             sortedIndices[i++] = (Integer)p.label;
         }

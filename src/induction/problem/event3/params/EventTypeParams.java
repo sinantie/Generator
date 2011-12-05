@@ -6,7 +6,6 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
 import induction.problem.event3.EventType;
-import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 
 /**
  *
@@ -163,7 +162,7 @@ public class EventTypeParams extends AParams
     }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
         String out = "";
         String[][] labels = getLabels(F+2, F+2, "fieldC " + typeToString + " ",
@@ -171,13 +170,24 @@ public class EventTypeParams extends AParams
         int i = 0;
         for(Vec v : fieldChoices)
         {
-            out += forEachProb(v, labels[i++]);
+            if(paramsType == ParamsType.PROBS)
+                out += forEachProb(v, labels[i++]);
+            else
+                out += forEachCount(v, labels[i++]);
         }
-        out += forEachProb(fieldSetChoices,
-               getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString)) +
-               forEachProb(noneFieldEmissions,
-               getLabels(W, "noneFieldE " + typeToString + " ",
-                          Event3Model.wordsToStringArray()));
+        if(paramsType == ParamsType.PROBS)
+            out += forEachProb(fieldSetChoices,
+                   getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString)) +
+                   forEachProb(noneFieldEmissions,
+                   getLabels(W, "noneFieldE " + typeToString + " ",
+                              Event3Model.wordsToStringArray()));
+        else
+            out += forEachCount(fieldSetChoices,
+                   getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString)) +
+                   forEachCount(noneFieldEmissions,
+                   getLabels(W, "noneFieldE " + typeToString + " ",
+                              Event3Model.wordsToStringArray()));
+            
         // if too huge parameter set, comment
 //        i = 0;
 //        String[][] labelsNone = getLabels(W, W, "noneFieldWordBiC " + typeToString + " ",
@@ -192,13 +202,23 @@ public class EventTypeParams extends AParams
 //                          fieldToString, GenerativeEvent3Model.wordsToStringArray());
         for(int f = 0; f < F; f++)
         {
-            out += forEachProb(genChoices[f], labelsGen[f]) +
-//                   forEachProb(fieldNameEmissions[f], labelsEm[f]) +
-                   fieldParams[f].output() + "\n";
+            if(paramsType == ParamsType.PROBS)
+                out += forEachProb(genChoices[f], labelsGen[f]) +
+    //                   forEachProb(fieldNameEmissions[f], labelsEm[f]) +
+                       fieldParams[f].output(paramsType) + "\n";
+            else
+                out += forEachCount(genChoices[f], labelsGen[f]) +
+    //                   forEachCount(fieldNameEmissions[f], labelsEm[f]) +
+                       fieldParams[f].output(paramsType) + "\n";
         }
-        out += forEachProb(filters,
-               getLabels(Parameters.B, "filter " + typeToString + " ",
-                          Parameters.booleanToString));                
+        if(paramsType == ParamsType.PROBS)
+            out += forEachProb(filters,
+                   getLabels(Parameters.B, "filter " + typeToString + " ",
+                              Parameters.booleanToString));
+        else
+            out += forEachCount(filters,
+                   getLabels(Parameters.B, "filter " + typeToString + " ",
+                              Parameters.booleanToString));
         return out;
     }   
 }

@@ -207,7 +207,6 @@ public class DiscriminativeInferState extends Event3InferState
         Map<Integer, Map<Integer, Vec[]>> localFieldEmissions = new HashMap<Integer, Map<Integer, Vec[]>>();
         Map<Integer, Vec> localNoneFieldEmissions = new HashMap<Integer, Vec>();
         for(final Event event : ex.events.values())       
-//        for(int e = 0; e < T; e++)
         {
             int eventTypeIndex = event.getEventTypeIndex();
             int eventId = event.getId();            
@@ -229,7 +228,7 @@ public class DiscriminativeInferState extends Event3InferState
                     {                        
                         emissions[v].addCount(modelFieldParams.emissions[v]);
                         emissions[v].addCount(getBaselineScore(baseFieldParams.emissions[v]));
-                        emissions[v].setSortedIndices();
+                        emissions[v].setCountsSortedIndices();
                     } // for
                     fieldEmissions.put(f, emissions);
                 } // if                
@@ -239,20 +238,20 @@ public class DiscriminativeInferState extends Event3InferState
             Vec noneFieldEmissions = VecFactory.zeros(VecFactory.Type.DENSE, W);
             noneFieldEmissions.addCount(params.eventTypeParams[eventTypeIndex].noneFieldEmissions);
             noneFieldEmissions.addCount(getBaselineScore(baseline.eventTypeParams[eventTypeIndex].noneFieldEmissions));
-            noneFieldEmissions.setSortedIndices();
+            noneFieldEmissions.setCountsSortedIndices();
             localNoneFieldEmissions.put(eventTypeIndex, noneFieldEmissions);            
         } // for
         // treat noneEventTypeEmissions
         Vec localNoneEventTypeEmissions = VecFactory.zeros(VecFactory.Type.DENSE, W);
-        localNoneEventTypeEmissions.addCount(params.trackParams[c].getNoneEventTypeEmissions());
+//        localNoneEventTypeEmissions.addCount(params.trackParams[c].getNoneEventTypeEmissions());
         localNoneEventTypeEmissions.addCount(
                 getBaselineScore(baseline.trackParams[c].getNoneEventTypeEmissions()));
-        localNoneEventTypeEmissions.setSortedIndices();
+        localNoneEventTypeEmissions.setCountsSortedIndices();
         //treat genericEmissions
         Vec localGenericEmissions = VecFactory.zeros(VecFactory.Type.DENSE, W);
         localGenericEmissions.addCount(params.genericEmissions);
         localGenericEmissions.addCount(getBaselineScore(baseline.genericEmissions));
-        localGenericEmissions.setSortedIndices();
+        localGenericEmissions.setCountsSortedIndices();
         
         emissionsParams = new EmissionParams(
                 localFieldEmissions,                
@@ -326,8 +325,6 @@ public class DiscriminativeInferState extends Event3InferState
             { }
             public GenWidget choose(GenWidget widget)
             {
-//                if(useKBest)
-//                    increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramWeights, ngramIndices));
                 return widget;
             }
         });
@@ -395,17 +392,17 @@ public class DiscriminativeInferState extends Event3InferState
         return getCount(((DiscriminativeParams)params).baselineWeight, 0) * normalisedLog(baseProb);
     }        
     
-    protected Vec getBaselineScore(Vec probVec)
+    protected Vec getBaselineScore(Vec vec)
     {
 //       double[] baseProbs = probVec.getCounts();
-       double[] baseProbs = probVec.getProbs();
+       double[] baseProbs = vec.getProbs();
        double baseWeight = getCount(((DiscriminativeParams)params).baselineWeight, 0);
-       Vec sv = VecFactory.zeros(VecFactory.Type.DENSE, baseProbs.length);
+       Vec res = VecFactory.zeros(VecFactory.Type.DENSE, baseProbs.length);
        for(int  i = 0; i < baseProbs.length; i++)
        {
-           sv.set(i, baseWeight * normalisedLog(baseProbs[i]));
+           res.set(i, baseWeight * normalisedLog(baseProbs[i]));
        }           
-       return sv;
+       return res;
     }
         
     protected List<Feature> getNgramFeatures(Vec weights, List<Integer> weightIndices, boolean augment)
@@ -433,7 +430,7 @@ public class DiscriminativeInferState extends Event3InferState
      */
     protected double getNgramWeights(List<List<Integer>> ngrams)
     {
-        // deal with positive ngrams, i.e. ngrams that exist in the gold standard text
+//         deal with positive ngrams, i.e. ngrams that exist in the gold standard text
         List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNgramsMap, ngrams);
         double weight = 0.0;
         for(Integer index : ngramIndices)
@@ -975,7 +972,7 @@ public class DiscriminativeInferState extends Event3InferState
                                         getCount(modelEventTypeParams.fieldChoices[f0], fIter) +
                                         getCount(modelEventTypeParams.fieldChoices[fIter],
                                                  modelEventTypeParams.boundary_f) +
-//                                        getCount(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1) +
+                                        getCount(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1) +
                                         getBaselineScore(baseParam);
                         }
                         public double getOnlineWeight(List<List<Integer>> ngrams)
@@ -991,8 +988,8 @@ public class DiscriminativeInferState extends Event3InferState
                             Feature[] featuresArray = {
                                 new Feature(modelEventTypeParams.fieldChoices[f0], fIter), 
                                 new Feature(modelEventTypeParams.fieldChoices[fIter],
-                                            modelEventTypeParams.boundary_f)
-//                                new Feature(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1)
+                                            modelEventTypeParams.boundary_f),
+                                new Feature(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1)
                             };
                             increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
@@ -1010,7 +1007,7 @@ public class DiscriminativeInferState extends Event3InferState
                             weights = modelEventTypeParams.fieldChoices[f0];
                             return calculateOracle ?
                                     baseParam : getCount(weights, fIter) + 
-//                                    getCount(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1) + 
+                                    getCount(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1) + 
                                     getBaselineScore(baseParam);
                         }
                         public void setPosterior(double prob) { }
@@ -1023,8 +1020,8 @@ public class DiscriminativeInferState extends Event3InferState
                             {
                                 widget.getFields()[c][k] = fIter;
                             }
-                            Feature[] featuresArray = {new Feature(weights, fIter)};//,
-//                            new Feature(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1)};
+                            Feature[] featuresArray = {new Feature(weights, fIter),
+                            new Feature(((DiscriminativeEventTypeParams)modelEventTypeParams).numberOfWordsPerField[fIter], j - i - 1)};
                             increaseCounts(featuresArray, normalisedLog(baseParam));
                             return widget;
                         }                      

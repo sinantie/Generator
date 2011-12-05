@@ -48,23 +48,23 @@ public class DiscriminativeParams extends Params
     }
     
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
         String out = outputDiscriminativeOnly();
-        out += super.output();
+        out += super.output(paramsType);
         return out;
     }
     
     public String outputDiscriminativeOnly()
     {
         String out = "";
-        out += forEachProbNonZero(baselineWeight, getLabels(1, "baseline", null));
+        out += forEachCountNonZero(baselineWeight, getLabels(1, "baseline", null));
         if(model.isUseKBest())
         {
-            out += forEachProbNonZero(lmWeight, getLabels(1, "lm", null));
-            out += forEachProbNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
+            out += forEachCountNonZero(lmWeight, getLabels(1, "lm", null));
+            out += forEachCountNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
                 "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
-            out += forEachProbNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
+            out += forEachCountNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
                 "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3)));
         }
         return out;

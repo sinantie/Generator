@@ -29,11 +29,16 @@ public class SymFieldParams extends AParams
     }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
-        return forEachProb(labelChoices,
-                getLabels(LB, "labelC " + prefix + " " ,
-                          GenerativeEvent3Model.labelsToStringArray()));
+        if(paramsType == ParamsType.PROBS)
+            return forEachProb(labelChoices,
+                    getLabels(LB, "labelC " + prefix + " " ,
+                              GenerativeEvent3Model.labelsToStringArray()));
+        else
+            return forEachCount(labelChoices,
+                    getLabels(LB, "labelC " + prefix + " " ,
+                              GenerativeEvent3Model.labelsToStringArray()));
     }
 
 }

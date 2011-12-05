@@ -19,6 +19,7 @@ import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
 import induction.problem.AInferState;
 import induction.problem.AParams;
+import induction.problem.AParams.ParamsType;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
@@ -312,7 +313,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 lopts.numIters = iter;
         } // while (iter < lopts.numIters)
         saveParams(name);
-        params.output(Execution.getFile(name+".params"));
+        params.output(Execution.getFile(name+".params"), ParamsType.PROBS);
         LogInfo.end_track();
         LogInfo.end_track();
         Record.end();

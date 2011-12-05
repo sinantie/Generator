@@ -180,21 +180,31 @@ public class ProbVec implements Serializable, Vec
 
     @Override
     public Set<Pair<Integer>> getProbsSorted()
+    {        
+        return getSorted(getProbs());
+    }
+    
+    @Override
+    public Set<Pair<Integer>> getCountsSorted()
+    {
+        return getSorted(getCounts());
+    }
+    
+    private Set<Pair<Integer>> getSorted(double[] counts)
     {
         int length = counts.length;
-        double[] probVec = getProbs();
 
         TreeSet<Pair<Integer>> pairs = new TreeSet<Pair<Integer>>();
         // sort automatically by probability (pair.value)
         for(int i = 0; i < length; i++)
         {
-            pairs.add(new Pair(probVec[i], new Integer(i)));
+            pairs.add(new Pair(counts[i], new Integer(i)));
         }
         return pairs.descendingSet();
     }
 
     @Override
-    public void setSortedIndices()
+    public void setProbSortedIndices()
     {
         sortedIndices = new int[counts.length];
         int i = 0;
@@ -204,6 +214,17 @@ public class ProbVec implements Serializable, Vec
         }
     }
 
+    @Override
+    public void setCountsSortedIndices()
+    {
+        sortedIndices = new int[counts.length];
+        int i = 0;
+        for(Pair p: getCountsSorted())
+        {
+            sortedIndices[i++] = (Integer)p.label;
+        }
+    }
+    
     public int getMax()
     {
         int index = -1;
@@ -349,6 +370,8 @@ public class ProbVec implements Serializable, Vec
         String[] labels = {"test1", "test2", "test3"};
         v1.labels = labels;
         Set<Pair<Integer>> a2 = v1.getProbsSorted();
+        v1.setProbSortedIndices();
+        Set<Pair<Integer>> a3 = v1.getProbsSorted();        
         System.out.println("");
     }
 }

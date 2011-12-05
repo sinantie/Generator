@@ -21,6 +21,7 @@ import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
 import induction.problem.AParams;
+import induction.problem.AParams.ParamsType;
 import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
@@ -35,8 +36,6 @@ import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -97,9 +96,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         baselineModelParams = loadGenerativeModelParams();
         
         Utils.begin_track("stagedInitParams");
-        try {
-        ObjectInputStream ois = ois = new ObjectInputStream(
-                    new FileInputStream(opts.stagedParamsFile));
+        try {            
+        ObjectInputStream ois = IOUtils.openObjIn(opts.stagedParamsFile);
         try
         {
             Utils.log("Loading " + opts.stagedParamsFile);            
@@ -141,8 +139,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         try
         {
             Utils.log("Loading " + opts.generativeModelParamsFile);
-            ObjectInputStream ois = new ObjectInputStream(
-                    new FileInputStream(opts.generativeModelParamsFile));
+            ObjectInputStream ois = IOUtils.openObjIn(opts.generativeModelParamsFile);
             wordIndexer = ((Indexer<String>) ois.readObject());
             vocabularySize = Event3Model.W();
             if(useKBest)
@@ -228,9 +225,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         try
         {
-            ObjectOutputStream oos = new ObjectOutputStream(
-                    new FileOutputStream(Execution.getFile(name + 
-                    ".discriminative.params.obj")));
+            ObjectOutputStream oos = IOUtils.openObjOut(Execution.getFile(name + 
+                    ".discriminative.params.obj.gz"));
             oos.writeObject(params.getVecs());
             oos.writeObject(wordNegativeNgramMap);
             oos.close();
@@ -256,7 +252,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected AParams newParams()
     {
-        return new DiscriminativeParams(this, opts, VecFactory.Type.DENSE, 10);
+        return new DiscriminativeParams(this, opts, VecFactory.Type.SPARSE, 10);
     }
 
     @Override
@@ -362,17 +358,17 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-                                       " - model: " + modelFeatures.get(baseFeature) + 
-                                       " - sum: " + baseFeature.getValue()
-                                       );
-                    if(perceptronSumModel.containsKey(lmFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-                                           " - model: " + modelFeatures.get(lmFeature) + 
-                                           " - sum: " + lmFeature.getValue()
-                                           );
-                    else
-                        System.out.println();
+//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+//                                       " - model: " + modelFeatures.get(baseFeature) + 
+//                                       " - sum: " + baseFeature.getValue()
+//                                       );
+//                    if(perceptronSumModel.containsKey(lmFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+//                                           " - model: " + modelFeatures.get(lmFeature) + 
+//                                           " - sum: " + lmFeature.getValue()
+//                                           );
+//                    else
+//                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -412,7 +408,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         if(!opts.dontOutputParams)
         {
             saveParams(name);
-            params.output(Execution.getFile(name+".params"));
+            params.output(Execution.getFile(name+".params"), ParamsType.COUNTS);
         }        
         LogInfo.end_track();
         Record.end();

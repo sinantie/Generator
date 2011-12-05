@@ -38,15 +38,18 @@ public class CatFieldParams extends FieldParams
     }
 
     @Override
-    public String output()
+    public String output(ParamsType paramsType)
     {
-        String out = super.output();
+        String out = super.output(paramsType);
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
         for(Vec v: emissions)
         {
-            out += forEachProb(v, labels[i++]);
+            if(paramsType == ParamsType.PROBS)
+                out += forEachProb(v, labels[i++]);
+            else
+                out += forEachCount(v, labels[i++]);
         }
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
                     GenerativeEvent3Model.wordsToStringArray(), field.valuesToStringArray());
@@ -62,7 +65,11 @@ public class CatFieldParams extends FieldParams
         i = 0;
         for(Vec v: filters)
         {
-            out += forEachProb(v, labels[i++]);
+            if(paramsType == ParamsType.PROBS)
+                out += forEachProb(v, labels[i++]);
+            else
+                out += forEachCount(v, labels[i++]);
+                
         }
         return out;
     }
