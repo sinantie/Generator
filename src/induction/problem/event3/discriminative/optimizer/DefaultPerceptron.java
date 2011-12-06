@@ -122,7 +122,12 @@ public class DefaultPerceptron extends GradientBasedOptimizer
                 update = updateGain * gradient.get(key);
                 tableSumModel.put(key, update); // incrementally add feature
             }
+            try {
             key.setValue(update); // propagate change to the ProbVecs
+            } catch(AssertionError e) 
+            {
+                System.out.println("Error updating param vector: " + e.getMessage());
+            }
         }
     }
 
