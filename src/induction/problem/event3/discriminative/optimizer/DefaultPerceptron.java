@@ -188,7 +188,12 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     {
         for(Feature f : globalTableAverageModel.keySet())
         {
-            f.setValue(globalTableAverageModel.get(f)[0]);
+            try{
+                f.setValue(globalTableAverageModel.get(f)[0]);
+            } catch(AssertionError e) 
+            {
+                System.out.println("Error updating param vector: " + e.getMessage());
+            }
         }
     }
     
