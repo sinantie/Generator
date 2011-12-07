@@ -309,8 +309,7 @@ public class Hypergraph<Widget> {
                 }
             }
             else
-            {
-                
+            {                
                 Derivation d;
                 ArrayList<Integer> input = new ArrayList();
 //                double[] weightArray = new double[kBestMask.length + 2];

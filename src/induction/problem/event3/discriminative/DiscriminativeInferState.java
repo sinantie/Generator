@@ -351,7 +351,8 @@ public class DiscriminativeInferState extends Event3InferState
                     // compute ngram features (we can do it  in the end,
                     // since we have created the resulting output text)
                     increaseNgramLMCounts(((GenWidget)result.widget).getText());
-                    increaseNegativeNgramCounts(((GenWidget)result.widget).getText());
+//                    increaseNegativeNgramCounts(((GenWidget)result.widget).getText());
+                    increaseHasConsecutiveWordsCount(((GenWidget)result.widget).getText());
                 }
             }
             else
@@ -436,9 +437,9 @@ public class DiscriminativeInferState extends Event3InferState
         for(Integer index : ngramIndices)
             weight += getCount(((DiscriminativeParams)params).ngramWeights, index);
         // deal with negative ngrams, i.e. ngrams never seen in the gold standard text
-        List<Integer> ngramNegativeIndices = NgramModel.getNgramIndices(wordNegativeNgramsMap, ngrams);
-        for(Integer index : ngramNegativeIndices)
-            weight += getCount(((DiscriminativeParams)params).ngramNegativeWeights, index);
+//        List<Integer> ngramNegativeIndices = NgramModel.getNgramIndices(wordNegativeNgramsMap, ngrams);
+//        for(Integer index : ngramNegativeIndices)
+//            weight += getCount(((DiscriminativeParams)params).ngramNegativeWeights, index);
         return weight;
 //        return 0.0;        
     }
@@ -457,6 +458,22 @@ public class DiscriminativeInferState extends Event3InferState
 //                              opts.numAsSymbol, ngram));
 //        return weight;
         return 0.0;
+    }
+    
+    protected double getHasConsecutiveWordsWeight(List<List<Integer>> ngrams)
+    {
+        double weight = 0.0d;
+        for(List<Integer> ngram : ngrams)
+        {
+            Integer prevWord = -1;
+            for(Integer word : ngram)
+            {
+                if(word == prevWord)
+                    weight += getCount(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
+                prevWord = word;
+            }
+        }
+        return weight;
     }
     
     /**
@@ -491,6 +508,11 @@ public class DiscriminativeInferState extends Event3InferState
         // deal with negative ngrams
         List<Integer> ngramIndices = NgramModel.getNgramIndices(wordNegativeNgramsMap, 3, text, true);
         increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramNegativeWeights, ngramIndices, true));
+    }
+    
+    protected void increaseHasConsecutiveWordsCount(int[] textArray)
+    {
+        // TO-DO
     }
     
     protected EventTypeParams getBaselineEventTypeParams(int event)
@@ -869,7 +891,7 @@ public class DiscriminativeInferState extends Event3InferState
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<List<Integer>> ngrams){
-                        return getNgramWeights(ngrams) + getLMWeights(ngrams);
+                        return getNgramWeights(ngrams) + getLMWeights(ngrams) + getHasConsecutiveWordsWeight(ngrams);
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {
@@ -894,7 +916,7 @@ public class DiscriminativeInferState extends Event3InferState
                         return calculateOracle ? 1.0 : 0.0; // remember we are in log space (or just counting) during reranking
                     }
                     public double getOnlineWeight(List<List<Integer>> ngrams){
-                        return getNgramWeights(ngrams) + getLMWeights(ngrams);
+                        return getNgramWeights(ngrams) + getLMWeights(ngrams) + getHasConsecutiveWordsWeight(ngrams);                        
                     }
                     public void setPosterior(double prob) { }
                     public Widget choose(Widget widget) {

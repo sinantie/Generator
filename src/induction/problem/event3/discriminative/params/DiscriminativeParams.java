@@ -13,8 +13,8 @@ import induction.problem.event3.params.Params;
  */
 public class DiscriminativeParams extends Params
 {
-    public Vec baselineWeight, ngramWeights, lmWeight;
-    public Vec ngramNegativeWeights;
+    public Vec baselineWeight, ngramWeights, lmWeight, hasConsecutiveWordsWeight;
+    public Vec ngramNegativeWeights;    
     
     private DiscriminativeEvent3Model model;
     
@@ -44,6 +44,8 @@ public class DiscriminativeParams extends Params
             addVec("negativeNgramWeights", ngramNegativeWeights);
             lmWeight = VecFactory.zeros(vectorType, 1);
             addVec("lmWeight", lmWeight);            
+            hasConsecutiveWordsWeight = VecFactory.zeros(vectorType, 1);
+            addVec("hasConsecutiveWordsWeight", hasConsecutiveWordsWeight);            
         }
     }
     
@@ -62,6 +64,7 @@ public class DiscriminativeParams extends Params
         if(model.isUseKBest())
         {
             out += forEachCountNonZero(lmWeight, getLabels(1, "lm", null));
+            out += forEachCountNonZero(hasConsecutiveWordsWeight, getLabels(1, "hasConsecutiveWords", null));
             out += forEachCountNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
                 "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
             out += forEachCountNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
