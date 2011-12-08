@@ -325,6 +325,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             optimizer.setNoCooling();
         Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
         Feature lmFeature = new Feature(((DiscriminativeParams)params).lmWeight, 0);
+        Feature hasConsecutiveWordsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
         for(int iter = 0; iter < lopts.numIters; iter++) // for t = 1...T do
         {
             FullStatFig complexity = new FullStatFig(); // Complexity inference
@@ -367,6 +368,12 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
 //                                           " - model: " + modelFeatures.get(lmFeature) + 
 //                                           " - sum: " + lmFeature.getValue()
 //                                           );
+//                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
+//                                           " - sum: " + hasConsecutiveWordsFeature.getValue()
+//                                           );
+//                        
 //                    else
 //                        System.out.println();
                 }                
@@ -402,9 +409,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-//        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + "\n" + 
+//        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + " " +
+//                hasConsecutiveWordsFeature.getValue() + "\n" + 
 //                ((DiscriminativeParams)params).outputDiscriminativeOnly());
-        
+//        
         if(!opts.dontOutputParams)
         {
             saveParams(name);

@@ -130,7 +130,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         {
             // compute ngram features (we can do it  in the end, since we have created the resulting output text)
             increaseNgramLMCounts(ex.getText());
-            increaseHasConsecutiveWordsCount(ex.getText());
+//            increaseHasConsecutiveWordsCount(ex.getText());
         }        
         bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        

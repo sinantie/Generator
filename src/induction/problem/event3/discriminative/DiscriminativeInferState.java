@@ -512,7 +512,14 @@ public class DiscriminativeInferState extends Event3InferState
     
     protected void increaseHasConsecutiveWordsCount(int[] textArray)
     {
-        // TO-DO
+        int prevWord = -1, count = 0;
+        for(int word : textArray)
+        {
+            if(word == prevWord)
+                count++;
+            prevWord = word;
+        }
+        increaseCount(new Feature(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0), count);
     }
     
     protected EventTypeParams getBaselineEventTypeParams(int event)

@@ -22,6 +22,8 @@ public class SrilmNgramWrapper extends NgramModel
     @Override
     public double getProb(String[] ngramWords)
     {
+//        double log10 = getLogProb10(ngramWords);        
+//        return unLog(log10 == -99 ? -1000 : log10);        
         return unLog(getLogProb10(ngramWords));
     }
 
