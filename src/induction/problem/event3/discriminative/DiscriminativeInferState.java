@@ -468,7 +468,7 @@ public class DiscriminativeInferState extends Event3InferState
             Integer prevWord = -1;
             for(Integer word : ngram)
             {
-                if(word == prevWord)
+                if(word.equals(prevWord))
                     weight += getCount(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
                 prevWord = word;
             }
