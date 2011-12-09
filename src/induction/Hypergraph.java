@@ -309,7 +309,7 @@ public class Hypergraph<Widget> {
                 }
             }
             else
-            {                
+            {
                 Derivation d;
                 ArrayList<Integer> input = new ArrayList();
 //                double[] weightArray = new double[kBestMask.length + 2];
@@ -321,7 +321,6 @@ public class Hypergraph<Widget> {
                 {
                     d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
-//                    weightArray[i] = d.logWeight;
                     this.logWeight += d.logWeight; // add weight of children
                     input.addAll(d.words);
                 }
@@ -330,10 +329,10 @@ public class Hypergraph<Widget> {
                 // and EVAL(e,J) function in pseudocode 3, Huang 2008)
 //                weightArray[weightArray.length - 1] = 0;
                 // compute EVAL(e,J) and +LM item (store in words list) (see Chiang, 2007)
+                List<List<Integer>> ngrams = new ArrayList<List<Integer>>();
                 if(input.size() >= M)
                 {
-                    // add non-local features
-                    List<List<Integer>> ngrams = new ArrayList();
+                    // add non-local features                    
                     for(int i = M - 1; i < input.size(); i++) // function p in Chiang 2007
                     {
                         if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
@@ -355,7 +354,11 @@ public class Hypergraph<Widget> {
                     }
                 } // if
                 else
-                {                    
+                {
+                    // add non-local features for input < M
+                    ngrams.add(input);
+                    if(edge.info instanceof HyperedgeInfoOnline)
+                        this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);                    
                     words = input; // 2nd branch of function q in Chiang 2007
                 } // LM
 //                for(double tempWeight : weightArray)                    
