@@ -46,7 +46,7 @@ public class DiscriminativeGenerationAtisTest
                     + "-generativeModelParamsFile results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
                     + "-stagedParamsFile results/output/atis/generation/discriminative/"
-                    + "calculate_baseline_ngrams_weight_norm_staged_ignore/stage1.discriminative.params.obj "
+                    + "baseline_ignore_ngrams_numWordsField_hasCons_staged_ignore/stage1.discriminative.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "                 
                     + "-kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
