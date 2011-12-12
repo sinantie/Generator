@@ -799,7 +799,7 @@ public class Hypergraph<Widget> {
             // choose the derivation with the highest score score
             DerivationWithBleu oracle = set.first();
     //        System.out.println(set);
-    //        System.out.println("K with highest score score is: " + oracle.k);
+//            System.out.println("K with highest score score is: " + oracle.k);
             return new HyperpathResult(oracle.chooser.widget, oracle.chooser.logWeight);
         }
         else // Original 1-best derivation

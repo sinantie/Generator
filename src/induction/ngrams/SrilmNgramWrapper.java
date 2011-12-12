@@ -23,7 +23,7 @@ public class SrilmNgramWrapper extends NgramModel
     public double getProb(String[] ngramWords)
     {
 //        double log10 = getLogProb10(ngramWords);        
-//        return unLog(log10 == -99 ? -1000 : log10);        
+//        return unLog(log10 == -99 ? -500 : log10);        
         return unLog(getLogProb10(ngramWords));
     }
 

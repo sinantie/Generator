@@ -529,7 +529,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public String testGenerate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+//        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
         FullStatFig complexity = new FullStatFig();        
         testPerformance = newPerformance();
         AExample ex = examples.get(0);
