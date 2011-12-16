@@ -1,7 +1,6 @@
 package induction.problem.event3.discriminative.optimizer;
 
 import fig.basic.LogInfo;
-import induction.Utils;
 import induction.problem.event3.discriminative.Feature;
 import java.util.HashMap;
 import java.util.Iterator;

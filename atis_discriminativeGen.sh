@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#inputLists=data/atis/test/atis-test.txt
-inputLists=test/testAtisExamples
-execDir=results/output/atis/generation/discriminative/calculate_baseline_ngrams_negative_staged_ignore_predLength_eventType_gen_test
+inputLists=data/atis/test/atis-test.txt
+#inputLists=test/testAtisExamples
+execDir=results/output/atis/generation/discriminative/baseline_ignore_ngrams_numWordsField_hasCons_staged_ignore_again_predLength_eventType_oracle_gen
 numThreads=1
-stagedParamsFile=results/output/atis/generation/discriminative/calculate_baseline_ngrams_negative_staged_ignore_test/stage1.discriminative.params.obj
+stagedParamsFile=results/output/atis/generation/discriminative/baseline_ignore_ngrams_numWordsField_hasCons_staged_ignore_again/stage1.discriminative.params.obj.gz
 baselineModel=results/output/atis/alignments/model_3/prior_0.01/stage1.params.obj
 
 java -Xmx3g -ea -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
@@ -32,7 +32,7 @@ dist/stanford-postagger-2010-05-26.jar -Djava.library.path=lib/wrappers inductio
 -lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model \
 -lengthPredictionFeatureType COUNTS \
 -lengthPredictionStartIndex 2 \
--lengthCompensation 0
-#-oracleReranker
+-lengthCompensation 0 \
+-oracleReranker
 #-allowNoneEvent \
 #-conditionNoneEvent
