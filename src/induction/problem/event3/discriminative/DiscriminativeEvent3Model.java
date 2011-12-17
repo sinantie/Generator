@@ -34,6 +34,7 @@ import induction.problem.event3.Widget;
 import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
+import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.EOFException;
 import java.io.IOException;
@@ -359,23 +360,23 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-//                                       " - model: " + modelFeatures.get(baseFeature) + 
-//                                       " - sum: " + baseFeature.getValue()
-//                                       );
-//                    if(perceptronSumModel.containsKey(lmFeature))
-//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-//                                           " - model: " + modelFeatures.get(lmFeature) + 
-//                                           " - sum: " + lmFeature.getValue()
-//                                           );
-//                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
-//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
-//                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
-//                                           " - sum: " + hasConsecutiveWordsFeature.getValue()
-//                                           );
-//                        
-//                    else
-//                        System.out.println();
+                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+                                       " - model: " + modelFeatures.get(baseFeature) + 
+                                       " - base sum: " + baseFeature.getValue()
+                                       );
+                    if(perceptronSumModel.containsKey(lmFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+                                           " - model: " + modelFeatures.get(lmFeature) + 
+                                           " - lm sum: " + lmFeature.getValue()
+                                           );
+                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
+                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
+                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
+                                           );
+                        
+                    else
+                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -662,11 +663,14 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     {
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
-//                        LogInfo.logs(GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
+//                        System.out.println("\n" + GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
+                        System.out.println("\n" + widgetToFullString(ex, (GenWidget)inferState.bestWidget));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }
                 }
+//            else
+//                System.out.println(widgetToFullString(ex, inferState.bestWidget));
             if(opts.modelType == Options.ModelType.generate)
                 synchronized(testPerformance)
                 {

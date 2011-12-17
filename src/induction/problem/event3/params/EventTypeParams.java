@@ -220,5 +220,13 @@ public class EventTypeParams extends AParams
                    getLabels(Parameters.B, "filter " + typeToString + " ",
                               Parameters.booleanToString));
         return out;
-    }   
+    }
+
+    @Override
+    public String toString()
+    {
+        return "fieldC " + typeToString;
+    }
+    
+    
 }

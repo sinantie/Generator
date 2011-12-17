@@ -316,7 +316,7 @@ public abstract class Event3Model extends WordModel
         }
         else
         {
-            if(opts.modelType == ModelType.generate)
+            if(opts.modelType == ModelType.generate || opts.modelType == ModelType.discriminativeTrain)
             {
                 return ex.genWidgetToNiceFullString((GenWidget)widget);
             }
@@ -796,6 +796,10 @@ public abstract class Event3Model extends WordModel
                         examples.add(new Example(this, name, events, text,
                                                        labels, lineStartIndices,
                                                        text.length,
+//                                            new GenWidget(trueEvents, null, null, null,
+//                                                      lineStartIndices,
+//                                                      eventTypeAllowedOnTrack,
+//                                                      eventTypeIndices)));
                                            new GenWidget(trueEvents, text)));
                     }
                     else

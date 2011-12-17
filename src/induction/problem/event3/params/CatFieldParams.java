@@ -73,4 +73,12 @@ public class CatFieldParams extends FieldParams
         }
         return out;
     }
+
+    @Override
+    public String toString()
+    {
+        return "catE " + prefix;
+    }
+    
+    
 }

@@ -110,8 +110,10 @@ public class DefaultPerceptron extends GradientBasedOptimizer
         {
             Feature key = it.next();
             Double oldValue = tableSumModel.get(key);
+//            Double oldValue = key.getValue();
             Double update;
             if (oldValue != null)
+//            if (!oldValue.equals(new Double(0.0)))
             {
                 update = oldValue + updateGain * gradient.get(key);
                 tableSumModel.put(key, update);                

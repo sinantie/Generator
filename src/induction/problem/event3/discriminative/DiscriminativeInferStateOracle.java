@@ -248,7 +248,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                 public double getWeight() {
                     baseProb = get(baseFParams.emissions[v], w);                    
                     return baseProb;
-                }            
+                }
                 public void setPosterior(double prob) { }
                 public Widget choose(Widget widget) {                                 
                     Feature[] featuresArray = {new Feature(modelFParams.emissions[v], w)};
