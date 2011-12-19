@@ -44,10 +44,10 @@ public abstract class FieldParams extends AParams implements Serializable
                     GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
         // if too huge parameter set, comment
-//        for(ProbVec v: wordBigramChoices)
-//        {
-//            out += forEachProb(v, labels[i++]);
-//        }
+        for(Vec v: wordBigramChoices)
+        {
+            out += forEachProbNonZero(v, labels[i++]);
+        }
         return out;
     }
 }

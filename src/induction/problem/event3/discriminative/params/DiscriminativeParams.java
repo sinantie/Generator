@@ -13,7 +13,8 @@ import induction.problem.event3.params.Params;
  */
 public class DiscriminativeParams extends Params
 {
-    public Vec baselineWeight, ngramWeights, lmWeight, hasConsecutiveWordsWeight;
+    public Vec baselineWeight, bigramWeights, ngramWeights, lmWeight, 
+               hasConsecutiveWordsWeight, hasEmptyValueWeight;
     public Vec ngramNegativeWeights;    
     
     private DiscriminativeEvent3Model model;
@@ -40,12 +41,16 @@ public class DiscriminativeParams extends Params
         {
             ngramWeights = VecFactory.zeros(vectorType, model.getWordNgramMap().size());
             addVec("ngramWeights", ngramWeights);
+            bigramWeights = VecFactory.zeros(vectorType, model.getWordBigramMap().size());
+            addVec("bigramWeights", bigramWeights);
             ngramNegativeWeights = new MapVec();
             addVec("negativeNgramWeights", ngramNegativeWeights);
             lmWeight = VecFactory.zeros(vectorType, 1);
             addVec("lmWeight", lmWeight);            
             hasConsecutiveWordsWeight = VecFactory.zeros(vectorType, 1);
             addVec("hasConsecutiveWordsWeight", hasConsecutiveWordsWeight);            
+            hasEmptyValueWeight = VecFactory.zeros(vectorType, 1);
+            addVec("hasEmptyValueWeight", hasEmptyValueWeight);            
         }
     }
     
@@ -59,17 +64,20 @@ public class DiscriminativeParams extends Params
     
     public String outputDiscriminativeOnly()
     {
-        String out = "";
-        out += forEachCountNonZero(baselineWeight, getLabels(1, "baseline", null));
+        StringBuilder out = new StringBuilder();
+        out.append(forEachCountNonZero(baselineWeight, getLabels(1, "baseline", null)));
         if(model.isUseKBest())
         {
-            out += forEachCountNonZero(lmWeight, getLabels(1, "lm", null));
-            out += forEachCountNonZero(hasConsecutiveWordsWeight, getLabels(1, "hasConsecutiveWords", null));
-            out += forEachCountNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
-                "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3)));
-            out += forEachCountNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
-                "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3)));
+            out.append(forEachCountNonZero(lmWeight, getLabels(1, "lm", null)));
+            out.append(forEachCountNonZero(hasConsecutiveWordsWeight, getLabels(1, "hasConsecutiveWords", null)));
+            out.append(forEachCountNonZero(hasEmptyValueWeight, getLabels(1, "hasEmptyValue", null)));
+            out.append(forEachCountNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
+                "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3))));
+            out.append(forEachCountNonZero(bigramWeights, getLabels(model.getWordBigramMap().size(), 
+                "bigramWeights ", model.getWordNgramLabels(model.getWordBigramMap(), 2))));
+            out.append(forEachCountNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
+                "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3))));
         }
-        return out;
+    return out.toString();
     }
 }

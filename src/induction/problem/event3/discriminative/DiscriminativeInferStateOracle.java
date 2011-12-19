@@ -17,6 +17,7 @@ import induction.problem.event3.Constants;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
+import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.StopNode;
@@ -130,7 +131,8 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         {
             // compute ngram features (we can do it  in the end, since we have created the resulting output text)
             increaseNgramLMCounts(ex.getText());
-            increaseHasConsecutiveWordsCount(ex.getText());
+            if(opts.includeHasConsecutiveWordsFeature)
+                increaseHasConsecutiveWordsCount(ex.getText());
         }        
         bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        
@@ -253,6 +255,8 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
                 public Widget choose(Widget widget) {                                 
                     Feature[] featuresArray = {new Feature(modelFParams.emissions[v], w)};
                     increaseCounts(featuresArray, normalisedLog(baseProb));
+                    if(opts.includeHasEmptyValueFeature && modelFParams.isEmptyValue(v))
+                        increaseCount(new Feature(((DiscriminativeParams)params).hasEmptyValueWeight, 0), 1);
                     return widget;   
                 }            
             });

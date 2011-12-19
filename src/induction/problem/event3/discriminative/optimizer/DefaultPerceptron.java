@@ -93,8 +93,7 @@ public class DefaultPerceptron extends GradientBasedOptimizer
     {
         numModelChanges++;
 //        Utils.logs("Update the perceptron model " + numModelChanges);
-        HashMap<Feature, Double> gradient = getGradient(oracleFeatures, modelFeatures);
-        //Support.print_hash_tbl(gradient);
+        HashMap<Feature, Double> gradient = getGradient(oracleFeatures, modelFeatures);        
         double updateGain = computeGain(numModelChanges);
 //        Utils.logs("Update gain is " + updateGain + "; gradient table size " + gradient.size());
         gradientNorm = gradient.size();

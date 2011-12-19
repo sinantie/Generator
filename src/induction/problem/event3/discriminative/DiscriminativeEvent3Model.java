@@ -34,7 +34,6 @@ import induction.problem.event3.Widget;
 import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
-import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.EOFException;
 import java.io.IOException;
@@ -67,7 +66,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      */
     HashMap<Feature, Double> oracleFeatures, modelFeatures;
         
-    Map<List<Integer>, Integer> wordNgramMap, wordNegativeNgramMap;
+    Map<List<Integer>, Integer> wordBigramMap, wordNgramMap, wordNegativeNgramMap;
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
@@ -188,6 +187,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
 //        wordNegativeNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
         wordNgramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 3, wordIndexer, false);
+        wordBigramMap = NgramModel.readNgramsFromArpaFile(opts.ngramModelFile, 2, wordIndexer, false);
     }
 
     public String[] getWordNgramLabels(Map<List<Integer>, Integer> ngrams, int N)
@@ -219,6 +219,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public Map<List<Integer>, Integer> getWordNgramMap()
     {
         return wordNgramMap;
+    }
+
+    public Map<List<Integer>, Integer> getWordBigramMap()
+    {
+        return wordBigramMap;
     }
     
     @Override
@@ -273,6 +278,162 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      */
     @Override
     public void learn(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel; // HACK
+        Utils.begin_track("Loading Language Model...");
+        if(opts.ngramWrapper == NgramWrapper.kylm)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        else if(opts.ngramWrapper == NgramWrapper.srilm)
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+        else if(opts.ngramWrapper == NgramWrapper.roark)
+            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+        LogInfo.end_track();
+        Record.begin(name);
+        Utils.begin_track("Train: " + name);
+        boolean existsTrain = false;
+        for(int i = 0; i < examples.size(); i++)
+        {
+            if(isTrain(i))
+            {
+                existsTrain = true; break;
+            }
+        }        
+        
+        // initialise model
+        HashMap<Feature, Double> perceptronSumModel = new HashMap();
+        HashMap<Feature, Double[]> perceptronAverageModel = new HashMap();
+        
+        int batchSize;
+        boolean cooling = false;
+        switch(lopts.learningScheme)
+        {            
+            case batch : batchSize = examples.size(); break;    
+            case stepwise : batchSize = lopts.miniBatchSize; cooling = true; break;    
+            default: case incremental: batchSize = 1;
+        }
+        // percy's cooling
+        GradientBasedOptimizer optimizer = new DefaultPerceptron(
+                perceptronSumModel, perceptronAverageModel, 
+                examples.size(), 
+                batchSize,
+                lopts.convergePass, 
+                lopts.stepSizeReductionPower,
+                lopts.initTemperature);
+        //zli's cooling (set initTemperature to 0.1)
+//        GradientBasedOptimizer optimizer = new DefaultPerceptron(
+//                perceptronSumModel, perceptronAverageModel, 
+//                examples.size(), 
+//                batchSize,
+//                lopts.convergePass, 
+//                lopts.initTemperature);
+        // we need the cooling scheduling in case we do stepwise updating
+        if(!cooling)
+            optimizer.setNoCooling();
+        Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
+        Feature lmFeature = new Feature(((DiscriminativeParams)params).lmWeight, 0);
+        Feature hasConsecutiveWordsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
+        for(int iter = 0; iter < lopts.numIters; iter++) // for t = 1...T do
+        {
+            FullStatFig complexity = new FullStatFig(); // Complexity inference
+            Utils.begin_track("Iteration %s/%s: ", Utils.fmt(iter+1), 
+                    Utils.fmt(lopts.numIters));
+            Record.begin("iteration", iter+1);
+            trainPerformance = existsTrain ? newPerformance() : null;
+            
+            for(int i = 0; i < examples.size(); i++) // for i = 1...N do
+            {                
+//                Collection<ExampleProcessor> list = new ArrayList(2);
+                // perform reranking on the hypergraph. During the recursive call
+                // in order to extract D_1 (top derivation) update the modelFeatures
+                // map, i.e. compute f(y^). We will need this for the perceptron updates
+//                list.add(new ExampleProcessor(
+//                        examples.get(i), i, modelFeatures, false, lopts, iter, complexity));
+//                // compute oracle and update the oracleFeatures map, i.e. compute f(y+)
+//                list.add(new ExampleProcessor(
+//                        examples.get(i), i, oracleFeatures, true, lopts, iter, complexity));
+//                Utils.parallelForeach(opts.numThreads, list);
+//                list.clear();
+//                System.out.println(examples.get(i).getName());
+                try{
+                    ExampleProcessor model = new ExampleProcessor(
+                            examples.get(i), i, modelFeatures, false, lopts, iter, complexity);
+
+                    model.call();
+                    model = null;
+                    ExampleProcessor oracle = new ExampleProcessor(
+                            examples.get(i), i, oracleFeatures, true, lopts, iter, complexity);
+                    oracle.call();
+                    oracle = null;                    
+                    
+//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+//                                       " - model: " + modelFeatures.get(baseFeature) + 
+//                                       " - base sum: " + baseFeature.getValue()
+//                                       );
+//                    if(perceptronSumModel.containsKey(lmFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
+//                                           " - model: " + modelFeatures.get(lmFeature) + 
+//                                           " - lm sum: " + lmFeature.getValue()
+//                                           );
+//                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
+//                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
+//                                           );
+//                        
+//                    else
+//                        System.out.println();
+                }                
+                catch(Exception e){
+                    e.printStackTrace();
+                    LogInfo.error(e);
+                }
+                
+                numProcessedExamples++;
+                // update perceptron if necessary (batch update)
+                updateOptimizer(false, optimizer);
+            } // for (all examples)
+            // purge any unprocessed examples
+            if(lopts.learningScheme == LearningScheme.stepwise)
+                updateOptimizer(true, optimizer);
+            // update the internal average model
+            ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
+            record(String.valueOf(iter), name, complexity);            
+            LogInfo.end_track();
+            Record.end();
+            // Final
+            if (iter == lopts.numIters - 1)
+            {
+                LogInfo.track("Final", true);
+                if(trainPerformance != null)
+                    trainPerformance.record("train");
+                LogInfo.end_track();
+            }
+            if (Execution.shouldBail())
+                lopts.numIters = iter;
+        } // for (all iterations)       
+        // use average model weights instead of sum 
+        // (reduces overfitting according to Collins, 2002)
+        ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
+        
+        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + " " +
+                hasConsecutiveWordsFeature.getValue() + "\n" + 
+                ((DiscriminativeParams)params).outputDiscriminativeOnly());
+//        
+        if(!opts.dontOutputParams)
+        {
+            saveParams(name);
+            params.output(Execution.getFile(name+".params"), ParamsType.COUNTS);
+        }        
+        LogInfo.end_track();
+        Record.end();
+    }
+    
+    /**
+     * Iterative Parameter mixing using averaged Perceptron training (McDonald 2010)
+     * @param name
+     * @param lopts 
+     */    
+    public void learnParallel(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel; // HACK
         Utils.begin_track("Loading Language Model...");
@@ -664,7 +825,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
 //                        System.out.println("\n" + GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
-                        System.out.println("\n" + widgetToFullString(ex, (GenWidget)inferState.bestWidget));
+//                        System.out.println("\n" + widgetToFullString(ex, (GenWidget)inferState.bestWidget));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }

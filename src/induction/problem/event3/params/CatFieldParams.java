@@ -74,6 +74,11 @@ public class CatFieldParams extends FieldParams
         return out;
     }
 
+    public boolean isEmptyValue(int value)
+    {
+        return field.valueToString(value).equals("--");
+    }
+    
     @Override
     public String toString()
     {
