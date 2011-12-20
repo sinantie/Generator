@@ -2,14 +2,14 @@
 
 inputLists=data/atis/train/atis5000.sents.full
 #inputLists=test/trainAtisExamples
-execDir=results/output/atis/generation/discriminative/baseline_ignore_seg5
+execDir=results/output/atis/generation/discriminative/baseline_ignore_ngrams_bigrams_numWordsField_hasCons_hasEmpty_seg5
 numIters=15
 numThreads=1
 baselineModel=results/output/atis/alignments/model_3/prior_0.01/stage1.params.obj
 stagedModel=results/output/atis/generation/discriminative/baseline_ignore/stage1.discriminative.params.obj.gz
 #baselineModel=results/output/atis/alignments/model_3/15_iter_no_null_smooth_0001_STOP/stage1.params.obj
 
-java -Xmx2g -ea -Djava.library.path=lib/wrappers -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
+java -Xmx2500m -ea -Djava.library.path=lib/wrappers -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar induction.runtime.DiscriminativeInduction \
 -create \
 -examplesInSingleFile \
@@ -30,7 +30,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.DiscriminativeInduction
 -reorderType ignore \
 -maxPhraseLength 5 \
 -binariseAtWordLevel \
--kBest 1 \
+-kBest 15 \
 -initType supervised \
 -includeHasConsecutiveWordsFeature \
 -includeBigramsFeature \

@@ -14,7 +14,10 @@ import induction.problem.event3.params.Params;
 public class DiscriminativeParams extends Params
 {
     public Vec baselineWeight, bigramWeights, ngramWeights, lmWeight, 
-               hasConsecutiveWordsWeight, hasEmptyValueWeight;
+               hasConsecutiveWordsWeight, 
+               hasConsecutiveBigramsWeight,
+               hasConsecutiveTrigramsWeight,            
+               hasEmptyValueWeight;
     public Vec ngramNegativeWeights;    
     
     private DiscriminativeEvent3Model model;
@@ -48,7 +51,11 @@ public class DiscriminativeParams extends Params
             lmWeight = VecFactory.zeros(vectorType, 1);
             addVec("lmWeight", lmWeight);            
             hasConsecutiveWordsWeight = VecFactory.zeros(vectorType, 1);
-            addVec("hasConsecutiveWordsWeight", hasConsecutiveWordsWeight);            
+            addVec("hasConsecutiveWordsWeight", hasConsecutiveWordsWeight);
+            hasConsecutiveBigramsWeight = VecFactory.zeros(vectorType, 1);
+            addVec("hasConsecutiveBigramsWeight", hasConsecutiveBigramsWeight);
+            hasConsecutiveTrigramsWeight = VecFactory.zeros(vectorType, 1);
+            addVec("hasConsecutiveTrigramsWeight", hasConsecutiveTrigramsWeight);
             hasEmptyValueWeight = VecFactory.zeros(vectorType, 1);
             addVec("hasEmptyValueWeight", hasEmptyValueWeight);            
         }
@@ -70,6 +77,8 @@ public class DiscriminativeParams extends Params
         {
             out.append(forEachCountNonZero(lmWeight, getLabels(1, "lm", null)));
             out.append(forEachCountNonZero(hasConsecutiveWordsWeight, getLabels(1, "hasConsecutiveWords", null)));
+            out.append(forEachCountNonZero(hasConsecutiveBigramsWeight, getLabels(1, "hasConsecutiveBigrams", null)));
+            out.append(forEachCountNonZero(hasConsecutiveTrigramsWeight, getLabels(1, "hasConsecutiveTrigrams", null)));
             out.append(forEachCountNonZero(hasEmptyValueWeight, getLabels(1, "hasEmptyValue", null)));
             out.append(forEachCountNonZero(ngramWeights, getLabels(model.getWordNgramMap().size(), 
                 "ngramWeights ", model.getWordNgramLabels(model.getWordNgramMap(), 3))));

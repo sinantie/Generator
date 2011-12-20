@@ -46,7 +46,7 @@ public class DiscriminativeGenerationAtisTest
                     + "-generativeModelParamsFile results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
                     + "-stagedParamsFile results/output/atis/generation/discriminative/"
-                    + "baseline_ignore_ngrams_numWordsField_hasCons_staged_ignore_again/stage1.discriminative.params.obj.gz "
+                    + "baseline_ignore_ngrams_bigrams_numWordsField_hasCons_seg5/stage1.discriminative.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "                 
                     + "-kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
@@ -56,7 +56,9 @@ public class DiscriminativeGenerationAtisTest
                     + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
-                    + "-lengthCompensation 0";
+                    + "-lengthCompensation 0 "
+                    +"-includeHasConsecutiveWordsFeature "
+                    +"-includeBigramsFeature";
 //                    + "-oracleReranker";
          
         /*initialisation procedure from Induction class*/

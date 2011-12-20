@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
@@ -209,6 +210,15 @@ public class Utils
         }
         return out;
     }
+    
+    public static List<Integer> asList(int[] ar)
+    {
+        List<Integer> list = new ArrayList<Integer>(ar.length);
+        for(int a : ar)
+            list.add(a);
+        return list;
+    }
+    
     public static void log(Object obj)
     {
         LogInfo.logs(obj);

@@ -133,6 +133,10 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             increaseNgramLMCounts(ex.getText());
             if(opts.includeHasConsecutiveWordsFeature)
                 increaseHasConsecutiveWordsCount(ex.getText());
+            if(opts.includeHasConsecutiveBigramsFeature)
+                increaseHasConsecutiveNgramsCount(ex.getText(), 2);
+            if(opts.includeHasConsecutiveTrigramsFeature)
+                increaseHasConsecutiveNgramsCount(ex.getText(), 3);
         }        
         bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        
