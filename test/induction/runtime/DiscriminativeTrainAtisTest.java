@@ -47,7 +47,7 @@ public class DiscriminativeTrainAtisTest
                     + "-generativeModelParamsFile results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "
                     + "-stagedParamsFile results/output/atis/generation/discriminative/"
-                    + "calculate_baseline_weight_norm/stage1.discriminative.params.obj "
+                    + "baseline_ignore/stage1.discriminative.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
 //                    + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 -indepWords 0,5 "                 
                     + "-kBest 40 "

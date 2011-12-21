@@ -27,7 +27,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.DiscriminativeInduction
 -ngramModelFile atisLM/atis-all-train-3-gram.model.arpa \
 -ngramWrapper srilm \
 -allowConsecutiveEvents \
--reorderType ignore \
+-reorderType eventType \
 -maxPhraseLength 5 \
 -binariseAtWordLevel \
 -kBest 15 \

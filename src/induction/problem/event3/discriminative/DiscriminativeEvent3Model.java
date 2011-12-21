@@ -330,7 +330,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         if(!cooling)
             optimizer.setNoCooling();
         Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
-        Feature lmFeature = new Feature(((DiscriminativeParams)params).lmWeight, 0);
+        Feature hasConsecutiveBigramsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveBigramsWeight, 0);
+        Feature hasConsecutiveTrigramsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveTrigramsWeight, 0);
         Feature hasConsecutiveWordsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
         for(int iter = 0; iter < lopts.numIters; iter++) // for t = 1...T do
         {
@@ -365,23 +366,28 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-//                                       " - model: " + modelFeatures.get(baseFeature) + 
-//                                       " - base sum: " + baseFeature.getValue()
-//                                       );
-//                    if(perceptronSumModel.containsKey(lmFeature))
-//                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-//                                           " - model: " + modelFeatures.get(lmFeature) + 
-//                                           " - lm sum: " + lmFeature.getValue()
-//                                           );
-//                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
-//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
-//                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
-//                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
-//                                           );
-//                        
-//                    else
-//                        System.out.println();
+                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+                                       " - model: " + modelFeatures.get(baseFeature) + 
+                                       " - base sum: " + baseFeature.getValue()
+                                       );
+                    if(perceptronSumModel.containsKey(hasConsecutiveBigramsFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveBigramsFeature) +
+                                           " - model: " + modelFeatures.get(hasConsecutiveBigramsFeature) + 
+                                           " - consBigrams sum: " + hasConsecutiveBigramsFeature.getValue()
+                                           );
+                    if(perceptronSumModel.containsKey(hasConsecutiveTrigramsFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveTrigramsFeature) +
+                                           " - model: " + modelFeatures.get(hasConsecutiveTrigramsFeature) + 
+                                           " - consTrigrams sum: " + hasConsecutiveTrigramsFeature.getValue()
+                                           );
+                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
+                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
+                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
+                                           );
+                        
+                    else
+                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -415,9 +421,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + " " +
-                hasConsecutiveWordsFeature.getValue() + "\n" + 
-                ((DiscriminativeParams)params).outputDiscriminativeOnly());
+        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
 //        
         if(!opts.dontOutputParams)
         {
@@ -485,9 +489,10 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // we need the cooling scheduling in case we do stepwise updating
         if(!cooling)
             optimizer.setNoCooling();
-        Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);
-        Feature lmFeature = new Feature(((DiscriminativeParams)params).lmWeight, 0);
+        Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);       
         Feature hasConsecutiveWordsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
+        Feature hasConsecutiveBigramsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveBigramsWeight, 0);
+        Feature hasConsecutiveTrigramsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveTrigramsWeight, 0);
         for(int iter = 0; iter < lopts.numIters; iter++) // for t = 1...T do
         {
             FullStatFig complexity = new FullStatFig(); // Complexity inference
@@ -525,10 +530,15 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                                        " - model: " + modelFeatures.get(baseFeature) + 
                                        " - base sum: " + baseFeature.getValue()
                                        );
-                    if(perceptronSumModel.containsKey(lmFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(lmFeature) +
-                                           " - model: " + modelFeatures.get(lmFeature) + 
-                                           " - lm sum: " + lmFeature.getValue()
+                    if(perceptronSumModel.containsKey(hasConsecutiveBigramsFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveBigramsFeature) +
+                                           " - model: " + modelFeatures.get(hasConsecutiveBigramsFeature) + 
+                                           " - consBigrams sum: " + hasConsecutiveBigramsFeature.getValue()
+                                           );
+                    if(perceptronSumModel.containsKey(hasConsecutiveTrigramsFeature))
+                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveTrigramsFeature) +
+                                           " - model: " + modelFeatures.get(hasConsecutiveTrigramsFeature) + 
+                                           " - consTrigrams sum: " + hasConsecutiveTrigramsFeature.getValue()
                                            );
                     else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
                         System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
@@ -571,9 +581,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-//        System.out.println("\n Global Avg: " + baseFeature.getValue() + " " + lmFeature.getValue() + " " +
-//                hasConsecutiveWordsFeature.getValue() + "\n" + 
-//                ((DiscriminativeParams)params).outputDiscriminativeOnly());
+        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
 //        
         if(!opts.dontOutputParams)
         {
