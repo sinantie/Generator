@@ -65,7 +65,7 @@ public class DiscriminativeParams extends Params
     public String output(ParamsType paramsType)
     {
         String out = outputDiscriminativeOnly();
-        out += super.output(paramsType);
+        out += super.outputNonZero(paramsType);
         return out;
     }
     

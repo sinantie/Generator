@@ -40,16 +40,16 @@ public class CatFieldParams extends FieldParams
     @Override
     public String output(ParamsType paramsType)
     {
-        String out = super.output(paramsType);
+        StringBuilder out = new StringBuilder(super.output(paramsType));
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
         for(Vec v: emissions)
         {
             if(paramsType == ParamsType.PROBS)
-                out += forEachProb(v, labels[i++]);
+                out.append(forEachProb(v, labels[i++]));
             else
-                out += forEachCount(v, labels[i++]);
+                out.append(forEachCount(v, labels[i++]));
         }
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
                     GenerativeEvent3Model.wordsToStringArray(), field.valuesToStringArray());
@@ -66,12 +66,49 @@ public class CatFieldParams extends FieldParams
         for(Vec v: filters)
         {
             if(paramsType == ParamsType.PROBS)
-                out += forEachProb(v, labels[i++]);
+                out.append(forEachProb(v, labels[i++]));
             else
-                out += forEachCount(v, labels[i++]);
+                out.append(forEachCount(v, labels[i++]));
                 
         }
-        return out;
+        return out.toString();
+    }
+    
+    @Override
+    public String outputNonZero(ParamsType paramsType)
+    {
+        StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));
+        String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
+                    field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+        int i = 0;
+        for(Vec v: emissions)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(v, labels[i++]));
+            else
+                out.append(forEachCountNonZero(v, labels[i++]));
+        }
+        labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
+                    GenerativeEvent3Model.wordsToStringArray(), field.valuesToStringArray());
+        i = 0;
+
+// uncomment for semantic parsing
+//        for(ProbVec v: valueEmissions)
+//        {
+//            out += forEachProb(v, labels[i++]);
+//        }
+        labels = getLabels(field.getV(), Parameters.B, "catFilter " + prefix + " ",
+                    field.valuesToStringArray(), Parameters.booleanToString);
+        i = 0;
+        for(Vec v: filters)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(v, labels[i++]));
+            else
+                out.append(forEachCountNonZero(v, labels[i++]));
+                
+        }
+        return out.toString();
     }
 
     public boolean isEmptyValue(int value)

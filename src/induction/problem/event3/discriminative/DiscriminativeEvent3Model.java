@@ -366,28 +366,28 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-                                       " - model: " + modelFeatures.get(baseFeature) + 
-                                       " - base sum: " + baseFeature.getValue()
-                                       );
-                    if(perceptronSumModel.containsKey(hasConsecutiveBigramsFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveBigramsFeature) +
-                                           " - model: " + modelFeatures.get(hasConsecutiveBigramsFeature) + 
-                                           " - consBigrams sum: " + hasConsecutiveBigramsFeature.getValue()
-                                           );
-                    if(perceptronSumModel.containsKey(hasConsecutiveTrigramsFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveTrigramsFeature) +
-                                           " - model: " + modelFeatures.get(hasConsecutiveTrigramsFeature) + 
-                                           " - consTrigrams sum: " + hasConsecutiveTrigramsFeature.getValue()
-                                           );
-                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
-                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
-                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
-                                           );
-                        
-                    else
-                        System.out.println();
+//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+//                                       " - model: " + modelFeatures.get(baseFeature) + 
+//                                       " - base sum: " + baseFeature.getValue()
+//                                       );
+//                    if(perceptronSumModel.containsKey(hasConsecutiveBigramsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveBigramsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveBigramsFeature) + 
+//                                           " - consBigrams sum: " + hasConsecutiveBigramsFeature.getValue()
+//                                           );
+//                    if(perceptronSumModel.containsKey(hasConsecutiveTrigramsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveTrigramsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveTrigramsFeature) + 
+//                                           " - consTrigrams sum: " + hasConsecutiveTrigramsFeature.getValue()
+//                                           );
+//                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
+//                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
+//                                           );
+//                        
+//                    else
+//                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -421,12 +421,12 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
+//        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
 //        
         if(!opts.dontOutputParams)
         {
-            saveParams(name);
-            params.output(Execution.getFile(name+".params"), ParamsType.COUNTS);
+            saveParams(name);            
+//            params.outputNonZero(Execution.getFile(name+".nonEmpty.params"), ParamsType.COUNTS);
         }        
         LogInfo.end_track();
         Record.end();
@@ -490,6 +490,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         if(!cooling)
             optimizer.setNoCooling();
         Feature baseFeature = new Feature(((DiscriminativeParams)params).baselineWeight, 0);       
+        Feature hasEmptyValueFeature = new Feature(((DiscriminativeParams)params).hasEmptyValueWeight, 0);
         Feature hasConsecutiveWordsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveWordsWeight, 0);
         Feature hasConsecutiveBigramsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveBigramsWeight, 0);
         Feature hasConsecutiveTrigramsFeature = new Feature(((DiscriminativeParams)params).hasConsecutiveTrigramsWeight, 0);
@@ -526,28 +527,28 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     oracle.call();
                     oracle = null;                    
                     
-                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
-                                       " - model: " + modelFeatures.get(baseFeature) + 
-                                       " - base sum: " + baseFeature.getValue()
-                                       );
-                    if(perceptronSumModel.containsKey(hasConsecutiveBigramsFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveBigramsFeature) +
-                                           " - model: " + modelFeatures.get(hasConsecutiveBigramsFeature) + 
-                                           " - consBigrams sum: " + hasConsecutiveBigramsFeature.getValue()
-                                           );
-                    if(perceptronSumModel.containsKey(hasConsecutiveTrigramsFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveTrigramsFeature) +
-                                           " - model: " + modelFeatures.get(hasConsecutiveTrigramsFeature) + 
-                                           " - consTrigrams sum: " + hasConsecutiveTrigramsFeature.getValue()
-                                           );
-                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
-                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
-                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
-                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
-                                           );
-                        
-                    else
-                        System.out.println();
+//                    System.out.print("oracle: " + oracleFeatures.get(baseFeature) +
+//                                       " - model: " + modelFeatures.get(baseFeature) + 
+//                                       " - base sum: " + baseFeature.getValue()
+//                                       );
+//                    if(perceptronSumModel.containsKey(hasConsecutiveBigramsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveBigramsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveBigramsFeature) + 
+//                                           " - consBigrams sum: " + hasConsecutiveBigramsFeature.getValue()
+//                                           );
+//                    if(perceptronSumModel.containsKey(hasConsecutiveTrigramsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveTrigramsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveTrigramsFeature) + 
+//                                           " - consTrigrams sum: " + hasConsecutiveTrigramsFeature.getValue()
+//                                           );
+//                    else if(perceptronSumModel.containsKey(hasConsecutiveWordsFeature))
+//                        System.out.println(" oracle: " + oracleFeatures.get(hasConsecutiveWordsFeature) +
+//                                           " - model: " + modelFeatures.get(hasConsecutiveWordsFeature) + 
+//                                           " - hasCons sum: " + hasConsecutiveWordsFeature.getValue()
+//                                           );
+//                        
+//                    else
+//                        System.out.println();
                 }                
                 catch(Exception e){
                     e.printStackTrace();
@@ -677,6 +678,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         record("results", name, complexity);
         Record.end();
         LogInfo.end_track();
+        
+        if(!opts.dontOutputParams)
+        {        
+            params.outputNonZero(Execution.getFile(name+".nonEmpty.params"), ParamsType.COUNTS);
+        }
     }        
     
     /**

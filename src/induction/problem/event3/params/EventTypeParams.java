@@ -164,29 +164,25 @@ public class EventTypeParams extends AParams
     @Override
     public String output(ParamsType paramsType)
     {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         String[][] labels = getLabels(F+2, F+2, "fieldC " + typeToString + " ",
                           fieldToString, fieldToString);
         int i = 0;
         for(Vec v : fieldChoices)
         {
             if(paramsType == ParamsType.PROBS)
-                out += forEachProb(v, labels[i++]);
+                out.append(forEachProb(v, labels[i++]));
             else
-                out += forEachCount(v, labels[i++]);
+                out.append(forEachCount(v, labels[i++]));
         }
         if(paramsType == ParamsType.PROBS)
-            out += forEachProb(fieldSetChoices,
-                   getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString)) +
-                   forEachProb(noneFieldEmissions,
-                   getLabels(W, "noneFieldE " + typeToString + " ",
-                              Event3Model.wordsToStringArray()));
+            out.append(forEachProb(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
+                    append(forEachProb(noneFieldEmissions, 
+                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
         else
-            out += forEachCount(fieldSetChoices,
-                   getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString)) +
-                   forEachCount(noneFieldEmissions,
-                   getLabels(W, "noneFieldE " + typeToString + " ",
-                              Event3Model.wordsToStringArray()));
+            out.append(forEachCount(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
+                    append(forEachCount(noneFieldEmissions,
+                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
             
         // if too huge parameter set, comment
 //        i = 0;
@@ -202,26 +198,77 @@ public class EventTypeParams extends AParams
 //                          fieldToString, GenerativeEvent3Model.wordsToStringArray());
         for(int f = 0; f < F; f++)
         {
+//                   forEachProb(fieldNameEmissions[f], labelsEm[f]) +
             if(paramsType == ParamsType.PROBS)
-                out += forEachProb(genChoices[f], labelsGen[f]) +
-    //                   forEachProb(fieldNameEmissions[f], labelsEm[f]) +
-                       fieldParams[f].output(paramsType) + "\n";
+                out.append(forEachProb(genChoices[f], labelsGen[f])).append(fieldParams[f].output(paramsType)).append("\n");
             else
-                out += forEachCount(genChoices[f], labelsGen[f]) +
-    //                   forEachCount(fieldNameEmissions[f], labelsEm[f]) +
-                       fieldParams[f].output(paramsType) + "\n";
+                out.append(forEachCount(genChoices[f], labelsGen[f])).append(fieldParams[f].output(paramsType)).append("\n");
         }
         if(paramsType == ParamsType.PROBS)
-            out += forEachProb(filters,
+            out.append(forEachProb(filters,
                    getLabels(Parameters.B, "filter " + typeToString + " ",
-                              Parameters.booleanToString));
+                              Parameters.booleanToString)));
         else
-            out += forEachCount(filters,
+            out.append(forEachCount(filters,
                    getLabels(Parameters.B, "filter " + typeToString + " ",
-                              Parameters.booleanToString));
-        return out;
+                              Parameters.booleanToString)));
+        return out.toString();
     }
 
+    @Override
+    public String outputNonZero(ParamsType paramsType)
+    {
+        StringBuilder out = new StringBuilder();
+        String[][] labels = getLabels(F+2, F+2, "fieldC " + typeToString + " ",
+                          fieldToString, fieldToString);
+        int i = 0;
+        for(Vec v : fieldChoices)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(v, labels[i++]));
+            else
+                out.append(forEachCountNonZero(v, labels[i++]));
+        }
+        if(paramsType == ParamsType.PROBS)
+            out.append(forEachProbNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
+                    append(forEachProbNonZero(noneFieldEmissions, 
+                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
+        else
+            out.append(forEachCountNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
+                    append(forEachCountNonZero(noneFieldEmissions,
+                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
+            
+        // if too huge parameter set, comment
+//        i = 0;
+//        String[][] labelsNone = getLabels(W, W, "noneFieldWordBiC " + typeToString + " ",
+//                          GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+//        for(ProbVec v : noneFieldBigramChoices)
+//        {
+//            out += forEachProbNonZero(v, labelsNone[i++]);
+//        }
+        String[][] labelsGen = getLabels(F, Parameters.G, "genC " + typeToString + " ",
+                          fieldToString, Parameters.generateToString);
+//        String[][] labelsEm = getLabels(F, W, "fieldNameE " + typeToString + " " ,
+//                          fieldToString, GenerativeEvent3Model.wordsToStringArray());
+        for(int f = 0; f < F; f++)
+        {
+//                   forEachProbNonZero(fieldNameEmissions[f], labelsEm[f]) +
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(genChoices[f], labelsGen[f])).append(fieldParams[f].output(paramsType)).append("\n");
+            else
+                out.append(forEachCountNonZero(genChoices[f], labelsGen[f])).append(fieldParams[f].output(paramsType)).append("\n");
+        }
+        if(paramsType == ParamsType.PROBS)
+            out.append(forEachProbNonZero(filters,
+                   getLabels(Parameters.B, "filter " + typeToString + " ",
+                              Parameters.booleanToString)));
+        else
+            out.append(forEachCountNonZero(filters,
+                   getLabels(Parameters.B, "filter " + typeToString + " ",
+                              Parameters.booleanToString)));
+        return out.toString();
+    }
+    
     @Override
     public String toString()
     {

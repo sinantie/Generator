@@ -34,38 +34,63 @@ public class NumFieldParams extends FieldParams implements Serializable
     @Override
     public String output(ParamsType paramsType)
     {
-        String out = super.output(paramsType);
+        StringBuilder out = new StringBuilder(super.output(paramsType));
         if(paramsType == ParamsType.PROBS)
-            out += forEachProb(methodChoices,
-                   getLabels(Parameters.M, "numMethodC " + prefix + " ",
-                              Parameters.numMethodsToString)) +
-                   forEachProb(leftNoiseChoices,
-                   getLabels(Parameters.S, "numLNoiseC " + prefix + " ",
-                              Parameters.noiseToString)) +
-                   forEachProb(rightNoiseChoices,
-                   getLabels(Parameters.S, "numRNoiseC " + prefix + " ",
-                              Parameters.noiseToString));
+            out.append(forEachProb(methodChoices, getLabels(Parameters.M, "numMethodC " + prefix + " ", 
+                    Parameters.numMethodsToString))).append(
+                    forEachProb(leftNoiseChoices, getLabels(Parameters.S, "numLNoiseC " + prefix + " ", 
+                    Parameters.noiseToString))).append(
+                    forEachProb(rightNoiseChoices, getLabels(Parameters.S, "numRNoiseC " + prefix + " ", 
+                    Parameters.noiseToString)));
         else
-            out += forEachCount(methodChoices,
-                   getLabels(Parameters.M, "numMethodC " + prefix + " ",
-                              Parameters.numMethodsToString)) +
-                   forEachCount(leftNoiseChoices,
-                   getLabels(Parameters.S, "numLNoiseC " + prefix + " ",
-                              Parameters.noiseToString)) +
-                   forEachCount(rightNoiseChoices,
-                   getLabels(Parameters.S, "numRNoiseC " + prefix + " ",
-                              Parameters.noiseToString));
+            out.append(forEachCount(methodChoices, getLabels(Parameters.M, "numMethodC " + prefix + " ", 
+                    Parameters.numMethodsToString))).append(
+                    forEachCount(leftNoiseChoices, getLabels(Parameters.S, "numLNoiseC " + prefix + " ", 
+                    Parameters.noiseToString))).append(
+                    forEachCount(rightNoiseChoices, getLabels(Parameters.S, "numRNoiseC " + prefix + " ", 
+                    Parameters.noiseToString)));
         String[][] labels = getLabels(Parameters.H, Parameters.B, "numFilter " + prefix + " ",
                 Parameters.histToString, Parameters.booleanToString);
         int i = 0;
         for(Vec v : filters)
         {
             if(paramsType == ParamsType.PROBS)
-                out += forEachProb(v, labels[i++]);
+                out.append(forEachProb(v, labels[i++]));
             else
-                out += forEachProb(v, labels[i++]);
+                out.append(forEachProb(v, labels[i++]));
         }
-        return out;
+        return out.toString();
+    }
+    
+    @Override
+    public String outputNonZero(ParamsType paramsType)
+    {
+        StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));
+        if(paramsType == ParamsType.PROBS)
+            out.append(forEachProbNonZero(methodChoices, getLabels(Parameters.M, "numMethodC " + prefix + " ", 
+                    Parameters.numMethodsToString))).append(
+                    forEachProbNonZero(leftNoiseChoices, getLabels(Parameters.S, "numLNoiseC " + prefix + " ", 
+                    Parameters.noiseToString))).append(
+                    forEachProbNonZero(rightNoiseChoices, getLabels(Parameters.S, "numRNoiseC " + prefix + " ", 
+                    Parameters.noiseToString)));
+        else
+            out.append(forEachCountNonZero(methodChoices, getLabels(Parameters.M, "numMethodC " + prefix + " ", 
+                    Parameters.numMethodsToString))).append(
+                    forEachCountNonZero(leftNoiseChoices, getLabels(Parameters.S, "numLNoiseC " + prefix + " ", 
+                    Parameters.noiseToString))).append(
+                    forEachCountNonZero(rightNoiseChoices, getLabels(Parameters.S, "numRNoiseC " + prefix + " ", 
+                    Parameters.noiseToString)));
+        String[][] labels = getLabels(Parameters.H, Parameters.B, "numFilter " + prefix + " ",
+                Parameters.histToString, Parameters.booleanToString);
+        int i = 0;
+        for(Vec v : filters)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(v, labels[i++]));
+            else
+                out.append(forEachProbNonZero(v, labels[i++]));
+        }
+        return out.toString();
     }    
 
 }

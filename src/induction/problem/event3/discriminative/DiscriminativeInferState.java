@@ -41,7 +41,6 @@ import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.EmissionParams;
 import induction.problem.event3.params.TrackParams;
-import java.lang.Integer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -104,7 +103,7 @@ public class DiscriminativeInferState extends Event3InferState
 
     Map<List<Integer>, Integer> wordBigramsMap, wordNgramsMap, wordNegativeNgramsMap;
     
-    private int iteration;    
+    protected int iteration;    
     
     WordNode startSymbol = new WordNode(-1, 0, -1, -1);
     
@@ -229,7 +228,7 @@ public class DiscriminativeInferState extends Event3InferState
                     for(int v = 0; v < modelFieldParams.emissions.length; v++)
                     {                        
                         emissions[v].addCount(modelFieldParams.emissions[v]);
-                        if(opts.includeHasEmptyValueFeature)
+                        if(opts.includeHasEmptyValueFeature && modelFieldParams.isEmptyValue(v))
                             emissions[v].addCount(((DiscriminativeParams)params).hasEmptyValueWeight.getCount(0));
                         emissions[v].addCount(getBaselineScore(baseFieldParams.emissions[v]));
                         emissions[v].setCountsSortedIndices();
@@ -359,9 +358,9 @@ public class DiscriminativeInferState extends Event3InferState
 //                    increaseNegativeNgramCounts(((GenWidget)result.widget).getText());
                     if(opts.includeHasConsecutiveWordsFeature)
                         increaseHasConsecutiveWordsCount(((GenWidget)result.widget).getText());
-                    if(opts.includeHasConsecutiveBigramsFeature)
+                    if(opts.includeHasConsecutiveBigramsFeature && iteration >= 5)
                         increaseHasConsecutiveNgramsCount(((GenWidget)result.widget).getText(), 2);
-                    if(opts.includeHasConsecutiveTrigramsFeature)
+                    if(opts.includeHasConsecutiveTrigramsFeature && iteration >= 5)
                         increaseHasConsecutiveNgramsCount(((GenWidget)result.widget).getText(), 3);
                 }
             }

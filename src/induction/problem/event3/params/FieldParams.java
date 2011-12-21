@@ -39,15 +39,30 @@ public abstract class FieldParams extends AParams implements Serializable
     @Override
     public String output(ParamsType paramsType)
     {
-        String out = "";
+        StringBuilder out = new StringBuilder();
         String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
                     GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
         int i = 0;
         // if too huge parameter set, comment
         for(Vec v: wordBigramChoices)
         {
-            out += forEachProbNonZero(v, labels[i++]);
+            out.append(forEachProb(v, labels[i++]));
         }
-        return out;
+        return out.toString();
+    }
+    
+    @Override
+    public String outputNonZero(ParamsType paramsType)
+    {
+        StringBuilder out = new StringBuilder();
+        String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
+                    GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+        int i = 0;
+        // if too huge parameter set, comment
+        for(Vec v: wordBigramChoices)
+        {
+            out.append(forEachProbNonZero(v, labels[i++]));
+        }
+        return out.toString();
     }
 }

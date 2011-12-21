@@ -31,7 +31,7 @@ public class StrFieldParams extends FieldParams
     @Override
     public String output(ParamsType paramsType)
     {
-        String out = super.output(paramsType);
+        StringBuilder out = new StringBuilder(super.output(paramsType));
         String[][] labels = getLabels(LB, LB, "labelC " + prefix + " ",        
                           GenerativeEvent3Model.labelsToStringArray(),
                           GenerativeEvent3Model.labelsToStringArray());
@@ -39,11 +39,29 @@ public class StrFieldParams extends FieldParams
         for(Vec v: labelChoices)
         {
             if(paramsType == ParamsType.PROBS)
-                out += forEachProb(v, labels[i++]);
+                out.append(forEachProb(v, labels[i++]));
             else
-                out += forEachCount(v, labels[i++]);
+                out.append(forEachCount(v, labels[i++]));
         }
-        return out;
+        return out.toString();
+    }
+    
+    @Override
+    public String outputNonZero(ParamsType paramsType)
+    {
+        StringBuilder out = new StringBuilder(super.output(paramsType));
+        String[][] labels = getLabels(LB, LB, "labelC " + prefix + " ",        
+                          GenerativeEvent3Model.labelsToStringArray(),
+                          GenerativeEvent3Model.labelsToStringArray());
+        int i = 0;
+        for(Vec v: labelChoices)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(v, labels[i++]));
+            else
+                out.append(forEachCountNonZero(v, labels[i++]));
+        }
+        return out.toString();
     }
 
 }

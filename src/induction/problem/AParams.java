@@ -136,11 +136,19 @@ public abstract class AParams implements Serializable
     }
     
     public abstract String output(ParamsType paramsType);
+    public abstract String outputNonZero(ParamsType paramsType);
 
     public void output(String path, ParamsType paramsType)
     {
         Utils.begin_track("AParams.output(%s)", path);
         Utils.write(path, output(paramsType));
+        LogInfo.end_track();
+    }
+    
+    public void outputNonZero(String path, ParamsType paramsType)
+    {
+        Utils.begin_track("AParams.outputNonZero(%s)", path);
+        Utils.write(path, outputNonZero(paramsType));
         LogInfo.end_track();
     }
 
