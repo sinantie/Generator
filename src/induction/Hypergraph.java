@@ -1,5 +1,6 @@
 package induction;
 
+import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.discriminative.DiscriminativeInferState;
 import induction.problem.AInferState;
 import induction.ngrams.NgramModel;
@@ -73,6 +74,9 @@ public class Hypergraph<Widget> {
    */  
   public interface HyperedgeInfoOnline<Widget> extends HyperedgeInfo<Widget> {
     public double getOnlineWeight(List<List<Integer>> ngrams);
+  }
+  public interface HyperedgeInfoOnlineFields<Widget> extends HyperedgeInfoOnline<Widget> {
+    public double getOnlineWeightFields(List<List<Integer>> fieldNgrams);
   }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
@@ -188,7 +192,7 @@ public class Hypergraph<Widget> {
     {
         final Hyperedge edge;
         ArrayList<Derivation> derArray;
-        ArrayList<Integer> words;
+        ArrayList<Integer> words, fields;
         BigDouble weight;
         double logWeight;
         int[] mask;
@@ -198,6 +202,8 @@ public class Hypergraph<Widget> {
                 Collection<Integer> fieldSet)
         {
             words = new ArrayList<Integer>(2*M - 1);
+            if(edge.dest.get(0).node instanceof FieldNode)
+                fields = new ArrayList<Integer>(2*M - 1);
             this.edge = edge;
             derArray = new ArrayList<Derivation>(edge.dest.size());            
             this.mask = mask;
@@ -207,29 +213,7 @@ public class Hypergraph<Widget> {
                 getSuccDiscriminative(mask);
             else
                 getSucc(mask);
-        }
-
-        public Derivation(Hyperedge edge)
-        {
-            words = new ArrayList<Integer>();
-            this.edge = edge;
-            /* leaf derivation - axiom. Get the best-first value from the
-               underlying multinomial distribution*/
-            if(edge.dest.get(0) == endNodeInfo && edge.dest.get(1) == endNodeInfo)
-            {
-                derArray = null;
-                induction.problem.Pair p = ((HyperedgeInfoLM)edge.info).getWeightAtRank(-1);
-                if(p.label != null)
-                {
-                    this.words.add(new Integer((Integer)p.label));
-                }
-            }
-            else
-            {
-                for(NodeInfo nodeInfo : edge.dest)
-                    this.words.addAll(nodeInfo.derivations.get(0).words);
-            }
-        }
+        }       
         
         private void getSucc(int[] kBestMask)
         {
@@ -308,61 +292,97 @@ public class Hypergraph<Widget> {
                     this.words.add(new Integer((Integer)p.label));
                 }
             }
+            else if(edge.dest.get(0).node instanceof FieldNode)
+            {
+                this.fields.add(new Integer(((FieldNode)edge.dest.get(0).node).getField()));
+            }
             else
             {
                 Derivation d;
-                ArrayList<Integer> input = new ArrayList();
-//                double[] weightArray = new double[kBestMask.length + 2];
+                ArrayList<Integer> wordInput = new ArrayList();
+                ArrayList<Integer> fieldInput = new ArrayList();
                 if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
                 {
-                    input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightAtRank(0).label));
+                    wordInput.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightAtRank(0).label));
                 }
                 for(int i = 0; i < kBestMask.length; i++)
                 {
                     d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
                     this.logWeight += d.logWeight; // add weight of children
-                    input.addAll(d.words);
+                    wordInput.addAll(d.words);
+                    if(d.fields != null)
+                        fieldInput.addAll(d.fields);
                 }
                 this.logWeight += edge.logWeight;  // add local features
                 // local + non-local features log weight (see 'sf' example, Table 1, Chiang 2007 
                 // and EVAL(e,J) function in pseudocode 3, Huang 2008)
-//                weightArray[weightArray.length - 1] = 0;
                 // compute EVAL(e,J) and +LM item (store in words list) (see Chiang, 2007)
-                List<List<Integer>> ngrams = new ArrayList<List<Integer>>();
-                if(input.size() >= M)
+                List<List<Integer>> wordNgrams = new ArrayList<List<Integer>>();
+                if(wordInput.size() >= M)
                 {
                     // add non-local features                    
-                    for(int i = M - 1; i < input.size(); i++) // function p in Chiang 2007
+                    for(int i = M - 1; i < wordInput.size(); i++) // function p in Chiang 2007
                     {
-                        if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
+                        if(!wordInput.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
                         {
 //                          // subList returns [i, j), j exclusive
-                            ngrams.add(input.subList(i - M + 1, i + 1));  
+                            wordNgrams.add(wordInput.subList(i - M + 1, i + 1));  
 //                            this.logWeight += Math.log(getLMProb(input.subList(i - M + 1, i + 1)));
                         }
-                    } // for
-                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);
+                    } // for                    
+                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(wordNgrams);
                     for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
                     {
-                        words.add(input.get(i));
+                        words.add(wordInput.get(i));
                     }
                     words.add(ELIDED_SYMBOL);
-                    for(int i = input.size() - M + 1; i < input.size(); i++)
+                    for(int i = wordInput.size() - M + 1; i < wordInput.size(); i++)
                     {
-                        words.add(input.get(i));
+                        words.add(wordInput.get(i));
                     }
                 } // if
                 else
                 {
                     // add non-local features for input < M
-                    ngrams.add(input);
+                    wordNgrams.add(wordInput);
                     if(edge.info instanceof HyperedgeInfoOnline)
-                        this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(ngrams);                    
-                    words = input; // 2nd branch of function q in Chiang 2007
+                        this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(wordNgrams);                    
+                    words = wordInput; // 2nd branch of function q in Chiang 2007
                 } // LM
-//                for(double tempWeight : weightArray)                    
-//                    this.logWeight += tempWeight;                
+                List<List<Integer>> fieldNgrams = new ArrayList<List<Integer>>();
+                if(fieldInput.size() >= M)
+                {
+                    // add non-local features                    
+                    for(int i = M - 1; i < fieldInput.size(); i++) // function p in Chiang 2007
+                    {
+                        if(!fieldInput.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
+                        {
+//                          // subList returns [i, j), j exclusive
+                            fieldNgrams.add(fieldInput.subList(i - M + 1, i + 1));  
+//                            this.logWeight += Math.log(getLMProb(input.subList(i - M + 1, i + 1)));
+                        }
+                    } // for                    
+                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(fieldNgrams);
+                    for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
+                    {
+                        fields.add(fieldInput.get(i));
+                    }
+                    fields.add(ELIDED_SYMBOL);
+                    for(int i = fieldInput.size() - M + 1; i < fieldInput.size(); i++)
+                    {
+                        fields.add(fieldInput.get(i));
+                    }
+                } // if
+                else
+                {
+                    // add non-local features for input < M
+                    fieldNgrams.add(fieldInput);
+                    if(edge.info instanceof HyperedgeInfoOnline)
+                        this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(fieldNgrams);                    
+                    fields = fieldInput; // 2nd branch of function q in Chiang 2007
+                } // fields
+
             } // else
         }
         
@@ -396,21 +416,37 @@ public class Hypergraph<Widget> {
         {
             StringBuilder out = new StringBuilder();
             if(derArray == null) // choose terminal nodes
-              {
-                  if(!words.isEmpty())
-                  {
-//                     out.append(vocabulary.getObject(words.get(0))).append(" ");
-                     out.append(words.get(0)).append(" ");                     
-                     return out.toString();                     
-                  }
-              }
-              for(Derivation d : derArray)
-              {
-                  out.append(d.getSubGeneration());
-              }
-              return out.toString();
+            {
+                if(!words.isEmpty())
+                {
+                    out.append(words.get(0)).append(" ");                     
+                    return out.toString();                     
+                }
+            }
+            for(Derivation d : derArray)
+            {
+              out.append(d.getSubGeneration());
+            }
+            return out.toString();
         }
 
+        private int getNumOfFieldsInSubGeneration()
+        {
+            int out = 0;
+            if(derArray == null) // choose terminal nodes
+            {
+                if(!fields.isEmpty())
+                {
+                    return out++;
+                }
+            }
+            for(Derivation d : derArray)
+            {
+              out += d.getNumOfFieldsInSubGeneration();
+            }
+            return out;
+        }
+        
         private double getLMProb(List<Integer> ngram)
         {
 //            if(modelType == ModelType.semParse)

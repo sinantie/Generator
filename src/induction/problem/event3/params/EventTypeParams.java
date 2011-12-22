@@ -13,8 +13,6 @@ import induction.problem.event3.EventType;
  */
 public class EventTypeParams extends AParams
 {
-    private Event3Model model;
-    private EventType eventType;
     protected final int W, F, FS, F2, onlyabsent_efs;
     protected final int dontcare_efs;
     private final int EFS_ABSENT = 1; // 01
@@ -34,8 +32,6 @@ public class EventTypeParams extends AParams
     public EventTypeParams(Event3Model model, EventType eventType, VecFactory.Type vectorType)
     {
         super();
-        this.model = model;
-        this.eventType = eventType;
         none_f = eventType.getNone_f();
         boundary_f = eventType.getBoundary_f();
         this.W = Event3Model.W();
