@@ -724,6 +724,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             model.call();
             bestWidget = model.bestWidget;
             System.out.println(widgetToFullString(ex, bestWidget));
+//            System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
         }
         catch(Exception e){
             e.printStackTrace();
@@ -839,7 +840,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
 //                        System.out.println("\n" + GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
-//                        System.out.println("\n" + widgetToFullString(ex, (GenWidget)inferState.bestWidget));
+//                        System.out.println("\n" + widgetToFullString(ex, inferState.bestWidget));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }

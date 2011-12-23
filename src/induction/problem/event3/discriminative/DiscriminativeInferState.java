@@ -525,6 +525,11 @@ public class DiscriminativeInferState extends Event3InferState
         return weight;
     }
     
+    protected double getNgramFieldWeights(List<List<Integer>> ngrams)
+    {
+        return 0.0;
+    }
+    
     /**
      * increases the ngram and lm features of the model, given an indexed text 
      * @param textArray 
@@ -1373,7 +1378,7 @@ public class DiscriminativeInferState extends Event3InferState
                   genFields(i, j, c, eventId, eventTypeParams.boundary_f, 
                                               eventTypeParams.getDontcare_efs()), 
                                               recurseNode,
-                            new Hypergraph.HyperedgeInfoOnline<GenWidget>() {
+                            new Hypergraph.HyperedgeInfoOnlineFields<GenWidget>() {
                       double baseProb; Vec alignWeights;
                       public double getWeight()
                       {
@@ -1388,6 +1393,10 @@ public class DiscriminativeInferState extends Event3InferState
                       {
                           return getNgramWeights(ngrams) + getLMWeights(ngrams) + 
                                  getHasConsecutiveWordsWeight(ngrams) + getHasConsecutiveNgramsWeight(ngrams, 2);
+                      }
+                      public double getOnlineWeightFields(List<List<Integer>> fieldNgrams)
+                      {
+                          return getNgramFieldWeights(fieldNgrams);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {

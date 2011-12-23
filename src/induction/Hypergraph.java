@@ -1,5 +1,6 @@
 package induction;
 
+import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.discriminative.DiscriminativeInferState;
 import induction.problem.AInferState;
@@ -202,8 +203,12 @@ public class Hypergraph<Widget> {
                 Collection<Integer> fieldSet)
         {
             words = new ArrayList<Integer>(2*M - 1);
-            if(edge.dest.get(0).node instanceof FieldNode)
+            if(edge.dest.get(0).node instanceof FieldNode || 
+               edge.dest.get(0).node instanceof FieldsNode || 
+               edge.dest.get(0).node instanceof TrackNode)
+            {
                 fields = new ArrayList<Integer>(2*M - 1);
+            }
             this.edge = edge;
             derArray = new ArrayList<Derivation>(edge.dest.size());            
             this.mask = mask;
@@ -280,6 +285,10 @@ public class Hypergraph<Widget> {
 
         private void getSuccDiscriminative(int[] kBestMask)
         {
+            if(edge.dest.get(0).node instanceof FieldNode)
+            {
+                this.fields.add(new Integer(((FieldNode)edge.dest.get(0).node).getField()));
+            }
             /* leaf derivation - axiom. Get the best-first value from the
                underlying multinomial distribution*/
             if(edge.dest.get(0) == endNodeInfo && edge.dest.get(1) == endNodeInfo)
@@ -291,11 +300,7 @@ public class Hypergraph<Widget> {
                 {
                     this.words.add(new Integer((Integer)p.label));
                 }
-            }
-            else if(edge.dest.get(0).node instanceof FieldNode)
-            {
-                this.fields.add(new Integer(((FieldNode)edge.dest.get(0).node).getField()));
-            }
+            }//            
             else
             {
                 Derivation d;
@@ -350,39 +355,42 @@ public class Hypergraph<Widget> {
                         this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(wordNgrams);                    
                     words = wordInput; // 2nd branch of function q in Chiang 2007
                 } // LM
-                List<List<Integer>> fieldNgrams = new ArrayList<List<Integer>>();
-                if(fieldInput.size() >= M)
+                if(fields != null)
                 {
-                    // add non-local features                    
-                    for(int i = M - 1; i < fieldInput.size(); i++) // function p in Chiang 2007
+                    List<List<Integer>> fieldNgrams = new ArrayList<List<Integer>>();                                    
+                    if(fieldInput.size() >= M)
                     {
-                        if(!fieldInput.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
+                        // add non-local features                    
+                        for(int i = M - 1; i < fieldInput.size(); i++) // function p in Chiang 2007
                         {
-//                          // subList returns [i, j), j exclusive
-                            fieldNgrams.add(fieldInput.subList(i - M + 1, i + 1));  
-//                            this.logWeight += Math.log(getLMProb(input.subList(i - M + 1, i + 1)));
+                            if(!fieldInput.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
+                            {
+    //                          // subList returns [i, j), j exclusive
+                                fieldNgrams.add(fieldInput.subList(i - M + 1, i + 1));  
+                            }
+                        } // for                    
+                        if(edge.info instanceof HyperedgeInfoOnlineFields)
+                            this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams);
+                        for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
+                        {
+                            fields.add(fieldInput.get(i));
                         }
-                    } // for                    
-                    this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(fieldNgrams);
-                    for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
+                        fields.add(ELIDED_SYMBOL);
+                        for(int i = fieldInput.size() - M + 1; i < fieldInput.size(); i++)
+                        {
+                            fields.add(fieldInput.get(i));
+                        }
+                    } // if
+                    else
                     {
-                        fields.add(fieldInput.get(i));
-                    }
-                    fields.add(ELIDED_SYMBOL);
-                    for(int i = fieldInput.size() - M + 1; i < fieldInput.size(); i++)
-                    {
-                        fields.add(fieldInput.get(i));
-                    }
-                } // if
-                else
-                {
-                    // add non-local features for input < M
-                    fieldNgrams.add(fieldInput);
-                    if(edge.info instanceof HyperedgeInfoOnline)
-                        this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(fieldNgrams);                    
-                    fields = fieldInput; // 2nd branch of function q in Chiang 2007
-                } // fields
-
+                        // add non-local features for input < M
+    //                    fieldNgrams.add(fieldInput);
+    //                    if(edge.info instanceof HyperedgeInfoOnlineFields)
+    //                        this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams);
+                        if(!(edge.dest.get(0).node instanceof FieldNode))
+                            fields = fieldInput; // 2nd branch of function q in Chiang 2007
+                    } // fields
+                }                
             } // else
         }
         
@@ -435,7 +443,7 @@ public class Hypergraph<Widget> {
             int out = 0;
             if(derArray == null) // choose terminal nodes
             {
-                if(!fields.isEmpty())
+                if(!(fields == null || fields.isEmpty()))
                 {
                     return out++;
                 }
