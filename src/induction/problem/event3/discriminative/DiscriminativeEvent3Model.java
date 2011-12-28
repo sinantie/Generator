@@ -67,6 +67,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     HashMap<Feature, Double> oracleFeatures, modelFeatures;
         
     Map<List<Integer>, Integer> wordBigramMap, wordNgramMap, wordNegativeNgramMap;
+    Map<List<Integer>, Integer>[] fieldNgramsMapPerEventTypeArray;
     /**
      * Keeps count of the number of examples processed so far. Necessary for batch updates
      */
@@ -102,13 +103,16 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         {
             Utils.log("Loading " + opts.stagedParamsFile);            
             params = newParams();
-            params.setVecs((Map<String, Vec>) ois.readObject());
-            wordNegativeNgramMap = (Map<List<Integer>, Integer>) ois.readObject();
+            params.setVecs((Map<String, Vec>) ois.readObject());            
+            if(opts.includeFieldNgramsPerEventTypeFeature)
+                fieldNgramsMapPerEventTypeArray = (Map<List<Integer>, Integer>[]) ois.readObject();
+            if(opts.includeNegativeNgramsFeature)
+                wordNegativeNgramMap = (Map<List<Integer>, Integer>) ois.readObject();            
 //            ois.close();
         }
         catch(EOFException eof)
         {
-            Utils.log("Suppressing loading error - no wordNegativeNgramMap object available");
+            Utils.log("Suppressing loading error - no wordNegativeNgramMap/fieldNgramsMapPerEventTypeArray object available");
         }
         catch(Exception ioe)
         {
@@ -143,10 +147,14 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             wordIndexer = ((Indexer<String>) ois.readObject());
             vocabularySize = Event3Model.W();
             if(useKBest)
+            {
                 // build a list of all the ngrams            
-                populateNgramMaps();            
+                populateNgramMaps();
+            }
             labelIndexer = ((Indexer<String>) ois.readObject());
             eventTypes = (EventType[]) ois.readObject();
+            if(opts.includeFieldNgramsPerEventTypeFeature)
+                fieldNgramsMapPerEventTypeArray = new HashMap[eventTypes.length];
             eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
             // fill in eventTypesNameIndexer
             fieldsMap = new HashMap<Integer, HashMap<String, Integer>>(eventTypes.length);
@@ -205,6 +213,21 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         }
         return labels;
     }
+    
+    public String[] getFieldNgramLabels(EventType eventType, Map<List<Integer>, Integer> ngrams, int N)
+    {
+        String labels[] = new String[ngrams.size()];
+        for(Entry<List<Integer>, Integer> entry : ngrams.entrySet())
+        {
+            StringBuilder str = new StringBuilder();
+            for(Integer index : entry.getKey())
+            {
+                str.append(eventType.fieldToString(index)).append(" ");
+            }
+            labels[entry.getValue()] = str.toString().trim();
+        }
+        return labels;
+    }
 
     public boolean isUseKBest()
     {
@@ -225,6 +248,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         return wordBigramMap;
     }
+
+    public Map<List<Integer>, Integer>[] getFieldNgramsMapPerEventTypeArray()
+    {
+        return fieldNgramsMapPerEventTypeArray;
+    }
     
     @Override
     protected void saveParams(String name)
@@ -234,6 +262,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             ObjectOutputStream oos = IOUtils.openObjOut(Execution.getFile(name + 
                     ".discriminative.params.obj.gz"));
             oos.writeObject(params.getVecs());
+            if(opts.includeFieldNgramsPerEventTypeFeature)
+                oos.writeObject(fieldNgramsMapPerEventTypeArray);
+            if(opts.includeNegativeNgramsFeature);
             oos.writeObject(wordNegativeNgramMap);
             oos.close();
         }
@@ -419,14 +450,13 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         } // for (all iterations)       
         // use average model weights instead of sum 
         // (reduces overfitting according to Collins, 2002)
-        ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
-        
-//        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
+        ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();                
 //        
         if(!opts.dontOutputParams)
         {
             saveParams(name);            
 //            params.outputNonZero(Execution.getFile(name+".nonEmpty.params"), ParamsType.COUNTS);
+            LogInfo.logs(((DiscriminativeParams)params).outputDiscriminativeOnly(ParamsType.COUNTS));
         }        
         LogInfo.end_track();
         Record.end();
@@ -582,8 +612,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly());
-//        
+//        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly(ParamsType.COUNTS));
         if(!opts.dontOutputParams)
         {
             saveParams(name);
@@ -815,8 +844,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             // create hypergraph - precompute local features on the fly
             inferState.setCalculateOracle(calculateOracle);       
             try{
-            inferState.createHypergraph();                        
-            inferState.setFeatures(features);                        
+            inferState.createHypergraph();
+            inferState.setFeatures(features);
             inferState.doInference();
             }
             catch(Exception e)

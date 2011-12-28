@@ -131,11 +131,13 @@ public class Options {
   @Option(gloss="omit events that contain only 0's or '--'") public boolean omitEmptyEvents = false;
 
   // Discriminative
+  @Option(gloss="include negative ngrams feature") public boolean includeNegativeNgramsFeature = false;
   @Option(gloss="include bigrams feature") public boolean includeBigramsFeature = false;
   @Option(gloss="include hasEmptyValue feature") public boolean includeHasEmptyValueFeature = false;
   @Option(gloss="include hasConsecutiveWords feature") public boolean includeHasConsecutiveWordsFeature = false;
   @Option(gloss="include hasConsecutiveBigrams feature") public boolean includeHasConsecutiveBigramsFeature = false;
   @Option(gloss="include hasConsecutiveTrigrams feature") public boolean includeHasConsecutiveTrigramsFeature = false;
+  @Option(gloss="include fieldNgramsPerEventType feature") public boolean includeFieldNgramsPerEventTypeFeature = false;
   
   // length prediction
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;

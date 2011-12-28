@@ -384,9 +384,9 @@ public class Hypergraph<Widget> {
                     else
                     {
                         // add non-local features for input < M
-    //                    fieldNgrams.add(fieldInput);
-    //                    if(edge.info instanceof HyperedgeInfoOnlineFields)
-    //                        this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams);
+                        fieldNgrams.add(fieldInput);
+                        if(edge.info instanceof HyperedgeInfoOnlineFields)
+                            this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams);
                         if(!(edge.dest.get(0).node instanceof FieldNode))
                             fields = fieldInput; // 2nd branch of function q in Chiang 2007
                     } // fields

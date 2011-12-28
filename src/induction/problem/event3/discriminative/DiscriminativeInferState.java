@@ -102,6 +102,7 @@ public class DiscriminativeInferState extends Event3InferState
     EmissionParams emissionsParams;
 
     Map<List<Integer>, Integer> wordBigramsMap, wordNgramsMap, wordNegativeNgramsMap;
+    Map<List<Integer>, Integer>[] fieldNgramsMapPerEventTypeArray;
     
     protected int iteration;    
     
@@ -118,6 +119,7 @@ public class DiscriminativeInferState extends Event3InferState
         this.wordNgramsMap = ((DiscriminativeEvent3Model)model).getWordNgramMap();
         this.wordBigramsMap = ((DiscriminativeEvent3Model)model).getWordBigramMap();
         this.wordNegativeNgramsMap = ((DiscriminativeEvent3Model)model).getWordNegativeNgramMap();
+        this.fieldNgramsMapPerEventTypeArray = ((DiscriminativeEvent3Model)model).getFieldNgramsMapPerEventTypeArray();
         this.iteration = ispec.getIter();        
     }
 
@@ -277,7 +279,7 @@ public class DiscriminativeInferState extends Event3InferState
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {
-        //testGetHasConsecutiveNgramsWeight();
+//        testGetHasConsecutiveNgramsWeight();
         if(useKBest)
             resortDiscriminativeEmissions();
         // setup hypergraph preliminaries
@@ -362,6 +364,8 @@ public class DiscriminativeInferState extends Event3InferState
                         increaseHasConsecutiveNgramsCount(((GenWidget)result.widget).getText(), 2);
                     if(opts.includeHasConsecutiveTrigramsFeature && iteration >= 5)
                         increaseHasConsecutiveNgramsCount(((GenWidget)result.widget).getText(), 3);
+                    if(opts.includeFieldNgramsPerEventTypeFeature)
+                        increaseFieldNgramCount((Widget)result.widget);
                 }
             }
             else
@@ -511,7 +515,8 @@ public class DiscriminativeInferState extends Event3InferState
         double featureWeight = n == 2 ? getCount(((DiscriminativeParams)params).hasConsecutiveBigramsWeight, 0) :
                                  getCount(((DiscriminativeParams)params).hasConsecutiveTrigramsWeight, 0);
         List<Integer> subInput;
-        for(int k = 0; k <= input.size() - 2*n; k++)
+//        for(int k = 0; k <= input.size() - 2*n; k++)
+        for(int k = 0; k < n; k++) // slide the window, at most n-1 times, to cover multiple-of-n sizes of text.length
         {
             List<Integer> prevSubInput = null;
             for(int i = k; i <= input.size() - n; i += n)
@@ -525,9 +530,14 @@ public class DiscriminativeInferState extends Event3InferState
         return weight;
     }
     
-    protected double getNgramFieldWeights(List<List<Integer>> ngrams)
+    protected double getFieldNgramWeights(List<List<Integer>> ngrams, int eventTypeIndex)
     {
-        return 0.0;
+        double weight = 0.0;      
+        List<Integer> ngramFieldIndices = NgramModel.getNgramIndices(
+                fieldNgramsMapPerEventTypeArray[eventTypeIndex], ngrams);
+        for(Integer index : ngramFieldIndices)
+            weight += getCount(((DiscriminativeEventTypeParams)params.eventTypeParams[eventTypeIndex]).fieldNgrams, index);
+        return weight;
     }
     
     /**
@@ -572,6 +582,52 @@ public class DiscriminativeInferState extends Event3InferState
         increaseCounts(getNgramFeatures(((DiscriminativeParams)params).ngramNegativeWeights, ngramIndices, true));
     }
     
+    protected void increaseFieldNgramCount(Widget widget)
+    {
+        int n = widget.getEvents()[0].length;       
+        for(int c = 0; c < widget.getEvents().length; c++)
+        {
+            int i = 0;
+            while (i < n) // Segment into entries
+            {
+                int e = widget.getEvents()[c][i];
+                int eventTypeIndex = ex.events.get(e).getEventTypeIndex();
+                int j = i + 1;
+                while (j < n && widget.getEvents()[c][j] == e)
+                {
+                    j++;
+                }                                
+                if (e != Parameters.none_e) // Tackle events with fields only
+                {                    
+                    if (widget.getFields() != null)                
+                    {
+                        List<Integer> fieldsString = new ArrayList<Integer>();
+                        int k = i;
+                        while (k < j) // Segment i...j into fields
+                        {
+                            int f = widget.getFields()[c][k];
+                            int l = k+1;
+                            while (l < j && widget.getFields()[c][l] == f)
+                            {
+                                l++;
+                            }                        
+                            if (f != -1)
+                            {
+                                fieldsString.add(f);                            
+                            }                        
+                            k = l;                            
+                        } // while
+                        List<Integer> ngramIndices = NgramModel.getNgramIndices(
+                            fieldNgramsMapPerEventTypeArray[eventTypeIndex], 3, fieldsString, true);
+                        increaseCounts(getNgramFeatures(((DiscriminativeEventTypeParams)params.eventTypeParams[eventTypeIndex]).
+                            fieldNgrams, ngramIndices, true));
+                    } // else                    
+                } // if                
+                i = j;
+            } // while
+        } // for
+    }
+    
     protected void increaseHasConsecutiveWordsCount(int[] textArray)
     {
         int prevWord = -1, count = 0;
@@ -591,7 +647,8 @@ public class DiscriminativeInferState extends Event3InferState
         List<Integer> input = Utils.asList(textArray);
         List<Integer> subInput;
         int count = 0;
-        for(int k = 0; k <= input.size() - 2*n; k++)
+//        for(int k = 0; k <= input.size() - 2*n; k++)
+        for(int k = 0; k < n; k++) // slide the window, at most n-1 times, to cover multiple-of-n sizes of text.length
         {
             List<Integer> prevSubInput = null;
             for(int i = k; i <= input.size() - n; i += n)
@@ -1396,7 +1453,7 @@ public class DiscriminativeInferState extends Event3InferState
                       }
                       public double getOnlineWeightFields(List<List<Integer>> fieldNgrams)
                       {
-                          return getNgramFieldWeights(fieldNgrams);
+                          return getFieldNgramWeights(fieldNgrams, eventTypeIndex);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {

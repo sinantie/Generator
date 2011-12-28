@@ -11,7 +11,7 @@ public class Pair<E> implements Comparable
 {
     public double value;
     public E label;
-    public int fieldValue;
+//    public int fieldValue;
     private Constants.Compare choice; // default is value
 
     public Pair(double value, E label)

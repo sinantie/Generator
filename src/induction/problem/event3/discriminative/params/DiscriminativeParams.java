@@ -64,12 +64,20 @@ public class DiscriminativeParams extends Params
     @Override
     public String output(ParamsType paramsType)
     {
-        String out = outputDiscriminativeOnly();
-        out += super.outputNonZero(paramsType);
-        return out;
+        StringBuilder out = new StringBuilder(outputDiscriminativeOnly(paramsType));
+        out.append(super.output(paramsType));
+        return out.toString();
     }
     
-    public String outputDiscriminativeOnly()
+    @Override
+    public String outputNonZero(ParamsType paramsType)
+    {
+        StringBuilder out = new StringBuilder(outputDiscriminativeOnly(paramsType));
+        out.append(super.outputNonZero(paramsType));
+        return out.toString();
+    }
+    
+    public String outputDiscriminativeOnly(ParamsType paramsType)
     {
         StringBuilder out = new StringBuilder();
         out.append(forEachCountNonZero(baselineWeight, getLabels(1, "baseline", null)));
@@ -86,6 +94,11 @@ public class DiscriminativeParams extends Params
                 "bigramWeights ", model.getWordNgramLabels(model.getWordBigramMap(), 2))));
             out.append(forEachCountNonZero(ngramNegativeWeights, getLabels(model.getWordNegativeNgramMap().size(), 
                 "negativeNgramWeights ", model.getWordNgramLabels(model.getWordNegativeNgramMap(), 3))));
+            
+            for(int i = 0; i < eventTypeParams.length; i++)
+            {
+                out.append(((DiscriminativeEventTypeParams)eventTypeParams[i]).outputDiscriminativeOnly(paramsType)).append("\n");
+            }
         }
     return out.toString();
     }
