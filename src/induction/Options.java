@@ -138,6 +138,7 @@ public class Options {
   @Option(gloss="include hasConsecutiveBigrams feature") public boolean includeHasConsecutiveBigramsFeature = false;
   @Option(gloss="include hasConsecutiveTrigrams feature") public boolean includeHasConsecutiveTrigramsFeature = false;
   @Option(gloss="include fieldNgramsPerEventType feature") public boolean includeFieldNgramsPerEventTypeFeature = false;
+  @Option(gloss="include numFieldsPerEventType feature") public boolean numFieldsPerEventTypeFeature = false;
   
   // length prediction
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;

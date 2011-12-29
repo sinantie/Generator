@@ -154,7 +154,11 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             labelIndexer = ((Indexer<String>) ois.readObject());
             eventTypes = (EventType[]) ois.readObject();
             if(opts.includeFieldNgramsPerEventTypeFeature)
+            {
                 fieldNgramsMapPerEventTypeArray = new HashMap[eventTypes.length];
+                for(int i = 0; i < eventTypes.length; i++)
+                    fieldNgramsMapPerEventTypeArray[i] = new HashMap();
+            }
             eventTypesBuffer = new ArrayList<EventType>(Arrays.asList(eventTypes));
             // fill in eventTypesNameIndexer
             fieldsMap = new HashMap<Integer, HashMap<String, Integer>>(eventTypes.length);
@@ -451,7 +455,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // use average model weights instead of sum 
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();                
-//        
+        
+//        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly(ParamsType.COUNTS));
         if(!opts.dontOutputParams)
         {
             saveParams(name);            

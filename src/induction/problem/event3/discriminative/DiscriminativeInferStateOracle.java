@@ -138,7 +138,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
             if(opts.includeHasConsecutiveTrigramsFeature && iteration >= 5)
                 increaseHasConsecutiveNgramsCount(ex.getText(), 3);
             if(opts.includeFieldNgramsPerEventTypeFeature)
-                        increaseFieldNgramCount((Widget)result.widget);
+                increaseFieldNgramCount((Widget)result.widget);
         }        
         bestWidget = (Widget) result.widget;        
 //            System.out.println(bestWidget);        

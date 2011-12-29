@@ -58,8 +58,10 @@ public class DiscriminativeTrainAtisTest
                     + "-includeBigrams "
 //                    + "-includeHasEmptyValueFeature "
                     + "-includeHasConsecutiveWordsFeature "
-                    + "-includeHasConsecutiveBigramsFeature "
-                    + "-includeHasConsecutiveTrigramsFeature";
+//                    + "-includeFieldNgramsPerEventTypeFeature "
+                    + "-numFieldsPerEventTypeFeature ";
+//                    + "-includeHasConsecutiveBigramsFeature "
+//                    + "-includeHasConsecutiveTrigramsFeature";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();

@@ -77,7 +77,7 @@ public class Hypergraph<Widget> {
     public double getOnlineWeight(List<List<Integer>> ngrams);
   }
   public interface HyperedgeInfoOnlineFields<Widget> extends HyperedgeInfoOnline<Widget> {
-    public double getOnlineWeightFields(List<List<Integer>> fieldNgrams);
+    public double getOnlineWeightFields(List<List<Integer>> fieldNgrams, int numOfFields);
   }
   public interface LogHyperedgeInfo<Widget> extends AHyperedgeInfo<Widget> {
     public double getLogWeight();
@@ -370,7 +370,7 @@ public class Hypergraph<Widget> {
                             }
                         } // for                    
                         if(edge.info instanceof HyperedgeInfoOnlineFields)
-                            this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams);
+                            this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams, getNumOfFieldsInSubGeneration());
                         for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
                         {
                             fields.add(fieldInput.get(i));
@@ -386,7 +386,7 @@ public class Hypergraph<Widget> {
                         // add non-local features for input < M
                         fieldNgrams.add(fieldInput);
                         if(edge.info instanceof HyperedgeInfoOnlineFields)
-                            this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams);
+                            this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams, getNumOfFieldsInSubGeneration());
                         if(!(edge.dest.get(0).node instanceof FieldNode))
                             fields = fieldInput; // 2nd branch of function q in Chiang 2007
                     } // fields
@@ -441,12 +441,9 @@ public class Hypergraph<Widget> {
         private int getNumOfFieldsInSubGeneration()
         {
             int out = 0;
-            if(derArray == null) // choose terminal nodes
-            {
-                if(!(fields == null || fields.isEmpty()))
-                {
-                    return out++;
-                }
+            if(edge.dest.get(0).node instanceof FieldNode && !fields.isEmpty())            
+            {                
+                return out++;                
             }
             for(Derivation d : derArray)
             {

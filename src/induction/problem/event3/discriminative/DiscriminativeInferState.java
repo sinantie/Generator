@@ -532,6 +532,8 @@ public class DiscriminativeInferState extends Event3InferState
     
     protected double getFieldNgramWeights(List<List<Integer>> ngrams, int eventTypeIndex)
     {
+        if(!opts.includeFieldNgramsPerEventTypeFeature)
+            return 0.0;
         double weight = 0.0;      
         List<Integer> ngramFieldIndices = NgramModel.getNgramIndices(
                 fieldNgramsMapPerEventTypeArray[eventTypeIndex], ngrams);
@@ -1451,9 +1453,10 @@ public class DiscriminativeInferState extends Event3InferState
                           return getNgramWeights(ngrams) + getLMWeights(ngrams) + 
                                  getHasConsecutiveWordsWeight(ngrams) + getHasConsecutiveNgramsWeight(ngrams, 2);
                       }
-                      public double getOnlineWeightFields(List<List<Integer>> fieldNgrams)
+                      public double getOnlineWeightFields(List<List<Integer>> fieldNgrams, int numOfFields)
                       {
-                          return getFieldNgramWeights(fieldNgrams, eventTypeIndex);
+                          return getFieldNgramWeights(fieldNgrams, eventTypeIndex) + 
+                                 getNumFieldsWeight(numOfFields);
                       }
                       public void setPosterior(double prob) {}
                       public GenWidget choose(GenWidget widget) {

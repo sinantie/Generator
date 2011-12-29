@@ -1,10 +1,3 @@
-Example_24
-i need a flight from pittsburgh to los angeles thursday evening
-.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
-.id:1	.type:search	@of:--	@typed:lambda	@what:flight
-.id:2	.type:when	@dep-ar:departure	@when:evening
-.id:3	.type:day	@day:thursday	@dep_ar_ret:departure
-0 0 1 2 3
 Example_1
 list all the flights that arrive at general mitchell international from various cities
 .id:0	.type:city	@from:any	@location:--	@services:--	@stop:--	@to:--
