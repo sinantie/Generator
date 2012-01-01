@@ -55,11 +55,13 @@ public class DiscriminativeTrainAtisTest
                     + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
                     + "ignore -maxPhraseLength 5 -binariseAtWordLevel "
                     + "-ngramSize 3 "
-                    + "-includeBigrams "
+//                    + "-oracleReranker "
+                    + "-includeBigrams "                    
 //                    + "-includeHasEmptyValueFeature "
                     + "-includeHasConsecutiveWordsFeature "
-//                    + "-includeFieldNgramsPerEventTypeFeature "
-                    + "-numFieldsPerEventTypeFeature ";
+//                    + "-includeFieldNgramsPerEventTypeFeature ";                    
+//                    + "-includeNumFieldsPerEventTypeFeature ";
+                    + "-includeHasEmptyValuePerFieldFeature ";
 //                    + "-includeHasConsecutiveBigramsFeature "
 //                    + "-includeHasConsecutiveTrigramsFeature";
          

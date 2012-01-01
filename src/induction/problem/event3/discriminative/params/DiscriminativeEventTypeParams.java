@@ -18,6 +18,8 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
     protected int maxNumOfWords;
     public Vec[] numberOfWordsPerField;
     public Vec fieldNgrams;
+    public Vec numOfFields;
+    public Vec emptyValue;
     private DiscriminativeEvent3Model model;
     private EventType eventType;
     
@@ -32,6 +34,10 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
         addVec(getLabels(F+1, "numWordsC " + typeToString + " ", fieldToString), numberOfWordsPerField);
         fieldNgrams = new MapVec();
         addVec("fieldNgramsC " + typeToString, fieldNgrams);
+        numOfFields = VecFactory.zeros(vectorType, maxNumOfWords);
+        addVec("numOfFieldsC " + typeToString, fieldNgrams);
+        emptyValue = VecFactory.zeros(vectorType, F +1);
+        addVec("emptyValueF " + typeToString, emptyValue);
     }
 
     @Override
@@ -54,7 +60,9 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
         Map map = model.getFieldNgramsMapPerEventTypeArray()[eventType.getEventTypeIndex()];
         out.append(forEachCount(fieldNgrams, getLabels(map.size(), 
                 "fieldNgramWeights ", model.getFieldNgramLabels(eventType, map, 3))));
-        out.append(super.output(paramsType));
+        out.append(forEachCount(numOfFields, getLabels(maxNumOfWords, "numOfFieldsC " + typeToString + " ", numAr)));
+        out.append(forEachCount(emptyValue, getLabels(F + 1, "emptyValueF " + typeToString + " ", fieldToString)));
+        out.append(super.output(paramsType));        
         return out.toString();
     }
     
@@ -82,9 +90,14 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
         {
             out.append(forEachCountNonZero(v, labels[i++]));
         }
-        Map map = model.getFieldNgramsMapPerEventTypeArray()[eventType.getEventTypeIndex()];
-        out.append(forEachCountNonZero(fieldNgrams, getLabels(map.size(), 
-                "fieldNgramWeights ", model.getFieldNgramLabels(eventType, map, 3))));        
+        if(model.getFieldNgramsMapPerEventTypeArray() != null)
+        {
+            Map map = model.getFieldNgramsMapPerEventTypeArray()[eventType.getEventTypeIndex()];
+            out.append(forEachCountNonZero(fieldNgrams, getLabels(map.size(), 
+                    "fieldNgramWeights ", model.getFieldNgramLabels(eventType, map, 3))));        
+        }
+        out.append(forEachCountNonZero(numOfFields, getLabels(maxNumOfWords, "numOfFieldsC " + typeToString + " ", numAr)));
+        out.append(forEachCountNonZero(emptyValue, getLabels(F + 1, "emptyValueF " + typeToString + " ", fieldToString)));
         return out.toString();
     }
 }

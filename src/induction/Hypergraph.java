@@ -1,5 +1,6 @@
 package induction;
 
+import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.discriminative.DiscriminativeInferState;
@@ -203,9 +204,10 @@ public class Hypergraph<Widget> {
                 Collection<Integer> fieldSet)
         {
             words = new ArrayList<Integer>(2*M - 1);
-            if(edge.dest.get(0).node instanceof FieldNode || 
+            if(enableFieldFeatures && 
+              (edge.dest.get(0).node instanceof FieldNode || 
                edge.dest.get(0).node instanceof FieldsNode || 
-               edge.dest.get(0).node instanceof TrackNode)
+               edge.dest.get(0).node instanceof TrackNode))
             {
                 fields = new ArrayList<Integer>(2*M - 1);
             }
@@ -285,7 +287,7 @@ public class Hypergraph<Widget> {
 
         private void getSuccDiscriminative(int[] kBestMask)
         {
-            if(edge.dest.get(0).node instanceof FieldNode)
+            if(enableFieldFeatures && edge.dest.get(0).node instanceof FieldNode)
             {
                 this.fields.add(new Integer(((FieldNode)edge.dest.get(0).node).getField()));
             }
@@ -316,7 +318,7 @@ public class Hypergraph<Widget> {
                     derArray.add(d);
                     this.logWeight += d.logWeight; // add weight of children
                     wordInput.addAll(d.words);
-                    if(d.fields != null)
+                    if(enableFieldFeatures && d.fields != null)
                         fieldInput.addAll(d.fields);
                 }
                 this.logWeight += edge.logWeight;  // add local features
@@ -355,7 +357,7 @@ public class Hypergraph<Widget> {
                         this.logWeight += ((HyperedgeInfoOnline)edge.info).getOnlineWeight(wordNgrams);                    
                     words = wordInput; // 2nd branch of function q in Chiang 2007
                 } // LM
-                if(fields != null)
+                if(enableFieldFeatures && fields != null)
                 {
                     List<List<Integer>> fieldNgrams = new ArrayList<List<Integer>>();                                    
                     if(fieldInput.size() >= M)
@@ -389,8 +391,8 @@ public class Hypergraph<Widget> {
                             this.logWeight += ((HyperedgeInfoOnlineFields)edge.info).getOnlineWeightFields(fieldNgrams, getNumOfFieldsInSubGeneration());
                         if(!(edge.dest.get(0).node instanceof FieldNode))
                             fields = fieldInput; // 2nd branch of function q in Chiang 2007
-                    } // fields
-                }                
+                    } 
+                } // fields               
             } // else
         }
         
@@ -443,11 +445,13 @@ public class Hypergraph<Widget> {
             int out = 0;
             if(edge.dest.get(0).node instanceof FieldNode && !fields.isEmpty())            
             {                
-                return out++;                
+                return ++out;                
             }
+            else if(edge.dest.get(0).node instanceof StopNode)
+                return 0;
             for(Derivation d : derArray)
             {
-              out += d.getNumOfFieldsInSubGeneration();
+                out += d.getNumOfFieldsInSubGeneration();
             }
             return out;
         }
@@ -503,7 +507,7 @@ public class Hypergraph<Widget> {
   private enum Reorder {eventType, event, field, ignore};
   public NgramModel ngramModel;
   public Indexer<String> vocabulary;
-  public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker;
+  public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, enableFieldFeatures;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
@@ -559,6 +563,10 @@ public class Hypergraph<Widget> {
         this.inferState = inferState;
     }
 
+    public void setEnableFieldFeatures(boolean enableFieldFeatures)
+    {
+        this.enableFieldFeatures = enableFieldFeatures;
+    }
   public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, int NUM,

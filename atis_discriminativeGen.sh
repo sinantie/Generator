@@ -37,8 +37,10 @@ dist/stanford-postagger-2010-05-26.jar -Djava.library.path=lib/wrappers inductio
 -includeHasConsecutiveWordsFeature \
 -dontOutputParams \
 -includeHasEmptyValueFeature
+#-includeFieldNgramsPerEventTypeFeature
 #-includeHasConsecutiveBigramsFeature \
-#-includeHasConsecutiveTrigramsFeature \
+#-includeHasConsecutiveTrigramsFeature
+#-includeHasEmptyValueFeature
 #
 
 #-oracleReranker

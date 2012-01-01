@@ -80,7 +80,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
      * The original size of the vocabulary, defined by the wordIndexer stored in the
      * serialised object of the generative model. This number stays invariable.
      */
-    int vocabularySize;
+    int vocabularySize;    
+    
     public DiscriminativeEvent3Model(Options opts)
     {
         super(opts);        
@@ -293,7 +294,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     @Override
     protected AParams newParams()
     {
-        return new DiscriminativeParams(this, opts, VecFactory.Type.SPARSE, 15);
+        return new DiscriminativeParams(this, opts, VecFactory.Type.SPARSE, opts.maxNumOfWordsPerField);
     }
 
     @Override
@@ -617,7 +618,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // (reduces overfitting according to Collins, 2002)
         ((DefaultPerceptron)optimizer).updateParamsWithAvgWeights();
         
-//        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly(ParamsType.COUNTS));
+        System.out.println(((DiscriminativeParams)params).outputDiscriminativeOnly(ParamsType.COUNTS));
         if(!opts.dontOutputParams)
         {
             saveParams(name);
@@ -878,6 +879,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }
+//                    System.out.println("\n" + widgetToFullString(ex, inferState.bestWidget));
                 }
 //            else
 //                System.out.println(widgetToFullString(ex, inferState.bestWidget));
