@@ -135,6 +135,11 @@ public class DiscriminativeInferState extends Event3InferState
         this.features = features;
     }
 
+    public HashMap<Feature, Double> getFeatures()
+    {
+        return features;
+    }
+
     public void setCalculateOracle(boolean calculateOracle)
     {
         this.calculateOracle = calculateOracle;

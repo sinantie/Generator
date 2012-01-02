@@ -844,9 +844,15 @@ public class Hypergraph<Widget> {
             String trueStr = GenerationPerformance.widgetToString((GenWidget)ex.getTrueWidget());
             TreeSet<DerivationWithBleu> set = new TreeSet<DerivationWithBleu>();
             for(int k = 0; k < startNodeInfo.derivations.size(); k++)
+            {
                 set.add(new DerivationWithBleu(widget, k, ex.N(), trueStr, bleuScorer));
+                if(inferState instanceof DiscriminativeInferState)
+                    ((DiscriminativeInferState)inferState).getFeatures().clear();
+            }
             // choose the derivation with the highest score score
             DerivationWithBleu oracle = set.first();
+            if(inferState instanceof DiscriminativeInferState)
+                oracle.recurseKBest();
     //        System.out.println(set);
 //            System.out.println("K with highest score score is: " + oracle.k);
             return new HyperpathResult(oracle.chooser.widget, oracle.chooser.logWeight);
@@ -923,12 +929,18 @@ public class Hypergraph<Widget> {
             chooser.choose = true;
             this.k = k;
             // get the k-best derivation
-            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), !discriminative);
+            recurseKBest();
+//            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), !discriminative);
             predStr = GenerationPerformance.widgetToString((GenWidget)chooser.widget);
             // score it
             score = bleuScorer.evaluateBleu(predStr, trueStr);
         }
 
+        public void recurseKBest()
+        {
+            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), !discriminative);
+        }
+        
         private int[] newMatrixOne(int N)
         {
             int[] out = new int[N];
