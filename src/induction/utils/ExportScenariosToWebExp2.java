@@ -550,38 +550,38 @@ public class ExportScenariosToWebExp2
          * HUMANEVAL-PHP
          */
         // atis
-//        String scenariosPath = "data/atis/test/atisEvalScenariosRandomBest12";
-//        imagesPathUrl = "resources/icons/";
-//        outputPath = "../../Public/humaneval/data/atisExperiment4";
-//        String propertiesPath = "../../Public/humaneval/data/atis.properties";
-//        String modelPath = "results/output/atis/generation/" +
-//                           "model_3_40-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
-//        String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml.tree";
-//        String baselinePath = "results/output/atis/generation/" +
-//                           "model_3_1-best_no_null_no_smooth_STOP_predLength/stage1.test.full-pred-gen";
-//        goldPath = "data/atis/test/atis-test.txt";
-//        nullifyOrder = true; // in the case of Gabor's system, all events are identified
-//                                     // by their position in the file, rather than their id.
-//                                     // As such, these ids may not correspond to the real event ids,
-//                                     // as in the case of ATIS. Therefore, we ignore this order
-//                                     // and instead match the true event's id based on the eventType's
-//                                     // name. WARNING: this will not work correctly in the case of
-//                                     // examples with more than one events of the same event type.
-//        outputAllFields = false; // don't output fields that are emtpy, i.e. have value='--'
+        String scenariosPath = "data/atis/test/discriminativeAtisEvalScenariosRandomBest12";
+        imagesPathUrl = "resources/icons/";
+        outputPath = "../../Public/humaneval/data/datisExperiment1";
+        String propertiesPath = "../../Public/humaneval/data/atis.properties";
+        String modelPath = "results/output/atis/generation/discriminative/" +
+                           "baseline_ignore_ngrams_bigrams_numWordsField_hasCons_seg5_predLength_eventType_gen_BEST/stage1.test.full-pred-gen";
+        String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml.tree";
+        String baselinePath = "results/output/atis/generation/discriminative/" +
+                           "calculate_baseline_weight_norm_predLength_gen_all/stage1.test.full-pred-gen";
+        goldPath = "data/atis/test/atis-test.txt";
+        nullifyOrder = true; // in the case of Gabor's system, all events are identified
+                                     // by their position in the file, rather than their id.
+                                     // As such, these ids may not correspond to the real event ids,
+                                     // as in the case of ATIS. Therefore, we ignore this order
+                                     // and instead match the true event's id based on the eventType's
+                                     // name. WARNING: this will not work correctly in the case of
+                                     // examples with more than one events of the same event type.
+        outputAllFields = false; // don't output fields that are emtpy, i.e. have value='--'
         
         // weatherGov
-        String scenariosPath = "gaborLists/weatherEvalScenariosPredLength12Events";
-        imagesPathUrl = "resources/icons/";
-        outputPath = "../../Public/humaneval/data/weatherExperiment4";
-        String propertiesPath = "../../Public/humaneval/data/weather.properties";
-        String modelPath = "results/output/weatherGov/generation/" +
-                           "20-best_reordered_eventTypes_linear_reg_cond_null/stage1.test.full-pred-gen";
-        String gaborPath = "../Gabor/gaborFiles/2010emnlp-generation/results-weather.xml";
-        String baselinePath = "results/output/weatherGov/generation/" +
-                           "1-best_reordered_eventTypes_linear_reg_cond_null/stage1.test.full-pred-gen";
+//        String scenariosPath = "gaborLists/weatherEvalScenariosPredLength12Events";
+//        imagesPathUrl = "resources/icons/";
+//        outputPath = "../../Public/humaneval/data/weatherExperiment4";
+//        String propertiesPath = "../../Public/humaneval/data/weather.properties";
+//        String modelPath = "results/output/weatherGov/generation/" +
+//                           "20-best_reordered_eventTypes_linear_reg_cond_null/stage1.test.full-pred-gen";
+//        String gaborPath = "../Gabor/gaborFiles/2010emnlp-generation/results-weather.xml";
+//        String baselinePath = "results/output/weatherGov/generation/" +
+//                           "1-best_reordered_eventTypes_linear_reg_cond_null/stage1.test.full-pred-gen";
 //        goldPath = "data/atis/test/atis-test.txt";
-        nullifyOrder = true; 
-        outputAllFields = true;
+//        nullifyOrder = true; 
+//        outputAllFields = true;
         if(args.length > 1)
         {
             scenariosPath = args[0];
