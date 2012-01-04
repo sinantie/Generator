@@ -119,8 +119,9 @@ public class ExportScenariosToWebExp2
                    }
                }
            } // if           
-           for(String path : Utils.readLines(scenariosPath))
+           for(String line : Utils.readLines(scenariosPath))
            {
+               String path = line.split("#")[0].trim(); // read the first string in the line
                if(path.equals(""))
                    continue;
                 if(processHuman(path, humanLines))
@@ -552,7 +553,7 @@ public class ExportScenariosToWebExp2
         // atis
         String scenariosPath = "data/atis/test/discriminativeAtisEvalScenariosRandomBest12";
         imagesPathUrl = "resources/icons/";
-        outputPath = "../../Public/humaneval/data/datisExperiment1";
+        outputPath = "../../Public/humaneval/data/datisExperiment4";
         String propertiesPath = "../../Public/humaneval/data/atis.properties";
         String modelPath = "results/output/atis/generation/discriminative/" +
                            "baseline_ignore_ngrams_bigrams_numWordsField_hasCons_seg5_predLength_eventType_gen_BEST/stage1.test.full-pred-gen";
