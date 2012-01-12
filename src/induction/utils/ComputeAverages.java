@@ -66,8 +66,12 @@ public class ComputeAverages
     
     public static void main(String[] args)
     {
-        final String inputPath = "data/atis/test/atis-test.txt";
-        Action action = new AverageAlignmentsPerExample();
+        // average alignments per example
+//        final String inputPath = "data/atis/test/atis-test.txt";
+//        Action action = new AverageAlignmentsPerExample();
+        // average number of fields with no value in the 'flight' record
+        final String inputPath = "data/atis/train/atis5000.sents.full.prototype";
+        Action action = new AverageFieldsWithNoValuePerRecord("flight", 13);
         ComputeAverages ca = new ComputeAverages(inputPath, true, action);
         ca.execute();
     }
@@ -93,6 +97,59 @@ public class ComputeAverages
         {
             return new Double((double)totalAlignedEvents / (double)totalExamples);
         }        
+    }
+    
+    static class AverageFieldsWithNoValuePerRecord implements Action {
+
+        private String record;
+        private int totalNumberOfFields, totalEmpty, totalExamples;
+        
+        public AverageFieldsWithNoValuePerRecord(String record, int totalNumberOfFields)
+        {
+            this.record = record;
+            this.totalNumberOfFields = totalNumberOfFields;
+        }
+        
+        @Override
+        public Object act(Object in)
+        {
+            String[] example = (String[])in;
+            // 3rd entry are the events
+            String events[] = example[2].split("\n");
+            String recordEvent = null;
+            // capture the line with the event we are looking for
+            for(String event : events)
+                if(event.contains(".type:"+record))
+                    recordEvent = event;
+            if(recordEvent != null)
+            {
+                // count the number of non-empty fields. 
+                // Then subtract from the total number of fields.
+                // Note that some records have a fixed number of fields, whereas others
+                // have a variable number, of only the non-empty. That's why
+                // it's safer to subtract from the total
+                int total = 0;
+                for(String fieldValue : recordEvent.split("\t"))
+                {
+                    // we need actual fields
+                    if(fieldValue.contains("@") || fieldValue.contains("$") || fieldValue.contains("#"))
+                    {
+                        if(!fieldValue.contains("--")) // capture only the non-empty
+                            total++;
+                    }
+                } // for                
+                totalEmpty += totalNumberOfFields - total;
+            } // if 
+            totalExamples++;
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return new Double((double)totalEmpty / (double)totalExamples);
+        }
+        
     }
     interface Action {
         public Object act(Object in);        
