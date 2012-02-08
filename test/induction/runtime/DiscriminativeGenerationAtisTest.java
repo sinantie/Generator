@@ -59,9 +59,9 @@ public class DiscriminativeGenerationAtisTest
                     + "-lengthCompensation 0 "
                     + "-includeBigrams "
                     + "-includeHasEmptyValueFeature "
-                    + "-includeHasConsecutiveWordsFeature "
-                    + "-includeHasConsecutiveBigramsFeature "
-                    + "-includeHasConsecutiveTrigramsFeature";
+                    + "-includeHasConsecutiveWordsFeature ";
+//                    + "-includeHasConsecutiveBigramsFeature "
+//                    + "-includeHasConsecutiveTrigramsFeature";
 //                    + "-oracleReranker";
          
         /*initialisation procedure from Induction class*/
@@ -70,7 +70,7 @@ public class DiscriminativeGenerationAtisTest
         model = new DiscriminativeEvent3Model(opts);
         model.init(InitType.staged, null, "stage1");
         model.readExamples();
-        model.logStats();
+        model.logStats();        
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
