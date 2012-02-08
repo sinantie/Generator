@@ -1,5 +1,9 @@
 package induction;
 
+import edu.berkeley.nlp.ling.Tree;
+import edu.berkeley.nlp.ling.Trees;
+import edu.berkeley.nlp.ling.Trees.PennTreeReader;
+import edu.berkeley.nlp.ling.Trees.StandardTreeNormalizer;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
@@ -675,5 +679,32 @@ public class Utils
             // our last action in the above loop was to switch d and p, so p now
             // actually has the most recent cost counts
             return p[n];
+    }
+    
+    public static List<Tree<String>> loadTrees(String path, int maxTrees, 
+                                               boolean removePunctuation) throws IOException
+    {
+        List trees = new ArrayList<Tree<String>>();
+        StandardTreeNormalizer treeTransformer = new Trees.StandardTreeNormalizer();
+        BufferedReader in = IOUtils.openIn(path);
+        PennTreeReader treeIterator = new Trees.PennTreeReader(in);        
+        for(int n = 0; n < maxTrees && treeIterator.hasNext(); n++)
+        {
+            Tree<String> tree = null;
+            try
+            {
+                tree = treeTransformer.transformTree(treeIterator.next());
+                if(removePunctuation)
+                    TreeUtils.removePunctuation(tree);
+                trees.add(tree);
+            }
+            catch(Exception e)
+            {
+                LogInfo.error("Error loading tree " + n);
+                e.printStackTrace();
+            }
+        }
+        in.close();
+        return trees;
     }
 }

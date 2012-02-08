@@ -16,7 +16,8 @@ public class DepTree {
   int[] childRank; // rank of this child
   int rootPosition;
   int N;
-
+  static final HeadFinder headFinder = new CollinsHeadFinder();
+  
   public DepTree(int N) {
     this.parent = ListUtils.newInt(N, -1);
     this.N = N;
@@ -55,36 +56,61 @@ public class DepTree {
     if(i > parent[i]) return childRank[i] == numRightChildren[parent[i]];
     throw Exceptions.bad;
   }
-
-  static class Converter {
-    int[] parent;
-    int currPosition;
-    static final HeadFinder headFinder = new CollinsHeadFinder();
-    public DepTree toDepTree(Tree<String> tree) {
-      this.parent = new int[tree.getYield().size()];
-      this.currPosition = 0;
-      helper(tree);
-      return new DepTree(parent);
+  
+    static int[] treeParent;
+    static int currPosition;
+    public static DepTree toDepTree(Tree<String> tree) 
+    {
+        
+        treeParent = new int[tree.getYield().size()];
+        currPosition = 0;
+        helper(tree);
+        return new DepTree(treeParent);
     }
     // Return position of head
-    public int helper(Tree<String> tree) {
-      if(tree.isLeaf()) { return currPosition++; }
-      int C = tree.getChildren().size();
-      int[] headPositions = new int[C];
-      for(int c = 0; c < C; c++)
+    public static int helper(Tree<String> tree) 
+    {
+        if(tree.isLeaf()) { return currPosition++; }
+        int C = tree.getChildren().size();
+        int[] headPositions = new int[C];
+        for(int c = 0; c < C; c++)
         headPositions[c] = helper(tree.getChildren().get(c));
-      int headc = tree.getChildren().indexOf(headFinder.determineHead(tree));
-      for(int c = 0; c < C; c++)
-        parent[headPositions[c]] = headPositions[headc];
-      return headPositions[headc];
+        int headc = tree.getChildren().indexOf(headFinder.determineHead(tree));
+        for(int c = 0; c < C; c++)
+        treeParent[headPositions[c]] = headPositions[headc];
+        return headPositions[headc];
     }
-  }
+  
+//  public static class Converter {
+//    int[] parent;
+//    int currPosition;
+//    static final HeadFinder headFinder = new CollinsHeadFinder();
+//    public DepTree toDepTree(Tree<String> tree) {
+//      this.parent = new int[tree.getYield().size()];
+//      this.currPosition = 0;
+//      helper(tree);
+//      return new DepTree(parent);
+//    }
+//    // Return position of head
+//    public int helper(Tree<String> tree) {
+//      if(tree.isLeaf()) { return currPosition++; }
+//      int C = tree.getChildren().size();
+//      int[] headPositions = new int[C];
+//      for(int c = 0; c < C; c++)
+//        headPositions[c] = helper(tree.getChildren().get(c));
+//      int headc = tree.getChildren().indexOf(headFinder.determineHead(tree));
+//      for(int c = 0; c < C; c++)
+//        parent[headPositions[c]] = headPositions[headc];
+//      return headPositions[headc];
+//    }
+//  }
 
   public String toString(int[] words, Indexer<String> wordIndexer) {
     StringBuilder buf = new StringBuilder();
     for(int i = 0; i < N; i++) {
       if(i > 0) buf.append(' ');
-      buf.append(i+":"+wordIndexer.getObject(words[i])+"<-"+parent[i]);
+            buf.append(i).append(":").append(wordIndexer.getObject(words[i])).
+                    append("<-").append(parent[i]);
     }
     return buf.toString();
   }

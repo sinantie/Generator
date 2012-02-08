@@ -34,6 +34,7 @@ import induction.problem.event3.Widget;
 import induction.problem.event3.discriminative.optimizer.DefaultPerceptron;
 import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
+import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import java.io.EOFException;
 import java.io.IOException;
@@ -901,7 +902,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     {
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
-//                        LogInfo.logs(GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
+                        LogInfo.logs(GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }
