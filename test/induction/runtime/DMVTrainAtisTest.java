@@ -38,6 +38,7 @@ public class DMVTrainAtisTest
         model = new GenerativeDMVModel(opts);
         model.readExamples();
         model.logStats();
+        model.preInit();
         model.init(InitType.bait, null, "stage1");        
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
