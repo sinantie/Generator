@@ -109,6 +109,15 @@ public abstract class AParams implements Serializable
             vecsMap.put(keys[i], vec[i]);
         }
     }
+    
+    protected void addVec(String[][] keys, Vec[][] vec)
+    {
+        for(int i = 0; i < keys.length; i++)
+        {
+            for(int j = 0; j < keys[0].length; j++)
+                vecsMap.put(keys[i][j], vec[i][j]);
+        }
+    }
 
     protected void addVec(Map<String, Vec> vecsMap)
     {

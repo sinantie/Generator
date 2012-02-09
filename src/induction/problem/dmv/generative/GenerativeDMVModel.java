@@ -14,7 +14,9 @@ import induction.problem.AInferState;
 import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.AWidget;
+import induction.problem.InductionUtils;
 import induction.problem.InferSpec;
+import induction.problem.VecFactory;
 import induction.problem.dmv.params.Params;
 import induction.problem.wordproblem.Example;
 import induction.problem.wordproblem.WordModel;
@@ -25,15 +27,35 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- *
+ * Rewrite of the DMV model (Klein and Manning 2006), based on the implementation
+ * of Percy Liang in Scala. It can parse both mrg and raw files.
  * @author konstas
  */
 public class GenerativeDMVModel extends WordModel implements Serializable
 {
 
+    private boolean useHarmonicWeights = false;
+    private Indexer<Integer>[] localWordIndexer;
+    
     public GenerativeDMVModel(Options opts)
     {
         super(opts);
+    }
+    
+    public int wordIndexerLength(int w)
+    {
+        return localWordIndexer[w].size();
+    }
+    
+    public String wordIndexerToString(int w1, int wordToInteger)
+    {
+        return wordToString(localWordIndexer[w1].getObject(wordToInteger));
+    }
+  
+    @Override
+    public void preInit()
+    {
+        
     }
     
     @Override
@@ -51,7 +73,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                     tempTree = tree;
                     List words = opts.useTagsAsWords ? tree.getPreTerminalYield() : tree.getYield();
                     if(words.size() <= opts.maxExampleLength)
-                        examples.add(new Example(indexWordsOfText(wordIndexer, words), 
+                        examples.add(new Example(InductionUtils.indexWordsOfText(wordIndexer, words), 
                                      DepTree.toDepTree(tree), "Example_" + counter++));
                 }
             }
@@ -69,25 +91,19 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             super.readExamples(input, maxExamples);
     }
     
-    private int[] indexWordsOfText(Indexer<String> wordIndexer, List<String> text)
-    {
-        int[] indices = new int[text.size()];
-        for(int i = 0; i < indices.length; i++)
-            indices[i] = wordIndexer.getIndex(text.get(i));
-        return indices;
-    }
+    
     
     @Override
     protected Params newParams()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Params(this, opts, VecFactory.Type.DENSE);
     }
 
     /**
-     * Initialize with an E-step which puts a uniform distribution over z
+     * Initialise with an E-step which puts a uniform distribution over z
      * This works for models with natural asymmetries such as word alignment and DMV,
      * but not for cluster-based models such as GMMs, PMMMs, HMMs,
-     * where random initialization is preferred (need noise)
+     * where random initialisation is preferred (need noise)
      */
     @Override
     protected void baitInitParams()
@@ -98,26 +114,12 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         Collection<BatchBaitInit> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
-            //TO-DO
-            list.add(new BatchBaitInit());
+            list.add(new BatchBaitInit(i, examples.get(i), counts));
         }
         params = counts;
         params.optimise(opts.initSmoothing);
         LogInfo.end_track();
     }
-    //
-//      track("baitInitParams: using harmonic initializer")
-//      val counts = newParams
-//      params.setUniform_!(1)
-//      Utils.parallel_foreach(opts.numThreads, examples, { (i:Int,ex:Example,log:Boolean) =>
-//        if(log) track("Example %s/%s", fmt(i), fmt(examples.length))
-//        // difference from learn is in the 3rd parameter: hardInfer, which is set to false, and interprets to not perform Viterbi search in the end
-//        new InferState(ex, params, counts, InferSpec(1, true, false, false, false, false, false, 1, -1), true).updateCounts
-//        if(log) end_track
-//      })
-//      params = counts
-//      params.optimize_!(opts.initSmoothing)
-//      end_track
               
     @Override
     protected APerformance newPerformance()
@@ -126,9 +128,13 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     }
 
     @Override
-    protected AInferState newInferState(AExample ex, AParams params, AParams counts, InferSpec ispec)
+    protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts, InferSpec ispec)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Example ex = (Example)aex;
+        Params localParams = (Params)aparams;
+        Params counts = (Params)acounts;
+        
+        return new DMVInferState(this, ex, localParams, counts, ispec, useHarmonicWeights);
     }
 
     @Override
@@ -137,16 +143,24 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Copy-pasted from Percy's code - so far it is incomplete
+     * @param index
+     * @return 
+     */
     @Override
     protected AExample genExample(int index)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int N = opts.genMaxTokens;
+        // TODO
+        int[] words = null;
+        return new Example(words, new DepTree(null));
     }
 
     @Override
     protected Integer[] widgetToIntSeq(AWidget widget)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Utils.int2Integer(((DepTree)widget).getParent());
     }
 
     @Override
@@ -156,9 +170,11 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     }
 
     @Override
-    protected String exampleToString(AExample ex)
+    protected String exampleToString(AExample aex)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Example ex = (Example)aex;
+        return ex.getName() + ": " + Utils.mkString(
+                InductionUtils.getObject(wordIndexer, ex.getText()), " ");
     }
 
     @Override
@@ -193,11 +209,40 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     protected class BatchBaitInit extends MyCallable
     {
 
+        AExample ex; 
+        int i; 
+        AParams counts;
+        boolean outputLog;
+        
+        public BatchBaitInit(int i, AExample ex, AParams counts)
+        {
+            this.ex = ex;
+            this.i = i;
+            this.counts = counts;
+            outputLog = opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0;
+        }
+        
         @Override
         public Object call() throws Exception
         {
-            throw new UnsupportedOperationException("Not supported yet.");
+            if(outputLog)            
+                Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1), Utils.fmt(examples.size()));
+                initExample();
+            if(outputLog)
+                LogInfo.end_track();
+            
+            return null;
         }
         
+        private void initExample()
+        {
+            useHarmonicWeights = true;
+            AInferState currentInferState = newInferState(ex, params, counts, 
+                    new InferSpec(1, true, false, false, false, false, false, 1, -1));
+            currentInferState.createHypergraph();
+//            currentInferState.doInference(); // We don't need to do inference, we are only initialising the parameters
+            currentInferState.updateCounts();
+            
+        }       
     }
 }

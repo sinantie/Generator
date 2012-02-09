@@ -6,6 +6,7 @@ import fig.record.Record;
 import induction.Options;
 import induction.Options.InitType;
 import induction.problem.ModelInterface;
+import induction.problem.dmv.generative.GenerativeDMVModel;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
@@ -22,6 +23,7 @@ public class Induction implements Runnable
         switch(opts.modelType)
         {
             case event3 : model = new GenerativeEvent3Model(opts); break;
+            case dmv : model = new GenerativeDMVModel(opts); break;
             default : LogInfo.fail("Unknown model type: " + opts.modelType);
         }
         /*in staged initialisation we need to read parameters before examples*/

@@ -12,7 +12,7 @@ import java.util.Map;
  * 
  * @author konstas
  */
-public class Widget// implements AWidget
+public class Widget implements AWidget
 {
     protected int[][] events, fields, gens, numMethods;
     protected int[] startIndices;

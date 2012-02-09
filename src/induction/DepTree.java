@@ -6,10 +6,11 @@ import edu.berkeley.nlp.ling.Tree;
 import fig.basic.Exceptions;
 import fig.basic.Indexer;
 import fig.basic.ListUtils;
+import induction.problem.AWidget;
 
 
 
-public class DepTree {
+public class DepTree implements AWidget{
   int[] parent;
   int[] numLeftChildren;
   int[] numRightChildren;
@@ -105,6 +106,11 @@ public class DepTree {
 //    }
 //  }
 
+    public int[] getParent()
+    {
+        return parent;
+    }
+    
   public String toString(int[] words, Indexer<String> wordIndexer) {
     StringBuilder buf = new StringBuilder();
     for(int i = 0; i < N; i++) {
