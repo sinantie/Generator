@@ -4,7 +4,9 @@ import fig.basic.LogInfo;
 import induction.Utils;
 import induction.problem.event3.Constants.TypeAdd;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -185,7 +187,39 @@ public abstract class AParams implements Serializable
         }
         return out;
     }
+    
+    public String[][][] getLabels(int n1, int n2, int n3, String prefix, String[] suffix1, String[] suffix2, String[] suffix3)
+    {
+        String out[][][] = new String[n1][n2][n3];
+        for(int i = 0; i < n1; i++)
+        {
+            for(int j = 0; j < n2; j++)
+            {
+                for(int k = 0; k < n3; k++)
+                    out[i][j][k] = prefix + ((suffix1 != null && suffix2 != null && suffix3 != null) ?
+                        suffix1[i] + " " + suffix2[j] + " " + suffix3[k] : "");
+            }
+        }
+        return out;
+    }
+    
+    public List<String>[][] getLabels(int n1, int n2, int[] n3, String prefix, String[] suffix1, String[] suffix2, List<String>[] suffix3)
+    {
+        List<String> out[][] = new List[n1][n2];
+        for(int i = 0; i < n1; i++)
+        {
+            for(int j = 0; j < n2; j++)
+            {
+                out[i][j] = new ArrayList<String>(n3[i]);
+                for(int k = 0; k < n3[i]; k++)
+                    out[i][j].add(prefix + ((suffix1 != null && suffix2 != null && suffix3 != null) ?
+                        suffix1[i] + " " + suffix2[j] + " " + suffix3[i].get(k) : ""));
+            }
+        }
+        return out;
+    }
 
+    
     // Helper for output(): display probabilities in sorted order
     public String forEachProb(Vec v)
     {

@@ -40,6 +40,7 @@ public class Induction implements Runnable
           
         if(opts.stage1.numIters > 0)
         {
+            model.preInit();
             opts.outputIterFreq = opts.stage1.numIters;
             if(opts.initType != InitType.staged)
                 model.init(opts.initType, opts.initRandom, "");

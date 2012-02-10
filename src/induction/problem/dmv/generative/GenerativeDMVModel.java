@@ -12,6 +12,7 @@ import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.AInferState;
 import induction.problem.AParams;
+import induction.problem.AParams.ParamsType;
 import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
@@ -52,10 +53,38 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         return wordToString(localWordIndexer[w1].getObject(wordToInteger));
     }
   
+    public List<String>[] wordIndexerToArray()
+    {
+        int W = W();
+        List<String>[] out = new ArrayList[W];
+        for(int i = 0; i < W; i++)
+        {
+            out[i] = new ArrayList<String>(wordIndexerLength(i));
+            for(int j = 0; j < localWordIndexer[i].size(); j++)
+                out[i].add(wordIndexerToString(i, j));
+        }
+        return out;
+    }
+    
+    /**
+     * Form the bilexical index mapping based on examples
+     */
     @Override
     public void preInit()
     {
-        
+        localWordIndexer = new Indexer[WordModel.W()];
+        for(int i = 0; i < localWordIndexer.length; i++)
+            localWordIndexer[i] = new Indexer<Integer>();
+        for(AExample ex : examples)
+        {
+            int[] text = ex.getText();
+            int N = text.length;
+            for(int i = 0; i < N; i++)
+            {                
+                for(int j = 0; j < N; j++)
+                    localWordIndexer[text[i]].getIndex(text[j]);
+            } // for
+        } // for
     }
     
     @Override
@@ -110,7 +139,8 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         Utils.begin_track("baitInitParams: using harmonic initializer");
         Params counts = newParams();
-        params.setUniform(1);
+        params = newParams(); 
+    params.setUniform(1);       
         Collection<BatchBaitInit> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
