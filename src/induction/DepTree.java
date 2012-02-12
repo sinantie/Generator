@@ -48,11 +48,11 @@ public class DepTree implements AWidget{
     }
   }
 
-  boolean isRoot(int i) { return parent[i] == i; }
-  boolean isLeftChild(int i) { return i < parent[i]; }
-  boolean isRightChild(int i) { return i > parent[i]; }
-  boolean isFirstChild(int i) { return childRank[i] == 1; }
-  boolean isLastChild(int i) {
+  public boolean isRoot(int i) { return parent[i] == i; }
+  public boolean isLeftChild(int i) { return i < parent[i]; }
+  public boolean isRightChild(int i) { return i > parent[i]; }
+  public boolean isFirstChild(int i) { return childRank[i] == 1; }
+  public boolean isLastChild(int i) {
     if(i < parent[i]) return childRank[i] == numLeftChildren[parent[i]];
     if(i > parent[i]) return childRank[i] == numRightChildren[parent[i]];
     throw Exceptions.bad;
@@ -109,6 +109,11 @@ public class DepTree implements AWidget{
     public int[] getParent()
     {
         return parent;
+    }
+
+    public int getN()
+    {
+        return N;
     }
     
   public String toString(int[] words, Indexer<String> wordIndexer) {

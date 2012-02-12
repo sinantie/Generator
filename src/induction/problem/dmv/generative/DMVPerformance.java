@@ -2,6 +2,7 @@ package induction.problem.dmv.generative;
 
 import fig.basic.StatFig;
 import induction.DepTree;
+import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.APerformance;
 
@@ -13,23 +14,11 @@ public class DMVPerformance extends APerformance<DepTree>
 {
     StatFig directed = new StatFig();
     StatFig undirected = new StatFig();
-    
-    
-//    def add(trueTree:DepTree, predTree:DepTree) {
-//      if (trueTree != null) {
-//        foreach(Utils.same(trueTree.N, predTree.N), { i:Int =>
-//          if (!trueTree.isRoot(i)) {
-//            val pi = trueTree.parent(i)
-//            directed.add(predTree.parent(i) == pi)
-//            undirected.add(predTree.parent(i) == pi || predTree.parent(pi) == i)
-//          }
-//        })
-//      }
-
+        
     @Override
     public double getAccuracy()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return directed.mean();
     }
 
     @Override
@@ -37,19 +26,29 @@ public class DMVPerformance extends APerformance<DepTree>
     {
         if(trueTree != null)
         {
-            //TO-DO
+            for(int i = 0; i < Utils.same(trueTree.getN(), predTree.getN()); i++)
+            {
+                if(!trueTree.isRoot(i))
+                {
+                    int pi = trueTree.getParent()[i];
+                    directed.add(predTree.getParent()[i] == pi);
+                    undirected.add(predTree.getParent()[i] == pi ||
+                                   predTree.getParent()[pi] == i);
+                }
+            }
         }
     }
 
     @Override
-    public void add(AExample trueWidget, DepTree predWidget)
+    public void add(AExample example, DepTree predWidget)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        add((DepTree)example.getTrueWidget(), predWidget);
     }
 
     @Override
     public String output()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Directed: "   + directed + "\n" + 
+               "Undirected: " + undirected;
     }
 }

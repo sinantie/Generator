@@ -12,7 +12,6 @@ import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.AInferState;
 import induction.problem.AParams;
-import induction.problem.AParams.ParamsType;
 import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
@@ -140,7 +139,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         Utils.begin_track("baitInitParams: using harmonic initializer");
         Params counts = newParams();
         params = newParams(); 
-    params.setUniform(1);       
+        params.setUniform(1);       
         Collection<BatchBaitInit> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
@@ -154,7 +153,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     protected APerformance newPerformance()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new DMVPerformance();
     }
 
     @Override
@@ -222,6 +221,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     public void learn(String name, LearnOptions lopts)
     {
+        useHarmonicWeights = false;
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
