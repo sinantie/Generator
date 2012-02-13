@@ -12,7 +12,7 @@ import org.junit.Test;
  *
  * @author konstas
  */
-public class DMVTrainAtisTest
+public class DMVTestAtisTest
 {
     LearnOptions lopts;
     String name;
@@ -25,6 +25,8 @@ public class DMVTrainAtisTest
                     + "-Options.stage1.numIters 100 -numThreads 2 "                    
                     + "-inputPaths "
                     + "../wsj/3.0/parsed/mrg/atis/atis3_clean_pos_cut.mrg "
+                    + "-stagedParamsFile results/output/atis/train/"
+                    + "debug/0.exec/stage1.dmv.params.obj.gz "
 //                    + "../wsj/3.0/parsed/mrg/atis/atis3_one.mrg "
                     + "-inputFileExt mrg "
                     + "-inputFormat mrg "
@@ -35,10 +37,10 @@ public class DMVTrainAtisTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
         model = new GenerativeDMVModel(opts);
+        model.init(InitType.staged, null, "stage1");
         model.readExamples();
         model.logStats();
-        model.preInit();
-        model.init(InitType.bait, null, "stage1");
+//        model.preInit();        
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
@@ -51,6 +53,6 @@ public class DMVTrainAtisTest
     public void testRun()
     {
         System.out.println("run");        
-        System.out.println(model.testInitLearn(name, lopts));
+        System.out.println(model.testGenerate(name, lopts));
     }
 }
