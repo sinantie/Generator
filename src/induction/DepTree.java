@@ -17,16 +17,21 @@ public class DepTree implements AWidget{
   int[] childRank; // rank of this child
   int rootPosition;
   int N;
+  public String performance = "";
+  public double[] scores;
   static final HeadFinder headFinder = new CollinsHeadFinder();
+  static final int NUMBER_OF_METRICS_DEP = 2;
   
   public DepTree(int N) {
     this.parent = ListUtils.newInt(N, -1);
     this.N = N;
+    scores = new double[NUMBER_OF_METRICS_DEP];
   }
 
   public DepTree(int[] parent) {
     this.parent = parent;
     this.N = parent.length;
+    scores = new double[NUMBER_OF_METRICS_DEP];
     finish();
   }
 

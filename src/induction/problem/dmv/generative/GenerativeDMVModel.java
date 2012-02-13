@@ -2,8 +2,12 @@ package induction.problem.dmv.generative;
 
 import edu.berkeley.nlp.ling.Tree;
 import edu.uci.ics.jung.graph.Graph;
+import fig.basic.FullStatFig;
+import fig.basic.IOUtils;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
+import fig.exec.Execution;
+import fig.record.Record;
 import induction.DepTree;
 import induction.LearnOptions;
 import induction.MyCallable;
@@ -12,19 +16,23 @@ import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.AInferState;
 import induction.problem.AParams;
+import induction.problem.AParams.ParamsType;
 import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.InferSpec;
+import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.dmv.params.Params;
-import induction.problem.wordproblem.Example;
 import induction.problem.wordproblem.WordModel;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Rewrite of the DMV model (Klein and Manning 2006), based on the implementation
@@ -41,7 +49,12 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         super(opts);
     }
-    
+
+    public Indexer<Integer>[] getLocalWordIndexer()
+    {
+        return localWordIndexer;
+    }
+        
     public int wordIndexerLength(int w)
     {
         return localWordIndexer[w].size();
@@ -101,7 +114,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                     tempTree = tree;
                     List words = opts.useTagsAsWords ? tree.getPreTerminalYield() : tree.getYield();
                     if(words.size() <= opts.maxExampleLength)
-                        examples.add(new Example(InductionUtils.indexWordsOfText(wordIndexer, words), 
+                        examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), 
                                      DepTree.toDepTree(tree), "Example_" + counter++));
                 }
             }
@@ -145,6 +158,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         {
             list.add(new BatchBaitInit(i, examples.get(i), counts));
         }
+        Utils.parallelForeach(opts.numThreads, list);
         params = counts;
         params.optimise(opts.initSmoothing);
         LogInfo.end_track();
@@ -159,7 +173,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts, InferSpec ispec)
     {
-        Example ex = (Example)aex;
+        DMVExample ex = (DMVExample)aex;
         Params localParams = (Params)aparams;
         Params counts = (Params)acounts;
         
@@ -167,9 +181,14 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     }
 
     @Override
-    protected AInferState newInferState(AExample ex, AParams params, AParams counts, InferSpec ispec, Graph graph)
+    protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts, InferSpec ispec, Graph graph)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        DMVExample ex = (DMVExample)aex;
+        Params localParams = (Params)aparams;
+        Params counts = (Params)acounts;
+        
+        return new DMVInferState(this, ex, localParams, counts, ispec, useHarmonicWeights, graph);
+        
     }
 
     /**
@@ -183,7 +202,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         int N = opts.genMaxTokens;
         // TODO
         int[] words = null;
-        return new Example(words, new DepTree(null));
+        return new DMVExample(words, new DepTree(null));
     }
 
     @Override
@@ -198,42 +217,254 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Outputs the gold-standard dependency tree
+     * @param aex
+     * @return 
+     */
     @Override
     protected String exampleToString(AExample aex)
     {
-        Example ex = (Example)aex;
-        return ex.getName() + ": " + Utils.mkString(
-                InductionUtils.getObject(wordIndexer, ex.getText()), " ");
+        DMVExample ex = (DMVExample)aex;
+        StringBuilder out = new StringBuilder(ex.getName()); 
+        out.append(" : ");
+        for(int i = 0; i < ex.N(); i++)
+            out.append(i).append(wordToString(ex.getText()[i])).append("->").
+                    append(ex.getTrueWidget().getParent()[i]).append(" ");        
+        return out.toString();
     }
 
     @Override
+    protected String widgetToFullString(AExample ex, AWidget widget)
+    {
+        return ((DMVExample)ex).widgetToNiceFullString((DepTree)widget);
+        // (it outputs the trueWidget dependencies, and a list of the heads for each word
+//        return super.widgetToFullString(ex, widget); 
+    }
+
+    
+    @Override
     protected void saveParams(String name)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try
+        {
+            ObjectOutputStream oos = IOUtils.openObjOut(Execution.getFile(name + ".dmv.params.obj.gz"));
+            oos.writeObject(wordIndexer);
+            oos.writeObject(localWordIndexer);            
+            oos.writeObject(params.getVecs());
+            oos.close();
+        }
+        catch (IOException ex)
+        {
+            Utils.log(ex.getMessage());
+            ex.printStackTrace(LogInfo.stderr);
+        }
     }
 
     @Override
     public void stagedInitParams()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Utils.begin_track("stagedInitParams");
+        try
+        {
+            Utils.log("Loading " + opts.stagedParamsFile);
+            ObjectInputStream ois = IOUtils.openObjIn(opts.stagedParamsFile);
+            wordIndexer = (Indexer<String>) ois.readObject();
+            localWordIndexer = (Indexer<Integer>[]) ois.readObject();
+            params = newParams();
+            params.setVecs((Map<String, Vec>) ois.readObject());
+            ois.close();
+        }
+        catch(Exception ioe)
+        {
+            Utils.log("Error loading "+ opts.stagedParamsFile);            
+            ioe.printStackTrace(LogInfo.stderr);
+            Execution.finish();
+        }
+        LogInfo.end_track();
     }
 
     @Override
     public void learn(String name, LearnOptions lopts)
     {
         useHarmonicWeights = false;
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        Record.begin(name);
+        Utils.begin_track("Train: " + name);
+        boolean existsTrain = false, existsTest = false, output, fullOutput;
+        for(int i = 0; i < examples.size(); i++)
+        {
+            if(isTrain(i))
+            {
+                existsTrain = true; break;
+            }
+        }
+        for(int i = 0; i < examples.size(); i++)
+        {
+            if(isTest(i))
+            {
+                existsTest = true; break;
+            }
+        }
+        
+        int iter = 0;
+        while (iter < lopts.numIters)
+        {
+            FullStatFig complexity = new FullStatFig(); // Complexity inference
+            // Gradually reduce temperature
+            double temperature = (lopts.numIters == 1) ? lopts.initTemperature :
+                lopts.initTemperature +
+                (lopts.finalTemperature- lopts.initTemperature) *
+                iter / (lopts.numIters - 1);
+
+            Utils.begin_track("Iteration %s/%s: temperature = %s",
+                    Utils.fmt(iter+1), Utils.fmt(lopts.numIters),
+                    Utils.fmt(temperature));
+            Record.begin("iteration", iter+1);
+            Execution.putOutput("currIter", iter+1);
+
+            trainPerformance = existsTrain ? newPerformance() : null;
+            testPerformance = existsTest ? newPerformance() : null;
+
+//            output = opts.outputIterFreq != 0 && iter % opts.outputIterFreq == 0;
+            output = (iter+1) % lopts.numIters == 0; // output only at the last iteration
+            fullOutput = output && opts.outputFullPred;
+            try
+            {
+                trainPredOut = (output && existsTrain) ?
+                    IOUtils.openOut(Execution.getFile(
+                    name+".train.pred."+iter)) : null;
+                testPredOut = (output && existsTest) ?
+                    IOUtils.openOut(Execution.getFile(
+                    name+".test.pred."+iter)) : null;
+                trainFullPredOut = (fullOutput && existsTrain) ?
+                    IOUtils.openOut(Execution.getFile(
+                    name+".train.full-pred."+iter)) : null;
+                testFullPredOut = (fullOutput && existsTest) ?
+                    IOUtils.openOut(Execution.getFile(
+                    name+".test.full-pred."+iter)) : null;
+            }
+            catch(IOException ioe)
+            {
+                Utils.begin_track("Error opening file");
+                LogInfo.end_track();
+            }
+
+            // Batch EM only
+            Params counts = newParams();
+
+            // E-step
+            Utils.begin_track("E-step");
+            Collection<BatchEM> list = new ArrayList(examples.size());
+            for(int i = 0; i < examples.size(); i++)
+            {
+                list.add(new BatchEM(i, examples.get(i), counts, temperature,
+                        lopts, iter, complexity));
+            }
+            Utils.parallelForeach(opts.numThreads, list);
+            LogInfo.end_track();
+            list.clear();
+            // M-step
+            params = counts;
+//            params.saveSum(); // 02/07/09: for printing out posterior mass (see AParams.foreachProb)
+            if (lopts.useVarUpdates)
+            {
+                params.optimiseVar(lopts.smoothing);
+            }
+            else
+            {
+                params.optimise(lopts.smoothing);
+            }
+            
+            record(String.valueOf(iter), name, complexity);
+            if(trainPredOut != null) trainPredOut.close();
+            if(testPredOut != null) testPredOut.close();
+            if(trainFullPredOut != null) trainFullPredOut.close();
+            if(testFullPredOut != null) testFullPredOut.close();
+
+            Execution.putOutput("currExample", examples.size());
+            LogInfo.end_track();
+            Record.end();
+            // Final
+            if (iter == lopts.numIters - 1)
+            {
+                LogInfo.track("Final", true);
+                if(trainPerformance != null)
+                    trainPerformance.record("train");
+                if(testPerformance != null)
+                    testPerformance.record("test");
+            }
+            iter++;
+            if (Execution.shouldBail() || existsTest) // it makes sense to perform one iteration at test time
+                lopts.numIters = iter;
+        } // while (iter < lopts.numIters)
+        if(!opts.dontOutputParams)
+        {
+            saveParams(name);             
+            params.output(Execution.getFile(name+".params"), ParamsType.PROBS);
+        }
+        LogInfo.end_track();
+        LogInfo.end_track();
+        Record.end();
+        Record.end();
+        Execution.putOutput("currIter", lopts.numIters);        
     }
 
+    /**
+     * Test on a specific dataset given the learned parameters.
+     * @param name
+     * @param lopts 
+     */
     @Override
     public void generate(String name, LearnOptions lopts)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+//        saveParams("stage1");
+//        System.exit(1);
+        useHarmonicWeights = false;
+        FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();       
+        try
+        {
+            testFullPredOut = (opts.outputFullPred) ?
+                IOUtils.openOut(Execution.getFile(
+                name+".test.full-pred-gen")) : null;
+            testPredOut = IOUtils.openOut(Execution.getFile(name+".tst.seq"));            
+        }
+        catch(Exception ioe)
+        {
+            Utils.begin_track("Error opening file(s) for writing. No output will be written!");
+            LogInfo.end_track();
+        }                
+        // E-step
+        Utils.begin_track("Testing " + name);
+//        Params counts = newParams();
+        Collection<BatchEM> list = new ArrayList(examples.size());
+        for(int i = 0; i < examples.size(); i++)
+        {
+            list.add(new BatchEM(i, examples.get(i), null, temperature, // used to have counts instead of null, but they are never used
+                    lopts, 0, complexity));                
+        }
+        Utils.parallelForeach(opts.numThreads, list);
+        LogInfo.end_track();
+        list.clear();
+
+        if(testFullPredOut != null) testFullPredOut.close();
+        if(testPredOut != null) testPredOut.close();
+        Execution.putOutput("currExample", examples.size());
+
+        // Final
+//        testPerformance.output(Execution.getFile(name+".test.performance"));
+        Record.begin("test");
+        record("results", name, complexity);
+        Record.end();
+        LogInfo.end_track();
+    }       
     
-    public String testGenerativeLearn(String name, LearnOptions lopts)
+    public String testInitLearn(String name, LearnOptions lopts)
     {
-        return "YES";
+        useHarmonicWeights = false;
+        return super.testInitLearn(name, lopts);
     }
     
     protected class BatchBaitInit extends MyCallable
@@ -256,7 +487,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         public Object call() throws Exception
         {
             if(outputLog)            
-                Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1), Utils.fmt(examples.size()));
+                Utils.begin_track("Example %s/%s", Utils.fmt(i+1), Utils.fmt(examples.size()));
                 initExample();
             if(outputLog)
                 LogInfo.end_track();
@@ -270,7 +501,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             AInferState currentInferState = newInferState(ex, params, counts, 
                     new InferSpec(1, true, false, false, false, false, false, 1, -1));
             currentInferState.createHypergraph();
-//            currentInferState.doInference(); // We don't need to do inference, we are only initialising the parameters
+            currentInferState.doInference(); // We don't need to do inference, we are only initialising the parameters
             currentInferState.updateCounts();
             
         }       

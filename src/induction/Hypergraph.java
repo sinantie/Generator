@@ -511,7 +511,7 @@ public class Hypergraph<Widget> {
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
-  private Graph graph;
+  public Graph graph;
   // discriminative stuff
   private AInferState inferState;
   private boolean discriminative;

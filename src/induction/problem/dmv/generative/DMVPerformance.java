@@ -26,16 +26,25 @@ public class DMVPerformance extends APerformance<DepTree>
     {
         if(trueTree != null)
         {
+            StatFig localDirected = new StatFig();
+            StatFig localUndirected = new StatFig();
             for(int i = 0; i < Utils.same(trueTree.getN(), predTree.getN()); i++)
             {
                 if(!trueTree.isRoot(i))
                 {
                     int pi = trueTree.getParent()[i];
-                    directed.add(predTree.getParent()[i] == pi);
-                    undirected.add(predTree.getParent()[i] == pi ||
+                    localDirected.add(predTree.getParent()[i] == pi);
+                    localUndirected.add(predTree.getParent()[i] == pi ||
                                    predTree.getParent()[pi] == i);
                 }
             }
+            directed.add(localDirected);
+            undirected.add(localUndirected);
+            predTree.scores[0] = localDirected.mean();
+            predTree.scores[1] = localUndirected.mean();
+            trueTree.performance = "Directed accuracy = " + predTree.scores[0] + 
+                                   " Undirected accuracy = " + predTree.scores[1];
+                                   
         }
     }
 
@@ -48,7 +57,7 @@ public class DMVPerformance extends APerformance<DepTree>
     @Override
     public String output()
     {
-        return "Directed: "   + directed + "\n" + 
-               "Undirected: " + undirected;
+        return "\nDirected accuracy = "   + directed + "\n" + 
+               "Undirected accuracy = " + undirected;
     }
 }

@@ -1,5 +1,6 @@
 package induction.problem.wordproblem;
 
+import fig.basic.Indexer;
 import induction.problem.AExample;
 
 /**
@@ -8,10 +9,10 @@ import induction.problem.AExample;
  */
 public class Example<Widget> implements AExample<Widget>
 {
-    private final String name;
-    private final int numTokens;
-    private int[] text;
-    private Widget trueWidget;
+    protected final String name;
+    protected final int numTokens;
+    protected int[] text;
+    protected Widget trueWidget;
     
     public Example(int[] words, Widget trueWidget)
     {
@@ -20,10 +21,11 @@ public class Example<Widget> implements AExample<Widget>
     
     public Example(int[] text, Widget trueWidget, String name)
     {
+        this.trueWidget = trueWidget;
         this.name = name;
         this.text = text;
         this.numTokens = text.length;
-    }
+    }        
     
     @Override
     public int N()

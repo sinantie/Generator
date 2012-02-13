@@ -1,6 +1,7 @@
 package induction.problem;
 
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
 import fig.basic.LogInfo;
@@ -12,6 +13,7 @@ import induction.Options;
 import induction.Options.InitType;
 import induction.Utils;
 import induction.WekaWrapper;
+import induction.ngrams.KylmNgramWrapper;
 import induction.problem.AParams.ParamsType;
 import java.io.File;
 import java.io.PrintWriter;
@@ -503,7 +505,133 @@ public abstract class AModel
             return "test: "+testPerformance.summary();
         else return "(skip)";
     }                   
-        
+       
+
+    /**
+     * helper method for testing the learning output. Simulates learn(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the aligned events' indices
+     */
+    public String testStagedLearn(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(inferState.stats());
+//        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+        testPerformance.add(ex, inferState.bestWidget);
+//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//        int i = 0;
+//        for(Example ex: examples)
+//        {
+//            try
+//            {
+//            InferState inferState =  createInferState(ex, 1, counts, temperature,
+//                    lopts, 0, complexity);
+//            testPerformance.add(ex, inferState.bestWidget);
+//            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//
+//            }
+//            catch(Exception e)
+//            {
+//                System.out.println(i+ " " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//            i++;
+//        }
+//        return "";
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+    }
+    
+    /**
+     * helper method for testing the learning output. Simulates learn(...) method
+     * for a number of examples without the thread mechanism.
+     * @return a String with the aligned events' indices of the last example
+     */
+    public String testInitLearn(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        int iter = 0;
+        AInferState inferState = null;
+        while (iter < lopts.numIters)
+        {
+            trainPerformance = newPerformance();
+            AParams counts = newParams();
+//            Example ex = examples.get(0);
+            for(AExample ex: examples)
+            {
+                try
+                {
+                    inferState =  createInferState(ex, 1, counts, temperature,
+                        lopts, iter, complexity);
+                    inferState.updateCounts();
+                    trainPerformance.add(ex, inferState.bestWidget);
+                }
+                catch(Exception e)
+                {
+                    System.out.println(ex.toString());
+                    e.printStackTrace(LogInfo.stderr);
+//                    e.printStackTrace();
+                    System.exit(0);
+                }
+            }
+            // M step
+            params = counts;
+            params.optimise(lopts.smoothing);            
+            iter++;
+        }
+//        System.out.println(params.output());
+//        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+        return widgetToFullString(examples.get(examples.size()-1), inferState.bestWidget);
+//        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+    }
+    
+    /**
+     * helper method for testing the generation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the generated SGML text output (contains results as well)
+     */
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+//        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        AInferState inferState =  createInferState(ex, 1, null, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return widgetToSGMLOutput(ex, inferState.bestWidget);
+    }
+    
+    public Graph testGenerateVisualise(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        if(opts.ngramModelFile != null)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+        AParams counts = newParams();
+        AExample ex = examples.get(examples.size()-1);
+        Graph graph = new DirectedSparseGraph<String, String>();
+        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+                lopts, 0, complexity, graph);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return graph;
+    }
+    
     protected class InitParams extends MyCallable
     {
         private AExample ex;

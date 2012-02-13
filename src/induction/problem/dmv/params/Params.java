@@ -31,8 +31,7 @@ public class Params extends AParams
         W = WordModel.W();
         starts = VecFactory.zeros(vectorType, W);
         addVec("S", starts);
-        continues = VecFactory.zeros3(vectorType, W, Constants.R, Constants.F);
-        // NEEDS TESTING!!!!!!!!
+        continues = VecFactory.zeros3(vectorType, W, Constants.R, Constants.F);        
         addVec(getLabels(W, Constants.R, "C ", vocabulary, Constants.R_STR), continues);
         wordIndexerLengths = new int[W];
         for(int i = 0; i < wordIndexerLengths.length; i++)
