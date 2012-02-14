@@ -22,16 +22,19 @@ public class DMVTestAtisTest
     public void setUp() 
     {        
          String args = "-modelType dmv "
-                    + "-Options.stage1.numIters 100 -numThreads 2 "                    
-                    + "-inputPaths "
-                    + "../wsj/3.0/parsed/mrg/atis/atis3_clean_pos_cut.mrg "
-                    + "-stagedParamsFile results/output/atis/train/"
-                    + "debug/0.exec/stage1.dmv.params.obj.gz "
+                    + "-numThreads 2 "                    
+                    + "-examplesInSingleFile "                    
+                    + "-testInputLists "
+//                    + "../wsj/3.0/parsed/mrg/atis/atis3_clean_pos_cut.mrg "
+                    + "data/atis/test/atis-test.txt "
+                    + "-stagedParamsFile results/output/atis/dmv/train/"
+                    + "atis_raw5000_LEX_10/stage1.dmv.params.obj.gz "
 //                    + "../wsj/3.0/parsed/mrg/atis/atis3_one.mrg "
-                    + "-inputFileExt mrg "
-                    + "-inputFormat mrg "
-                    + "-dontOutputParams "            
-                    + "-useTagsAsWords";
+                    + "-inputFileExt events "
+                    + "-inputFormat raw "
+                    + "-dontOutputParams ";
+//                    + "-posAtSurfaceLevel "            
+//                    + "-useTagsAsWords";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
