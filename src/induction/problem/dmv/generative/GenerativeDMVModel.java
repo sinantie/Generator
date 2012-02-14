@@ -24,12 +24,15 @@ import induction.problem.InferSpec;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.dmv.params.Params;
+import induction.problem.event3.Event3Model;
 import induction.problem.wordproblem.WordModel;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -79,60 +82,117 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     }
     
     /**
-     * Form the bilexical index mapping based on examples
+     * Form the bilexical index mapping based on examples. Not recommended
+     * when using the lexicalised version of DMV, as there might be unseen
+     * words in the test set.
      */
     @Override
     public void preInit()
     {
         localWordIndexer = new Indexer[WordModel.W()];
         for(int i = 0; i < localWordIndexer.length; i++)
-            localWordIndexer[i] = new Indexer<Integer>();
-        for(AExample ex : examples)
-        {
-            int[] text = ex.getText();
-            int N = text.length;
-            for(int i = 0; i < N; i++)
-            {                
-                for(int j = 0; j < N; j++)
-                    localWordIndexer[text[i]].getIndex(text[j]);
+            localWordIndexer[i] = new Indexer<Integer>();        
+        if(opts.useTagsAsWords)
+        {            
+            for(AExample ex : examples)
+            {
+                int[] text = ex.getText();
+                int N = text.length;
+                for(int i = 0; i < N; i++)
+                {                
+                    for(int j = 0; j < N; j++)
+                        localWordIndexer[text[i]].getIndex(text[j]);
+                } // for
             } // for
-        } // for
+        } // if
+        else // bad way to do this...we are replicating the same vector many times
+        {
+            for(int i = 0; i < localWordIndexer.length; i++)
+                for(int j = 0; j < WordModel.W(); j++)
+                    localWordIndexer[i].getIndex(j);
+        }                
     }
     
     @Override
-    protected void readExamples(String input, int maxExamples)
+    protected void readFromSingleFile(ArrayList<String> inputLists)
     {
         if (opts.inputFormat == Options.InputFormat.mrg)
         {
-            Tree tempTree = null;
-            int counter = 0;
-            try
+            for(String file : inputLists)
             {
-                List<Tree<String>> trees = Utils.loadTrees(input, maxExamples, opts.removePunctuation);
-                for(Tree tree : trees)
-                {
-                    tempTree = tree;
-                    List words = opts.useTagsAsWords ? tree.getPreTerminalYield() : tree.getYield();
-                    if(words.size() <= opts.maxExampleLength)
-                        examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), 
-                                     DepTree.toDepTree(tree), "Example_" + counter++));
-                }
-            }
-            catch(IOException ioe)
-            {
-                LogInfo.error("Error loading file " + input);
-            }
-            catch(Exception e)
-            {
-                LogInfo.error("Error loading " + input + " " + counter + " " + tempTree);
-                e.printStackTrace();                
-            }
-        } // if
+                if(new File(file).exists())
+                {               
+                    try
+                    {
+                        List<Tree<String>> trees = Utils.loadTrees(file, opts.removePunctuation);
+                        for(Tree tree : trees)
+                        {
+                            readExamples(tree, maxExamples);
+                        }
+                    }
+                    catch(IOException ioe)
+                    {
+                        LogInfo.error("Error loading file " + file);
+                    }                
+                } // if  
+            } // for
+        }
         else
-            super.readExamples(input, maxExamples);
+            super.readFromSingleFile(inputLists);
     }
     
+    protected void readExamples(Tree input, int maxExamples)
+    {        
+        Tree tempTree = null;
+        try
+        {
+            tempTree = input;
+            List words = opts.useTagsAsWords ? input.getPreTerminalYield() : input.getYield();
+            if(words.size() <= opts.maxExampleLength)
+                examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), 
+                             DepTree.toDepTree(input), "Example_" + numExamples++));
+        }
+        catch(Exception e)
+        {
+            LogInfo.error("Error reading " + numExamples + " " + tempTree);
+            e.printStackTrace();
+        }        
+    }
     
+    /**
+     * In case we don't have the dependencies' information. Works only with .events files!
+     * @param input
+     * @param maxExamples 
+     */
+    @Override
+    protected void readExamples(String input, int maxExamples)
+    {
+        if(opts.inputFileExt.equals("events"))
+        {
+            String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
+            List words;
+            if(opts.useTagsAsWords)
+                words = posTag(res[1]);
+            else
+                words = Arrays.asList(res[1].split(" "));
+            if(words.size() <= opts.maxExampleLength)
+                examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), null, res[0]));
+        }
+    }
+    
+    /**
+     * POS tag a sentence using the Stanford MaxEnt POS Tagger
+     * @param sentence
+     * @return 
+     */
+    private List<String> posTag(String sentence)
+    {
+        List<String> out = new ArrayList<String>();
+        String[] tokens = posTagger.tagString(sentence).split(" ");
+        for(String token : tokens)
+            out.add(token.substring(token.lastIndexOf("/") + 1));
+        return out;
+    }
     
     @Override
     protected Params newParams()
@@ -214,7 +274,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     protected String widgetToSGMLOutput(AExample ex, AWidget widget)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return widgetToFullString(ex, widget);
     }
 
     /**

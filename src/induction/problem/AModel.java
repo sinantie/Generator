@@ -39,7 +39,7 @@ public abstract class AModel
     protected Options opts;
     protected AParams params;
     protected List<AExample> examples = new ArrayList<AExample>();
-    private int numExamples, maxExamples;
+    protected int numExamples, maxExamples;
     protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
     protected APerformance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
@@ -287,7 +287,7 @@ public abstract class AModel
         } // for
     }
 
-    private void readFromSingleFile(ArrayList<String> inputLists)
+    protected void readFromSingleFile(ArrayList<String> inputLists)
     {
         for(String file : inputLists)
         {
@@ -601,7 +601,8 @@ public abstract class AModel
     public String testGenerate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        if(opts.ngramModelFile != null)
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();

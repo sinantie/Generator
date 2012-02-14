@@ -34,8 +34,6 @@ import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.alignment.InferState;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

@@ -681,6 +681,12 @@ public class Utils
             return p[n];
     }
     
+    public static List<Tree<String>> loadTrees(String path,  
+                                               boolean removePunctuation) throws IOException
+    {
+        return loadTrees(path, Integer.MAX_VALUE, removePunctuation);
+    }
+    
     public static List<Tree<String>> loadTrees(String path, int maxTrees, 
                                                boolean removePunctuation) throws IOException
     {
