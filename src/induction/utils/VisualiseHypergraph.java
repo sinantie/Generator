@@ -11,12 +11,8 @@
 
 package induction.utils;
 
-import edu.uci.ics.jung.algorithms.layout.DAGLayout;
-import edu.uci.ics.jung.algorithms.layout.FRLayout2;
-import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout2;
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
 import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Graph;
@@ -90,16 +86,17 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
     
     private void setUpDMV()
     {
-        String args = "-modelType discriminativeTrain -inputLists test/trainAtisExamples "
+        String args = "-modelType dmv "
 //         String args = "-modelType discriminativeTrain -inputLists data/atis/train/atis5000.sents.full "
                     + "-Options.stage1.numIters 15 -numThreads 1 "                    
-                    + "-inputPaths "
-                    + "../wsj/3.0/parsed/mrg/atis/atis3_clean_pos_cut.mrg "
-//                    + "../wsj/3.0/parsed/mrg/atis/atis3_one.mrg "
-                    + "-inputFileExt mrg "
-                    + "-inputFormat mrg "
-                    + "-dontOutputParams "            
-                    + "-useTagsAsWords";
+                    + "-testInputLists "
+//                    + "../wsj/3.0/parsed/mrg/atis/atis3_clean_pos_cut.mrg "
+                    + "data/atis/train/atis5000.sents.full "
+                    + "-examplesInSingleFile "
+                    + "-inputFileExt events "
+                    + "-inputFormat raw "
+                    + "-dontOutputParams "; 
+//                    + "-useTagsAsWords";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
@@ -117,7 +114,7 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
     private void setUpView(Graph graph)
     {                 
 //        layout = new SpringLayout2(graph);
-        layout = new DAGLayout(graph);
+        layout = new KKLayout(graph);
         //layout.setSize(new Dimension(700,700));
         vv = new VisualizationViewer(layout);
         vv.setPreferredSize(new Dimension(900,900));
