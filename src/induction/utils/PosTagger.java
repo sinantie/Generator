@@ -16,8 +16,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -29,10 +33,12 @@ public class PosTagger
     private final String path;
     private String extension = null;
     private MaxentTagger tagger;
-    private Set<String> taggedVocabulary;
+    private Set<String> taggedVocabulary, syncVocabulary;
     private enum Type {DIRECTORY, FILE_EVENTS_FORMAT, FILE_RAW};
     private final Type typeOfFile;
-
+    private boolean useUniversalTags = false;
+    private Map<String, String> universalMaps;
+    
     public PosTagger(String path, String pathsOrFile)
     {
         this.path = path;
@@ -43,6 +49,7 @@ public class PosTagger
         else
             typeOfFile = Type.FILE_RAW;
         taggedVocabulary = new HashSet<String>();
+        syncVocabulary = Collections.synchronizedSet(taggedVocabulary);
         try
         {
             tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
@@ -54,35 +61,55 @@ public class PosTagger
         }
     }
 
-    public PosTagger(String path, String pathsOrFile, String extension)
+    public PosTagger(String path, String pathsOrFile, String useUniversalTagsStr)
     {
         this(path, pathsOrFile);
-        this.extension = extension;
+        this.useUniversalTags = useUniversalTagsStr.equals("useUniversalTags");
+        if(this.useUniversalTags)
+        {
+            universalMaps = new HashMap<String, String>();
+            String[] lines = Utils.readLines("lib/universal_pos_tags/en-ptb.map");
+            for(String line : lines)
+            {
+                String[] ar = line.split("\t");
+                universalMaps.put(ar[0], ar[1]);
+            }
+        }
+    }
+    
+    public PosTagger(String path, String pathsOrFile, String useUniversalTagsStr, String extension)
+    {
+        this(path, pathsOrFile, useUniversalTagsStr);
+        this.extension = extension;        
     }
 
     public void execute()
     {
         try
         {
-            List<String> corpus; 
+            List<String> examples; 
             if(typeOfFile == Type.DIRECTORY)
             {
-                corpus = readFromPath();
+                examples = readFromPath();
             }
             else if(typeOfFile == Type.FILE_EVENTS_FORMAT)
             {
-                corpus = readFromSingleFile(true);
+                examples = readFromSingleFile(true);
             }
             else
-                corpus = readFromSingleFile(false);
-            
-            int counter = 0;
-            for(String example : corpus)
-            {                
-                parse(example);               
-                if(counter++ % 1000 == 0)
-                    System.out.println("Processed " + counter + " examples");                
-            }
+                examples = readFromSingleFile(false);
+            Collection<Worker> list = new ArrayList<Worker>(examples.size());
+            for(int i = 0; i < examples.size(); i++)
+                list.add(new Worker(i, examples.get(i)));
+            Utils.parallelForeach(Runtime.getRuntime().availableProcessors(), list);
+//            Utils.parallelForeach(1, list);
+//            int counter = 0;
+//            for(String example : examples)
+//            {                
+//                parse(example);               
+//                if(counter++ % 1000 == 0)
+//                    System.out.println("Processed " + counter + " examples");                
+//            }
            
 
             FileOutputStream fos = new FileOutputStream(path + "_vocabulary");
@@ -176,7 +203,18 @@ public class PosTagger
     private void parse(String input)
     {        
         String taggedInput = tag(input);
-        taggedVocabulary.addAll(Arrays.asList(taggedInput.split("\\p{Space}")));        
+        if(!useUniversalTags)
+            syncVocabulary.addAll(Arrays.asList(taggedInput.split("\\p{Space}")));        
+        else
+        {
+            String[] tokens = taggedInput.split("\\p{Space}");
+            for(String token : tokens)
+            {
+                int index = token.lastIndexOf("/");
+                syncVocabulary.add(token.substring(0, index + 1) + 
+                                   universalMaps.get(token.substring(index + 1)));
+            }
+        }
     }
 
     public String tag(String input)
@@ -188,12 +226,15 @@ public class PosTagger
     {
         if(args.length > 3)
         {
-            System.err.println("Usage: file_with_paths use_paths{directory,file_events,file_raw} [extension]");
+            System.err.println("Usage: file_with_paths use_paths{directory,file_events,file_raw} "
+                             + "[useUniversalTags extension]");
             System.exit(1);
         }
         PosTagger pos;
-        if(args.length > 1)
+        if(args.length == 3)
             pos = new PosTagger(args[0], args[1], args[2]);
+        else if(args.length == 4)
+            pos = new PosTagger(args[0], args[1], args[2], args[3]);
         else
             pos = new PosTagger(args[0], args[1]);
 
@@ -202,17 +243,21 @@ public class PosTagger
     
     protected class Worker extends MyCallable
     {
+        int counter;
         String example;
 
-        public Worker(String example)
+        public Worker(int counter, String example)
         {
             this.example = example;
+            this.counter = counter;
         }
                 
         @Override
         public Object call() throws Exception
         {
-            parse(example);
+            parse(example);               
+            if(counter++ % 1000 == 0)
+                System.out.println("Processed " + counter + " examples");              
             return null;
         }
     }
