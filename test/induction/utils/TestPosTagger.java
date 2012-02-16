@@ -24,7 +24,7 @@ public class TestPosTagger extends TestCase
 //        assertEquals("--/:", posTagger.tag("--").trim());
 //        assertEquals("and/CC", posTagger.tag("and").trim());
         
-        posTagger = new PosTagger("data/atis/train/atis5000.sents.full", "file_events");
+        posTagger = new PosTagger("data/atis/train/atis5000.sents.full", "file_events", "useUniversalTags");
         posTagger.execute();
     }
 }
