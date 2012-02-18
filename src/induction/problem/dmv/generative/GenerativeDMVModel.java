@@ -527,6 +527,12 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         return super.testInitLearn(name, lopts);
     }
     
+    public Graph testGenerateVisualise(String name, LearnOptions lopts)
+    {
+        this.useHarmonicWeights = false;
+        return super.testGenerateVisualise(name, lopts);
+    }
+    
     protected class BatchBaitInit extends MyCallable
     {
 

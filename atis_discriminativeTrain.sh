@@ -2,7 +2,7 @@
 
 inputLists=data/atis/train/atis5000.sents.full
 #inputLists=test/trainAtisExamples
-execDir=results/output/atis/generation/discriminative/baseline_ignore_ngrams_bigrams_numWordsField_hasCons_numFieldsEvent_seg5
+execDir=results/output/atis/generation/discriminative/baseline_ignore_ngrams_bigrams_hasCons_ALL_seg5
 numIters=15
 numThreads=1
 baselineModel=results/output/atis/alignments/model_3/prior_0.01/stage1.params.obj
@@ -34,10 +34,13 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.DiscriminativeInduction
 -initType supervised \
 -includeHasConsecutiveWordsFeature \
 -includeBigramsFeature \
--includeNumFieldsPerEventTypeFeature
-#-includeHasEmptyValuePerFieldFeature
+-includeHasConsecutiveTrigramsFeature \
+-includeHasConsecutiveBigramsFeature \
+-includeNumFieldsPerEventTypeFeature \
+-includeHasEmptyValuePerFieldFeature \
+-includeFieldNgramsPerEventTypeFeature
+
 #-includeHasConsecutiveTrigramsFeature
-#-includeFieldNgramsPerEventTypeFeature
 #-includeHasConsecutiveBigramsFeature \
 #-includeHasConsecutiveTrigramsFeature
 #-includeHasEmptyValueFeature

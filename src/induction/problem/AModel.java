@@ -624,8 +624,8 @@ public abstract class AModel
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
         AParams counts = newParams();
-        AExample ex = examples.get(examples.size()-1);
-//        AExample ex = examples.get(1621);
+//        AExample ex = examples.get(examples.size()-1);
+        AExample ex = examples.get(1621);
         Graph graph = new DirectedSparseGraph<String, String>();
         AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity, graph);
