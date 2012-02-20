@@ -129,6 +129,7 @@ public class Options {
   @Option(gloss="set n for modified BLEU score") public int modifiedBleuScoreSize = 4;
   @Option(gloss="re-rank output based on oracle BLEU score") public boolean oracleReranker = false;
   @Option(gloss="omit events that contain only 0's or '--'") public boolean omitEmptyEvents = false;
+  @Option(gloss="use DMV model for integration") public boolean useDependencies = false;
 
   // Discriminative
   @Option(gloss="include negative ngrams feature") public boolean includeNegativeNgramsFeature = false;
@@ -178,6 +179,8 @@ public class Options {
   @Option(gloss="Parameters object file") public String stagedParamsFile = "";
   @Option(gloss="Parameters object file of generative model (for discriminative training only") 
   public String generativeModelParamsFile;
+  @Option(gloss="Parameters object file of dmv model (for use within models of generation only") 
+  public String dmvModelParamsFile;
   @Option(gloss="Output every this number of iterations") public int outputIterFreq = 1;
   @Option(gloss="Output full predictions (for debugging)") public boolean outputFullPred = false;
   @Option(gloss="Output training objective and test predictions on current parameters") public boolean outputCurrentState = false;

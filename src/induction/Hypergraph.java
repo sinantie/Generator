@@ -198,6 +198,7 @@ public class Hypergraph<Widget> {
         BigDouble weight;
         double logWeight;
         int[] mask;
+        int head, headPos;
         Collection<Integer> eventTypeSet, fieldSet;
 
         public Derivation(Hyperedge edge, int[] mask, Collection<Integer> eventTypeSet,

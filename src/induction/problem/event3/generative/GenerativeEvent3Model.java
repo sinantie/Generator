@@ -127,6 +127,9 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             params.setVecs((Map<String, Vec>) ois.readObject());
 //            }
             ois.close();
+            
+            if(opts.useDependencies)         
+                loadGenerativeDMVModel();
         }
         catch(Exception ioe)
         {
@@ -170,8 +173,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             ex.printStackTrace(LogInfo.stderr);
 //            ex.printStackTrace();
         }
-    }
-
+    }    
+    
     @Override
     protected void baitInitParams()
     { // Hard code things

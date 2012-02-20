@@ -23,7 +23,7 @@ import induction.problem.InductionUtils;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
-import induction.problem.dmv.params.Params;
+import induction.problem.dmv.params.DMVParams;
 import induction.problem.event3.Event3Model;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
@@ -195,9 +195,9 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     }
     
     @Override
-    protected Params newParams()
+    protected DMVParams newParams()
     {
-        return new Params(this, opts, VecFactory.Type.DENSE);
+        return new DMVParams(this, opts, VecFactory.Type.DENSE);
     }
 
     /**
@@ -210,7 +210,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     protected void baitInitParams()
     {
         Utils.begin_track("baitInitParams: using harmonic initializer");
-        Params counts = newParams();
+        DMVParams counts = newParams();
         params = newParams(); 
         params.setUniform(1);       
         Collection<BatchBaitInit> list = new ArrayList(examples.size());
@@ -234,8 +234,8 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts, InferSpec ispec)
     {
         DMVExample ex = (DMVExample)aex;
-        Params localParams = (Params)aparams;
-        Params counts = (Params)acounts;
+        DMVParams localParams = (DMVParams)aparams;
+        DMVParams counts = (DMVParams)acounts;
         
         return new DMVInferState(this, ex, localParams, counts, ispec, useHarmonicWeights);
     }
@@ -244,8 +244,8 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts, InferSpec ispec, Graph graph)
     {
         DMVExample ex = (DMVExample)aex;
-        Params localParams = (Params)aparams;
-        Params counts = (Params)acounts;
+        DMVParams localParams = (DMVParams)aparams;
+        DMVParams counts = (DMVParams)acounts;
         
         return new DMVInferState(this, ex, localParams, counts, ispec, useHarmonicWeights, graph);
         
@@ -324,12 +324,26 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     public void stagedInitParams()
     {
-        Utils.begin_track("stagedInitParams");
+        stagedInitParams(opts.stagedParamsFile, null);
+    }
+
+    /**
+     * For loading within another model.
+     * @param stagedParamsFile the params file 
+     * @param crossWordIndexer a cross-indexed map between different models
+     */
+    public void stagedInitParams(String stagedParamsFile, Map<Integer, Integer> crossWordIndexer)
+    {
+        Utils.begin_track("DMV stagedInitParams");
         try
         {
-            Utils.log("Loading " + opts.stagedParamsFile);
-            ObjectInputStream ois = IOUtils.openObjIn(opts.stagedParamsFile);
-            wordIndexer = (Indexer<String>) ois.readObject();
+            Utils.log("Loading " + stagedParamsFile);
+            ObjectInputStream ois = IOUtils.openObjIn(stagedParamsFile);
+            Indexer<String> dmvWordIndexer = (Indexer<String>) ois.readObject();
+            if(crossWordIndexer == null)
+                wordIndexer = dmvWordIndexer;
+            else
+                mapIndexers(wordIndexer, dmvWordIndexer, crossWordIndexer);
             localWordIndexer = (Indexer<Integer>[]) ois.readObject();
             params = newParams();
             params.setVecs((Map<String, Vec>) ois.readObject());
@@ -337,13 +351,21 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         }
         catch(Exception ioe)
         {
-            Utils.log("Error loading "+ opts.stagedParamsFile);            
+            Utils.log("Error loading "+ stagedParamsFile);            
             ioe.printStackTrace(LogInfo.stderr);
             Execution.finish();
         }
         LogInfo.end_track();
     }
-
+    
+    private void mapIndexers(Indexer<String> wordIndexer1, Indexer<String> wordIndexer2, Map<Integer, Integer> crossWordMap)
+    {
+        for(String word : wordIndexer1.getObjects())
+        {
+            crossWordMap.put(wordIndexer1.getIndex(word), wordIndexer2.getIndex(word));
+        }
+    }
+    
     @Override
     public void learn(String name, LearnOptions lopts)
     {
@@ -411,7 +433,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             }
 
             // Batch EM only
-            Params counts = newParams();
+            DMVParams counts = newParams();
 
             // E-step
             Utils.begin_track("E-step");
@@ -498,7 +520,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         }                
         // E-step
         Utils.begin_track("Testing " + name);
-//        Params counts = newParams();
+//        DMVParams counts = newParams();
         Collection<BatchEM> list = new ArrayList(examples.size());
         for(int i = 0; i < examples.size(); i++)
         {
@@ -531,7 +553,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         this.useHarmonicWeights = false;
         return super.testGenerateVisualise(name, lopts);
-    }
+    }    
     
     protected class BatchBaitInit extends MyCallable
     {

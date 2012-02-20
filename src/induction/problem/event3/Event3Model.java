@@ -14,6 +14,8 @@ import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
+import induction.problem.dmv.generative.GenerativeDMVModel;
+import induction.problem.dmv.params.DMVParams;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
 import java.io.Serializable;
@@ -78,7 +80,9 @@ public abstract class Event3Model extends WordModel
     // map of fields names and indices - used for semantic parsing. It is filled in
     // at stagedInitParams
     protected HashMap<Integer, HashMap<String, Integer>> fieldsMap;
-
+    protected Map<Integer, Integer> depsCrossWordMap;
+    protected GenerativeDMVModel depsModel;
+    
     public Event3Model(Options opts)
     {
         super(opts);
@@ -273,6 +277,12 @@ public abstract class Event3Model extends WordModel
 
     }
 
+    protected void loadGenerativeDMVModel()
+    {
+        depsModel = new GenerativeDMVModel(opts);
+        depsCrossWordMap = new HashMap<Integer, Integer>();
+        depsModel.stagedInitParams(opts.dmvModelParamsFile, depsCrossWordMap);
+    }    
 
     @Override
     public void logStats()

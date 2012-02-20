@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author konstas
  */
-public class Params extends AParams
+public class DMVParams extends AParams
 {
     public int W;
     public Vec starts;
@@ -23,7 +23,7 @@ public class Params extends AParams
     private int[] wordIndexerLengths;
     private String vocabulary[] = WordModel.wordsToStringArray();
     
-    public Params(GenerativeDMVModel model, Options opts, VecFactory.Type vectorType)
+    public DMVParams(GenerativeDMVModel model, Options opts, VecFactory.Type vectorType)
     {
         super();
         this.model = model;
