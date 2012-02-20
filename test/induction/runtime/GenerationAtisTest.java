@@ -50,7 +50,10 @@ public class GenerationAtisTest
 //                    + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
-                    + "-lengthCompensation 0";
+                    + "-lengthCompensation 0 "
+//                    + "-useDependencies "
+                    + "-dmvModelParamsFile results/output/atis/dmv/train/"
+                    + "atis_raw5000_full_indexers_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
