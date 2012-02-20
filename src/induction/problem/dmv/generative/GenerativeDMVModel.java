@@ -200,6 +200,11 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         return new DMVParams(this, opts, VecFactory.Type.DENSE);
     }
 
+    public DMVParams getParams()
+    {
+        return (DMVParams)params;
+    }
+    
     /**
      * Initialise with an E-step which puts a uniform distribution over z
      * This works for models with natural asymmetries such as word alignment and DMV,

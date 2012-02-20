@@ -107,6 +107,7 @@ public class GenInferState extends InferState
         hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
+                opts.useDependencies,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),
@@ -433,13 +434,17 @@ public class GenInferState extends InferState
             }
             else
             {
-                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                 public double getWeight() {
                     return 1.0d;
                 }
                 public Pair getWeightAtRank(int rank)
                 {                    
                     return getAtRank(fparams.emissions[v], rank);                    
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafDepHead(word, i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
@@ -486,7 +491,7 @@ public class GenInferState extends InferState
                 }
                 else
                 {
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                         public double getWeight() {
                             return 1.0;
                         }
@@ -495,6 +500,10 @@ public class GenInferState extends InferState
                         public Pair getWeightAtRank(int rank)
                         {
                              return getAtRank(eventTypeParams.noneFieldEmissions, rank);
+                        }
+                        public Pair getDepWeight(int word)
+                        {
+                            return getLeafDepHead(word, i);
                         }
                         public GenWidget chooseWord(GenWidget widget, int word)
                         {
@@ -550,6 +559,10 @@ public class GenInferState extends InferState
                             Pair p =  getAtRank(params.genericEmissions, rank);
                             p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
                             return p;
+                        }
+                        public Pair getDepWeight(int word)
+                        {
+                            return getLeafDepHead(word, i);              
                         }
                         public GenWidget chooseWord(GenWidget widget, int word)
                         {
@@ -842,7 +855,7 @@ public class GenInferState extends InferState
     // Note: we don't need any state, but include i and c so that we get distinct
     // nodes (see note in Hypergraph)
     @Override
-    protected Object selectNoEvents(int i, int c)
+    protected Object selectNoEvents(final int i, int c)
     {
         if (ex.events.isEmpty())
             return hypergraph.endNode;
@@ -855,7 +868,7 @@ public class GenInferState extends InferState
                 {
                     final int eventTypeIndex = ev.getEventTypeIndex();
                     final EventTypeParams eventTypeParams = params.eventTypeParams[eventTypeIndex];
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                         public double getWeight() {
                                 return get(eventTypeParams.filters, Parameters.B_FALSE);
                         }
@@ -863,6 +876,10 @@ public class GenInferState extends InferState
                         public Pair getWeightAtRank(int rank)
                         {
                             return new Pair(getWeight(), null);
+                        }
+                        public Pair getDepWeight(int word)
+                        {
+                            return getLeafDepHead(word, i);
                         }
                         public GenWidget chooseWord(GenWidget widget, int word) {return widget;}
                         public GenWidget choose(GenWidget widget) {return widget;}
@@ -951,11 +968,15 @@ public class GenInferState extends InferState
         WordNode node = new WordNode(i, c, ((Event3Model)model).none_t(), -1);
         if(hypergraph.addSumNode(node))
         {
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                 public double getWeight() { return 1.0; }
                 public Pair getWeightAtRank(int rank)
                 {
                     return getAtRank(params.trackParams[c].getNoneEventTypeEmissions(), rank);
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafDepHead(word, i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) { return widget; }
@@ -970,12 +991,12 @@ public class GenInferState extends InferState
     }
 
     @Override
-    protected StopNode genStopNode(int i, final int t0, final TrackParams cparams, final TrackParams ccounts)
+    protected StopNode genStopNode(final int i, final int t0, final TrackParams cparams, final TrackParams ccounts)
     {
         StopNode node = new StopNode(i, t0);
         if(hypergraph.addSumNode(node))
         {   // Transition to boundary_t
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<Widget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<Widget>() {
                 public double getWeight() {
                     if (prevIndepEventTypes())
                         return 1.0;
@@ -996,7 +1017,10 @@ public class GenInferState extends InferState
                     return new Pair(getWeight(), vocabulary.getIndex("</s>"));
 //                    return new Pair(1.0, vocabulary.getIndex("</s>"));
                 }
-
+                public Pair getDepWeight(int word) // CAREFUL!
+                {
+                    return getLeafDepHead(word, i);
+                }
                 @Override
                 public Widget chooseWord(Widget widget, int word)
                 {

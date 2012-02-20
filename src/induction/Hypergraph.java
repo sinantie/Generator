@@ -1,5 +1,6 @@
 package induction;
 
+import induction.problem.event3.generative.generation.GenInferState;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.FieldNode;
@@ -70,6 +71,9 @@ public class Hypergraph<Widget> {
     public induction.problem.Pair getWeightAtRank(int rank);
     public Widget chooseWord(Widget widget, int word);
   }
+  public interface HyperedgeInfoDepLM<Widget> extends HyperedgeInfoLM<Widget> {
+    public induction.problem.Pair getDepWeight(int word);    
+  }  
   /**
    * Interface that supports calculation of edge weights during viterbi search
    * @param <Widget> 
@@ -198,7 +202,7 @@ public class Hypergraph<Widget> {
         BigDouble weight;
         double logWeight;
         int[] mask;
-        int head, headPos;
+        DepHead head;
         Collection<Integer> eventTypeSet, fieldSet;
 
         public Derivation(Hyperedge edge, int[] mask, Collection<Integer> eventTypeSet,
@@ -235,23 +239,39 @@ public class Hypergraph<Widget> {
                 if(p.label != null)
                 {
                     this.words.add(new Integer((Integer)p.label));
+                    if(useDependencies)
+                    {
+                        induction.problem.Pair<DepHead> headPair = 
+                                ((HyperedgeInfoDepLM)edge.info).getDepWeight(new Integer((Integer)p.label));
+                        head = headPair.label;
+                        this.weight.mult(head.weight);
+                    }
                 }
+                
             }
             else
             {
                 Derivation d;                
                 ArrayList<Integer> input = new ArrayList();
-                BigDouble[] weightArray = new BigDouble[kBestMask.length + 2];
+                BigDouble[] weightArray = new BigDouble[!useDependencies ? kBestMask.length + 2 : 
+                                                        kBestMask.length + 3];
                 if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
                 {
                     input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightAtRank(0).label));
-                }
+                }            
                 for(int i = 0; i < kBestMask.length; i++)
                 {
                     d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
+                }
+                if(useDependencies && kBestMask.length < 3) // DMV only handles binary rules
+                {
+                    DepHead leftHead = derArray.get(0).head;
+                    DepHead rightHead = derArray.get(1).head;
+                    boolean adj = Math.abs(leftHead.pos - rightHead.pos) == 1;
+//                    ((GenInferState)inferState).
                 }
                 weightArray[weightArray.length - 2] = edge.weight;  // edge weight            
                 weightArray[weightArray.length - 1] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
@@ -494,8 +514,8 @@ public class Hypergraph<Widget> {
                 out += e + ",";
             return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
         }
-    }
-
+    }   
+    
   // Specifies the hypergraph and stores the computations
   public boolean debug = false;
   public boolean allowEmptyNodes = false; // Do we allow nodes with no children?
@@ -508,7 +528,8 @@ public class Hypergraph<Widget> {
   private enum Reorder {eventType, event, field, ignore};
   public NgramModel ngramModel;
   public Indexer<String> vocabulary;
-  public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, enableFieldFeatures;
+  public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, 
+                 enableFieldFeatures, useDependencies;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
@@ -527,7 +548,7 @@ public class Hypergraph<Widget> {
   public  void setup(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
-                                        boolean oracleReranker, int NUM,
+                                        boolean oracleReranker, boolean useDependencies, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
@@ -543,6 +564,7 @@ public class Hypergraph<Widget> {
         this.reorderType = reorderType;
         this.allowConsecutiveEvents = allowConsecutiveEvents;
         this.oracleReranker = oracleReranker;
+        this.useDependencies = useDependencies;
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
@@ -570,12 +592,13 @@ public class Hypergraph<Widget> {
     }
   public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, Options.ReorderType reorderType,
-                                        boolean allowConsecutiveEvents, int NUM,
+                                        boolean allowConsecutiveEvents, 
+                                        boolean useDependencies, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
       setup(null, debug, modelType, allowEmptyNodes, K, null, 2, reorderType, 
-                         allowConsecutiveEvents, false, NUM, ELIDED_SYMBOL, 
+                         allowConsecutiveEvents, false, useDependencies, NUM, ELIDED_SYMBOL, 
                          numbersAsSymbol, wordIndexer, ex, graph);
   }
 

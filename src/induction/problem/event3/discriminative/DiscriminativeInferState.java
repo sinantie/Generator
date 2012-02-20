@@ -291,6 +291,7 @@ public class DiscriminativeInferState extends Event3InferState
         hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
+                opts.useDependencies,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),

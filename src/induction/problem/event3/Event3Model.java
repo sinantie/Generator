@@ -282,7 +282,17 @@ public abstract class Event3Model extends WordModel
         depsModel = new GenerativeDMVModel(opts);
         depsCrossWordMap = new HashMap<Integer, Integer>();
         depsModel.stagedInitParams(opts.dmvModelParamsFile, depsCrossWordMap);
-    }    
+    }
+
+    public Map<Integer, Integer> getDepsCrossWordMap()
+    {
+        return depsCrossWordMap;
+    }
+
+    public GenerativeDMVModel getDepsModel()
+    {
+        return depsModel;
+    }
 
     @Override
     public void logStats()

@@ -13,6 +13,8 @@ import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
 import fig.basic.Pair;
+import induction.DepHead;
+import induction.problem.dmv.params.DMVParams;
 import induction.problem.event3.params.FieldParams;
 import java.util.Arrays;
 
@@ -135,7 +137,21 @@ public abstract class Event3InferState
         if(p instanceof StrFieldParams) return (StrFieldParams)p;
         throw Utils.impossible();
     }
-
+    protected DMVParams getDepsParams()
+    {
+        return ((Event3Model)model).getDepsModel().getParams();
+    }
+    protected induction.problem.Pair<DepHead> getLeafDepHead(int word, int pos)
+    {
+        int indexInDepModel = getIndexOfWordInDepModel(word);
+        double weight = get(getDepsParams().starts, indexInDepModel);
+        return new induction.problem.Pair<DepHead>(weight, 
+                 new DepHead(indexInDepModel, pos, weight));      
+    }
+    protected int getIndexOfWordInDepModel(int wordIn)
+    {
+        return ((Event3Model)model).getDepsCrossWordMap().get(wordIn);
+    }
     private boolean iterInRange(Pair<Integer, Integer> interval)
     {
         return ispec.iter >= interval.getFirst().intValue() &&
