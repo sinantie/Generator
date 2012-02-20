@@ -22,7 +22,7 @@ public class DMVTrainAtisTest
     public void setUp() 
     {        
          String args = "-modelType dmv "
-                    + "-Options.stage1.numIters 100 "
+                    + "-Options.stage1.numIters 30 "
                     + "-numThreads 2 "                    
                     + "-examplesInSingleFile "                    
                     + "-inputLists "
@@ -30,9 +30,9 @@ public class DMVTrainAtisTest
                     + "data/atis/train/atis5000.sents.full "
                     + "-inputFileExt events "
                     + "-inputFormat raw "
-                    + "-dontOutputParams "            
-                    + "-posAtSurfaceLevel "            
-                    + "-useTagsAsWords";
+                    + "-dontOutputParams ";
+//                    + "-posAtSurfaceLevel "            
+//                    + "-useTagsAsWords";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
