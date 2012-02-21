@@ -80,7 +80,7 @@ public class NgramIndicesTest
         String textStr[] = "what flights go from dallas to phoenix".split(" ");
         List<Integer> text = new ArrayList();
         for(int i = 0; i < textStr.length; i++)
-            text.add(Event3Model.getWordIndex(textStr[i]));
+            text.add(model.getWordIndex(textStr[i]));
         List list = NgramModel.getNgramIndices(discModel.getWordNgramMap(), 3, text, false);
         System.out.println(list);
         

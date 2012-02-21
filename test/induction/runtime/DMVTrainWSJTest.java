@@ -24,13 +24,15 @@ public class DMVTrainWSJTest
          String args = "-modelType dmv "
                     + "-Options.stage1.numIters 30 "
                     + "-numThreads 1 "                    
-                    + "-inputPaths "
-                    + "../wsj/train/ "
+                    + "-inputLists "
+//                    + "../wsj/train/ "
+                    + "wsjLists/unsupervised-train-wsj "
 //                    + "-inputFileExt mrg "
                     + "-inputFormat mrg "
                     + "-dontOutputParams "
-                    + "-useTagsAsWords "
-                    + "-maxExampleLength 10 ";
+                    + "-maxExampleLength 10 "
+                    + "-removePunctuation "
+                    + "-useTagsAsWords";
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();

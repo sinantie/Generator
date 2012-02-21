@@ -51,7 +51,7 @@ public class GenerationAtisTest
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
-//                    + "-useDependencies "
+                    + "-useDependencies "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
                     + "atis_raw5000_full_indexers_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
