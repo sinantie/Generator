@@ -6,13 +6,33 @@ package induction;
  */
 public class DepHead
 {
-    int head, pos;
-    BigDouble weight;
+    private int head, pos;
+    private BigDouble weight;
 
-    public DepHead(int head, int headPos, double headWeight)
+    public int getHead()
+    {
+        return head;
+    }
+
+    public int getPos()
+    {
+        return pos;
+    }
+
+    public BigDouble getWeight()
+    {
+        return weight;
+    }
+    
+    public DepHead(int head, int pos, double weight)
+    {
+        this(head, pos, BigDouble.fromDouble(weight));
+    }
+    
+    public DepHead(int head, int headPos, BigDouble headWeight)
     {
         this.head = head;
         this.pos = headPos;
-        this.weight = BigDouble.fromDouble(headWeight);
-    }                
+        this.weight = headWeight;
+    }
 }

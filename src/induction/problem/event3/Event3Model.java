@@ -15,7 +15,6 @@ import induction.problem.AExample;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
-import induction.problem.dmv.params.DMVParams;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
 import java.io.Serializable;

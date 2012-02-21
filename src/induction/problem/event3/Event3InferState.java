@@ -13,6 +13,7 @@ import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
 import fig.basic.Pair;
+import induction.BigDouble;
 import induction.DepHead;
 import induction.problem.dmv.params.DMVParams;
 import induction.problem.event3.params.FieldParams;
@@ -147,6 +148,30 @@ public abstract class Event3InferState
         double weight = get(getDepsParams().starts, indexInDepModel);
         return new induction.problem.Pair<DepHead>(weight, 
                  new DepHead(indexInDepModel, pos, weight));      
+    }
+    public BigDouble getDepDerivationWeight(DepHead head, DepHead argument, int direction)
+    {
+        BigDouble weight = argument.getWeight();        
+        boolean adj = Math.abs(head.getPos() - argument.getPos()) == 1;
+        int r;
+        if(adj)
+        {
+            r = direction == induction.problem.dmv.Constants.D_LEFT ?
+                    induction.problem.dmv.Constants.R_LEFT0 : 
+                    induction.problem.dmv.Constants.R_RIGHT0;
+        }        
+        else
+        {
+            r = direction == induction.problem.dmv.Constants.D_RIGHT ?
+                    induction.problem.dmv.Constants.R_LEFT1 : 
+                    induction.problem.dmv.Constants.R_RIGHT1;
+        }
+        DMVParams depsParams = getDepsParams();
+        weight.mult(get(depsParams.continues[head.getHead()][r], induction.problem.dmv.Constants.F_CONT) *
+                    get(depsParams.deps[head.getHead()][direction], 
+                       ((Event3Model)model).getDepsModel().getLocalWordIndexer()[head.getHead()].indexOf(argument.getHead())) *
+                    get(depsParams.continues[head.getHead()][r], induction.problem.dmv.Constants.F_STOP));
+        return weight;
     }
     protected int getIndexOfWordInDepModel(int wordIn)
     {

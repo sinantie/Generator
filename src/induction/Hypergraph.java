@@ -1,6 +1,6 @@
 package induction;
 
-import induction.problem.event3.generative.generation.GenInferState;
+import induction.problem.event3.Event3InferState;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.FieldNode;
@@ -244,10 +244,9 @@ public class Hypergraph<Widget> {
                         induction.problem.Pair<DepHead> headPair = 
                                 ((HyperedgeInfoDepLM)edge.info).getDepWeight(new Integer((Integer)p.label));
                         head = headPair.label;
-                        this.weight.mult(head.weight);
+                        this.weight.mult(head.getWeight());
                     }
-                }
-                
+                }                
             }
             else
             {
@@ -270,11 +269,24 @@ public class Hypergraph<Widget> {
                 {
                     DepHead leftHead = derArray.get(0).head;
                     DepHead rightHead = derArray.get(1).head;
-                    boolean adj = Math.abs(leftHead.pos - rightHead.pos) == 1;
-//                    ((GenInferState)inferState).
+                    // choose whether to attach the right head as argument to the left head
+                    // or vice versa
+                    BigDouble weights[] = {
+                    ((Event3InferState)inferState).getDepDerivationWeight(
+                            leftHead, rightHead, induction.problem.dmv.Constants.D_RIGHT), 
+                    ((Event3InferState)inferState).getDepDerivationWeight(
+                            rightHead, leftHead, induction.problem.dmv.Constants.D_LEFT)};
+                    int argmax = BigDouble.argmax(weights);
+                    head = argmax == 0 ?
+                        new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
+                        new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
+                    weightArray[weightArray.length - 1] = weights[argmax];
+
                 }
-                weightArray[weightArray.length - 2] = edge.weight;  // edge weight            
-                weightArray[weightArray.length - 1] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
+                weightArray[!useDependencies ? weightArray.length - 2 : 
+                        weightArray.length - 3] = edge.weight;     // edge weight            
+                weightArray[!useDependencies ? weightArray.length - 1 : 
+                        weightArray.length - 2] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
                 // compute P_LM and +LM item (store in words list) (see Chiang, 2007)
                 if(input.size() >= M)
                 {
