@@ -137,7 +137,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                 } // if  
             } // for
         }
-        else
+        else if(opts.inputFormat == Options.InputFormat.raw)
             super.readFromSingleFile(inputLists);
     }
     
@@ -160,24 +160,53 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     }
     
     /**
-     * In case we don't have the dependencies' information. Works only with .events files!
+     * In case we don't have the dependencies' information.
      * @param input
      * @param maxExamples 
      */
     @Override
     protected void readExamples(String input, int maxExamples)
     {
-        if(opts.inputFileExt.equals("events"))
+        if(opts.inputFormat == Options.InputFormat.mrg)
         {
-            String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
-            List words;
-            if(opts.useTagsAsWords)
-                words = posTag(res[1]);
-            else
-                words = Arrays.asList(res[1].split(" "));
-            if(words.size() <= opts.maxExampleLength)
-                examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), null, res[0]));
-        }
+            Tree tempTree = null;
+            int counter = 0;
+            try
+            {
+                List<Tree<String>> trees = Utils.loadTrees(input, maxExamples, opts.removePunctuation);
+                for(Tree tree : trees)
+                {
+                    tempTree = tree;
+                    List words = opts.useTagsAsWords ? tree.getPreTerminalYield() : tree.getYield();
+                    if(words.size() <= opts.maxExampleLength)
+                        examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), 
+                                     DepTree.toDepTree(tree), "Example_" + counter++));
+                }
+            }
+            catch(IOException ioe)
+            {
+                LogInfo.error("Error loading file " + input);
+            }
+            catch(Exception e)
+            {
+                LogInfo.error("Error loading " + input + " " + counter + " " + tempTree);
+                e.printStackTrace();                
+            }
+        } // if
+        else if(opts.inputFormat == Options.InputFormat.raw)
+        {
+            if(opts.inputFileExt.equals("events"))
+            {
+                String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
+                List words;
+                if(opts.useTagsAsWords)
+                    words = posTag(res[1]);
+                else
+                    words = Arrays.asList(res[1].split(" "));
+                if(words.size() <= opts.maxExampleLength)
+                    examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), null, res[0]));
+            } // if
+        } // else
     }
     
     /**
