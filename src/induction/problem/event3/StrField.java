@@ -23,10 +23,11 @@ public class StrField extends Field implements Serializable
 
 //    int LB;
     public Indexer<ArrayPair> indexer = new Indexer<ArrayPair>();
-
+    Event3Model model; 
     public StrField() {}
-    public StrField(String fieldName)
+    public StrField(Event3Model model, String fieldName)
     {
+        this.model = model;
         name = fieldName;
 //        this.LB = LB;
         maxLength = Integer.MAX_VALUE;
@@ -65,7 +66,7 @@ public class StrField extends Field implements Serializable
         {
             if (role == -1 || role == GenerativeEvent3Model.getWordRole(tokens[i]))
             {
-                words.add(GenerativeEvent3Model.getWordIndex(tokens[i]));
+                words.add(model.getWordIndex(tokens[i]));
                 labels.add(GenerativeEvent3Model.getLabelIndex(Arrays.asList(tokens), i));
             }
         }
@@ -73,9 +74,9 @@ public class StrField extends Field implements Serializable
     }
 
     @Override
-    public AParams newParams(VecFactory.Type vectorType, String prefix)
+    public AParams newParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
-        return new StrFieldParams(vectorType, GenerativeEvent3Model.LB(), prefix);
+        return new StrFieldParams(model, vectorType, GenerativeEvent3Model.LB(), prefix);
     }
 
     @Override

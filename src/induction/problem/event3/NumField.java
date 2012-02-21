@@ -45,9 +45,9 @@ public class NumField extends Field implements Serializable
     }
 
     @Override
-    public AParams newParams(VecFactory.Type vectorType, String prefix)
+    public AParams newParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
-        return new NumFieldParams(vectorType, prefix);
+        return new NumFieldParams(model, vectorType, prefix);
     }
 
     @Override

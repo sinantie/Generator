@@ -89,7 +89,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     public void preInit()
     {
-        localWordIndexer = new Indexer[WordModel.W()];
+        localWordIndexer = new Indexer[W()];
         for(int i = 0; i < localWordIndexer.length; i++)
             localWordIndexer[i] = new Indexer<Integer>();        
         if(opts.useTagsAsWords)
@@ -108,7 +108,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         else // bad way to do this...we are replicating the same vector many times
         {
             for(int i = 0; i < localWordIndexer.length; i++)
-                for(int j = 0; j < WordModel.W(); j++)
+                for(int j = 0; j < W(); j++)
                     localWordIndexer[i].getIndex(j);
         }                
     }
@@ -149,7 +149,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             tempTree = input;
             List words = opts.useTagsAsWords ? input.getPreTerminalYield() : input.getYield();
             if(words.size() <= opts.maxExampleLength)
-                examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), 
+                examples.add(new DMVExample(this, InductionUtils.indexWordsOfText(wordIndexer, words), 
                              DepTree.toDepTree(input), "Example_" + numExamples++));
         }
         catch(Exception e)
@@ -179,7 +179,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                     tempTree = tree;
                     List words = opts.useTagsAsWords ? tree.getPreTerminalYield() : tree.getYield();
                     if(words.size() <= opts.maxExampleLength)
-                        examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), 
+                        examples.add(new DMVExample(this, InductionUtils.indexWordsOfText(wordIndexer, words), 
                                      DepTree.toDepTree(tree), "Example_" + counter++));
                 }
             }
@@ -204,7 +204,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                 else
                     words = Arrays.asList(res[1].split(" "));
                 if(words.size() <= opts.maxExampleLength)
-                    examples.add(new DMVExample(InductionUtils.indexWordsOfText(wordIndexer, words), null, res[0]));
+                    examples.add(new DMVExample(this, InductionUtils.indexWordsOfText(wordIndexer, words), null, res[0]));
             } // if
         } // else
     }
@@ -296,7 +296,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         int N = opts.genMaxTokens;
         // TODO
         int[] words = null;
-        return new DMVExample(words, new DepTree(null));
+        return new DMVExample(this, words, new DepTree(null));
     }
 
     @Override
@@ -358,7 +358,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     public void stagedInitParams()
     {
-        stagedInitParams(opts.stagedParamsFile, null);
+        stagedInitParams(opts.stagedParamsFile, null, null);
     }
 
     /**
@@ -366,18 +366,16 @@ public class GenerativeDMVModel extends WordModel implements Serializable
      * @param stagedParamsFile the params file 
      * @param crossWordIndexer a cross-indexed map between different models
      */
-    public void stagedInitParams(String stagedParamsFile, Map<Integer, Integer> crossWordIndexer)
+    public void stagedInitParams(String stagedParamsFile, Indexer<String> hostModelWordIndexer, Map<Integer, Integer> crossWordIndexer)
     {
         Utils.begin_track("DMV stagedInitParams");
         try
         {
             Utils.log("Loading " + stagedParamsFile);
             ObjectInputStream ois = IOUtils.openObjIn(stagedParamsFile);
-            Indexer<String> dmvWordIndexer = (Indexer<String>) ois.readObject();
-            if(crossWordIndexer == null)
-                wordIndexer = dmvWordIndexer;
-            else
-                mapIndexers(wordIndexer, dmvWordIndexer, crossWordIndexer);
+            wordIndexer = (Indexer<String>) ois.readObject();
+            if(crossWordIndexer != null)                
+                mapIndexers(hostModelWordIndexer, wordIndexer, crossWordIndexer);
             localWordIndexer = (Indexer<Integer>[]) ois.readObject();
             params = newParams();
             params.setVecs((Map<String, Vec>) ois.readObject());
@@ -396,7 +394,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         for(String word : wordIndexer1.getObjects())
         {
-            crossWordMap.put(wordIndexer1.getIndex(word), wordIndexer2.getIndex(word));
+            crossWordMap.put(wordIndexer1.getIndex(word), wordIndexer2.contains(word) ? wordIndexer2.getIndex(word) : null);
         }
     }
     

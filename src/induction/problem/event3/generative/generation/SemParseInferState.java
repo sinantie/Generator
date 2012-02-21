@@ -50,7 +50,7 @@ public class SemParseInferState extends GenInferState
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
         {
-            nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
+            nums[w] = Constants.str2num(((Event3Model)model).wordToString(words[w]));
         }
         labels = ex.getLabels();
         // map all field values to an Indexer

@@ -17,14 +17,15 @@ import induction.problem.event3.generative.GenerativeEvent3Model;
 public class SymField extends Field
 {
     static final long serialVersionUID = -2578578447679981583L;
-    
+    Event3Model model;
 //    int LB, W;
 
     public SymField() {}
-    public SymField(String fieldName)
+    public SymField(Event3Model model, String fieldName)
     {
 //        this.W = W;
 //        this.LB = LB;
+        this.model = model;
         name = fieldName;
         maxLength = 1;
     }
@@ -32,25 +33,25 @@ public class SymField extends Field
     @Override
     public int getV()
     {
-        return GenerativeEvent3Model.W();
+        return model.W();
     }
     
     @Override
     public String valueToString(int v)
     {
-        return GenerativeEvent3Model.wordToString(v);
+        return model.wordToString(v);
     }
 
     @Override
     public int parseValue(int role, String str)
     {
-        return GenerativeEvent3Model.getWordIndex(str);
+        return model.getWordIndex(str);
     }
 
     @Override
-    public AParams newParams(VecFactory.Type vectorType, String prefix)
+    public AParams newParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
-        return new SymFieldParams(vectorType, GenerativeEvent3Model.LB(), prefix);
+        return new SymFieldParams(model, vectorType, GenerativeEvent3Model.LB(), prefix);
     }
 
     @Override

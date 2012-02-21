@@ -3,7 +3,7 @@ package induction.problem.event3.params;
 import induction.problem.AParams;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
-import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import java.io.Serializable;
 
@@ -18,14 +18,14 @@ public abstract class FieldParams extends AParams implements Serializable
     private int W;
     protected String prefix;
 
-    public FieldParams(VecFactory.Type vectorType, String prefix)
+    public FieldParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
-        super();
-        this.W = GenerativeEvent3Model.W();
+        super(model);
+        this.W = model.W();
         this.prefix = prefix;
         wordBigramChoices = VecFactory.zeros2(vectorType, W, W);
         addVec(getLabels(W, "wordBi "  + prefix + " ",
-                    GenerativeEvent3Model.wordsToStringArray()), wordBigramChoices);
+                    ((Event3Model)model).wordsToStringArray()), wordBigramChoices);
     }
 
     // Provide potentials for salience
@@ -39,9 +39,9 @@ public abstract class FieldParams extends AParams implements Serializable
     @Override
     public String output(ParamsType paramsType)
     {
+        String[] words = ((Event3Model)model).wordsToStringArray();
         StringBuilder out = new StringBuilder();
-        String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
-                    GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+        String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ", words, words);
         int i = 0;
         // if too huge parameter set, comment
         for(Vec v: wordBigramChoices)
@@ -54,9 +54,9 @@ public abstract class FieldParams extends AParams implements Serializable
     @Override
     public String outputNonZero(ParamsType paramsType)
     {
+        String[] words = ((Event3Model)model).wordsToStringArray();
         StringBuilder out = new StringBuilder();
-        String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ",
-                    GenerativeEvent3Model.wordsToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+        String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ", words, words);
         int i = 0;
         // if too huge parameter set, comment
         for(Vec v: wordBigramChoices)

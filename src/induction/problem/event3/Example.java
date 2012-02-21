@@ -1,7 +1,6 @@
 package induction.problem.event3;
 
 import induction.problem.event3.generative.generation.GenWidget;
-import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.AExample;
@@ -46,7 +45,7 @@ public class Example implements AExample<Widget>
             isPunctuationArray = new boolean[N];
             for(int i = 0; i < isPunctuationArray.length; i++)
             {
-                s = GenerativeEvent3Model.wordToString(text[i]);
+                s = model.wordToString(text[i]);
                 isPunctuationArray[i] = model.getOpts().posAtSurfaceLevel ?
                         // if words have pos tag attached to them
                         s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
@@ -96,7 +95,7 @@ public class Example implements AExample<Widget>
         String out = "";
         for(int i = 0; i < widget.getText().length; i++)
         {
-            out += (widget.getNums()[i] > -1 ? widget.getNums()[i] : GenerativeEvent3Model.wordToString(widget.getText()[i])) + " ";
+            out += (widget.getNums()[i] > -1 ? widget.getNums()[i] : model.wordToString(widget.getText()[i])) + " ";
         }
         return out.trim();
     }
@@ -237,7 +236,7 @@ public class Example implements AExample<Widget>
                 {
                     for(int k = i; k < j; k++)
                     {
-                        buf.append(GenerativeEvent3Model.wordToString(widget.getText()[k])).append(" ");
+                        buf.append(model.wordToString(widget.getText()[k])).append(" ");
                     }
                     buf.deleteCharAt(buf.length() - 1);
                 } // if
@@ -263,7 +262,7 @@ public class Example implements AExample<Widget>
                         for(int m = k; m < l; m++)
                         {
                             String str = (widget.getNums()[m] > -1 ? widget.getNums()[m] :
-                                GenerativeEvent3Model.wordToString(widget.getText()[m])) + "";
+                                model.wordToString(widget.getText()[m])) + "";
                             if (widget.gens != null && widget.gens[c][m] != -1)
                             {
                                 str += "_" + Parameters.short_gstr[widget.gens[c][m]];
@@ -385,7 +384,7 @@ public class Example implements AExample<Widget>
                 {
                     for(int k = i; k < j; k++)
                     {
-                        buf.append(GenerativeEvent3Model.wordToString(text[k])).append(" ");
+                        buf.append(model.wordToString(text[k])).append(" ");
                     }
                     buf.deleteCharAt(buf.length() - 1);
                 } // if
@@ -410,7 +409,7 @@ public class Example implements AExample<Widget>
                         }
                         for(int m = k; m < l; m++)
                         {
-                            String str = GenerativeEvent3Model.wordToString(text[m]);
+                            String str = model.wordToString(text[m]);
                             if (widget.gens != null && widget.gens[c][m] != -1)
                             {
                                 str += "_" + Parameters.short_gstr[widget.gens[c][m]];

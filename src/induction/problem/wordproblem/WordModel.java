@@ -20,7 +20,7 @@ public abstract class WordModel extends AModel
 //                                     Example>//, InferState>
 {
 
-    protected static Indexer<String> wordIndexer = new Indexer<String>();
+    protected Indexer<String> wordIndexer = new Indexer<String>();
     protected int[] wordFreqs = null; // Word frequencies
    
     public WordModel(Options opts)
@@ -32,12 +32,12 @@ public abstract class WordModel extends AModel
      *
      * @return number of words
      */
-    public static int W()
+    public int W()
     {
         return wordIndexer.size();
     }
 
-    public static String wordToString(int w)
+    public String wordToString(int w)
     {
         if(w > -1)
             return wordIndexer.getObject(w);
@@ -45,8 +45,16 @@ public abstract class WordModel extends AModel
 //            return "N/A";
             return "";
     }
+    
+    public static String wordToString(Indexer<String> wordIndexer, int w)
+    {
+        if(w > -1)
+            return wordIndexer.getObject(w);
+        else
+            return "";
+    }
 
-    public static String[] wordsToStringArray()
+    public String[] wordsToStringArray()
     {
         String[] out = new String[wordIndexer.size()];
         return wordIndexer.getObjects().toArray(out);

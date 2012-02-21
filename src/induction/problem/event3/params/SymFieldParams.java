@@ -3,6 +3,7 @@ package induction.problem.event3.params;
 import induction.problem.AParams;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
@@ -17,9 +18,9 @@ public class SymFieldParams extends AParams
     public Vec labelChoices;
     private String prefix;
 
-    public SymFieldParams(VecFactory.Type vectorType, int LB, String prefix)
+    public SymFieldParams(Event3Model model, VecFactory.Type vectorType, int LB, String prefix)
     {
-        super();
+        super(model);
         this.LB = LB;
         this.prefix = prefix;
         // lb -> probability of producing labels

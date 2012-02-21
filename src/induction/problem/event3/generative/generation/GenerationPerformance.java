@@ -1,7 +1,6 @@
 package induction.problem.event3.generative.generation;
 
 import induction.problem.event3.generative.alignment.AlignmentPerformance;
-import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.Parameters;
 import edu.berkeley.nlp.mt.BatchBleuModifiedScorer;
 import edu.berkeley.nlp.mt.BatchBleuScorer;
@@ -9,11 +8,13 @@ import edu.cmu.meteor.Meteor;
 import edu.cmu.meteor.scorer.MeteorScorer;
 import edu.cmu.meteor.scorer.MeteorStats;
 import fig.basic.EvalResult;
+import fig.basic.Indexer;
 import induction.MyList;
 import induction.Utils;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.TERMetric;
 import induction.problem.event3.Widget;
+import induction.problem.wordproblem.WordModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,8 +51,8 @@ public class GenerationPerformance extends AlignmentPerformance
     {
         if(trueWidget != null)
         {
-            String predStr = widgetToString((GenWidget)predWidget);
-            String trueStr = widgetToString((GenWidget)trueWidget);
+            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget);
+            String trueStr = widgetToString(model.getWordIndexer(), (GenWidget)trueWidget);
 
 //            String predModifiedStr = modifyPredStr(predStr, trueStr, (GenWidget) predWidget, (GenWidget) trueWidget);
             // Compute BLEU
@@ -135,13 +136,13 @@ public class GenerationPerformance extends AlignmentPerformance
         return subResult;
     }
 
-    public static String widgetToString(GenWidget widget)
+    public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget)
     {
         String out = "";
         for(int i = 0; i < widget.text.length; i++)
         {
             out += (widget.nums[i] > -1 ? widget.nums[i] :
-                    GenerativeEvent3Model.wordToString(widget.text[i])) + " ";
+                    WordModel.wordToString(wordIndexer, widget.text[i])) + " ";
         }
         return out.trim();
     }

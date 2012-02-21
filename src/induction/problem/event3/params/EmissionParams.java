@@ -2,6 +2,7 @@ package induction.problem.event3.params;
 
 import induction.problem.AParams;
 import induction.problem.Vec;
+import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import java.util.Map;
 
 /**
@@ -19,9 +20,10 @@ public class EmissionParams extends AParams
     Map<Integer, Map<Integer, Vec[]>> catEmissions;
     Vec noneEventTypeEmissions, genericEmissions;
     
-    public EmissionParams(Map<Integer, Map<Integer, Vec[]>> catEmissions, Map<Integer, Vec> noneFieldEmissions,
+    public EmissionParams(DiscriminativeEvent3Model model, Map<Integer, Map<Integer, Vec[]>> catEmissions, Map<Integer, Vec> noneFieldEmissions,
                           Vec noneEventTypeEmissions, Vec genericEmissions)
     {
+        super(model);
         this.catEmissions = catEmissions;
         this.noneFieldEmissions = noneFieldEmissions;
         this.noneEventTypeEmissions = noneEventTypeEmissions;

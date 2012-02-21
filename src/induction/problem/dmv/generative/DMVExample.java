@@ -10,14 +10,16 @@ import induction.problem.wordproblem.WordModel;
  */
 public class DMVExample extends Example<DepTree>
 {
-    public DMVExample(int[] text, DepTree trueWidget)
+    
+    
+    public DMVExample(WordModel model, int[] text, DepTree trueWidget)
     {
-        super(text, trueWidget);
+        super(model, text, trueWidget);        
     }
     
-    public DMVExample(int[] text, DepTree trueWidget, String name)
+    public DMVExample(WordModel model, int[] text, DepTree trueWidget, String name)
     {
-        super(text, trueWidget, name);
+        super(model, text, trueWidget, name);        
     }
     
     public String widgetToNiceFullString(DepTree widget)
@@ -42,10 +44,10 @@ public class DMVExample extends Example<DepTree>
         StringBuilder out = new StringBuilder();
         for(int i = 0; i < numTokens; i++)
             out.append(i).
-                append("[").append(WordModel.wordToString(text[i])).append("]").
+                append("[").append(model.wordToString(text[i])).append("]").
                 append("<-").
                 append(widget.getParent()[i]).
-                append("[").append(WordModel.wordToString(text[widget.getParent()[i]])).append("]").
+                append("[").append(model.wordToString(text[widget.getParent()[i]])).append("]").
                 append(" ");        
         return out.toString();
     }

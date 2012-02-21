@@ -6,6 +6,7 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
 import induction.problem.event3.EventType;
+import induction.problem.wordproblem.WordModel;
 
 /**
  *
@@ -31,10 +32,10 @@ public class EventTypeParams extends AParams
 
     public EventTypeParams(Event3Model model, EventType eventType, VecFactory.Type vectorType)
     {
-        super();
+        super(model);
         none_f = eventType.getNone_f();
         boundary_f = eventType.getBoundary_f();
-        this.W = Event3Model.W();
+        this.W = model.W();
         this.F = eventType.getF();
         this.typeToString = eventType.getName();
         this.fieldToString = new String[F + 2];
@@ -89,7 +90,7 @@ public class EventTypeParams extends AParams
         
         noneFieldBigramChoices = VecFactory.zeros2(vectorType, W, W);
         addVec(getLabels(W, "noneFieldWordBiC " + typeToString + " ",
-                          Event3Model.wordsToStringArray()), noneFieldBigramChoices);
+                          model.wordsToStringArray()), noneFieldBigramChoices);
 
         // f, w -> express field f with word w (G_FIELD_NAME) (not used)
 //        fieldNameEmissions = ProbVec.zeros2(F, W);
@@ -97,7 +98,7 @@ public class EventTypeParams extends AParams
         fieldParams = new AParams[F];
         for(int f = 0; f < F; f++)
         {
-            fieldParams[f] = eventType.getFields()[f].newParams(vectorType, 
+            fieldParams[f] = eventType.getFields()[f].newParams(model, vectorType, 
                     typeToString + " " + fieldToString[f]);
             addVec(fieldParams[f].getVecs());
         }
@@ -174,11 +175,11 @@ public class EventTypeParams extends AParams
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProb(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
                     append(forEachProb(noneFieldEmissions, 
-                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
+                    getLabels(W, "noneFieldE " + typeToString + " ", ((Event3Model)model).wordsToStringArray())));
         else
             out.append(forEachCount(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
                     append(forEachCount(noneFieldEmissions,
-                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
+                    getLabels(W, "noneFieldE " + typeToString + " ", ((Event3Model)model).wordsToStringArray())));
             
         // if too huge parameter set, comment
 //        i = 0;
@@ -228,11 +229,11 @@ public class EventTypeParams extends AParams
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
                     append(forEachProbNonZero(noneFieldEmissions, 
-                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
+                    getLabels(W, "noneFieldE " + typeToString + " ", ((Event3Model)model).wordsToStringArray())));
         else
             out.append(forEachCountNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
                     append(forEachCountNonZero(noneFieldEmissions,
-                    getLabels(W, "noneFieldE " + typeToString + " ", Event3Model.wordsToStringArray())));
+                    getLabels(W, "noneFieldE " + typeToString + " ", ((Event3Model)model).wordsToStringArray())));
             
         // if too huge parameter set, comment
 //        i = 0;

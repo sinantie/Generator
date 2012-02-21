@@ -263,7 +263,7 @@ public class DiscriminativeInferState extends Event3InferState
         localGenericEmissions.addCount(getBaselineScore(baseline.genericEmissions));
         localGenericEmissions.setCountsSortedIndices();
         
-        emissionsParams = new EmissionParams(
+        emissionsParams = new EmissionParams((DiscriminativeEvent3Model)model,
                 localFieldEmissions,                
                 localNoneFieldEmissions, 
                 localNoneEventTypeEmissions,                 

@@ -20,9 +20,11 @@ public abstract class AParams implements Serializable
     public static enum ParamsType {PROBS, COUNTS};
     static final long serialVersionUID = -8920104157808512229L;
     protected Map<String, Vec> vecsMap;
-
-    public AParams()
+    protected AModel model;
+    
+    public AParams(AModel model)
     {
+        this.model = model;
         vecsMap = new HashMap<String, Vec>();
     }   
     

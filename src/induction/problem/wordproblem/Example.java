@@ -1,6 +1,5 @@
 package induction.problem.wordproblem;
 
-import fig.basic.Indexer;
 import induction.problem.AExample;
 
 /**
@@ -13,14 +12,16 @@ public class Example<Widget> implements AExample<Widget>
     protected final int numTokens;
     protected int[] text;
     protected Widget trueWidget;
+    protected WordModel model;
     
-    public Example(int[] words, Widget trueWidget)
-    {
-        this(words, trueWidget, "");
+    public Example(WordModel model, int[] words, Widget trueWidget)
+    {        
+        this(model, words, trueWidget, "");
     }
     
-    public Example(int[] text, Widget trueWidget, String name)
+    public Example(WordModel model, int[] text, Widget trueWidget, String name)
     {
+        this.model = model;
         this.trueWidget = trueWidget;
         this.name = name;
         this.text = text;

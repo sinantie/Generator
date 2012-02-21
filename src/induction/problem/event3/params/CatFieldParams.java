@@ -3,7 +3,7 @@ package induction.problem.event3.params;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.CatField;
-import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.Event3Model;
 
 /**
  *
@@ -16,10 +16,10 @@ public class CatFieldParams extends FieldParams
 //    private String prefix;
     private CatField field;
     private int W;
-    public CatFieldParams(VecFactory.Type vectorType, int W, String prefix, CatField field)
+    public CatFieldParams(Event3Model model, VecFactory.Type vectorType, String prefix, CatField field)
     {
-        super(vectorType, prefix);
-        this.W = W;
+        super(model, vectorType, prefix);
+        this.W = model.W();
 //        this.prefix = prefix;
         this.field = field;
         // v, w -> express value v with word w
@@ -42,7 +42,7 @@ public class CatFieldParams extends FieldParams
     {
         StringBuilder out = new StringBuilder(super.output(paramsType));
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
-                    field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+                    field.valuesToStringArray(), ((Event3Model)model).wordsToStringArray());
         int i = 0;
         for(Vec v: emissions)
         {
@@ -52,7 +52,7 @@ public class CatFieldParams extends FieldParams
                 out.append(forEachCount(v, labels[i++]));
         }
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
-                    GenerativeEvent3Model.wordsToStringArray(), field.valuesToStringArray());
+                    ((Event3Model)model).wordsToStringArray(), field.valuesToStringArray());
         i = 0;
 
 // uncomment for semantic parsing
@@ -79,7 +79,7 @@ public class CatFieldParams extends FieldParams
     {
         StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
-                    field.valuesToStringArray(), GenerativeEvent3Model.wordsToStringArray());
+                    field.valuesToStringArray(), ((Event3Model)model).wordsToStringArray());
         int i = 0;
         for(Vec v: emissions)
         {
@@ -89,7 +89,7 @@ public class CatFieldParams extends FieldParams
                 out.append(forEachCountNonZero(v, labels[i++]));
         }
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
-                    GenerativeEvent3Model.wordsToStringArray(), field.valuesToStringArray());
+                    ((Event3Model)model).wordsToStringArray(), field.valuesToStringArray());
         i = 0;
 
 // uncomment for semantic parsing

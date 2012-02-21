@@ -65,7 +65,7 @@ public class InferState extends Event3InferState
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
         {
-            nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
+            nums[w] = Constants.str2num(((Event3Model)model).wordToString(words[w]));
         }
         labels = ex.getLabels();
 
@@ -564,14 +564,14 @@ public class InferState extends Event3InferState
                             {
                                 return get(((EventTypeParams)aparams).noneFieldBigramChoices[
                                         begin > 0 ? words[begin] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")
+                                        ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin]);
                             }
                             else
                             {
                                 return get(((FieldParams)aparams).wordBigramChoices[
                                         begin > 0 ? words[begin] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")
+                                        ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin]);
                             }
 
@@ -582,14 +582,14 @@ public class InferState extends Event3InferState
                         {
                             update(((EventTypeParams)acounts).noneFieldBigramChoices[
                                         begin > 0 ? words[begin] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")
+                                        ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin], prob);
                         }
                         else
                         {
                             update(((FieldParams)acounts).wordBigramChoices[
                                         begin > 0 ? words[begin] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")
+                                        ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin], prob);
                         }
                     }
@@ -793,7 +793,7 @@ public class InferState extends Event3InferState
                     public double getWeight() {
                         return get(cparams.getNoneEventTypeBigramChoices()[
                                         i > 0 ? words[i] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")
+                                        ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[i]) *
                                 get(params.trackParams[c].getNoneEventTypeEmissions(), words[i]) *
                                    getEventTypeGivenWord(params.trackParams[c].none_t, words[i]);
@@ -802,7 +802,7 @@ public class InferState extends Event3InferState
                     {
                         update(ccounts.getNoneEventTypeBigramChoices()[
                                         i > 0 ? words[i] - 1 :
-                                        Event3Model.getWordIndex("(boundary)")
+                                        ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[i], prob);
                         update(counts.trackParams[c].getNoneEventTypeEmissions(), words[i], prob);
                         updateEventTypeGivenWord(params.trackParams[c].none_t, words[i], prob);

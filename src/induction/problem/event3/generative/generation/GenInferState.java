@@ -28,7 +28,6 @@ import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.StopNode;
-import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
 import java.util.ArrayList;
@@ -347,7 +346,7 @@ public class GenInferState extends InferState
 //                                    Math.pow(get(fparams.rightNoiseChoices,
 //                                    Parameters.S_CONTINUE), NOISE_MINUS_ONE) *
 //                                    get(fparams.rightNoiseChoices, Parameters.S_STOP),
-//                                    Event3Model.getWordIndex("<num>"));
+//                                    ((Event3Model)model).getWordIndex("<num>"));
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -383,7 +382,7 @@ public class GenInferState extends InferState
 //                                    Math.pow(get(fparams.leftNoiseChoices,
 //                                    Parameters.S_CONTINUE), MINUS_NOISE_MINUS_ONE) *
 //                                    get(fparams.leftNoiseChoices, Parameters.S_STOP),
-//                                    Event3Model.getWordIndex("<num>"));
+//                                    ((Event3Model)model).getWordIndex("<num>"));
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -630,7 +629,7 @@ public class GenInferState extends InferState
 //                                return get(((EventTypeParams)aparams).noneFieldBigramChoices[
 //                                // word1 = -1, in case we are in the beginning of a phrase
 //                                        word1 > 0 ? word1 :
-//                                        Event3Model.getWordIndex("(boundary)")],
+//                                        ((Event3Model)model).getWordIndex("(boundary)")],
 //                                        word2);
 //                            }
 //                            else
@@ -638,7 +637,7 @@ public class GenInferState extends InferState
 //                                return get(((FieldParams)aparams).wordBigramChoices[
 //                                // word1 = -1, in case we are in the beginning of a phrase
 //                                        word1 > 0 ? word1 :
-//                                        Event3Model.getWordIndex("(boundary)")],
+//                                        ((Event3Model)model).getWordIndex("(boundary)")],
 //                                        word2);
 //                            }
 //                        }
@@ -1037,592 +1036,592 @@ public class GenInferState extends InferState
         hypergraph.addEdge(node, genTrack(i, j, t0, 0, opts.allowNoneEvent, true));
     }
 
-    private Object testOrder()
-    {
-        final double pTempStart = 0.9;
-        final double pWindStart = 0.8;
-        final double pTempTemp = 0.02;
-        final double pTempWind = 0.85;
-        final double pWindWind = 0.01;
-        final double pWindTemp = 0.7;
-        EventsNode ev0Start = new EventsNode(0, ((Event3Model)model).none_t()); hypergraph.addSumNode(ev0Start);
-        TrackNode tr01Start = new TrackNode(0, 1, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr01Start);
-        TrackNode tr02Start = new TrackNode(0, 2, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr02Start);
-        TrackNode tr03Start = new TrackNode(0, 3, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr03Start);
-        
-        final FieldsNode fs01Temp = new FieldsNode(0, 1, 0, 1, 0, 0); hypergraph.addSumNode(fs01Temp);
-        EventsNode ev1Temp = new EventsNode(1, 1); hypergraph.addSumNode(ev1Temp);
-        final FieldsNode fs01Wind = new FieldsNode(0, 1, 0, 2, 0, 0); hypergraph.addSumNode(fs01Wind);
-        EventsNode ev1Wind = new EventsNode(1, 2); hypergraph.addSumNode(ev1Wind);
-        
-        final FieldsNode fs02Temp = new FieldsNode(0, 2, 0, 1, 0, 0); hypergraph.addSumNode(fs02Temp);
-        final FieldsNode fs02Wind = new FieldsNode(0, 2, 0, 2, 0, 0); hypergraph.addSumNode(fs02Wind);
-        
-        final FieldsNode fs03Temp = new FieldsNode(0, 3, 0, 1, 0, 0); hypergraph.addSumNode(fs03Temp);
-        final FieldsNode fs03Wind = new FieldsNode(0, 3, 0, 2, 0, 0); hypergraph.addSumNode(fs03Wind);
-        
-        TrackNode tr12Wind = new TrackNode(1, 2, 2, 0, false, false); hypergraph.addSumNode(tr12Wind);
-        TrackNode tr12Temp = new TrackNode(1, 2, 1, 0, false, false); hypergraph.addSumNode(tr12Temp);
-        
-        TrackNode tr13Temp = new TrackNode(1, 3, 1, 0, false, false); hypergraph.addSumNode(tr13Temp);
-        TrackNode tr13Wind = new TrackNode(1, 3, 2, 0, false, false); hypergraph.addSumNode(tr13Wind);
-        
-        final FieldsNode fs12Temp = new FieldsNode(1, 2, 0, 1, 0, 0); hypergraph.addSumNode(fs12Temp);
-        EventsNode ev2Temp = new EventsNode(2, 1); hypergraph.addSumNode(ev2Temp);
-        final FieldsNode fs12Wind = new FieldsNode(1, 2, 0, 2, 0, 0); hypergraph.addSumNode(fs12Wind);
-        EventsNode ev2Wind = new EventsNode(2, 2); hypergraph.addSumNode(ev2Wind);
-        
-        final FieldsNode fs13Temp = new FieldsNode(1, 3, 0, 1, 0, 0); hypergraph.addSumNode(fs13Temp);
-        final FieldsNode fs13Wind = new FieldsNode(1, 3, 0, 2, 0, 0); hypergraph.addSumNode(fs13Wind);
-        
-        TrackNode tr23Temp = new TrackNode(2, 3, 1, 0, false, false); hypergraph.addSumNode(tr23Temp);
-        TrackNode tr23Wind = new TrackNode(2, 3, 2, 0, false, false); hypergraph.addSumNode(tr23Wind);
-
-        final FieldsNode fs23Temp = new FieldsNode(2, 3, 0, 1, 0, 0); hypergraph.addSumNode(fs23Temp);
-        final FieldsNode fs23Wind = new FieldsNode(2, 3, 0, 2, 0, 0); hypergraph.addSumNode(fs23Wind);
-        
-        hypergraph.addEdge(ev0Start, tr01Start, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev0Start, tr02Start, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev0Start, tr03Start, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr01Start, fs01Temp, ev1Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempStart; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr01Start, fs01Wind, ev1Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindStart; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr02Start, fs02Temp, ev2Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempStart; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr02Start, fs02Wind, ev2Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindStart; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr03Start, fs03Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempStart; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr03Start, fs03Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindStart; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev1Temp, tr12Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev1Temp, tr13Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev1Wind, tr12Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev1Wind, tr13Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr12Wind, fs12Temp, ev2Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempWind; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr12Wind, fs12Wind, ev2Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindWind; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr12Temp, fs12Temp, ev2Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempTemp; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr12Temp, fs12Wind, ev2Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindTemp; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr13Temp, fs13Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempTemp; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr13Temp, fs13Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindTemp; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr13Wind, fs13Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempWind; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr13Wind, fs13Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindWind; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev2Temp, tr23Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(ev2Wind, tr23Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr23Temp, fs23Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempTemp; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr23Temp, fs23Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindTemp; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr23Wind, fs23Temp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pTempWind; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(tr23Wind, fs23Wind, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return pWindWind; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-
-        hypergraph.addEdge(fs01Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.8, Event3Model.getWordIndex("a")); break;
-                        case 1 : p = new Pair(0.6, Event3Model.getWordIndex("low")); break;
-                        default: case 2 : p = new Pair(0.5, Event3Model.getWordIndex("around")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs01Temp.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs12Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.8, Event3Model.getWordIndex("a")); break;
-                        case 1 : p = new Pair(0.6, Event3Model.getWordIndex("low")); break;
-                        default: case 2 : p = new Pair(0.5, Event3Model.getWordIndex("around")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs12Temp.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs23Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.8, Event3Model.getWordIndex("a")); break;
-                        case 1 : p = new Pair(0.6, Event3Model.getWordIndex("low")); break;
-                        default: case 2 : p = new Pair(0.5, Event3Model.getWordIndex("around")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs23Temp.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs01Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.8, Event3Model.getWordIndex("south")); break;
-                        case 1 : p = new Pair(0.6, Event3Model.getWordIndex("west")); break;
-                        default: case 2 : p = new Pair(0.5, Event3Model.getWordIndex("wind")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs01Wind.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs12Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.8, Event3Model.getWordIndex("south")); break;
-                        case 1 : p = new Pair(0.6, Event3Model.getWordIndex("west")); break;
-                        default: case 2 : p = new Pair(0.5, Event3Model.getWordIndex("wind")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs12Wind.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs23Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.8, Event3Model.getWordIndex("south")); break;
-                        case 1 : p = new Pair(0.6, Event3Model.getWordIndex("west")); break;
-                        default: case 2 : p = new Pair(0.5, Event3Model.getWordIndex("wind")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs23Wind.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs02Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.038, Event3Model.getWordIndex("mostly")); break;
-                        case 1 : p = new Pair(0.036, Event3Model.getWordIndex("cloudy")); break;
-                        default: case 2 : p = new Pair(0.035, Event3Model.getWordIndex(",")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs02Temp.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs02Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.038, Event3Model.getWordIndex("partly")); break;
-                        case 1 : p = new Pair(0.036, Event3Model.getWordIndex("becoming")); break;
-                        default: case 2 : p = new Pair(0.035, Event3Model.getWordIndex("sunny")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs02Wind.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs03Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.08, Event3Model.getWordIndex("patchy")); break;
-                        case 1 : p = new Pair(0.06, Event3Model.getWordIndex("gusts")); break;
-                        default: case 2 : p = new Pair(0.05, Event3Model.getWordIndex("before")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs03Temp.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs03Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.08, Event3Model.getWordIndex("showers")); break;
-                        case 1 : p = new Pair(0.06, Event3Model.getWordIndex("thunderstorms")); break;
-                        default: case 2 : p = new Pair(0.05, Event3Model.getWordIndex("after")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs03Wind.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs13Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.08, Event3Model.getWordIndex("calm")); break;
-                        case 1 : p = new Pair(0.06, Event3Model.getWordIndex("clear")); break;
-                        default: case 2 : p = new Pair(0.05, Event3Model.getWordIndex("near")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs13Temp.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(fs13Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    Pair p = null;
-                    switch(rank)
-                    {
-                        case 0 : p = new Pair(0.08, Event3Model.getWordIndex("calm")); break;
-                        case 1 : p = new Pair(0.06, Event3Model.getWordIndex("clear")); break;
-                        default: case 2 : p = new Pair(0.05, Event3Model.getWordIndex("near")); break;
-                    }
-                    return p;
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[fs13Wind.getI()] = word;
-                    return widget;
-                }
-            });
-        return ev0Start;
-    }
-    
-    private Object test()
-    {
-        EventsNode sentence = new EventsNode(0, 0);
-        TrackNode np = new TrackNode(0, 0, 0, 0, false, false);
-        FieldNode vp = new FieldNode(0, 0, 0, 0, 0);
-        FieldNode nnp = new FieldNode(0, 0, 0, 0, 1);
-        final WordNode word1 = new WordNode(0, 1, 1, 1);
-        final WordNode word2 = new WordNode(1, 1, 1, 2);
-        final WordNode word3 = new WordNode(2, 1, 1, 2);
-        final WordNode word4 = new WordNode(3, 1, 1, 2);
-        final WordNode word5 = new WordNode(4, 1, 1, 2);
-        hypergraph.addSumNode(sentence);
-        hypergraph.addSumNode(np);
-        hypergraph.addSumNode(vp);
-        hypergraph.addSumNode(nnp);
-        hypergraph.addSumNode(word1);
-        hypergraph.addSumNode(word2);
-        hypergraph.addSumNode(word3);
-        hypergraph.addSumNode(word4);
-        hypergraph.addSumNode(word5);
-        hypergraph.addEdge(sentence, np, vp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(sentence, nnp, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(nnp, word5, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(np, word1, word2, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(vp, word3, word4, new Hypergraph.HyperedgeInfo<Widget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public Widget choose(Widget widget) { return widget; }
-            });
-        hypergraph.addEdge(word1, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    if(rank == 0)
-                    {
-                        return new Pair(0.8, Event3Model.getWordIndex("mostly"));
-                    }
-                    else
-                    {
-                        return new Pair(0.5, Event3Model.getWordIndex("mainly"));
-                    }
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[word1.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(word2, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    if(rank == 0)
-                    {
-                        return new Pair(0.9, Event3Model.getWordIndex("cloudy"));
-                    }
-                    else
-                    {
-                        return new Pair(0.4, Event3Model.getWordIndex("after"));
-                    }
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[word2.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(word3, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    if(rank == 0)
-                    {
-                        return new Pair(0.2, Event3Model.getWordIndex("and"));
-                    }
-                    else
-                    {
-                        return new Pair(0.01, Event3Model.getWordIndex("midnight"));
-                    }
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[word3.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(word4, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    if(rank == 0)
-                    {
-                        return new Pair(0.002, Event3Model.getWordIndex("."));
-                    }
-                    else
-                    {
-                        return new Pair(0.00018, Event3Model.getWordIndex("cold"));
-                    }
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[word4.getI()] = word;
-                    return widget;
-                }
-            });
-        hypergraph.addEdge(word5, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                public double getWeight() { return 1.0; }
-                public void setPosterior(double prob) { }
-                public GenWidget choose(GenWidget widget) { return widget; }
-                public Pair getWeightAtRank(int rank)
-                {
-                    if(rank == 0)
-                    {
-                        return new Pair(0.9, Event3Model.getWordIndex("high"));
-                    }
-                    else
-                    {
-                        return new Pair(0.5, Event3Model.getWordIndex("low"));
-                    }
-                }
-                public GenWidget chooseWord(GenWidget widget, int word)
-                {
-                    widget.getText()[word4.getI()] = word;
-                    return widget;
-                }
-            });
-
-        return sentence;
-    }
+//    private Object testOrder()
+//    {
+//        final double pTempStart = 0.9;
+//        final double pWindStart = 0.8;
+//        final double pTempTemp = 0.02;
+//        final double pTempWind = 0.85;
+//        final double pWindWind = 0.01;
+//        final double pWindTemp = 0.7;
+//        EventsNode ev0Start = new EventsNode(0, ((Event3Model)model).none_t()); hypergraph.addSumNode(ev0Start);
+//        TrackNode tr01Start = new TrackNode(0, 1, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr01Start);
+//        TrackNode tr02Start = new TrackNode(0, 2, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr02Start);
+//        TrackNode tr03Start = new TrackNode(0, 3, ((Event3Model)model).none_t(), 0, false, false); hypergraph.addSumNode(tr03Start);
+//        
+//        final FieldsNode fs01Temp = new FieldsNode(0, 1, 0, 1, 0, 0); hypergraph.addSumNode(fs01Temp);
+//        EventsNode ev1Temp = new EventsNode(1, 1); hypergraph.addSumNode(ev1Temp);
+//        final FieldsNode fs01Wind = new FieldsNode(0, 1, 0, 2, 0, 0); hypergraph.addSumNode(fs01Wind);
+//        EventsNode ev1Wind = new EventsNode(1, 2); hypergraph.addSumNode(ev1Wind);
+//        
+//        final FieldsNode fs02Temp = new FieldsNode(0, 2, 0, 1, 0, 0); hypergraph.addSumNode(fs02Temp);
+//        final FieldsNode fs02Wind = new FieldsNode(0, 2, 0, 2, 0, 0); hypergraph.addSumNode(fs02Wind);
+//        
+//        final FieldsNode fs03Temp = new FieldsNode(0, 3, 0, 1, 0, 0); hypergraph.addSumNode(fs03Temp);
+//        final FieldsNode fs03Wind = new FieldsNode(0, 3, 0, 2, 0, 0); hypergraph.addSumNode(fs03Wind);
+//        
+//        TrackNode tr12Wind = new TrackNode(1, 2, 2, 0, false, false); hypergraph.addSumNode(tr12Wind);
+//        TrackNode tr12Temp = new TrackNode(1, 2, 1, 0, false, false); hypergraph.addSumNode(tr12Temp);
+//        
+//        TrackNode tr13Temp = new TrackNode(1, 3, 1, 0, false, false); hypergraph.addSumNode(tr13Temp);
+//        TrackNode tr13Wind = new TrackNode(1, 3, 2, 0, false, false); hypergraph.addSumNode(tr13Wind);
+//        
+//        final FieldsNode fs12Temp = new FieldsNode(1, 2, 0, 1, 0, 0); hypergraph.addSumNode(fs12Temp);
+//        EventsNode ev2Temp = new EventsNode(2, 1); hypergraph.addSumNode(ev2Temp);
+//        final FieldsNode fs12Wind = new FieldsNode(1, 2, 0, 2, 0, 0); hypergraph.addSumNode(fs12Wind);
+//        EventsNode ev2Wind = new EventsNode(2, 2); hypergraph.addSumNode(ev2Wind);
+//        
+//        final FieldsNode fs13Temp = new FieldsNode(1, 3, 0, 1, 0, 0); hypergraph.addSumNode(fs13Temp);
+//        final FieldsNode fs13Wind = new FieldsNode(1, 3, 0, 2, 0, 0); hypergraph.addSumNode(fs13Wind);
+//        
+//        TrackNode tr23Temp = new TrackNode(2, 3, 1, 0, false, false); hypergraph.addSumNode(tr23Temp);
+//        TrackNode tr23Wind = new TrackNode(2, 3, 2, 0, false, false); hypergraph.addSumNode(tr23Wind);
+//
+//        final FieldsNode fs23Temp = new FieldsNode(2, 3, 0, 1, 0, 0); hypergraph.addSumNode(fs23Temp);
+//        final FieldsNode fs23Wind = new FieldsNode(2, 3, 0, 2, 0, 0); hypergraph.addSumNode(fs23Wind);
+//        
+//        hypergraph.addEdge(ev0Start, tr01Start, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev0Start, tr02Start, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev0Start, tr03Start, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr01Start, fs01Temp, ev1Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempStart; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr01Start, fs01Wind, ev1Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindStart; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr02Start, fs02Temp, ev2Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempStart; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr02Start, fs02Wind, ev2Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindStart; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr03Start, fs03Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempStart; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr03Start, fs03Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindStart; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev1Temp, tr12Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev1Temp, tr13Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev1Wind, tr12Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev1Wind, tr13Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr12Wind, fs12Temp, ev2Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempWind; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr12Wind, fs12Wind, ev2Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindWind; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr12Temp, fs12Temp, ev2Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempTemp; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr12Temp, fs12Wind, ev2Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindTemp; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr13Temp, fs13Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempTemp; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr13Temp, fs13Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindTemp; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr13Wind, fs13Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempWind; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr13Wind, fs13Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindWind; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev2Temp, tr23Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(ev2Wind, tr23Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr23Temp, fs23Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempTemp; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr23Temp, fs23Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindTemp; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr23Wind, fs23Temp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pTempWind; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(tr23Wind, fs23Wind, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return pWindWind; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//
+//        hypergraph.addEdge(fs01Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.8, ((Event3Model)model).getWordIndex("a")); break;
+//                        case 1 : p = new Pair(0.6, ((Event3Model)model).getWordIndex("low")); break;
+//                        default: case 2 : p = new Pair(0.5, ((Event3Model)model).getWordIndex("around")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs01Temp.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs12Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.8, ((Event3Model)model).getWordIndex("a")); break;
+//                        case 1 : p = new Pair(0.6, ((Event3Model)model).getWordIndex("low")); break;
+//                        default: case 2 : p = new Pair(0.5, ((Event3Model)model).getWordIndex("around")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs12Temp.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs23Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.8, ((Event3Model)model).getWordIndex("a")); break;
+//                        case 1 : p = new Pair(0.6, ((Event3Model)model).getWordIndex("low")); break;
+//                        default: case 2 : p = new Pair(0.5, ((Event3Model)model).getWordIndex("around")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs23Temp.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs01Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.8, ((Event3Model)model).getWordIndex("south")); break;
+//                        case 1 : p = new Pair(0.6, ((Event3Model)model).getWordIndex("west")); break;
+//                        default: case 2 : p = new Pair(0.5, ((Event3Model)model).getWordIndex("wind")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs01Wind.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs12Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.8, ((Event3Model)model).getWordIndex("south")); break;
+//                        case 1 : p = new Pair(0.6, ((Event3Model)model).getWordIndex("west")); break;
+//                        default: case 2 : p = new Pair(0.5, ((Event3Model)model).getWordIndex("wind")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs12Wind.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs23Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.8, ((Event3Model)model).getWordIndex("south")); break;
+//                        case 1 : p = new Pair(0.6, ((Event3Model)model).getWordIndex("west")); break;
+//                        default: case 2 : p = new Pair(0.5, ((Event3Model)model).getWordIndex("wind")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs23Wind.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs02Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.038, ((Event3Model)model).getWordIndex("mostly")); break;
+//                        case 1 : p = new Pair(0.036, ((Event3Model)model).getWordIndex("cloudy")); break;
+//                        default: case 2 : p = new Pair(0.035, ((Event3Model)model).getWordIndex(",")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs02Temp.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs02Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.038, ((Event3Model)model).getWordIndex("partly")); break;
+//                        case 1 : p = new Pair(0.036, ((Event3Model)model).getWordIndex("becoming")); break;
+//                        default: case 2 : p = new Pair(0.035, ((Event3Model)model).getWordIndex("sunny")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs02Wind.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs03Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.08, ((Event3Model)model).getWordIndex("patchy")); break;
+//                        case 1 : p = new Pair(0.06, ((Event3Model)model).getWordIndex("gusts")); break;
+//                        default: case 2 : p = new Pair(0.05, ((Event3Model)model).getWordIndex("before")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs03Temp.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs03Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.08, ((Event3Model)model).getWordIndex("showers")); break;
+//                        case 1 : p = new Pair(0.06, ((Event3Model)model).getWordIndex("thunderstorms")); break;
+//                        default: case 2 : p = new Pair(0.05, ((Event3Model)model).getWordIndex("after")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs03Wind.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs13Temp, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.08, ((Event3Model)model).getWordIndex("calm")); break;
+//                        case 1 : p = new Pair(0.06, ((Event3Model)model).getWordIndex("clear")); break;
+//                        default: case 2 : p = new Pair(0.05, ((Event3Model)model).getWordIndex("near")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs13Temp.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(fs13Wind, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    Pair p = null;
+//                    switch(rank)
+//                    {
+//                        case 0 : p = new Pair(0.08, ((Event3Model)model).getWordIndex("calm")); break;
+//                        case 1 : p = new Pair(0.06, ((Event3Model)model).getWordIndex("clear")); break;
+//                        default: case 2 : p = new Pair(0.05, ((Event3Model)model).getWordIndex("near")); break;
+//                    }
+//                    return p;
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[fs13Wind.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        return ev0Start;
+//    }
+//    
+//    private Object test()
+//    {
+//        EventsNode sentence = new EventsNode(0, 0);
+//        TrackNode np = new TrackNode(0, 0, 0, 0, false, false);
+//        FieldNode vp = new FieldNode(0, 0, 0, 0, 0);
+//        FieldNode nnp = new FieldNode(0, 0, 0, 0, 1);
+//        final WordNode word1 = new WordNode(0, 1, 1, 1);
+//        final WordNode word2 = new WordNode(1, 1, 1, 2);
+//        final WordNode word3 = new WordNode(2, 1, 1, 2);
+//        final WordNode word4 = new WordNode(3, 1, 1, 2);
+//        final WordNode word5 = new WordNode(4, 1, 1, 2);
+//        hypergraph.addSumNode(sentence);
+//        hypergraph.addSumNode(np);
+//        hypergraph.addSumNode(vp);
+//        hypergraph.addSumNode(nnp);
+//        hypergraph.addSumNode(word1);
+//        hypergraph.addSumNode(word2);
+//        hypergraph.addSumNode(word3);
+//        hypergraph.addSumNode(word4);
+//        hypergraph.addSumNode(word5);
+//        hypergraph.addEdge(sentence, np, vp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(sentence, nnp, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(nnp, word5, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(np, word1, word2, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(vp, word3, word4, new Hypergraph.HyperedgeInfo<Widget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public Widget choose(Widget widget) { return widget; }
+//            });
+//        hypergraph.addEdge(word1, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    if(rank == 0)
+//                    {
+//                        return new Pair(0.8, ((Event3Model)model).getWordIndex("mostly"));
+//                    }
+//                    else
+//                    {
+//                        return new Pair(0.5, ((Event3Model)model).getWordIndex("mainly"));
+//                    }
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[word1.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(word2, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    if(rank == 0)
+//                    {
+//                        return new Pair(0.9, ((Event3Model)model).getWordIndex("cloudy"));
+//                    }
+//                    else
+//                    {
+//                        return new Pair(0.4, ((Event3Model)model).getWordIndex("after"));
+//                    }
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[word2.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(word3, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    if(rank == 0)
+//                    {
+//                        return new Pair(0.2, ((Event3Model)model).getWordIndex("and"));
+//                    }
+//                    else
+//                    {
+//                        return new Pair(0.01, ((Event3Model)model).getWordIndex("midnight"));
+//                    }
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[word3.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(word4, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    if(rank == 0)
+//                    {
+//                        return new Pair(0.002, ((Event3Model)model).getWordIndex("."));
+//                    }
+//                    else
+//                    {
+//                        return new Pair(0.00018, ((Event3Model)model).getWordIndex("cold"));
+//                    }
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[word4.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//        hypergraph.addEdge(word5, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                public double getWeight() { return 1.0; }
+//                public void setPosterior(double prob) { }
+//                public GenWidget choose(GenWidget widget) { return widget; }
+//                public Pair getWeightAtRank(int rank)
+//                {
+//                    if(rank == 0)
+//                    {
+//                        return new Pair(0.9, ((Event3Model)model).getWordIndex("high"));
+//                    }
+//                    else
+//                    {
+//                        return new Pair(0.5, ((Event3Model)model).getWordIndex("low"));
+//                    }
+//                }
+//                public GenWidget chooseWord(GenWidget widget, int word)
+//                {
+//                    widget.getText()[word4.getI()] = word;
+//                    return widget;
+//                }
+//            });
+//
+//        return sentence;
+//    }
 }

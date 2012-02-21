@@ -23,6 +23,7 @@ import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
+import induction.problem.wordproblem.WordModel;
 
 /**
  * This class describes a hypregraph representation of the problem. The main
@@ -65,7 +66,7 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
         {
-            nums[w] = Constants.str2num(Event3Model.wordToString(words[w]));
+            nums[w] = Constants.str2num(((WordModel)model).wordToString(words[w]));
         }
         labels = ex.getLabels();        
     }                    

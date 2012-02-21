@@ -6,7 +6,6 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.dmv.Constants;
 import induction.problem.dmv.generative.GenerativeDMVModel;
-import induction.problem.wordproblem.WordModel;
 import java.util.List;
 
 /**
@@ -21,14 +20,15 @@ public class DMVParams extends AParams
     private GenerativeDMVModel model;
     private Options opts;
     private int[] wordIndexerLengths;
-    private String vocabulary[] = WordModel.wordsToStringArray();
+    private String vocabulary[];
     
     public DMVParams(GenerativeDMVModel model, Options opts, VecFactory.Type vectorType)
     {
-        super();
+        super(model);
         this.model = model;
         this.opts = opts;
-        W = WordModel.W();
+        vocabulary = model.wordsToStringArray();
+        W = model.W();
         starts = VecFactory.zeros(vectorType, W);
         addVec("S", starts);
         continues = VecFactory.zeros3(vectorType, W, Constants.R, Constants.F);        

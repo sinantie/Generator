@@ -239,7 +239,7 @@ public class Hypergraph<Widget> {
                 if(p.label != null)
                 {
                     this.words.add(new Integer((Integer)p.label));
-                    if(useDependencies)
+                    if(useDependencies && edge.info instanceof HyperedgeInfoDepLM)
                     {
                         induction.problem.Pair<DepHead> headPair = 
                                 ((HyperedgeInfoDepLM)edge.info).getDepWeight(new Integer((Integer)p.label));
@@ -877,7 +877,7 @@ public class Hypergraph<Widget> {
         if(oracleReranker) // Perform oracle reranking, against BLEU-4 score
         {
             BatchBleuScorer bleuScorer = new BatchBleuScorer();
-            String trueStr = GenerationPerformance.widgetToString((GenWidget)ex.getTrueWidget());
+            String trueStr = GenerationPerformance.widgetToString(vocabulary, (GenWidget)ex.getTrueWidget());
             TreeSet<DerivationWithBleu> set = new TreeSet<DerivationWithBleu>();
             for(int k = 0; k < startNodeInfo.derivations.size(); k++)
             {
@@ -967,7 +967,7 @@ public class Hypergraph<Widget> {
             // get the k-best derivation
             recurseKBest();
 //            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), !discriminative);
-            predStr = GenerationPerformance.widgetToString((GenWidget)chooser.widget);
+            predStr = GenerationPerformance.widgetToString(vocabulary, (GenWidget)chooser.widget);
             // score it
             score = bleuScorer.evaluateBleu(predStr, trueStr);
         }

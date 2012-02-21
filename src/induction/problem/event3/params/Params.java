@@ -19,12 +19,11 @@ public class Params extends AParams
     public Vec[] eventTypeChoicesGivenWord;
     public TrackParams[] trackParams;
     public EventTypeParams[] eventTypeParams;
-    private EventType[] eventTypes;
-    private Event3Model model;
+    private EventType[] eventTypes;    
     private Options opts;
     public Params(Event3Model model, Options opts, VecFactory.Type vectorType)
     {
-        super();
+        super(model);
         genParams(model, opts, vectorType);
 
         // t -> generate words for event type t
@@ -39,7 +38,7 @@ public class Params extends AParams
     public Params(Event3Model model, Options opts,
                   VecFactory.Type vectorType, int maxNumOfWordsPerField)
     {
-        super();
+        super(model);
         genParams(model, opts, vectorType);
         // t -> generate words for event type t
         eventTypeParams = new EventTypeParams[T];
@@ -55,7 +54,7 @@ public class Params extends AParams
     {
         this.opts = opts;
         T = model.getT();
-        W = Event3Model.W();
+        W = model.W();
         C = model.getC();
         this.model = model;
         this.eventTypes = model.getEventTypes();
@@ -78,7 +77,7 @@ public class Params extends AParams
         if(opts.includeEventTypeGivenWord)
         {            
             eventTypeChoicesGivenWord = VecFactory.zeros2(vectorType, W, T+1);
-            addVec(getLabels(W, "eventTypeChoicesGivenWord", Event3Model.wordsToStringArray()),
+            addVec(getLabels(W, "eventTypeChoicesGivenWord", model.wordsToStringArray()),
                     eventTypeChoicesGivenWord);
         }
     }
@@ -92,12 +91,12 @@ public class Params extends AParams
             for(int c = 0; c < C; c++)
             {                
                 // Select the none event more often
-                trackParams[c].getEventTypeChoices()[t].addCount(model.none_t(),
+                trackParams[c].getEventTypeChoices()[t].addCount(((Event3Model)model).none_t(),
                         opts.noneEventTypeSmoothing);
 
                 if (!Double.isNaN(opts.fixedNoneEventTypeProb))
                 {
-                    trackParams[c].getEventTypeChoices()[t].setCountToObtainProb(model.none_t(),
+                    trackParams[c].getEventTypeChoices()[t].setCountToObtainProb(((Event3Model)model).none_t(),
                             opts.fixedNoneEventTypeProb);
                 }
             } // for c
@@ -142,31 +141,32 @@ public class Params extends AParams
     @Override
     public String output(ParamsType paramsType)
     {
+        String[] words = ((Event3Model)model).wordsToStringArray();
         StringBuilder out = new StringBuilder();
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProb(trackChoices,
-                    getLabels(model.getPC(), "trackC ", model.pcstrArray())));
+                    getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
         else
             out.append(forEachCount(trackChoices,
-                    getLabels(model.getPC(), "trackC ", model.pcstrArray())));
+                    getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
         for(AParams params : trackParams)
         {
             out.append(params.output(paramsType)).append("\n");
         }
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProb(genericEmissions,
-                   getLabels(W, "genericE ", Event3Model.wordsToStringArray()))).
+                   getLabels(W, "genericE ", words))).
                     append(forEachProb(genericLabelChoices, getLabels(Event3Model.LB(), 
                     "genericLabelC ", Event3Model.labelsToStringArray())));
         else
             out.append(forEachCount(genericEmissions,
-                   getLabels(W, "genericE ", Event3Model.wordsToStringArray()))).
+                   getLabels(W, "genericE ", words))).
                     append(forEachCount(genericLabelChoices, getLabels(Event3Model.LB(), 
                     "genericLabelC ", Event3Model.labelsToStringArray())));
         if(opts.includeEventTypeGivenWord)
         {
             String[][] labels = getLabels(W, T + 1, "eventTypeChoice|w ",
-                    Event3Model.wordsToStringArray(), model.eventTypeStrArray());
+                    words, ((Event3Model)model).eventTypeStrArray());
             int i = 0;
             for(Vec v: eventTypeChoicesGivenWord)
             {
@@ -187,31 +187,32 @@ public class Params extends AParams
     @Override
     public String outputNonZero(ParamsType paramsType)
     {
+        String[] words = ((Event3Model)model).wordsToStringArray();
         StringBuilder out = new StringBuilder();
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(trackChoices,
-                    getLabels(model.getPC(), "trackC ", model.pcstrArray())));
+                    getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
         else
             out.append(forEachCountNonZero(trackChoices,
-                    getLabels(model.getPC(), "trackC ", model.pcstrArray())));
+                    getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
         for(AParams params : trackParams)
         {
             out.append(params.outputNonZero(paramsType)).append("\n");
         }
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(genericEmissions,
-                   getLabels(W, "genericE ", Event3Model.wordsToStringArray()))).
+                   getLabels(W, "genericE ", words))).
                     append(forEachProbNonZero(genericLabelChoices, getLabels(Event3Model.LB(), 
                     "genericLabelC ", Event3Model.labelsToStringArray())));
         else
             out.append(forEachCountNonZero(genericEmissions,
-                   getLabels(W, "genericE ", Event3Model.wordsToStringArray()))).
+                   getLabels(W, "genericE ", words))).
                     append(forEachCountNonZero(genericLabelChoices, getLabels(Event3Model.LB(), 
                     "genericLabelC ", Event3Model.labelsToStringArray())));
         if(opts.includeEventTypeGivenWord)
         {
             String[][] labels = getLabels(W, T + 1, "eventTypeChoice|w ",
-                    Event3Model.wordsToStringArray(), model.eventTypeStrArray());
+                    words, ((Event3Model)model).eventTypeStrArray());
             int i = 0;
             for(Vec v: eventTypeChoicesGivenWord)
             {

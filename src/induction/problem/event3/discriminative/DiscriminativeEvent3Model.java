@@ -147,7 +147,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             Utils.log("Loading " + opts.generativeModelParamsFile);
             ObjectInputStream ois = IOUtils.openObjIn(opts.generativeModelParamsFile);
             wordIndexer = ((Indexer<String>) ois.readObject());
-            vocabularySize = Event3Model.W();
+            vocabularySize = W();
             if(useKBest)
             {
                 // build a list of all the ngrams            
@@ -902,7 +902,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     {
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
-                        LogInfo.logs(GenerationPerformance.widgetToString((GenWidget)inferState.bestWidget));
+                        LogInfo.logs(GenerationPerformance.widgetToString(wordIndexer, (GenWidget)inferState.bestWidget));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }

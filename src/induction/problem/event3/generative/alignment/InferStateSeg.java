@@ -14,6 +14,7 @@ import induction.problem.InferSpec;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3InferState;
+import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
 import induction.problem.event3.nodes.EventNode;
@@ -46,7 +47,7 @@ public class InferStateSeg extends Event3InferState
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
         {
-            nums[w] = Constants.str2num(GenerativeEvent3Model.wordToString(words[w])) ;
+            nums[w] = Constants.str2num(((Event3Model)model).wordToString(words[w])) ;
         }
         labels = ex.getLabels();
 

@@ -19,9 +19,9 @@ public class TrackParams extends AParams
 
     public TrackParams(Event3Model model, int c, VecFactory.Type vectorType)
     {
-        super();
+        super(model);
         this.model = model;
-        this.T = model.getT(); this.W = Event3Model.W(); this.c = c;
+        this.T = model.getT(); this.W = model.W(); this.c = c;
         none_t = model.none_t();
         boundary_t = model.boundary_t();
         // t_0, t -> choose event of type t given we were in type t_0        
@@ -32,7 +32,7 @@ public class TrackParams extends AParams
         addVec("noneEventTypeEmissions["+c+"]", noneEventTypeEmissions);
         noneEventTypeBigramChoices = VecFactory.zeros2(vectorType, W, W);
         addVec(getLabels(W, "noneFieldWordBiC["+c+"] ",
-                          Event3Model.wordsToStringArray()), noneEventTypeBigramChoices);
+                          model.wordsToStringArray()), noneEventTypeBigramChoices);
     }
 
     public Vec[] getEventTypeChoices()
@@ -53,6 +53,7 @@ public class TrackParams extends AParams
     @Override
     public String output(ParamsType paramsType)
     {
+        String[] words = ((Event3Model)model).wordsToStringArray();
         StringBuilder out = new StringBuilder();
         String[][] labels = getLabels(T+2, T+2, "eventTypeC [" + model.cstr(c) + "] ",
                 model.eventTypeStrArray(), model.eventTypeStrArray());
@@ -66,12 +67,10 @@ public class TrackParams extends AParams
         }
         if(paramsType == ParamsType.PROBS)
             out.append("\n").append(forEachProb(noneEventTypeEmissions,
-                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ",
-                          Event3Model.wordsToStringArray())));
+                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ", words)));
         else
             out.append("\n").append(forEachCount(noneEventTypeEmissions,
-                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ",
-                          Event3Model.wordsToStringArray())));
+                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ", words)));
         i = 0;
         // if too huge parameter set, comment
 //        String[][] labelsNone = getLabels(W, W, "noneEventTypeWordBiC [" + model.cstr(c) + "] ",
@@ -86,6 +85,7 @@ public class TrackParams extends AParams
     @Override
     public String outputNonZero(ParamsType paramsType)
     {
+        String[] words = ((Event3Model)model).wordsToStringArray();
         StringBuilder out = new StringBuilder();
         String[][] labels = getLabels(T+2, T+2, "eventTypeC [" + model.cstr(c) + "] ",
                 model.eventTypeStrArray(), model.eventTypeStrArray());
@@ -99,12 +99,10 @@ public class TrackParams extends AParams
         }
         if(paramsType == ParamsType.PROBS)
             out.append("\n").append(forEachProbNonZero(noneEventTypeEmissions,
-                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ",
-                          Event3Model.wordsToStringArray())));
+                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ", words)));
         else
             out.append("\n").append(forEachCountNonZero(noneEventTypeEmissions,
-                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ",
-                          Event3Model.wordsToStringArray())));
+                          getLabels(W, "noneEventTypeE [" + model.cstr(c) + "] ", words)));
         i = 0;
         // if too huge parameter set, comment
 //        String[][] labelsNone = getLabels(W, W, "noneEventTypeWordBiC [" + model.cstr(c) + "] ",

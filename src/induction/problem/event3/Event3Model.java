@@ -105,7 +105,7 @@ public abstract class Event3Model extends WordModel
         return word;
     }
 
-    public static int getWordIndex(String str)
+    public int getWordIndex(String str)
     {
         return wordIndexer.getIndex(processWord(str));
     }
@@ -280,7 +280,7 @@ public abstract class Event3Model extends WordModel
     {
         depsModel = new GenerativeDMVModel(opts);
         depsCrossWordMap = new HashMap<Integer, Integer>();
-        depsModel.stagedInitParams(opts.dmvModelParamsFile, depsCrossWordMap);
+        depsModel.stagedInitParams(opts.dmvModelParamsFile, wordIndexer, depsCrossWordMap);
     }
 
     public Map<Integer, Integer> getDepsCrossWordMap()
@@ -455,12 +455,12 @@ public abstract class Event3Model extends WordModel
                            case 'i' : id = Integer.valueOf(token.value); break;
                            case '#' : field = new NumField(token.fieldName); break;
                            case '@' : if (opts.treatCatAsSym)
-                                            field = new SymField(token.fieldName);
+                                            field = new SymField(this, token.fieldName);
                                         else
                                             field = new CatField(token.fieldName);
                                         break;
-                           case ':' : field = new SymField(token.fieldName); break;
-                           case '$' : field = new StrField(token.fieldName); break;
+                           case ':' : field = new SymField(this, token.fieldName); break;
+                           case '$' : field = new StrField(this, token.fieldName); break;
                            default : throw new IllegalArgumentException("Bad field name: " + token.fieldName);
                        } // switch
                        if(field != null) // in case it's id

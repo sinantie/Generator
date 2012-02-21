@@ -2,6 +2,7 @@ package induction.problem.event3.params;
 
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 
 /**
@@ -16,9 +17,9 @@ public class StrFieldParams extends FieldParams
     private GenerativeEvent3Model model;
 //    private String prefix;
 
-    public StrFieldParams(VecFactory.Type vectorType, int LB, String prefix)
+    public StrFieldParams(Event3Model model, VecFactory.Type vectorType, int LB, String prefix)
     {
-        super(vectorType, prefix);
+        super(model, vectorType, prefix);
         this.LB = LB;
 //        this.prefix = prefix;
         // lb1, lb2 -> probability of transforming label lb1 to lb2

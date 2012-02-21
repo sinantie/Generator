@@ -701,7 +701,7 @@ public class Utils
             {
                 tree = treeTransformer.transformTree(treeIterator.next());
                 if(removePunctuation)
-                    TreeUtils.removePunctuation(tree);
+                    tree = TreeUtils.removePunctuation(tree);
                 trees.add(tree);
             }
             catch(Exception e)

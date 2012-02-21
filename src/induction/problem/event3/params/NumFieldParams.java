@@ -2,6 +2,7 @@ package induction.problem.event3.params;
 
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.event3.Event3Model;
 import java.io.Serializable;
 
 /**
@@ -14,9 +15,9 @@ public class NumFieldParams extends FieldParams implements Serializable
     public  Vec methodChoices, leftNoiseChoices, rightNoiseChoices;
     private Vec[] filters;
 
-    public NumFieldParams(VecFactory.Type vectorType, String prefix)
+    public NumFieldParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
-        super(vectorType, prefix);
+        super(model, vectorType, prefix);
 
         methodChoices = VecFactory.zeros(vectorType, Parameters.M); // m -> use method m to generate numbers
         addVec("numMethodChoices" + prefix, methodChoices);
