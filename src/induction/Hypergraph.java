@@ -244,7 +244,7 @@ public class Hypergraph<Widget> {
                         induction.problem.Pair<DepHead> headPair = 
                                 ((HyperedgeInfoDepLM)edge.info).getDepWeight(new Integer((Integer)p.label));
                         head = headPair.label;
-                        this.weight.mult(head.getWeight());
+//                        this.weight.mult(head.getWeight());
                     }
                 }                
             }
@@ -254,6 +254,7 @@ public class Hypergraph<Widget> {
                 ArrayList<Integer> input = new ArrayList();
                 BigDouble[] weightArray = new BigDouble[!useDependencies ? kBestMask.length + 2 : 
                                                         kBestMask.length + 3];
+                if(useDependencies) weightArray[weightArray.length - 1] = BigDouble.one();
                 if(modelType == ModelType.semParse && edge.info instanceof HyperedgeInfoLM)
                 {
                     input.add(new Integer((Integer)((HyperedgeInfoLM)edge.info).getWeightAtRank(0).label));
@@ -264,23 +265,39 @@ public class Hypergraph<Widget> {
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
-                }
-                if(useDependencies && kBestMask.length < 3) // DMV only handles binary rules
-                {
-                    DepHead leftHead = derArray.get(0).head;
-                    DepHead rightHead = derArray.get(1).head;
-                    // choose whether to attach the right head as argument to the left head
-                    // or vice versa
-                    BigDouble weights[] = {
-                    ((Event3InferState)inferState).getDepDerivationWeight(
-                            leftHead, rightHead, induction.problem.dmv.Constants.D_RIGHT), 
-                    ((Event3InferState)inferState).getDepDerivationWeight(
-                            rightHead, leftHead, induction.problem.dmv.Constants.D_LEFT)};
-                    int argmax = BigDouble.argmax(weights);
-                    head = argmax == 0 ?
-                        new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
-                        new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
-                    weightArray[weightArray.length - 1] = weights[argmax];
+                }                
+                if(useDependencies && kBestMask.length < 3) // DMV only handles binary and unary rules
+                {                    
+                    if(kBestMask.length < 2) // unary rule, just carry the head as is
+                        head = derArray.get(0).head;                        
+                    else
+                    {
+                        DepHead leftHead = derArray.get(0).head;
+                        DepHead rightHead = derArray.get(1).head;
+                        if(leftHead == null) // special cases, of nodes that don't emit words (e.g. StopNode)
+                            head = rightHead;
+                        else if(rightHead == null)
+                            head = leftHead;
+                        else
+                        {
+                            // choose whether to attach the right head as argument to the left head
+                            // or vice versa
+                            BigDouble weights[] = {
+                            ((Event3InferState)inferState).getDepDerivationWeight(
+                                    leftHead, rightHead, induction.problem.dmv.Constants.D_RIGHT), 
+                            ((Event3InferState)inferState).getDepDerivationWeight(
+                                    rightHead, leftHead, induction.problem.dmv.Constants.D_LEFT)};
+                            int argmax = BigDouble.argmax(weights);
+                            // in case both derivations are equiprobable choose to attach right-first
+                            if(argmax == -1) argmax = 0;
+                            head = argmax == 0 ?
+                                new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
+                                new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
+                            weightArray[weightArray.length - 1] = weights[argmax];
+                        }
+                        
+                    }
+                    
 
                 }
                 weightArray[!useDependencies ? weightArray.length - 2 : 
@@ -295,7 +312,8 @@ public class Hypergraph<Widget> {
                     {
                         if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
                         {
-                            weightArray[weightArray.length - 1].mult(
+                            weightArray[!useDependencies ? weightArray.length - 1 : 
+                                        weightArray.length - 2].mult(
                                     getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
                         }
                     } // for
@@ -513,18 +531,18 @@ public class Hypergraph<Widget> {
         @Override
         public String toString()
         {
-            String out = "";
+            StringBuilder out = new StringBuilder();
             for(int i = 0; i < words.size(); i++)
             {
-                out += vocabulary.getObject(words.get(i)) + " ";
+                out.append(vocabulary.getObject(words.get(i))).append(" ");
             }
-            out += "(" + (discriminative ? logWeight : weight) + ")";
+            out.append("(").append((discriminative ? logWeight : weight)).append(")");
             if(eventTypeSet == null)
-                return out;
-            out += " [";
+                return out.toString();
+            out.append(" [");
             for(Integer e : eventTypeSet)
-                out += e + ",";
-            return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out + "]";
+                out.append(e).append(",");
+            return eventTypeSet.size() > 0 ? out.substring(0, out.length() - 1) + "]" : out.append("]").toString();
         }
     }   
     

@@ -995,7 +995,7 @@ public class GenInferState extends InferState
         StopNode node = new StopNode(i, t0);
         if(hypergraph.addSumNode(node))
         {   // Transition to boundary_t
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<Widget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<Widget>() {
                 public double getWeight() {
                     if (prevIndepEventTypes())
                         return 1.0;
@@ -1016,10 +1016,10 @@ public class GenInferState extends InferState
                     return new Pair(getWeight(), vocabulary.getIndex("</s>"));
 //                    return new Pair(1.0, vocabulary.getIndex("</s>"));
                 }
-                public Pair getDepWeight(int word) // CAREFUL!
-                {
-                    return getLeafDepHead(word, i);
-                }
+//                public Pair getDepWeight(int word) // CAREFUL!
+//                {
+//                    return getLeafDepHead(word, i);
+//                }
                 @Override
                 public Widget chooseWord(Widget widget, int word)
                 {

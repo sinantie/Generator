@@ -44,6 +44,7 @@ public class BigDouble {
   private double M;
   private int E;
 
+  public BigDouble(BigDouble in){this.M = in.M; this.E = in.E;}
   private BigDouble(double M, int E) { this.M = M; this.E = E; }
   private static BigDouble newStandardizedBigDouble(double M, int E) {
     BigDouble d = new BigDouble(M, E);
