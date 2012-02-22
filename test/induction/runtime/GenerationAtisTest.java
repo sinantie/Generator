@@ -38,7 +38,8 @@ public class GenerationAtisTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType generate -testInputLists test/testAtisExamples "
+         String args = "-modelType generate "
+                    + "-testInputLists test/testAtisExamples "
                     + "-inputFileExt events -examplesInSingleFile -stagedParamsFile "
                     + "results/output/atis/alignments/"
                     + "model_3/prior_0.01/stage1.params.obj "

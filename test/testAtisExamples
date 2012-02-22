@@ -1,3 +1,9 @@
+Example_15
+i need information on flights from washington to boston that leave on a saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
 Example_1
 what flights go from dallas to baltimore
 .id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
