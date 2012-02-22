@@ -53,7 +53,7 @@ public class GenerationAtisTest
                     + "-lengthCompensation 0 "
                     + "-useDependencies "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
-                    + "atis_raw5000_full_indexers_LEX_100/stage1.dmv.params.obj.gz";
+                    + "atis_raw5000_full_indexers_prior_01_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
