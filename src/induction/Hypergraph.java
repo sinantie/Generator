@@ -265,7 +265,41 @@ public class Hypergraph<Widget> {
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
-                }                
+                }                                
+                weightArray[!useDependencies ? weightArray.length - 2 : 
+                        weightArray.length - 3] = edge.weight;     // edge weight            
+                weightArray[!useDependencies ? weightArray.length - 1 : 
+                        weightArray.length - 2] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
+                // compute P_LM and +LM item (store in words list) (see Chiang, 2007)
+                if(input.size() >= M)
+                {
+                    
+                    for(int i = M - 1; i < input.size(); i++) // function p in Chiang 2007
+                    {
+                        if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
+                        {
+//                            weightArray[!useDependencies ? weightArray.length - 1 : 
+//                                        weightArray.length - 2].mult(
+//                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
+                            weightArray[!useDependencies ? weightArray.length - 1 : 
+                                        weightArray.length - 2].mult(
+                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
+                        }
+                    } // for
+                    for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
+                    {
+                        words.add(input.get(i));
+                    }
+                    words.add(ELIDED_SYMBOL);
+                    for(int i = input.size() - M + 1; i < input.size(); i++)
+                    {
+                        words.add(input.get(i));
+                    }
+                } // if
+                else
+                {                    
+                    words = input; // 2nd branch of function q in Chiang 2007
+                } // LM
                 if(useDependencies && kBestMask.length < 3) // DMV only handles binary and unary rules
                 {                    
                     if(kBestMask.length < 2) // unary rule, just carry the head as is
@@ -293,44 +327,12 @@ public class Hypergraph<Widget> {
                             head = argmax == 0 ?
                                 new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
                                 new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
-                            weightArray[weightArray.length - 1] = weights[argmax];
-                        }
-                        
-                    }
-                    
-
-                }
-                weightArray[!useDependencies ? weightArray.length - 2 : 
-                        weightArray.length - 3] = edge.weight;     // edge weight            
-                weightArray[!useDependencies ? weightArray.length - 1 : 
-                        weightArray.length - 2] = BigDouble.one(); // LM weight (see 'sf' example, Table 1, Chiang 2007)
-                // compute P_LM and +LM item (store in words list) (see Chiang, 2007)
-                if(input.size() >= M)
-                {
-                    
-                    for(int i = M - 1; i < input.size(); i++) // function p in Chiang 2007
-                    {
-                        if(!input.subList(i - M + 1, i + 1).contains(ELIDED_SYMBOL))
-                        {
-                            weightArray[!useDependencies ? weightArray.length - 1 : 
-                                        weightArray.length - 2].mult(
-                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
-                        }
-                    } // for
-                    for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
-                    {
-                        words.add(input.get(i));
-                    }
-                    words.add(ELIDED_SYMBOL);
-                    for(int i = input.size() - M + 1; i < input.size(); i++)
-                    {
-                        words.add(input.get(i));
-                    }
-                } // if
-                else
-                {                    
-                    words = input; // 2nd branch of function q in Chiang 2007
-                } // LM
+//                            weightArray[weightArray.length - 1] = weights[argmax];
+                            weights[argmax].mult(0.5);
+                            weightArray[weightArray.length - 2].incr(weights[argmax]);
+                        }                        
+                    }                    
+                } // deps
                 this.weight = BigDouble.one();
                 this.weight.mult_multN(weightArray);
             } // else

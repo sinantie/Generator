@@ -175,7 +175,8 @@ public abstract class Event3InferState
     }
     protected int getIndexOfWordInDepModel(int wordIn)
     {
-        return ((Event3Model)model).getDepsCrossWordMap().get(wordIn);
+        Integer w = ((Event3Model)model).getDepsCrossWordMap().get(wordIn);
+        return w == null ? -1 : w;
     }
     private boolean iterInRange(Pair<Integer, Integer> interval)
     {
