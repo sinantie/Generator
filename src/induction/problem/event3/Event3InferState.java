@@ -145,9 +145,14 @@ public abstract class Event3InferState
     protected induction.problem.Pair<DepHead> getLeafDepHead(int word, int pos)
     {
         int indexInDepModel = getIndexOfWordInDepModel(word);
-        double weight = get(getDepsParams().starts, indexInDepModel);
-        return new induction.problem.Pair<DepHead>(weight, 
-                 new DepHead(indexInDepModel, pos, weight));      
+        DepHead head = null;
+        double weight = Double.MIN_VALUE;
+        if(indexInDepModel > -1)
+        {
+            weight = get(getDepsParams().starts, indexInDepModel);
+            head = new DepHead(indexInDepModel, pos, weight);
+        }        
+        return new induction.problem.Pair<DepHead>(weight, head);      
     }
     public BigDouble getDepDerivationWeight(DepHead head, DepHead argument, int direction)
     {

@@ -107,6 +107,7 @@ public class GenInferState extends InferState
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 opts.useDependencies,
+                opts.interpolationFactor,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),
@@ -115,7 +116,7 @@ public class GenInferState extends InferState
 //                opts.ngramWrapper != Options.NgramWrapper.roark,
                 opts.numAsSymbol,
                 vocabulary, ex, graph);
-
+        
         if(opts.fullPredRandomBaseline)
         {
             this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),

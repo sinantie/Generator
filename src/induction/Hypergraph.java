@@ -327,8 +327,9 @@ public class Hypergraph<Widget> {
                             head = argmax == 0 ?
                                 new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
                                 new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
-//                            weightArray[weightArray.length - 1] = weights[argmax];
-                            weights[argmax].mult(0.5);
+//                            weightArray[weightArray.length - 1] = weights[argmax];                            
+                            weightArray[weightArray.length - 2].mult(interpolationFactor);
+                            weights[argmax].mult(1.0 - interpolationFactor);
                             weightArray[weightArray.length - 2].incr(weights[argmax]);
                         }                        
                     }                    
@@ -561,7 +562,7 @@ public class Hypergraph<Widget> {
   public NgramModel ngramModel;
   public Indexer<String> vocabulary;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, 
-                 enableFieldFeatures, useDependencies;
+                 enableFieldFeatures;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
@@ -569,6 +570,9 @@ public class Hypergraph<Widget> {
   // discriminative stuff
   private AInferState inferState;
   private boolean discriminative;
+  // dependencies stuff
+  private boolean useDependencies;
+  private double interpolationFactor;
   // Start and end nodes
   private final Object startNode = addNodeAndReturnIt("START", NodeType.sum); // use sum or prod versions
   public final Object endNode = addNodeAndReturnIt("END", NodeType.sum);
@@ -580,7 +584,8 @@ public class Hypergraph<Widget> {
   public  void setup(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
-                                        boolean oracleReranker, boolean useDependencies, int NUM,
+                                        boolean oracleReranker, boolean useDependencies, 
+                                        double interpolationFactor, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
@@ -597,6 +602,7 @@ public class Hypergraph<Widget> {
         this.allowConsecutiveEvents = allowConsecutiveEvents;
         this.oracleReranker = oracleReranker;
         this.useDependencies = useDependencies;
+        this.interpolationFactor = interpolationFactor;
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
@@ -625,13 +631,13 @@ public class Hypergraph<Widget> {
   public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, 
-                                        boolean useDependencies, int NUM,
+                                        boolean useDependencies, double interpolationFactor, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
       setup(null, debug, modelType, allowEmptyNodes, K, null, 2, reorderType, 
-                         allowConsecutiveEvents, false, useDependencies, NUM, ELIDED_SYMBOL, 
-                         numbersAsSymbol, wordIndexer, ex, graph);
+                         allowConsecutiveEvents, false, useDependencies, interpolationFactor, 
+                         NUM, ELIDED_SYMBOL, numbersAsSymbol, wordIndexer, ex, graph);
   }
 
   // Things we're going to compute

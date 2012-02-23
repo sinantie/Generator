@@ -130,6 +130,7 @@ public class Options {
   @Option(gloss="re-rank output based on oracle BLEU score") public boolean oracleReranker = false;
   @Option(gloss="omit events that contain only 0's or '--'") public boolean omitEmptyEvents = false;
   @Option(gloss="use DMV model for integration") public boolean useDependencies = false;
+  @Option(gloss="interpolation factor for DMV + LM integration") public double interpolationFactor = 1.0;
 
   // Discriminative
   @Option(gloss="include negative ngrams feature") public boolean includeNegativeNgramsFeature = false;
