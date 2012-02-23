@@ -53,6 +53,7 @@ public class GenerationAtisTest
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
                     + "-useDependencies "
+                    + "-interpolationFactor 0.5 "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
                     + "atis_raw5000_full_indexers_prior_01_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
@@ -61,6 +62,8 @@ public class GenerationAtisTest
         model = new GenerativeEvent3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
+        for(String s : model.wordsToStringArray())
+            System.out.println(s);
         model.logStats();
 //        opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
