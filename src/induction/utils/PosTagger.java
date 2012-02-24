@@ -1,5 +1,6 @@
 package induction.utils;
 
+import uk.co.flamingpenguin.jewel.cli.Option;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
 import induction.MyCallable;
@@ -23,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
+import static uk.co.flamingpenguin.jewel.cli.CliFactory.parseArguments;
 
 /**
  *
@@ -31,40 +34,39 @@ import java.util.Set;
 public class PosTagger
 {
     private final String path;
-    private String extension = null;
+    private FileOutputStream fileOutputStream;
+    private String extension;
     private MaxentTagger tagger;
     private Set<String> taggedVocabulary, syncVocabulary;
-    private enum Type {DIRECTORY, FILE_EVENTS_FORMAT, FILE_RAW};
-    private final Type typeOfFile;
+    // option 'list' means that 'path' is a list of filenames that contain
+    // a single example (either raw or event by Percy's format)
+    // option file means that 'path' is a file that contains a list 
+    // of all examples (either raw sentences or events by Percy's format)
+    public enum TypeOfPath {list, file}
+    public enum TypeOfInput {events, raw}
+    private final TypeOfPath typeOfPath;
+    private final TypeOfInput typeOfInput;
     private boolean useUniversalTags = false;
-    private Map<String, String> universalMaps;
+    private Map<String, String> universalMaps;       
+    private Map<String, List<String>> posDictionary;
     
-    public PosTagger(String path, String pathsOrFile)
+    public PosTagger(String path, TypeOfPath typeOfPath, TypeOfInput typeOfInput, 
+                     String posDictionaryPath, boolean useUniversalTags, String extension)
     {
         this.path = path;
-        if(pathsOrFile.equals("directory"))
-            typeOfFile = Type.DIRECTORY;
-        else if(pathsOrFile.equals("file_events"))
-            typeOfFile = Type.FILE_EVENTS_FORMAT;
-        else
-            typeOfFile = Type.FILE_RAW;
-        taggedVocabulary = new HashSet<String>();
-        syncVocabulary = Collections.synchronizedSet(taggedVocabulary);
         try
         {
-            tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
+            this.fileOutputStream = new FileOutputStream(path + ".tagged");
         }
-        catch(Exception ioe)
+        catch(IOException ioe)
         {
-            System.out.println("Error loading tagger model");
+            System.err.println(ioe.getMessage());
             System.exit(1);
         }
-    }
-
-    public PosTagger(String path, String pathsOrFile, String useUniversalTagsStr)
-    {
-        this(path, pathsOrFile);
-        this.useUniversalTags = useUniversalTagsStr.equals("useUniversalTags");
+        this.typeOfPath = typeOfPath;
+        this.typeOfInput = typeOfInput;        
+        this.useUniversalTags = useUniversalTags;
+        this.extension = extension;
         if(this.useUniversalTags)
         {
             universalMaps = new HashMap<String, String>();
@@ -75,50 +77,57 @@ public class PosTagger
                 universalMaps.put(ar[0], ar[1]);
             }
         }
-    }
-    
-    public PosTagger(String path, String pathsOrFile, String useUniversalTagsStr, String extension)
-    {
-        this(path, pathsOrFile, useUniversalTagsStr);
-        this.extension = extension;        
+        if(!posDictionaryPath.equals(""))
+        {
+            posDictionary = readPosDictionary(posDictionaryPath);
+        }
+        else
+        {
+            try
+            {
+                tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
+            }
+            catch(Exception ioe)
+            {
+                System.out.println("Error loading tagger model");
+                System.exit(1);
+            }
+        }        
+        taggedVocabulary = new HashSet<String>();
+        syncVocabulary = Collections.synchronizedSet(taggedVocabulary);        
     }
 
     public void execute()
     {
         try
         {
-            List<String> examples; 
-            if(typeOfFile == Type.DIRECTORY)
-            {
-                examples = readFromPath();
-            }
-            else if(typeOfFile == Type.FILE_EVENTS_FORMAT)
-            {
-                examples = readFromSingleFile(true);
-            }
+            List<String[]> examples = null; 
+            if(typeOfPath == TypeOfPath.list)            
+                examples = readFromList();
+            else if(typeOfPath == TypeOfPath.file)                                    
+                examples = readExamplesFromSingleFile();
             else
-                examples = readFromSingleFile(false);
+            {
+                System.err.println("Invalid argument");
+                return;
+            }
             Collection<Worker> list = new ArrayList<Worker>(examples.size());
             for(int i = 0; i < examples.size(); i++)
                 list.add(new Worker(i, examples.get(i)));
-            Utils.parallelForeach(Runtime.getRuntime().availableProcessors(), list);
-//            Utils.parallelForeach(1, list);
-//            int counter = 0;
-//            for(String example : examples)
-//            {                
-//                parse(example);               
-//                if(counter++ % 1000 == 0)
-//                    System.out.println("Processed " + counter + " examples");                
-//            }
-           
-
-            FileOutputStream fos = new FileOutputStream(path + "_vocabulary");
-            System.out.println("Writing vocabulary to disk...");
-            for(String word : taggedVocabulary)
+//            Utils.parallelForeach(Runtime.getRuntime().availableProcessors(), list);           
+            Utils.parallelForeach(1, list);
+            fileOutputStream.close();
+            // save vocabulary to disk
+            if(posDictionary != null)
             {
-                fos.write((word + "\n").getBytes());
-            }
-            fos.close();
+                FileOutputStream fos = new FileOutputStream(path + ".vocabulary");
+                System.out.println("Writing vocabulary to disk...");
+                for(String word : taggedVocabulary)
+                {
+                    fos.write((word + "\n").getBytes());
+                }
+                fos.close();
+            }            
         }
         catch(IOException ioe)
         {
@@ -126,14 +135,19 @@ public class PosTagger
         }
     }
 
-    private List<String> readFromPath() throws IOException
+    /**
+     * Read a list of files that contain a single example each
+     * @return
+     * @throws IOException 
+     */
+    private List<String[]> readFromList() throws IOException
     {
-        List<String> out = new ArrayList<String>();
+        List<String[]> out = new ArrayList<String[]>();
         BufferedReader fin = new BufferedReader(new FileReader(path));
         String line = "";            
         while((line = fin.readLine()) != null)
         {
-            if(extension != null && !line.endsWith(extension))
+            if(!extension.equals("") && !line.endsWith(extension))
             {
                 out.add(readFile(IOUtils.stripFileExt(line) + "." + extension));
             }              
@@ -146,12 +160,17 @@ public class PosTagger
         return out;
     }
     
-    private List<String> readFromSingleFile(boolean events) throws IOException
+    /**
+     * Read examples from  a single file
+     * @return
+     * @throws IOException 
+     */
+    private List<String[]> readExamplesFromSingleFile() throws IOException
     {
-        List<String> out = new ArrayList<String>();        
+        List<String[]> out = new ArrayList<String[]>();        
         if(new File(path).exists())
         {
-            if(events)
+            if(typeOfInput == TypeOfInput.events)
             {
                 String key = null;
                 StringBuilder str = new StringBuilder();
@@ -172,19 +191,44 @@ public class PosTagger
             } // if
             else
             {
-                out.addAll(Arrays.asList(Utils.readLines(path)));
+//                out.addAll(Arrays.asList(Utils.readLines(path)));
+                String[] sentences = Utils.readLines(path);
+                for(String sentence : sentences)
+                {
+                    String[] ar = {sentence};
+                    out.add(ar);
+                }
             }
         } // if        
         return out;
     }
     
-    private String readExample(String input)
+    /**
+     * Read a single example from the input string. Handle both raw and event format
+     * @param input
+     * @return 
+     */
+    private String[] readExample(String input)
     {
-        String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
-        return res[1];
+//        String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
+//        return res[1];
+        if(typeOfInput == TypeOfInput.events)
+            return Event3Model.extractExampleFromString(input);
+        else
+        {
+            String[] out = {input};
+            return out;
+        }
     }
-    private String readFile(String path) throws IOException
-    {
+    
+    /**
+     * Open file and read the example. The file should only contain a single example
+     * @param path
+     * @return
+     * @throws IOException 
+     */
+    private String[] readFile(String path) throws IOException
+    {        
         InputStream in = new FileInputStream(new File(path));
         OutputStream out = new ByteArrayOutputStream();
         // Transfer bytes from in to out
@@ -197,56 +241,179 @@ public class PosTagger
         in.close();
         out.close();
 
-        return out.toString().toLowerCase().trim();
+        return readExample(out.toString().toLowerCase().trim());
     }
 
-    private void parse(String input)
-    {        
-        String taggedInput = tag(input);
-        if(!useUniversalTags)
-            syncVocabulary.addAll(Arrays.asList(taggedInput.split("\\p{Space}")));        
-        else
+    private Map<String, List<String>> readPosDictionary(String path)
+    {
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        for(String line : Utils.readLines(path))
         {
-            String[] tokens = taggedInput.split("\\p{Space}");
-            for(String token : tokens)
+            int indexOfDelimeter = line.lastIndexOf("/");
+            String word = line.substring(0, indexOfDelimeter);
+            String tag = line.substring(indexOfDelimeter + 1);
+            if(!map.containsKey(word))
             {
-                int index = token.lastIndexOf("/");
-                syncVocabulary.add(token.substring(0, index + 1) + 
-                                   universalMaps.get(token.substring(index + 1)));
+                ArrayList tags = new ArrayList<String>(1);
+                tags.add(tag);
+                map.put(word, tags);
+            }
+            else
+            {
+                map.get(word).add(tag);
             }
         }
+        return map;
     }
-
-    public String tag(String input)
+    
+    private void parse(String[] example)
     {
-        return tagger.tagString(input);
+        String taggedText = tag(example);
+        try // TO-DO: needs a seperate thread, as it will eventually slow down seperate workers...
+        {
+            saveToFile(example, taggedText);
+        }
+        catch(IOException ioe){
+            System.err.println(ioe.getMessage());
+        }
+        if(posDictionary == null) // update vocabulary, unless we use one to pos tag
+        {
+            if(!useUniversalTags)
+                syncVocabulary.addAll(Arrays.asList(taggedText.split("\\p{Space}")));        
+            else
+            {
+                String[] tokens = taggedText.split("\\p{Space}");
+                for(String token : tokens)
+                {
+                    int index = token.lastIndexOf("/");
+                    syncVocabulary.add(token.substring(0, index + 1) + 
+                                       universalMaps.get(token.substring(index + 1)));
+                }
+            } // else
+        } // if
+        
     }
 
+    private void saveToFile(String[] example, String taggedText) throws IOException
+    {        
+        synchronized(fileOutputStream)
+        {
+            if(typeOfInput == TypeOfInput.raw)
+                fileOutputStream.write((taggedText + "\n").getBytes());
+            else
+            {
+                StringBuilder str = new StringBuilder();
+                for(int i = 0; i < example.length; i++)
+                {
+                    if(i == 1)
+                        str.append(taggedText).append("\n");
+                    else
+                        str.append(example[i]).append("\n");
+                }
+                fileOutputStream.write(str.toString().getBytes());
+            } // else
+        }
+    }
+    
+    public String tag(String[] example)
+    {
+        String input; 
+        if(typeOfInput == TypeOfInput.raw)
+            input = example[0];
+        else
+            input = example[1]; // res[0] = name, res[1] = text
+        String taggedText;
+        if(posDictionary == null) // use trained pos tagger
+        {
+            taggedText = tagger.tagString(input);            
+            if(!useUniversalTags) // only update word/tag vocabulary
+                syncVocabulary.addAll(Arrays.asList(taggedText.split("\\p{Space}")));        
+            else
+            {
+                String[] tokens = taggedText.split("\\p{Space}");
+                StringBuilder taggedTextBuilder = new StringBuilder();
+                for(String token : tokens)
+                {                    
+                    String ar[] = splitWordTagToken(token);
+                    String wordTagUniv = String.format("%s/%s", ar[0], universalMaps.get(ar[1]));                            
+                    taggedTextBuilder.append(wordTagUniv).append(" ");
+                    syncVocabulary.add(wordTagUniv); // update word/tag vocabulary
+                }
+                taggedText = taggedTextBuilder.substring(0, taggedTextBuilder.length() - 1);
+            } // else
+        } // if
+        else // use pos dictionary. Warn in case of ambiguity without crashing.
+        {
+            String[] tokens = input.split("\\p{Space}");
+            StringBuilder taggedTextBuilder = new StringBuilder();
+            for(String token : tokens)
+            {                
+                List<String> tags = posDictionary.get(token);
+                if(tags.size() > 1) // found ambiguity, report it!
+                {
+                    taggedTextBuilder.append(token).append(" ");
+                    if(typeOfInput == TypeOfInput.raw)
+                        System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
+                    else
+                        System.err.println("Ambiguity in word '" + token + 
+                                "' in example " + example[0]); 
+//                                +" in sentence '" + input + "'");
+                }
+                else                    
+                    taggedTextBuilder.append(String.format("%s/%s", token, tags.get(0))).append(" ");
+                    
+            }
+            taggedText = taggedTextBuilder.substring(0, taggedTextBuilder.length() - 1); 
+        }
+        return taggedText;
+    }
+
+    private String[] splitWordTagToken(String token)
+    {
+        String[] ar = new String[2];
+        int index = token.lastIndexOf("/");
+        ar[0] = token.substring(0, index);
+        ar[1] = token.substring(index + 1);
+        return ar;
+    }
+    
     public static void main(String[] args)
     {
-        if(args.length > 3)
+        try
         {
-            System.err.println("Usage: file_with_paths use_paths{directory,file_events,file_raw} "
-                             + "[useUniversalTags extension]");
-            System.exit(1);
+            TaggerOptions opts = parseArguments(TaggerOptions.class, args);
+            PosTagger pos = new PosTagger(opts.getPath(), 
+                                          opts.getTypeOfPath(),
+                                          opts.getTypeOfInput(),
+                                          opts.getPosDictionary(),
+                                          opts.isUseUniversalTags(), 
+                                          opts.getExtension());
+            pos.execute();
         }
-        PosTagger pos;
-        if(args.length == 3)
-            pos = new PosTagger(args[0], args[1], args[2]);
-        else if(args.length == 4)
-            pos = new PosTagger(args[0], args[1], args[2], args[3]);
-        else
-            pos = new PosTagger(args[0], args[1]);
-
-        pos.execute();
+        catch(ArgumentValidationException e) 
+        {
+            System.err.println("Usage: -path path -typeOfPath {dir,file_events,file_raw} "
+                             + "[-useUniversalTags -extension ext -posDictionary path]");
+            System.err.println(e.getMessage());            
+        }        
+    }
+      
+    interface TaggerOptions 
+    {        
+        @Option String getPath();
+        @Option TypeOfPath getTypeOfPath();
+        @Option TypeOfInput getTypeOfInput();
+        @Option(defaultValue="") String getExtension();
+        @Option(defaultValue="") String getPosDictionary();
+        @Option boolean isUseUniversalTags();        
     }
     
     protected class Worker extends MyCallable
     {
         int counter;
-        String example;
+        String[] example;
 
-        public Worker(int counter, String example)
+        public Worker(int counter, String[] example)
         {
             this.example = example;
             this.counter = counter;
@@ -256,9 +423,9 @@ public class PosTagger
         public Object call() throws Exception
         {
             parse(example);               
-            if(counter++ % 1000 == 0)
+            if(counter++ % 10000 == 0)
                 System.out.println("Processed " + counter + " examples");              
             return null;
         }
-    }
+    }        
 }
