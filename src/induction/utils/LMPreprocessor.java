@@ -3,6 +3,7 @@ package induction.utils;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import induction.Utils;
+import induction.problem.event3.Event3Model;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,12 +25,14 @@ public class LMPreprocessor
     int ngramSize;
     BufferedOutputStream bos;
     SimpleTokenizer tokenizer;
-    public enum SourceType {PATH, LIST};
+    
+    public enum SourceType {PATH, LIST, FILE};
     SourceType type;
-    boolean replaceNumbers;
+    boolean replaceNumbers, toLowerCase;
 
     public LMPreprocessor(String targetFile, String sourceDir, int ngramSize, 
-                          SourceType type, String fileExtension, boolean replaceNumbers)
+                          SourceType type, String fileExtension, 
+                          boolean replaceNumbers, boolean toLowerCase)
     {
         this.target = targetFile;
         this.source = sourceDir;
@@ -38,6 +41,7 @@ public class LMPreprocessor
         this.type = type;
         this.fileExtension = fileExtension;
         this.replaceNumbers = replaceNumbers;
+        this.toLowerCase = toLowerCase;
     }
 
     public void execute(boolean tokeniseOnly)
@@ -55,8 +59,10 @@ public class LMPreprocessor
             {
                 if(type == SourceType.PATH)
                     addPath(source);
-                else
+                else if(type == SourceType.LIST)
                     addList(source);
+                else
+                    processExamplesInSingleFile(source);
             }
             bos.close();
         }
@@ -103,34 +109,80 @@ public class LMPreprocessor
         }
     }
 
+    private void processExamplesInSingleFile(String source)
+    {
+        if(new File(source).exists())
+        {
+            String key = null;
+            StringBuilder str = new StringBuilder();
+            for(String line : Utils.readLines(source))
+            {
+                if(line.startsWith("Example_"))
+                {
+                    if(key != null) // only for the first example
+                    {                      
+                        processEventExample(str.toString());
+                        str = new StringBuilder();
+                    }
+                    key = line;
+                } // if                   
+                str.append(line).append("\n");
+            }  // for           
+            processEventExample(str.toString()); // don't forget last example
+        }
+    }
+    
     protected void processFile(String path)
     {       
         try
         {
             BufferedReader br = new BufferedReader(new FileReader(path));
-            String line = "", textInOneLine = "", textOut = HEADER;
+            String line = "", textInOneLine = "";
             while((line = br.readLine()) != null)
             {
                 textInOneLine += line + " ";
             }
-//            for(String s : tokenizer.tokenize(textInOneLine.trim()))
-            for(String s : textInOneLine.trim().split(" "))
-            {
-                textOut += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
-                             "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
-                             (s.matches("\\p{Digit}+") && // numbers
-                              !(s.contains("am") || s.contains("pm")))) // but not hours!
-                       ) ?  "<num> " : s + " ";
-            }            
             br.close();
-            bos.write((textOut.trim().toLowerCase() + " </s>\n").getBytes());
+            writeToFile(processExample(textInOneLine));
         }
         catch(IOException ioe)
         {
             LogInfo.error("Error reading file " + path);
         }
     }
-
+    
+    protected void processEventExample(String input)
+    {
+        try
+        {
+            writeToFile(processExample(Event3Model.extractExampleFromString(input)[1]));
+        }
+        catch(IOException ioe)
+        {
+            System.err.println(ioe.getMessage());
+        }        
+    }
+    
+    protected String processExample(String input)
+    {
+        String textOut = HEADER;
+        for(String s : input.trim().split(" "))
+        {
+            textOut += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
+                         "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
+                         (s.matches("\\p{Digit}+") && // numbers
+                          !(s.contains("am") || s.contains("pm")))) // but not hours!
+                   ) ?  "<num> " : s + " ";
+        }
+        return textOut;
+    }
+    
+    protected void writeToFile(String input) throws IOException
+    {
+        bos.write(( (toLowerCase ? input.trim().toLowerCase() : input.trim())
+                  + " </s>\n").getBytes());
+    }
+    
     /**
      * Tokenises source file. Assumes <s> and </s> are already placed in source
      */
@@ -165,13 +217,14 @@ public class LMPreprocessor
 
     public static void main(String[] args)
     {
-        String source = "gaborLists/genDevListPathsGabor";
-        String target = "weatherGovLM/dev/weather-dev-3-gram.sentences";
+        String source = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers";
+        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.sentences";
         String fileExtension = "text";
-        boolean tokeniseOnly = false, replaceNumbers = true;
+        boolean tokeniseOnly = false, replaceNumbers = false, toLowerCase = false;
         int ngramSize = 3;
         LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
-                                              SourceType.LIST, fileExtension, replaceNumbers);
+                                                SourceType.FILE, fileExtension, 
+                                                replaceNumbers, toLowerCase);
         lmp.execute(tokeniseOnly);
     }
 }
