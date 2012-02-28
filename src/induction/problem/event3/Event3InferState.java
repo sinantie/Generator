@@ -156,7 +156,8 @@ public abstract class Event3InferState
     }
     public BigDouble getDepDerivationWeight(DepHead head, DepHead argument, int direction)
     {
-        BigDouble weight = new BigDouble(argument.getWeight());        
+//        BigDouble weight = new BigDouble(argument.getWeight());        
+        BigDouble weight = BigDouble.one();
         boolean adj = Math.abs(head.getPos() - argument.getPos()) == 1;
         int r;
         if(adj)

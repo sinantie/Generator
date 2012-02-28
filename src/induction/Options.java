@@ -124,7 +124,8 @@ public class Options {
   @Option public ReorderType reorderType = ReorderType.eventType;
   @Option(gloss="model unknown word (default=false)") public boolean modelUnkWord = false;
   @Option(gloss="binarise at word level (default=false)") public boolean binariseAtWordLevel = false;
-  @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean posAtSurfaceLevel = false;
+  @Option(gloss="surface level contains pos tags (default=false)") public boolean posAtSurfaceLevel = false;
+  @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean usePosTagger = false;
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;
   @Option(gloss="set n for modified BLEU score") public int modifiedBleuScoreSize = 4;
   @Option(gloss="re-rank output based on oracle BLEU score") public boolean oracleReranker = false;

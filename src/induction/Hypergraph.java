@@ -301,9 +301,9 @@ public class Hypergraph<Widget> {
                     words = input; // 2nd branch of function q in Chiang 2007
                 } // LM
                 if(useDependencies && kBestMask.length < 3) // DMV only handles binary and unary rules
-                {                    
+                {
                     if(kBestMask.length < 2) // unary rule, just carry the head as is
-                        head = derArray.get(0).head;                        
+                        head = derArray.get(0).head;
                     else
                     {
                         DepHead leftHead = derArray.get(0).head;

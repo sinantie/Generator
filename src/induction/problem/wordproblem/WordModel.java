@@ -3,6 +3,7 @@ package induction.problem.wordproblem;
 import fig.basic.Indexer;
 import fig.exec.Execution;
 import induction.Options;
+import induction.Utils;
 import induction.problem.AModel;
 
 /**
@@ -46,10 +47,11 @@ public abstract class WordModel extends AModel
             return "";
     }
     
-    public static String wordToString(Indexer<String> wordIndexer, int w)
+    public static String wordToString(Indexer<String> wordIndexer, int w, boolean stripPosTag)
     {
         if(w > -1)
-            return wordIndexer.getObject(w);
+            return stripPosTag ? Utils.stripTag(wordIndexer.getObject(w)) : 
+                    wordIndexer.getObject(w);
         else
             return "";
     }

@@ -51,7 +51,7 @@ public class GenerationPerformance extends AlignmentPerformance
     {
         if(trueWidget != null)
         {
-            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget);
+            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget, model.getOpts().posAtSurfaceLevel);
             String trueStr = widgetToString(model.getWordIndexer(), (GenWidget)trueWidget);
 
 //            String predModifiedStr = modifyPredStr(predStr, trueStr, (GenWidget) predWidget, (GenWidget) trueWidget);
@@ -138,15 +138,20 @@ public class GenerationPerformance extends AlignmentPerformance
 
     public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget)
     {
-        String out = "";
-        for(int i = 0; i < widget.text.length; i++)
-        {
-            out += (widget.nums[i] > -1 ? widget.nums[i] :
-                    WordModel.wordToString(wordIndexer, widget.text[i])) + " ";
-        }
-        return out.trim();
+        return widgetToString(wordIndexer, widget, false);
     }
-
+    
+    public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget, boolean stripPosTags)
+    {
+        StringBuilder out = new StringBuilder();
+        for(int i = 0; i < widget.text.length; i++)
+        {            
+            out.append(widget.nums[i] > -1 ? widget.nums[i] :
+                    WordModel.wordToString(wordIndexer, widget.text[i], stripPosTags)).append(" ");
+        }
+        return out.toString().trim();
+    }
+    
     /**
      * Print metrics
      */

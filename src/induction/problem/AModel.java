@@ -162,7 +162,7 @@ public abstract class AModel
         Utils.begin_track("Reading examples");
         numExamples = 0;
         examples.clear();
-        if(opts.posAtSurfaceLevel)
+        if(opts.usePosTagger)
         {
             try
             {

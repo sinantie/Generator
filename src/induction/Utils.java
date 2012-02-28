@@ -713,4 +713,9 @@ public class Utils
         in.close();
         return trees;
     }
+    
+    public static String stripTag(String word)
+    {
+        return word.substring(0, word.lastIndexOf("/"));
+    }
 }
