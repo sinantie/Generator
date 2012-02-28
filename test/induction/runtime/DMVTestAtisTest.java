@@ -33,7 +33,7 @@ public class DMVTestAtisTest
                     + "-inputFileExt events "
                     + "-inputFormat raw "
                     + "-dontOutputParams ";
-//                    + "-posAtSurfaceLevel "            
+//                    + "-usePosTagger "            
 //                    + "-useTagsAsWords";
          
         /*initialisation procedure from Induction class*/

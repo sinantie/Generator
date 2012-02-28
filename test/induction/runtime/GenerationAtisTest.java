@@ -61,9 +61,7 @@ public class GenerationAtisTest
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");
-        model.readExamples();
-        for(String s : model.wordsToStringArray())
-            System.out.println(s);
+        model.readExamples();        
         model.logStats();
 //        opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;

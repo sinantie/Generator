@@ -27,12 +27,15 @@ public class DMVTrainAtisTest
                     + "-examplesInSingleFile "                    
                     + "-inputLists "
 //                    + "../wsj/3.0/parsed/mrg/atis/atis3_clean_pos_cut.mrg "
-                    + "data/atis/train/atis5000.sents.full "
+//                    + "data/atis/train/atis5000.sents.full "
+                    + "data/atis/train/atis5000.sents.full.tagged.CDnumbers "
                     + "-inputFileExt events "
                     + "-inputFormat raw "
-                    + "-dontOutputParams ";
-//                    + "-posAtSurfaceLevel "            
-//                    + "-useTagsAsWords";
+                    + "-dontOutputParams "
+                    + "-useTagsAsWords "
+                    + "-posAtSurfaceLevel ";
+//                    + "-usePosTagger "            
+
          
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
