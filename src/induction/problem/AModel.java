@@ -14,6 +14,7 @@ import induction.Options.InitType;
 import induction.Utils;
 import induction.WekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
+import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AParams.ParamsType;
 import java.io.File;
 import java.io.PrintWriter;
@@ -602,7 +603,7 @@ public abstract class AModel
     {
         opts.alignmentModel = lopts.alignmentModel;
         if(opts.ngramModelFile != null)
-            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, 3);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();

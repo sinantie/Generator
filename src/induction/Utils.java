@@ -716,6 +716,11 @@ public class Utils
     
     public static String stripTag(String word)
     {
-        return word.substring(0, word.lastIndexOf("/"));
+        return word.equals("</s>") || !word.contains("/") ? word : word.substring(0, word.lastIndexOf("/"));
+    }
+    
+    public static String stripWord(String word)
+    {
+        return word.equals("</s>") || !word.contains("/") ? null : word.substring(word.lastIndexOf("/") + 1);
     }
 }

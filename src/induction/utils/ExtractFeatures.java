@@ -1,12 +1,12 @@
 package induction.utils;
 
+import fig.basic.IOUtils;
 import induction.Utils;
 import induction.problem.event3.CatField;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -76,8 +76,7 @@ public class ExtractFeatures
         int totalNumberOfFields = 0;
         try
         {
-            ObjectInputStream ois = new ObjectInputStream(
-                    new FileInputStream(paramsFilename));
+            ObjectInputStream ois = IOUtils.openObjIn(paramsFilename);
             ois.readObject(); // wordIndexer, don't need it
             ois.readObject(); // labelIndexer, don't need it
             EventType[] eventTypes = (EventType[]) ois.readObject(); // we only need this one

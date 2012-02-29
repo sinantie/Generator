@@ -518,7 +518,7 @@ public class Hypergraph<Widget> {
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
             {
-                temp = vocabulary.getObject(ngram.get(i));
+                temp = Utils.stripTag(vocabulary.getObject(ngram.get(i)));
                 // ngram inferState needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
                 ngramStr[i] = numbersAsSymbol &&

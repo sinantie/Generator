@@ -79,6 +79,7 @@ public abstract class Event3Model extends WordModel
     // map of fields names and indices - used for semantic parsing. It is filled in
     // at stagedInitParams
     protected HashMap<Integer, HashMap<String, Integer>> fieldsMap;
+    protected Indexer<String> testSetWordIndexer = new Indexer<String>();
     protected Map<Integer, Integer> depsCrossWordMap;
     protected GenerativeDMVModel depsModel;
     
@@ -110,6 +111,16 @@ public abstract class Event3Model extends WordModel
         return wordIndexer.getIndex(processWord(str));
     }
 
+    public int getTestSetWordIndex(String str)
+    {
+        return testSetWordIndexer.getIndex(processWord(str));
+    }
+
+    public Indexer<String> getTestSetWordIndexer()
+    {
+        return testSetWordIndexer;
+    }
+        
     public int getT()
     {
         return eventTypes.length;
@@ -702,7 +713,7 @@ public abstract class Event3Model extends WordModel
                     textInput.split("\n") : Utils.readLines(textInput))
                 {
                     lineToStartText.add(textIndex);
-                    for(String s : line.toLowerCase().split(" "))
+                    for(String s : (opts.posAtSurfaceLevel ? line : line.toLowerCase()).split(" "))
                     {
                         textStr.add(s);
                         textIndex++;
@@ -733,7 +744,8 @@ public abstract class Event3Model extends WordModel
                     }
                     else
                     {
-                        text[i] = getWordIndex(word);
+                        text[i] = !opts.testInputPaths.isEmpty() || !opts.testInputLists.isEmpty() ? 
+                                getTestSetWordIndex(word) : getWordIndex(word);
                     }
                 }
 

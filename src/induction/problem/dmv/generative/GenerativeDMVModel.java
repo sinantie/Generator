@@ -92,20 +92,20 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         localWordIndexer = new Indexer[W()];
         for(int i = 0; i < localWordIndexer.length; i++)
             localWordIndexer[i] = new Indexer<Integer>();        
-        if(opts.useTagsAsWords)
-        {            
-            for(AExample ex : examples)
-            {
-                int[] text = ex.getText();
-                int N = text.length;
-                for(int i = 0; i < N; i++)
-                {                
-                    for(int j = 0; j < N; j++)
-                        localWordIndexer[text[i]].getIndex(text[j]);
-                } // for
-            } // for
-        } // if
-        else // bad way to do this...we are replicating the same vector many times
+//        if(opts.useTagsAsWords)
+//        {            
+//            for(AExample ex : examples)
+//            {
+//                int[] text = ex.getText();
+//                int N = text.length;
+//                for(int i = 0; i < N; i++)
+//                {                
+//                    for(int j = 0; j < N; j++)
+//                        localWordIndexer[text[i]].getIndex(text[j]);
+//                } // for
+//            } // for
+//        } // if
+//        else // bad way to do this...we are replicating the same vector many times
         {
             for(int i = 0; i < localWordIndexer.length; i++)
                 for(int j = 0; j < W(); j++)
@@ -395,7 +395,8 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         for(String word : wordIndexer1.getObjects())
         {
-            crossWordMap.put(wordIndexer1.getIndex(word), wordIndexer2.contains(word) ? wordIndexer2.getIndex(word) : null);
+            String tagOrWord = opts.posAtSurfaceLevel ? Utils.stripWord(word) : word;
+            crossWordMap.put(wordIndexer1.getIndex(word), wordIndexer2.contains(tagOrWord) ? wordIndexer2.getIndex(tagOrWord) : null);
         }
     }
     

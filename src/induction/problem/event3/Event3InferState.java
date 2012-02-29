@@ -173,6 +173,8 @@ public abstract class Event3InferState
                     induction.problem.dmv.Constants.R_RIGHT1;
         }
         DMVParams depsParams = getDepsParams();
+//        System.out.println((((Event3Model)model).getDepsModel().wordToString(argument.getHead()))  + " " +
+//                           (((Event3Model)model).getDepsModel().wordToString(head.getHead())));
         weight.mult(get(depsParams.continues[head.getHead()][r], induction.problem.dmv.Constants.F_CONT) *
                     get(depsParams.deps[head.getHead()][direction], 
                        ((Event3Model)model).getDepsModel().getLocalWordIndexer()[head.getHead()].indexOf(argument.getHead())) *
