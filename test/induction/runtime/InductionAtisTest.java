@@ -53,6 +53,7 @@ public class InductionAtisTest
                  + "-indepWords 0,5 "
                  + "-initNoise 0 "
                  + "-dontCrossPunctuation "
+                 + "-posAtSurfaceLevel "
                  + "-Options.stage1.smoothing 0.01 "
 //                 + "-modelUnkWord "
                  + "-Options.stage1.useVarUpdates";
@@ -61,7 +62,7 @@ public class InductionAtisTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
-        model.readExamples();
+        model.readExamples();        
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
         model.init(InitType.random, opts.initRandom, "");
