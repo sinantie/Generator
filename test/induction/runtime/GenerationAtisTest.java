@@ -49,6 +49,7 @@ public class GenerationAtisTest
                     + "-disallowConsecutiveRepeatFields "
                     + "-kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
+                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
 //                    + "-ngramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.model.arpa "
                     + "-ngramWrapper srilm "
                     + "-allowConsecutiveEvents "
@@ -60,8 +61,8 @@ public class GenerationAtisTest
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
-                    + "-useDependencies "
-                    + "-interpolationFactor 0.8 "
+//                    + "-useDependencies "
+                    + "-interpolationFactor 0.5 "
                     + "-posAtSurfaceLevel "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
                     + "atis_raw5000_full_indexers_001_POS_50/stage1.dmv.params.obj.gz";
