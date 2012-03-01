@@ -65,7 +65,7 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
     @Override
     protected void createHypergraph(Hypergraph<DepTree> hypergraph)
     {
-        hypergraph.setup(this, opts.debug, opts.modelType, true, -1, null, -1, 
+        hypergraph.setup(this, opts.debug, opts.modelType, true, -1, null, null, -1, 
                          opts.reorderType, false, opts.oracleReranker, false, 1.0,
                          -1, 
                          -1, false, 

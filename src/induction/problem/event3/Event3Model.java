@@ -1,17 +1,22 @@
 package induction.problem.event3;
 
+import fig.basic.FullStatFig;
 import induction.problem.event3.generative.generation.SemParseWidget;
 import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
+import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.ModelType;
 import util.Stemmer;
 import induction.Utils;
+import induction.ngrams.NgramModel;
+import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
+import induction.problem.AInferState;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
@@ -82,6 +87,7 @@ public abstract class Event3Model extends WordModel
     protected Indexer<String> testSetWordIndexer = new Indexer<String>();
     protected Map<Integer, Integer> depsCrossWordMap;
     protected GenerativeDMVModel depsModel;
+    protected NgramModel secondaryNgramModel;
     
     public Event3Model(Options opts)
     {
@@ -90,6 +96,12 @@ public abstract class Event3Model extends WordModel
         misc_lb = labelIndexer.getIndex("*");
     }
 
+    public NgramModel getSecondaryNgramModel()
+    {
+        return secondaryNgramModel;
+    }
+
+    
     ////////////////////////////////////////////////////////////
     // Generic routines
     private int[] newIntArray(int n, int x)
@@ -1019,5 +1031,32 @@ public abstract class Event3Model extends WordModel
             total += eventType.getF();
         }
         return total;
+    }
+    
+    /**
+     * helper method for testing the generation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the generated SGML text output (contains results as well)
+     */
+    @Override
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        if(opts.ngramModelFile != null)
+        {
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+            if(opts.secondaryNgramModelFile != null)
+                secondaryNgramModel = new SrilmNgramWrapper(opts.secondaryNgramModelFile, opts.ngramSize);
+        }
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+//        AParams counts = newParams();
+        AExample ex = examples.get(0);
+        AInferState inferState =  createInferState(ex, 1, null, temperature,
+                lopts, 0, complexity);
+        testPerformance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return widgetToSGMLOutput(ex, inferState.bestWidget);
     }
 }

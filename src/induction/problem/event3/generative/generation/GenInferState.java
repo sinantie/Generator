@@ -42,7 +42,7 @@ public class GenInferState extends InferState
 {
     Graph graph;
     //public static final int EXTRA_VOCABULARY_SYMBOLS = 5;
-    protected NgramModel ngramModel;
+    protected NgramModel ngramModel, secondaryNgramModel;
     protected Indexer<String> vocabulary;
 
     public GenInferState(Event3Model model, Example ex, Params params,
@@ -50,6 +50,7 @@ public class GenInferState extends InferState
     {
         super(model, ex, params, counts, ispec);
         this.ngramModel = ngramModel;
+        this.secondaryNgramModel = model.getSecondaryNgramModel();
     }
 
     public GenInferState(Event3Model model, Example ex, Params params,
@@ -103,7 +104,7 @@ public class GenInferState extends InferState
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
         // setup hypergraph preliminaries
-        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, secondaryNgramModel, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 opts.useDependencies,

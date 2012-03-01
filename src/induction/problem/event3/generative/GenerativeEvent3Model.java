@@ -330,11 +330,24 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         {
             Utils.begin_track("Loading Language Model: " + name);
             if(opts.ngramWrapper == NgramWrapper.kylm)
+            {
                 ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+                if(opts.secondaryNgramModelFile != null) // pos tags LM
+                    secondaryNgramModel = new KylmNgramWrapper(opts.secondaryNgramModelFile);
+            }
             else if(opts.ngramWrapper == NgramWrapper.srilm)
+            {
                 ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+                if(opts.secondaryNgramModelFile != null) // pos tags LM
+                    secondaryNgramModel = new SrilmNgramWrapper(opts.secondaryNgramModelFile, opts.ngramSize);
+            }
             else if(opts.ngramWrapper == NgramWrapper.roark)
+            {
                 ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+                if(opts.secondaryNgramModelFile != null)
+                    secondaryNgramModel = new RoarkNgramWrapper(opts.secondaryNgramModelFile);
+            }
+                
             LogInfo.end_track();
         }
         FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)

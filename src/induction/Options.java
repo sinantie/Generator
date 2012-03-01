@@ -115,6 +115,7 @@ public class Options {
   // Generation
   @Option(gloss="number k of candidates (default=1, i.e. perform 1-best viterbi)") public int kBest = 1;
   @Option(gloss="ngram model input file") public String ngramModelFile;
+  @Option(gloss="secondary ngram model input file (contains POS tags ngrams)") public String secondaryNgramModelFile;
   @Option(gloss="n-gram size (default=3)") public int ngramSize = 3;
   @Option(gloss="n-gram wrapper (default=srilm)") public NgramWrapper ngramWrapper = NgramWrapper.srilm;
   @Option(gloss="numbers should be treated as symbols, rather than converted to <num> (default=false)") public boolean numAsSymbol = false;

@@ -246,11 +246,11 @@ public class Hypergraph<Widget> {
                         head = headPair.label;
 //                        this.weight.mult(head.getWeight());
                     }
-                }                
+                }
             }
             else
             {
-                Derivation d;                
+                Derivation d;
                 ArrayList<Integer> input = new ArrayList();
                 BigDouble[] weightArray = new BigDouble[!useDependencies ? kBestMask.length + 2 : 
                                                         kBestMask.length + 3];
@@ -265,7 +265,7 @@ public class Hypergraph<Widget> {
                     derArray.add(d);
                     weightArray[i] = d.weight;
                     input.addAll(d.words);
-                }                                
+                }
                 weightArray[!useDependencies ? weightArray.length - 2 : 
                         weightArray.length - 3] = edge.weight;     // edge weight            
                 weightArray[!useDependencies ? weightArray.length - 1 : 
@@ -283,7 +283,9 @@ public class Hypergraph<Widget> {
 //                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
                             weightArray[!useDependencies ? weightArray.length - 1 : 
                                         weightArray.length - 2].mult(
-                                    getLMProb(input.subList(i - M + 1, i + 1))); // subList returns [i, j), j exclusive
+                                    getLMProb(input.subList(i - M + 1, i + 1))
+                                    
+                                    ); // subList returns [i, j), j exclusive
                         }
                     } // for
                     for(int i = 0; i < M - 1; i++) // function q in Chiang 2007
@@ -305,7 +307,7 @@ public class Hypergraph<Widget> {
                     if(kBestMask.length < 2) // unary rule, just carry the head as is
                         head = derArray.get(0).head;
                     else
-                    {
+                    {                        
                         DepHead leftHead = derArray.get(0).head;
                         DepHead rightHead = derArray.get(1).head;
                         if(leftHead == null) // special cases, of nodes that don't emit words (e.g. StopNode)
@@ -327,10 +329,13 @@ public class Hypergraph<Widget> {
                             head = argmax == 0 ?
                                 new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
                                 new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
-//                            weightArray[weightArray.length - 1] = weights[argmax];                            
-                            weightArray[weightArray.length - 2].mult(interpolationFactor);
-                            weights[argmax].mult(1.0 - interpolationFactor);
-                            weightArray[weightArray.length - 2].incr(weights[argmax]);
+//                            weightArray[weightArray.length - 1] = weights[argmax];
+                            if(calculateDependencies)
+                            {
+                                weightArray[weightArray.length - 2].mult(interpolationFactor);
+                                weights[argmax].mult(1.0 - interpolationFactor);
+                                weightArray[weightArray.length - 2].incr(weights[argmax]);
+                            }                            
                         }                        
                     }                    
                 } // deps
@@ -515,10 +520,12 @@ public class Hypergraph<Widget> {
 //            if(modelType == ModelType.semParse)
 //                return 1.0; // we currently don't support LM for semantic parsing
             String[] ngramStr = new String[ngram.size()];
+            String[] posNgramStr = secondaryNgramModel != null ? new String[ngram.size()] : null;
             String temp = "";
             for(int i = 0; i < ngram.size(); i++)
             {
-                temp = Utils.stripTag(vocabulary.getObject(ngram.get(i)));
+                String token = vocabulary.getObject(ngram.get(i));
+                temp = Utils.stripTag(token);
                 // ngram inferState needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
                 ngramStr[i] = numbersAsSymbol &&
@@ -526,9 +533,13 @@ public class Hypergraph<Widget> {
                                      "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
                                      "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
                                      ? "<num>" : temp;
+                if(secondaryNgramModel != null)
+                    posNgramStr[i] = Utils.stripWord(token, false);
             }
 
-            return ngramModel.getProb(ngramStr);
+            return secondaryNgramModel == null ? ngramModel.getProb(ngramStr) : 
+                    ngramModel.getProb(ngramStr) * interpolationFactor *
+                    secondaryNgramModel.getProb(posNgramStr) * (1-interpolationFactor);
         }
 
         @Override
@@ -559,7 +570,7 @@ public class Hypergraph<Widget> {
   public  int K, M, NUM, ELIDED_SYMBOL;
   public Options.ReorderType reorderType;
   private enum Reorder {eventType, event, field, ignore};
-  public NgramModel ngramModel;
+  public NgramModel ngramModel, secondaryNgramModel;
   public Indexer<String> vocabulary;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, 
                  enableFieldFeatures;
@@ -571,7 +582,7 @@ public class Hypergraph<Widget> {
   private AInferState inferState;
   private boolean discriminative;
   // dependencies stuff
-  private boolean useDependencies;
+  private boolean useDependencies, calculateDependencies;
   private double interpolationFactor;
   // Start and end nodes
   private final Object startNode = addNodeAndReturnIt("START", NodeType.sum); // use sum or prod versions
@@ -582,7 +593,9 @@ public class Hypergraph<Widget> {
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
 
   public  void setup(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
-                                        int K, NgramModel ngramModel, int M, Options.ReorderType reorderType,
+                                        int K, NgramModel ngramModel, 
+                                        NgramModel secondaryNgramModel,
+                                        int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
                                         boolean oracleReranker, boolean useDependencies, 
                                         double interpolationFactor, int NUM,
@@ -598,6 +611,7 @@ public class Hypergraph<Widget> {
         this.K = K;
         this.M = M;
         this.ngramModel = ngramModel;
+        this.secondaryNgramModel = secondaryNgramModel;
         this.reorderType = reorderType;
         this.allowConsecutiveEvents = allowConsecutiveEvents;
         this.oracleReranker = oracleReranker;
@@ -635,7 +649,7 @@ public class Hypergraph<Widget> {
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
-      setup(null, debug, modelType, allowEmptyNodes, K, null, 2, reorderType, 
+      setup(null, debug, modelType, allowEmptyNodes, K, null, null, 2, reorderType, 
                          allowConsecutiveEvents, false, useDependencies, interpolationFactor, 
                          NUM, ELIDED_SYMBOL, numbersAsSymbol, wordIndexer, ex, graph);
   }
@@ -861,6 +875,8 @@ public class Hypergraph<Widget> {
             v = topologicalOrdering.get(i);
             if(v != endNodeInfo)
             {
+                if(useDependencies)
+                    calculateDependencies = v.node instanceof EventsNode || v.node instanceof TrackNode;
                 if(reorderType == ReorderType.ignore)
                 {
                     kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order

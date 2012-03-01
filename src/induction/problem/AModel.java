@@ -603,7 +603,7 @@ public abstract class AModel
     {
         opts.alignmentModel = lopts.alignmentModel;
         if(opts.ngramModelFile != null)
-            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, 3);
+            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();

@@ -17,7 +17,7 @@ public class SemanticLMPreprocessor extends LMPreprocessor
                           boolean includeValues, boolean noise, boolean useCorrectPredictionsOnly,
                           boolean replaceNumbers, boolean toLowerCase)
     {
-        super(targetFile, sourceDir, ngramSize, type, fileExtension, replaceNumbers, toLowerCase);
+        super(targetFile, sourceDir, ngramSize, type, fileExtension, replaceNumbers, toLowerCase, false);
         this.includeEvents = includeEvents;
         this.includeFieldNames = includeValues;
         this.noise = noise;

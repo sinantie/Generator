@@ -719,8 +719,19 @@ public class Utils
         return word.equals("</s>") || !word.contains("/") ? word : word.substring(0, word.lastIndexOf("/"));
     }
     
-    public static String stripWord(String word)
+    public static String stripWord(String word, boolean strict)
     {
-        return word.equals("</s>") || !word.contains("/") ? null : word.substring(word.lastIndexOf("/") + 1);
+        if(strict)            
+            return word.equals("</s>") || !word.contains("/") ? null : word.substring(word.lastIndexOf("/") + 1);
+        else
+            return !word.contains("/") || word.equals("</s>") ? word : word.substring(word.lastIndexOf("/") + 1);
+    }
+    
+    public static String[] stripWords(String[] words)
+    {
+        String[] out = new String[words.length];
+        for(int i = 0; i < out.length; i++)
+            out[i] = stripWord(words[i], false);
+        return out;
     }
 }

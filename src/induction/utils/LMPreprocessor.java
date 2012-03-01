@@ -28,11 +28,12 @@ public class LMPreprocessor
     
     public enum SourceType {PATH, LIST, FILE};
     SourceType type;
-    boolean replaceNumbers, toLowerCase;
+    boolean replaceNumbers, toLowerCase, stripWords;
 
     public LMPreprocessor(String targetFile, String sourceDir, int ngramSize, 
                           SourceType type, String fileExtension, 
-                          boolean replaceNumbers, boolean toLowerCase)
+                          boolean replaceNumbers, boolean toLowerCase,
+                          boolean stripWords)
     {
         this.target = targetFile;
         this.source = sourceDir;
@@ -42,6 +43,7 @@ public class LMPreprocessor
         this.fileExtension = fileExtension;
         this.replaceNumbers = replaceNumbers;
         this.toLowerCase = toLowerCase;
+        this.stripWords = stripWords;
     }
 
     public void execute(boolean tokeniseOnly)
@@ -165,16 +167,17 @@ public class LMPreprocessor
     
     protected String processExample(String input)
     {
-        String textOut = HEADER;
+        StringBuilder textOut = new StringBuilder(HEADER);
         for(String s : input.trim().split(" "))
         {
-            textOut += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
+            String word = stripWords ? Utils.stripWord(s, true) : s;            
+            textOut.append( (replaceNumbers && (word.matches("-\\p{Digit}+|" + // negative numbers
                          "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
-                         (s.matches("\\p{Digit}+") && // numbers
-                          !(s.contains("am") || s.contains("pm")))) // but not hours!
-                   ) ?  "<num> " : s + " ";
+                         (word.matches("\\p{Digit}+") && // numbers
+                          !(word.contains("am") || word.contains("pm")))) // but not hours!
+                   ) ?  "<num> " : word).append(" ");            
         }
-        return textOut;
+        return textOut.toString();
     }
     
     protected void writeToFile(String input) throws IOException
@@ -218,13 +221,13 @@ public class LMPreprocessor
     public static void main(String[] args)
     {
         String source = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers";
-        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.sentences";
+        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.tags_only.sentences";
         String fileExtension = "text";
-        boolean tokeniseOnly = false, replaceNumbers = false, toLowerCase = false;
+        boolean tokeniseOnly = false, replaceNumbers = false, toLowerCase = false, stripWords = true;
         int ngramSize = 3;
         LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
                                                 SourceType.FILE, fileExtension, 
-                                                replaceNumbers, toLowerCase);
+                                                replaceNumbers, toLowerCase, stripWords);
         lmp.execute(tokeniseOnly);
     }
 }

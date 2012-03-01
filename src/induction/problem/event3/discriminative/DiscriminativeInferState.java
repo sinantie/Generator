@@ -288,7 +288,7 @@ public class DiscriminativeInferState extends Event3InferState
         if(useKBest)
             resortDiscriminativeEmissions();
         // setup hypergraph preliminaries
-        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, opts.ngramSize,
+        hypergraph.setup(this, opts.debug, opts.modelType, true, opts.kBest, ngramModel, null, opts.ngramSize,
                 opts.reorderType, opts.allowConsecutiveEvents,
                 opts.oracleReranker,
                 opts.useDependencies,
