@@ -49,7 +49,7 @@ public class GenerationAtisTest
                     + "-disallowConsecutiveRepeatFields "
                     + "-kBest 40 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
-                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
+//                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
 //                    + "-ngramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.model.arpa "
                     + "-ngramWrapper srilm "
                     + "-allowConsecutiveEvents "
