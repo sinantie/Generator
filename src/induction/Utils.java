@@ -734,4 +734,18 @@ public class Utils
             out[i] = stripWord(words[i], false);
         return out;
     }
+
+    static int argmax(double[] weights)
+    {
+        if(weights == null)
+            return -1;
+        if(weights.length == 1)
+            return 0;
+        double max = weights[0];
+        int maxI = 0;
+        for(int i = 1; i < weights.length; i++)
+            if(weights[i] > max)
+                maxI = i;
+        return maxI;
+    }
 }

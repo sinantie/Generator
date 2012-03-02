@@ -299,7 +299,7 @@ public abstract class Event3Model extends WordModel
 
     }
 
-    protected void loadGenerativeDMVModel()
+    protected void loadDMVModel()
     {
         depsModel = new GenerativeDMVModel(opts);
         depsCrossWordMap = new HashMap<Integer, Integer>();

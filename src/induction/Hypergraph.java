@@ -1,6 +1,6 @@
 package induction;
 
-import induction.problem.event3.Event3InferState;
+import induction.problem.event3.generative.generation.GenInferState;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.FieldNode;
@@ -319,9 +319,9 @@ public class Hypergraph<Widget> {
                             // choose whether to attach the right head as argument to the left head
                             // or vice versa
                             BigDouble weights[] = {
-                            ((Event3InferState)inferState).getDepDerivationWeight(
+                            ((GenInferState)inferState).getDepDerivationWeight(
                                     leftHead, rightHead, induction.problem.dmv.Constants.D_RIGHT), 
-                            ((Event3InferState)inferState).getDepDerivationWeight(
+                            ((GenInferState)inferState).getDepDerivationWeight(
                                     rightHead, leftHead, induction.problem.dmv.Constants.D_LEFT)};
                             int argmax = BigDouble.argmax(weights);
                             // in case both derivations are equiprobable choose to attach right-first
@@ -360,6 +360,12 @@ public class Hypergraph<Widget> {
                 if(p.label != null)
                 {
                     this.words.add(new Integer((Integer)p.label));
+                    if(useDependencies && edge.info instanceof HyperedgeInfoDepLM)
+                    {
+                        induction.problem.Pair<DepHead> headPair = 
+                                ((HyperedgeInfoDepLM)edge.info).getDepWeight(new Integer((Integer)p.label));
+                        head = headPair.label;
+                    }
                 }
             }//            
             else
@@ -451,7 +457,41 @@ public class Hypergraph<Widget> {
                         if(!(edge.dest.get(0).node instanceof FieldNode))
                             fields = fieldInput; // 2nd branch of function q in Chiang 2007
                     } 
-                } // fields               
+                } // fields          
+                if(useDependencies && kBestMask.length < 3) // DMV only handles binary and unary rules
+                {
+                    if(kBestMask.length < 2) // unary rule, just carry the head as is
+                        head = derArray.get(0).head;
+                    else
+                    {                        
+                        DepHead leftHead = derArray.get(0).head;
+                        DepHead rightHead = derArray.get(1).head;
+                        if(leftHead == null) // special cases, of nodes that don't emit words (e.g. StopNode)
+                            head = rightHead;
+                        else if(rightHead == null)
+                            head = leftHead;
+                        else
+                        {
+                            // choose whether to attach the right head as argument to the left head
+                            // or vice versa
+                            double weights[] = {
+                            ((DiscriminativeInferState)inferState).getDepDerivationWeight(
+                                    leftHead, rightHead, induction.problem.dmv.Constants.D_RIGHT), 
+                            ((DiscriminativeInferState)inferState).getDepDerivationWeight(
+                                    rightHead, leftHead, induction.problem.dmv.Constants.D_LEFT)};
+                            int argmax = Utils.argmax(weights);
+                            // in case both derivations are equiprobable choose to attach right-first
+                            if(argmax == -1) argmax = 0;
+                            head = argmax == 0 ?
+                                new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
+                                new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
+                            if(calculateDependencies) // apply DMV locally on field level
+                            {
+                                this.logWeight += weights[argmax];
+                            }                            
+                        }                        
+                    }                    
+                } // deps
             } // else
         }
         

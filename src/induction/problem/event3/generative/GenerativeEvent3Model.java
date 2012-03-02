@@ -129,7 +129,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             ois.close();
             
             if(opts.useDependencies)         
-                loadGenerativeDMVModel();
+                loadDMVModel();
         }
         catch(Exception ioe)
         {

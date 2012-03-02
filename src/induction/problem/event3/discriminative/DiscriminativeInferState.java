@@ -4,6 +4,7 @@ import induction.problem.event3.generative.generation.*;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.Indexer;
 import fig.basic.StopWatchSet;
+import induction.DepHead;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.NumFieldParams;
 import induction.problem.event3.params.CatFieldParams;
@@ -20,6 +21,7 @@ import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.dmv.params.DMVParams;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3InferState;
@@ -374,6 +376,8 @@ public class DiscriminativeInferState extends Event3InferState
                         increaseHasConsecutiveNgramsCount(((GenWidget)result.widget).getText(), 3);
                     if(opts.includeFieldNgramsPerEventTypeFeature || (opts.includeNumFieldsPerEventTypeFeature && iteration >= 5))
                         increaseFieldNgramCountNumOfFields((Widget)result.widget);
+                    if(opts.useDependencies)
+                        increaseDependenciesCounts((Widget)result.widget);
                 }
             }
             else
@@ -570,6 +574,34 @@ public class DiscriminativeInferState extends Event3InferState
            return getCount(((DiscriminativeEventTypeParams)params.eventTypeParams[ev.getEventTypeIndex()]).emptyValue, field);
         }
         return 0.0d;
+    }
+    
+    public double getDepDerivationWeight(DepHead head, DepHead argument, int direction)
+    {
+//        BigDouble weight = new BigDouble(argument.getWeight());        
+        double weight = 0;
+        boolean adj = Math.abs(head.getPos() - argument.getPos()) == 1;
+        int r;
+        if(adj)
+        {
+            r = direction == induction.problem.dmv.Constants.D_LEFT ?
+                    induction.problem.dmv.Constants.R_LEFT0 : 
+                    induction.problem.dmv.Constants.R_RIGHT0;
+        }        
+        else
+        {
+            r = direction == induction.problem.dmv.Constants.D_RIGHT ?
+                    induction.problem.dmv.Constants.R_LEFT1 : 
+                    induction.problem.dmv.Constants.R_RIGHT1;
+        }
+        DMVParams depsParams = getDepsParams();
+//        System.out.println((((Event3Model)model).getDepsModel().wordToString(argument.getHead()))  + " " +
+//                           (((Event3Model)model).getDepsModel().wordToString(head.getHead())));
+        weight = get(depsParams.continues[head.getHead()][r], induction.problem.dmv.Constants.F_CONT) +
+                    get(depsParams.deps[head.getHead()][direction], 
+                       ((Event3Model)model).getDepsModel().getLocalWordIndexer()[head.getHead()].indexOf(argument.getHead())) +
+                    get(depsParams.continues[head.getHead()][r], induction.problem.dmv.Constants.F_STOP);
+        return weight;
     }
     
     /**
@@ -862,11 +894,15 @@ public class DiscriminativeInferState extends Event3InferState
         {
             if(useKBest)
             {                                
-                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {                
                 public double getWeight() {return 0.0d;}
                 public Pair getWeightAtRank(int rank)
                 {                   
                     return getAtRank(getResortedCatFieldEmissions(event, field, v), rank);
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafDepHead(word, i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {return widget;}
@@ -937,13 +973,17 @@ public class DiscriminativeInferState extends Event3InferState
             {
                 if(useKBest)
                 {
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {                
                     public double getWeight() {
                         return 0.0d;
                     }
                     public Pair getWeightAtRank(int rank)
                     {                   
                         return getAtRank(getResortedNoneFieldEmissions(eventTypeIndex), rank);
+                    }
+                    public Pair getDepWeight(int word)
+                    {
+                        return getLeafDepHead(word, i);
                     }
                     public void setPosterior(double prob) { }
                     public GenWidget choose(GenWidget widget) {                    
@@ -1013,13 +1053,17 @@ public class DiscriminativeInferState extends Event3InferState
                 // G_FIELD_GENERIC: generate based on event type                               
                 if(useKBest)
                 {
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {                
                     public double getWeight() {return 0.0d;}
                     public Pair getWeightAtRank(int rank)
                     {                   
                         Pair p = getAtRank(emissionsParams.getGenericEmissions(), rank);
                         p.value += getCount(modelEventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
                         return p;
+                    }
+                    public Pair getDepWeight(int word)
+                    {
+                        return getLeafDepHead(word, i);
                     }
                     public void setPosterior(double prob) { }
                     public GenWidget choose(GenWidget widget) {return widget;}
@@ -1336,11 +1380,15 @@ public class DiscriminativeInferState extends Event3InferState
         {
             if(useKBest)
             {
-                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {                
+                hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {                
                 public double getWeight() {return 0.0d;}
                 public Pair getWeightAtRank(int rank)
                 {                   
                     return getAtRank(emissionsParams.getNoneEventTypeEmissions(), rank);
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafDepHead(word, i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {return widget;}

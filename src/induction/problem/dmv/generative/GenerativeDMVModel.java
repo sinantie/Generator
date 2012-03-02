@@ -230,6 +230,11 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         return new DMVParams(this, opts, VecFactory.Type.DENSE);
     }
 
+    public void supervisedInitParams(VecFactory.Type type)
+    {
+        params = new DMVParams(this, opts, type);
+    }
+    
     public DMVParams getParams()
     {
         return (DMVParams)params;

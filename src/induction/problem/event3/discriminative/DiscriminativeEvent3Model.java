@@ -26,6 +26,7 @@ import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.dmv.generative.GenerativeDMVModel;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -97,6 +98,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         // Load generative model parameters
         baselineModelParams = loadGenerativeModelParams();
+        // Load dependencies model
+        if(opts.useDependencies)
+            loadDMVModel();
         
         Utils.begin_track("stagedInitParams");
         try {            
@@ -258,7 +262,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public Map<List<Integer>, Integer>[] getFieldNgramsMapPerEventTypeArray()
     {
         return fieldNgramsMapPerEventTypeArray;
-    }
+    }    
     
     @Override
     protected void saveParams(String name)
@@ -287,10 +291,31 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     {
         // Load generative model parameters
         baselineModelParams = loadGenerativeModelParams();
+        // Initialise dependencies model
+        if(opts.useDependencies)
+            initDepsModel();
         params = newParams();
         //do nothing, initialise to zero by default
     }
 
+    protected void initDepsModel()
+    {
+        // initialize the dependency model's wordIndexer either with lexical items or POS tags
+        Indexer<String> depsModelWordIndexer = depsModel.getWordIndexer();
+        if(!opts.useTagsAsWords)
+            depsModelWordIndexer.addAll(wordIndexer);
+        else
+        {
+            for(String word : wordIndexer.getObjects())
+            {
+                String tag = Utils.stripWord(word, true);
+                if(tag != null)
+                    depsModelWordIndexer.add(tag);
+            } // for
+        } // else        
+        depsModel.preInit();
+        depsModel.supervisedInitParams(VecFactory.Type.SPARSE);
+    }
     
     @Override
     protected AParams newParams()
