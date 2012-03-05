@@ -61,7 +61,7 @@ public class GenerationAtisTest
                     + "-lengthPredictionFeatureType COUNTS "
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
-//                    + "-useDependencies "
+                    + "-useDependencies "
                     + "-interpolationFactor 0.5 "
                     + "-posAtSurfaceLevel "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
