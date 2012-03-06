@@ -376,8 +376,8 @@ public class DiscriminativeInferState extends Event3InferState
                         increaseHasConsecutiveNgramsCount(((GenWidget)result.widget).getText(), 3);
                     if(opts.includeFieldNgramsPerEventTypeFeature || (opts.includeNumFieldsPerEventTypeFeature && iteration >= 5))
                         increaseFieldNgramCountNumOfFields((Widget)result.widget);
-                    if(opts.useDependencies)
-                        increaseDependenciesCounts((Widget)result.widget);
+                    if(opts.useDependencies){}
+//                        increaseDependenciesCounts((Widget)result.widget);
                 }
             }
             else
