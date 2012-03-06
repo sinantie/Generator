@@ -330,12 +330,16 @@ public class Hypergraph<Widget> {
                                 new DepHead(leftHead.getHead(), leftHead.getPos(), weights[0]) :
                                 new DepHead(rightHead.getHead(), rightHead.getPos(), weights[1]);
 //                            weightArray[weightArray.length - 1] = weights[argmax];
-                          //  if(calculateDependencies)
+//                            if(calculateDependencies)
                             {
-                                System.out.println(weightArray[weightArray.length - 2] + " " + weights[argmax]);
-                                weightArray[weightArray.length - 2].mult(interpolationFactor);
-                                weights[argmax].mult(1.0 - interpolationFactor);
-                                weightArray[weightArray.length - 2].incr(weights[argmax]);
+                                if(weightArray[weightArray.length - 2].getE() > -1)
+                                {
+//                                    System.out.println(weightArray[weightArray.length - 2] + " " + weights[argmax]);
+                                    weightArray[weightArray.length - 2].mult(interpolationFactor);
+                                    weights[argmax].mult(1.0 - interpolationFactor);
+                                    weightArray[weightArray.length - 2].incr(weights[argmax]);
+                                }
+                                
                             }                            
                         }                        
                     }                    
@@ -529,7 +533,9 @@ public class Hypergraph<Widget> {
             {
                 if(!words.isEmpty())
                 {
-                    out.append(words.get(0)).append(" ");                     
+                    out.append(words.get(0)).append(" "); 
+                    if(useDependencies && head != null)
+                        out.append("[").append(head.getHead()).append("]").append(" ");
                     return out.toString();                     
                 }
             }

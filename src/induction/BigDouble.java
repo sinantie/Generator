@@ -52,6 +52,12 @@ public class BigDouble {
     return d;
   }
 
+    public int getE()
+    {
+        return E;
+    }
+
+  
   // Set
   public void setLog(double logM) {
     this.E = (int)logM / LOG_BASE;
