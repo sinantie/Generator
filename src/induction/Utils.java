@@ -113,7 +113,7 @@ public class Utils
         }
         else
         {
-            return String.format("%.3f", x);
+            return String.format("%.4f", x);
         }
     }
 
