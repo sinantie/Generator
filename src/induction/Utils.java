@@ -748,4 +748,33 @@ public class Utils
                 maxI = i;
         return maxI;
     }
+    
+    /**
+     * Replace occurences of numbers in the input into the <num> tag
+     * @param input
+     * @return 
+     */
+    public static String replaceNumbers(String input)
+    {
+        StringBuilder str = new StringBuilder();
+        input = input.replaceAll("\n", "\n ");
+        for(String token : input.split(" "))
+        {            
+            str.append(replaceNumber(token)).append(" ");
+        } // for
+        return str.toString();
+    }
+    
+    /**
+     * Replaces the input string with the <num> tag if it is a number
+     * @param input
+     * @return 
+     */
+    public static String replaceNumber(String input)
+    {
+        return input.matches("-\\p{Digit}+|" + // negative numbers
+                                 "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
+                                 "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
+                                 ? "<num>" : input;
+    }
 }

@@ -1,5 +1,8 @@
 package induction.utils;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import uk.co.flamingpenguin.jewel.cli.Option;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
@@ -37,7 +40,7 @@ public class PosTagger
     private FileOutputStream fileOutputStream;
     private String extension;
     private MaxentTagger tagger;
-    private Set<String> taggedVocabulary, syncVocabulary;
+    private Set<String> taggedVocabulary, syncVocabulary; 
     // option 'list' means that 'path' is a list of filenames that contain
     // a single example (either raw or event by Percy's format)
     // option file means that 'path' is a file that contains a list 
@@ -46,26 +49,35 @@ public class PosTagger
     public enum TypeOfInput {events, raw}
     private final TypeOfPath typeOfPath;
     private final TypeOfInput typeOfInput;
-    private boolean useUniversalTags = false;
+    private boolean useUniversalTags = false, replaceNumbers = false;
     private Map<String, String> universalMaps;       
     private Map<String, List<String>> posDictionary;
+    private ExecutorService writerService;
+    private final int NUM_OF_THREADS = Runtime.getRuntime().availableProcessors();
+//    private final int NUM_OF_THREADS = 1;
     
     public PosTagger(String path, TypeOfPath typeOfPath, TypeOfInput typeOfInput, 
-                     String posDictionaryPath, boolean useUniversalTags, String extension)
+                     String posDictionaryPath, boolean useUniversalTags, boolean replaceNumbers, 
+                     String extension)
     {
         this.path = path;
-        try
+        if(typeOfPath == TypeOfPath.file)
         {
-            this.fileOutputStream = new FileOutputStream(path + ".tagged");
+            try
+            {
+                this.fileOutputStream = new FileOutputStream(path + ".tagged");
+            }
+            catch(IOException ioe)
+            {
+                System.err.println(ioe.getMessage());
+                System.exit(1);
+            }
         }
-        catch(IOException ioe)
-        {
-            System.err.println(ioe.getMessage());
-            System.exit(1);
-        }
+        writerService = Executors.newFixedThreadPool(NUM_OF_THREADS);
         this.typeOfPath = typeOfPath;
         this.typeOfInput = typeOfInput;        
         this.useUniversalTags = useUniversalTags;
+        this.replaceNumbers = replaceNumbers;
         this.extension = extension;
         if(this.useUniversalTags)
         {
@@ -114,9 +126,10 @@ public class PosTagger
             Collection<Worker> list = new ArrayList<Worker>(examples.size());
             for(int i = 0; i < examples.size(); i++)
                 list.add(new Worker(i, examples.get(i)));
-//            Utils.parallelForeach(Runtime.getRuntime().availableProcessors(), list);           
-            Utils.parallelForeach(1, list);
-            fileOutputStream.close();
+            Utils.parallelForeach(NUM_OF_THREADS, list);
+            if(fileOutputStream != null)
+                fileOutputStream.close();
+            shutDownWriterService();
             // save vocabulary to disk
             if(posDictionary != null)
             {
@@ -193,9 +206,10 @@ public class PosTagger
             {
 //                out.addAll(Arrays.asList(Utils.readLines(path)));
                 String[] sentences = Utils.readLines(path);
+                int i = 0;
                 for(String sentence : sentences)
                 {
-                    String[] ar = {sentence};
+                    String[] ar = {("Example_" + ++i), sentence};
                     out.add(ar);
                 }
             }
@@ -204,21 +218,39 @@ public class PosTagger
     }
     
     /**
-     * Read a single example from the input string. Handle both raw and event format
+     * Read a single example from the input string. Handle event format
      * @param input
      * @return 
      */
     private String[] readExample(String input)
     {
-//        String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
-//        return res[1];
         if(typeOfInput == TypeOfInput.events)
-            return Event3Model.extractExampleFromString(input);
-        else
         {
-            String[] out = {input};
+            String[] out = Event3Model.extractExampleFromString(input);
+            if(replaceNumbers)
+                out[1] = Utils.replaceNumbers(out[1]);
             return out;
         }
+        else
+        {
+            return null;
+        }
+    }
+    
+    /**
+     * Read a single example from the input string. Handle raw format only
+     * @param input
+     * @param path
+     * @return 
+     */
+    private String[] readExample(String path, String input)
+    {
+        if(typeOfInput == TypeOfInput.raw)
+        {
+            String[] out = {path, replaceNumbers ? Utils.replaceNumbers(input) : input};
+            return out;
+        }
+        return null;
     }
     
     /**
@@ -241,7 +273,7 @@ public class PosTagger
         in.close();
         out.close();
 
-        return readExample(out.toString().toLowerCase().trim());
+        return readExample(path, out.toString().toLowerCase().trim());
     }
 
     private Map<String, List<String>> readPosDictionary(String path)
@@ -269,6 +301,7 @@ public class PosTagger
     private void parse(String[] example)
     {
         String taggedText = tag(example);
+        
         try // TO-DO: needs a seperate thread, as it will eventually slow down seperate workers...
         {
             saveToFile(example, taggedText);
@@ -295,37 +328,58 @@ public class PosTagger
     }
 
     private void saveToFile(String[] example, String taggedText) throws IOException
-    {        
-        synchronized(fileOutputStream)
+    {              
+        if(typeOfPath == TypeOfPath.file)
         {
+            StringBuilder str = new StringBuilder();
             if(typeOfInput == TypeOfInput.raw)
-                fileOutputStream.write((taggedText + "\n").getBytes());
+                str.append(taggedText).append("\n");
             else
             {
-                StringBuilder str = new StringBuilder();
                 for(int i = 0; i < example.length; i++)
                 {
                     if(i == 1)
                         str.append(taggedText).append("\n");
                     else
                         str.append(example[i]).append("\n");
-                }
-                fileOutputStream.write(str.toString().getBytes());
+                } // for
             } // else
-        }
+            writerService.submit(new Writer(fileOutputStream, str.toString()));
+        } // if
+        else        
+            writerService.submit(new Writer(example[0], taggedText));
+        
+        
+//        synchronized(fileOutputStream)
+//        {
+//            if(typeOfInput == TypeOfInput.raw)
+//                fileOutputStream.write((taggedText + "\n").getBytes());
+//            else
+//            {              
+//                StringBuilder str = new StringBuilder();
+//                for(int i = 0; i < example.length; i++)
+//                {
+//                    if(i == 1)
+//                        str.append(taggedText).append("\n");
+//                    else
+//                        str.append(example[i]).append("\n");
+//                }
+//                fileOutputStream.write(str.toString().getBytes());
+//            } // else
+//        }
     }
     
     public String tag(String[] example)
     {
         String input; 
-        if(typeOfInput == TypeOfInput.raw)
-            input = example[0];
-        else
-            input = example[1]; // res[0] = name, res[1] = text
+//        if(typeOfInput == TypeOfInput.raw)
+//            input = example[0];
+//        else
+        input = example[1]; // res[0] = name, res[1] = text
         String taggedText;
         if(posDictionary == null) // use trained pos tagger
         {
-            taggedText = tagger.tagString(input);            
+            taggedText = tagger.tagString(input);
             if(!useUniversalTags) // only update word/tag vocabulary
                 syncVocabulary.addAll(Arrays.asList(taggedText.split("\\p{Space}")));        
             else
@@ -365,7 +419,7 @@ public class PosTagger
             }
             taggedText = taggedTextBuilder.substring(0, taggedTextBuilder.length() - 1); 
         }
-        return taggedText;
+        return retainFormatAndNormalise(input, taggedText);
     }
 
     private String[] splitWordTagToken(String token)
@@ -375,6 +429,40 @@ public class PosTagger
         ar[0] = token.substring(0, index);
         ar[1] = token.substring(index + 1);
         return ar;
+    }
+    
+    /**
+     * Retain the format of the original text, i.e. newlines that have been 
+     * wiped out from the tagging process. In addition, strip <num> tag assignments
+     * as they are most likely noisy.
+     * @param original
+     * @param tagged
+     * @return 
+     */
+    private String retainFormatAndNormalise(String original, String tagged)
+    {
+        StringBuilder str = new StringBuilder();
+        String[] originalAr = original.split(" ");
+        String[] taggedAr = tagged.split(" ");
+        for(int i = 0; i < taggedAr.length; i++)
+        {            
+            String temp = taggedAr[i].contains("<num>") ? "<num>" : taggedAr[i];                
+            str.append(originalAr[i].endsWith("\n") ? (temp + "\n") : (temp + " "));
+        }
+        return str.toString().trim();
+    }
+    
+    private void shutDownWriterService()
+    {
+        writerService.shutdown();
+        try
+        {
+            while (!writerService.awaitTermination(1, TimeUnit.SECONDS)) { }
+        }
+        catch(InterruptedException ie)
+        {
+            System.err.println("Interrupted");
+        }
     }
     
     public static void main(String[] args)
@@ -387,6 +475,7 @@ public class PosTagger
                                           opts.getTypeOfInput(),
                                           opts.getPosDictionary(),
                                           opts.isUseUniversalTags(), 
+                                          opts.isReplaceNumbers(),
                                           opts.getExtension());
             pos.execute();
         }
@@ -406,6 +495,7 @@ public class PosTagger
         @Option(defaultValue="") String getExtension();
         @Option(defaultValue="") String getPosDictionary();
         @Option boolean isUseUniversalTags();        
+        @Option boolean isReplaceNumbers();        
     }
     
     protected class Worker extends MyCallable
@@ -427,5 +517,45 @@ public class PosTagger
                 System.out.println("Processed " + counter + " examples");              
             return null;
         }
-    }        
+    }     
+    
+    protected class Writer extends MyCallable
+    {
+        String text;
+        FileOutputStream fos;
+        
+        public Writer(String path, String text)
+        {
+            this.text = text;
+            try
+            {
+                fos = new FileOutputStream(path + ".tagged");
+            }
+            catch(IOException ioe)
+            {
+                ioe.printStackTrace();
+            }
+        }        
+        
+        public Writer(FileOutputStream fos, String text)
+        {
+            this.text = text;
+            this.fos = fos;
+        }
+        
+        @Override
+        public Object call() throws Exception
+        {
+            try
+            {                 
+                fos.write(text.getBytes());
+                fos.close();
+            }
+            catch(IOException ioe)
+            {
+                ioe.printStackTrace();
+            }
+            return null;
+        }       
+    }
 }

@@ -575,11 +575,7 @@ public class Hypergraph<Widget> {
                 temp = Utils.stripTag(token);
                 // ngram inferState needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
-                ngramStr[i] = numbersAsSymbol &&
-                              temp.matches("-\\p{Digit}+|" + // negative numbers
-                                     "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
-                                     "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
-                                     ? "<num>" : temp;
+                ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp) : temp;
                 if(secondaryNgramModel != null)
                     posNgramStr[i] = Utils.stripWord(token, false);
             }

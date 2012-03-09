@@ -1,6 +1,7 @@
 package induction.ngrams;
 
 import fig.basic.Indexer;
+import induction.Utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -205,11 +206,7 @@ public abstract class NgramModel
                 return -99;
             // ngram inferState needs to convert numbers to symbol <num>
             // syntax parser can process numbers
-            ngramStr[i] = numbersAsSymbol &&
-                          temp.matches("-\\p{Digit}+|" + // negative numbers
-                                 "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
-                                 "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
-                                 ? "<num>" : temp;
+            ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp) : temp;
         }
 
         return ngramModel.getLogProb(ngramStr);
