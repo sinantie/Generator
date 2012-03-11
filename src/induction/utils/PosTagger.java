@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
-import fig.exec.Execution;
 import induction.MyCallable;
 import induction.Utils;
 import induction.problem.event3.Event3Model;
@@ -96,19 +95,11 @@ public class PosTagger
         if(!opts.posDictionaryPath.equals(""))
         {
             posDictionary = readPosDictionary(opts.posDictionaryPath);
+            if(opts.forceTagger)
+                loadPosTagger();
         }
         else
-        {
-            try
-            {
-                tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
-            }
-            catch(Exception ioe)
-            {
-                System.out.println("Error loading tagger model");
-                System.exit(1);
-            }
-        }        
+            loadPosTagger();
         taggedVocabulary = new HashSet<String>();
         syncVocabulary = Collections.synchronizedSet(taggedVocabulary);        
     }
@@ -152,6 +143,19 @@ public class PosTagger
         }
     }
 
+    private void loadPosTagger()
+    {
+        try
+        {
+            tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
+        }
+        catch(Exception ioe)
+        {
+            System.out.println("Error loading tagger model");
+            System.exit(1);
+        }
+    }
+    
     /**
      * Read a list of files that contain a single example each
      * @return
@@ -404,25 +408,36 @@ public class PosTagger
         {
             String[] tokens = input.split("\\p{Space}");
             StringBuilder taggedTextBuilder = new StringBuilder();
-            for(String token : tokens)
+            int countEmpty=0;
+            for(int i = 0; i < tokens.length; i++)
             {  
+                String token = tokens[i];
                 if(!token.isEmpty())
                 {
                     List<String> tags = posDictionary.get(token);
-                    if(tags.size() > 1) // found ambiguity, report it!
+                    if(tags.size() > 1) // found ambiguity, report it or use pos tagger to resolve it (costly might have to call the tagger several times)
                     {
-                        taggedTextBuilder.append(token).append(" ");
-                        if(typeOfInput == TypeOfInput.raw && verbose)
-                            System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
+                        if(opts.forceTagger)
+                        {
+                            taggedTextBuilder.append(tagger.tagString(input).split(" ")[i - countEmpty]).append(" ");
+                        }
                         else
-                            System.err.println("Ambiguity in word '" + token + 
-                                    "' in example " + example[0]); 
-    //                                +" in sentence '" + input + "'");
-                    }
+                        {
+                            taggedTextBuilder.append(token).append(" ");
+                            if(typeOfInput == TypeOfInput.raw && verbose)
+                                System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
+                            else
+                                System.err.println("Ambiguity in word '" + token + 
+                                        "' in example " + example[0]); 
+                        }
+                            
+                    } // if
                     else                    
                         taggedTextBuilder.append(String.format("%s/%s", token, tags.get(0))).append(" ");
-                }                                    
-            }
+                } // if
+                else
+                    countEmpty++;
+            } // for
             taggedText = taggedTextBuilder.substring(0, taggedTextBuilder.length() - 1); 
         }
         return retainFormatAndNormalise(input, taggedText);
