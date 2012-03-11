@@ -1,7 +1,7 @@
 #!/bin/bash
 
 inputLists=data/atis/test/atis-test.txt
-execDir=results/output/atis/generation/dependencies/noRecursiveWeight/model_3_100-best_0.01_STOP_inter0.6_noSTOPweight_lmLEX_POS_predLength
+execDir=results/output/atis/generation/dependencies/noRecursiveWeight/model_3_100-best_0.01_STOP_inter0.6_lmLEX_POS_predLength
 numThreads=2
 stagedParamsFile=results/output/atis/alignments/model_3/prior_0.01_POS/stage1.params.obj.gz
 dmvModelParamsFile=results/output/atis/dmv/train/atis_raw5000_full_indexers_001_POS_50/stage1.dmv.params.obj.gz

@@ -1,5 +1,8 @@
 package induction.utils;
 
+import fig.exec.Execution;
+import induction.utils.PosTaggerOptions.TypeOfInput;
+import induction.utils.PosTaggerOptions.TypeOfPath;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -9,13 +12,14 @@ import org.junit.Test;
  */
 public class TestPosTagger extends TestCase
 {
+
     PosTagger posTagger;
 
     public TestPosTagger(String name)
     {
-        super(name);        
+        super(name);
     }
-    
+
 //    @Test
 //    public void testAtisPosTagger()
 //    {               
@@ -28,18 +32,21 @@ public class TestPosTagger extends TestCase
 //                                 "");
 //        posTagger.execute();
 //    }
-    
     @Test
     public void testWeatherGovPosTagger()
-    {               
-//        posTagger = new PosTagger("gaborLists/genDevListPathsGabor", 
-        posTagger = new PosTagger("gaborLists/trainListPathsGabor",
-                                  PosTagger.TypeOfPath.list, 
-                                  PosTagger.TypeOfInput.raw, 
-                                  "",
-                                  false,
-                                  true,
-                                  "text");
+    {
+        String args =
+                  "-inputPath test/testWeatherGovEvents "
+                + "-typeOfPath list "
+                + "-typeOfInput raw "
+                + "-posDictionaryPath gaborLists/trainListPathsGabor_vocabulary_manual "
+                + "-extension text "
+                + "-replaceNumbers";
+        PosTaggerOptions opts = new PosTaggerOptions();
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+        posTagger = new PosTagger(opts);        
         posTagger.execute();
+//        posTagger = new PosTagger("gaborLists/genDevListPathsGabor", 
+//        posTagger = new PosTagger("gaborLists/trainListPathsGabor",        
     }
 }

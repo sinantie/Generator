@@ -1,11 +1,13 @@
 package induction.utils;
 
+import induction.utils.PosTaggerOptions.TypeOfInput;
+import induction.utils.PosTaggerOptions.TypeOfPath;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
-import uk.co.flamingpenguin.jewel.cli.Option;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
+import fig.exec.Execution;
 import induction.MyCallable;
 import induction.Utils;
 import induction.problem.event3.Event3Model;
@@ -27,8 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import uk.co.flamingpenguin.jewel.cli.ArgumentValidationException;
-import static uk.co.flamingpenguin.jewel.cli.CliFactory.parseArguments;
 
 /**
  *
@@ -36,32 +36,35 @@ import static uk.co.flamingpenguin.jewel.cli.CliFactory.parseArguments;
  */
 public class PosTagger
 {
+    PosTaggerOptions opts;
+    
     private final String path;
     private FileOutputStream fileOutputStream;
     private String extension;
     private MaxentTagger tagger;
     private Set<String> taggedVocabulary, syncVocabulary; 
-    // option 'list' means that 'path' is a list of filenames that contain
+    // option 'list' means that 'inputPath' is a list of filenames that contain
     // a single example (either raw or event by Percy's format)
-    // option file means that 'path' is a file that contains a list 
+    // option file means that 'inputPath' is a file that contains a list 
     // of all examples (either raw sentences or events by Percy's format)
-    public enum TypeOfPath {list, file}
-    public enum TypeOfInput {events, raw}
+    
     private final TypeOfPath typeOfPath;
     private final TypeOfInput typeOfInput;
-    private boolean useUniversalTags = false, replaceNumbers = false;
+    private boolean useUniversalTags, replaceNumbers, verbose;
     private Map<String, String> universalMaps;       
     private Map<String, List<String>> posDictionary;
     private ExecutorService writerService;
     private final int NUM_OF_THREADS = Runtime.getRuntime().availableProcessors();
 //    private final int NUM_OF_THREADS = 1;
     
-    public PosTagger(String path, TypeOfPath typeOfPath, TypeOfInput typeOfInput, 
-                     String posDictionaryPath, boolean useUniversalTags, boolean replaceNumbers, 
-                     String extension)
+//    public PosTagger(String inputPath, TypeOfPath typeOfPath, TypeOfInput typeOfInput, 
+//                     String posDictionaryPath, boolean useUniversalTags, boolean replaceNumbers, 
+//                     String extension, boolean verbose)
+    public PosTagger(PosTaggerOptions opts)
     {
-        this.path = path;
-        if(typeOfPath == TypeOfPath.file)
+        this.opts = opts;
+        this.path = opts.inputPath;
+        if(opts.typeOfPath == TypeOfPath.file)
         {
             try
             {
@@ -74,11 +77,12 @@ public class PosTagger
             }
         }
         writerService = Executors.newFixedThreadPool(NUM_OF_THREADS);
-        this.typeOfPath = typeOfPath;
-        this.typeOfInput = typeOfInput;        
-        this.useUniversalTags = useUniversalTags;
-        this.replaceNumbers = replaceNumbers;
-        this.extension = extension;
+        this.typeOfPath = opts.typeOfPath;
+        this.typeOfInput = opts.typeOfInput;        
+        this.useUniversalTags = opts.useUniversalTags;
+        this.replaceNumbers = opts.replaceNumbers;
+        this.extension = opts.extension;
+        this.verbose = opts.verbose;
         if(this.useUniversalTags)
         {
             universalMaps = new HashMap<String, String>();
@@ -89,9 +93,9 @@ public class PosTagger
                 universalMaps.put(ar[0], ar[1]);
             }
         }
-        if(!posDictionaryPath.equals(""))
+        if(!opts.posDictionaryPath.equals(""))
         {
-            posDictionary = readPosDictionary(posDictionaryPath);
+            posDictionary = readPosDictionary(opts.posDictionaryPath);
         }
         else
         {
@@ -131,7 +135,7 @@ public class PosTagger
                 fileOutputStream.close();
             shutDownWriterService();
             // save vocabulary to disk
-            if(posDictionary != null)
+            if(posDictionary == null)
             {
                 FileOutputStream fos = new FileOutputStream(path + ".vocabulary");
                 System.out.println("Writing vocabulary to disk...");
@@ -204,7 +208,7 @@ public class PosTagger
             } // if
             else
             {
-//                out.addAll(Arrays.asList(Utils.readLines(path)));
+//                out.addAll(Arrays.asList(Utils.readLines(inputPath)));
                 String[] sentences = Utils.readLines(path);
                 int i = 0;
                 for(String sentence : sentences)
@@ -240,7 +244,7 @@ public class PosTagger
     /**
      * Read a single example from the input string. Handle raw format only
      * @param input
-     * @param path
+     * @param inputPath
      * @return 
      */
     private String[] readExample(String path, String input)
@@ -255,7 +259,7 @@ public class PosTagger
     
     /**
      * Open file and read the example. The file should only contain a single example
-     * @param path
+     * @param inputPath
      * @return
      * @throws IOException 
      */
@@ -401,21 +405,23 @@ public class PosTagger
             String[] tokens = input.split("\\p{Space}");
             StringBuilder taggedTextBuilder = new StringBuilder();
             for(String token : tokens)
-            {                
-                List<String> tags = posDictionary.get(token);
-                if(tags.size() > 1) // found ambiguity, report it!
+            {  
+                if(!token.isEmpty())
                 {
-                    taggedTextBuilder.append(token).append(" ");
-                    if(typeOfInput == TypeOfInput.raw)
-                        System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
-                    else
-                        System.err.println("Ambiguity in word '" + token + 
-                                "' in example " + example[0]); 
-//                                +" in sentence '" + input + "'");
-                }
-                else                    
-                    taggedTextBuilder.append(String.format("%s/%s", token, tags.get(0))).append(" ");
-                    
+                    List<String> tags = posDictionary.get(token);
+                    if(tags.size() > 1) // found ambiguity, report it!
+                    {
+                        taggedTextBuilder.append(token).append(" ");
+                        if(typeOfInput == TypeOfInput.raw && verbose)
+                            System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
+                        else
+                            System.err.println("Ambiguity in word '" + token + 
+                                    "' in example " + example[0]); 
+    //                                +" in sentence '" + input + "'");
+                    }
+                    else                    
+                        taggedTextBuilder.append(String.format("%s/%s", token, tags.get(0))).append(" ");
+                }                                    
             }
             taggedText = taggedTextBuilder.substring(0, taggedTextBuilder.length() - 1); 
         }
@@ -463,39 +469,6 @@ public class PosTagger
         {
             System.err.println("Interrupted");
         }
-    }
-    
-    public static void main(String[] args)
-    {
-        try
-        {
-            TaggerOptions opts = parseArguments(TaggerOptions.class, args);
-            PosTagger pos = new PosTagger(opts.getPath(), 
-                                          opts.getTypeOfPath(),
-                                          opts.getTypeOfInput(),
-                                          opts.getPosDictionary(),
-                                          opts.isUseUniversalTags(), 
-                                          opts.isReplaceNumbers(),
-                                          opts.getExtension());
-            pos.execute();
-        }
-        catch(ArgumentValidationException e) 
-        {
-            System.err.println("Usage: -path path -typeOfPath {dir,file_events,file_raw} "
-                             + "[-useUniversalTags -extension ext -posDictionary path]");
-            System.err.println(e.getMessage());            
-        }        
-    }
-      
-    interface TaggerOptions 
-    {        
-        @Option String getPath();
-        @Option TypeOfPath getTypeOfPath();
-        @Option TypeOfInput getTypeOfInput();
-        @Option(defaultValue="") String getExtension();
-        @Option(defaultValue="") String getPosDictionary();
-        @Option boolean isUseUniversalTags();        
-        @Option boolean isReplaceNumbers();        
     }
     
     protected class Worker extends MyCallable
@@ -557,5 +530,5 @@ public class PosTagger
             }
             return null;
         }       
-    }
+    }        
 }

@@ -220,13 +220,15 @@ public class LMPreprocessor
 
     public static void main(String[] args)
     {
-        String source = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers";
-        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.tags_only.sentences";
-        String fileExtension = "text";
-        boolean tokeniseOnly = false, replaceNumbers = false, toLowerCase = false, stripWords = true;
+//        String source = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers";
+//        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.tags_only.sentences";
+        String source = "gaborLists/trainListPathsGabor";
+        String target = "weatherGovLM/gabor-srilm-abs-3-gram.model.tagged.sentences";
+        String fileExtension = "text.tagged";
+        boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;
         LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
-                                                SourceType.FILE, fileExtension, 
+                                                SourceType.LIST, fileExtension, 
                                                 replaceNumbers, toLowerCase, stripWords);
         lmp.execute(tokeniseOnly);
     }
