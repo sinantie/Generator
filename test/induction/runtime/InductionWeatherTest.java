@@ -43,11 +43,19 @@ public class InductionWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 15 -inputLists "
-                + "gaborLists/weatherEvalScenariosRandomBest12Events -inputFileExt events "
-                + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
-                + "-disallowConsecutiveRepeatFields -indepWords 0,5 "
-                + "-dontCrossPunctuation -Options.stage1.smoothing 0.1";
+         String args = 
+                   "-modelType event3 "
+                 + "-Options.stage1.numIters 15 "
+                 + "-inputLists "
+//                 + "gaborLists/weatherEvalScenariosRandomBest12Events "
+                 + "test/testWeatherGovEvents "
+                 + "-inputFileExt events "
+                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
+                 + "-disallowConsecutiveRepeatFields "
+                 + "-indepWords 0,5 "
+                 + "-dontCrossPunctuation "
+                 + "-Options.stage1.smoothing 0.1 "
+                 + "-posAtSurfaceLevel";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
