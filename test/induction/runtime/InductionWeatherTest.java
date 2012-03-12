@@ -48,13 +48,16 @@ public class InductionWeatherTest
                  + "-Options.stage1.numIters 15 "
                  + "-inputLists "
 //                 + "gaborLists/weatherEvalScenariosRandomBest12Events "
-                 + "test/testWeatherGovEvents "
+//                 + "test/testWeatherGovEvents "
+                 + "gaborLists/trainListPathsGabor "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
                  + "-indepWords 0,5 "
                  + "-dontCrossPunctuation "
                  + "-Options.stage1.smoothing 0.1 "
+                 + "-allowNoneEvent "
+                 + "-conditionNoneEvent "
                  + "-posAtSurfaceLevel";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
