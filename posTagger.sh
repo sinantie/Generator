@@ -11,4 +11,5 @@ java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/stanford-postagger-
 -typeOfInput raw \
 -posDictionaryPath ${posDictionary} \
 -extension text \
--replaceNumbers
+-replaceNumbers \
+-forceTagger

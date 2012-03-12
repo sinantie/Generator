@@ -1,12 +1,12 @@
 #!/bin/bash
 
 inputLists=data/atis/test/atis-test.txt
-execDir=results/output/atis/generation/dependencies/noRecursiveWeight/model_3_100-best_0.01_STOP_inter0.6_lmLEX_POS_predLength
+execDir=results/output/atis/generation/dependencies/noRecursiveWeight/model_3_120-best_0.01_STOP_inter0.3_condLM_hypRecomb_lmLEX_POS_predLength
 numThreads=2
 stagedParamsFile=results/output/atis/alignments/model_3/prior_0.01_POS/stage1.params.obj.gz
 dmvModelParamsFile=results/output/atis/dmv/train/atis_raw5000_full_indexers_001_POS_50/stage1.dmv.params.obj.gz
-kBest=100
-interpolationFactor=0.6
+kBest=120
+interpolationFactor=0.3
 java -Xmx2000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
