@@ -96,9 +96,10 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
                         @Override
                         public double getWeight()
                         {
-//                            return 1.0;
-                            return (leftCont > tol ? leftCont : 1.0) *
-                                   (rightCont > tol ? rightCont : 1.0);
+//                            return 1.0;                                                                
+                            return 
+                                    (leftCont > tol ? leftCont : 1.0) *
+                                    (rightCont > tol ? rightCont : 1.0);
                         }
                         @Override
                         public void setPosterior(double prob)
@@ -215,7 +216,9 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
                 public double getWeight()
                 {
                     return useHarmonicWeights ? 
-                            harmonicWeight(i, j, true) : 
+                            harmonicWeight(i, j, true)
+//                            * harmonicWeightStops(true)
+                            : 
                             get(params.deps[words[i]][d], wordIndexer[i][j]) *
                             get(params.continues[words[i]][r], F_CONT) *
                             get(params.continues[words[i]][rr], F_STOP) /
@@ -246,7 +249,9 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
                 public double getWeight()
                 {
                     return useHarmonicWeights ? 
-                        harmonicWeight(i, j, false) : 
+                        harmonicWeight(i, j, false) 
+//                        * harmonicWeightStops(true)
+                        : 
                         get(params.deps[words[i]][d], wordIndexer[i][j]) *
                         get(params.continues[words[i]][r], F_CONT);
                 }
@@ -339,5 +344,12 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
     private double harmonicWeight(int i, int j, boolean adj)
     {
         return 1.0/(Math.abs(i-j) + 2);// * (adj ? 1.0 : 1.0/(Math.abs(i-j) + 3));
+    }
+    
+    private double harmonicWeightStops(boolean cont)
+    {
+        if(cont)
+            return 0.75;
+        return 0.25;
     }
 }
