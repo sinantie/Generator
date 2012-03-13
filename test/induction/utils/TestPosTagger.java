@@ -41,7 +41,7 @@ public class TestPosTagger extends TestCase
                 + "-typeOfInput raw "
                 + "-posDictionaryPath gaborLists/trainListPathsGabor_vocabulary_manual "
                 + "-extension text "
-                + "-replaceNumbers "
+//                + "-replaceNumbers "
                 + "-forceTagger";
         PosTaggerOptions opts = new PosTaggerOptions();
         Execution.init(args.split(" "), new Object[]{opts}); // parse input params

@@ -44,7 +44,7 @@ public class DMVTrainAtisTest
         model.readExamples();
         model.logStats();
         model.preInit();
-        model.init(InitType.bait, null, "stage1");
+        model.init(InitType.random, opts.initRandom, "stage1");
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
