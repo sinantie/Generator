@@ -129,12 +129,13 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
                 @Override
                 public double getWeight()
                 {
-                    return get(params.starts, words[iIter]);
+//                    return get(params.starts, words[iIter]);
+                    return 1.0;
                 }
                 @Override
                 public void setPosterior(double prob)
                 {
-                    update(counts.starts, words[iIter], prob);
+//                    update(counts.starts, words[iIter], prob);
                 }
                 @Override
                 public DepTree choose(DepTree widget)

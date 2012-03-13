@@ -131,6 +131,29 @@ public abstract class AModel
     {
         params = newParams();
         throw new UnsupportedOperationException("Not yet implemented");
+//        def uniformzInitParams = {
+//      // Initialize with an E-step which puts a uniform distribution over z
+//      // This works for models with natural asymmetries such as word alignment and DMV,
+//      // but not for cluster-based models such as GMMs, PMMMs, HMMs,
+//      // where random initialization is preferred (need noise)
+//      begin_track("uniformzInitParams")
+//      val counts = newParams
+//      params.setUniform_!(1)
+//      Utils.parallel_foreach(opts.numThreads, examples, { (i:Int,ex:Example,log:Boolean) =>
+//        if(log) begin_track("Example %s/%s", fmt(i), fmt(examples.length))
+//        // 02/15/09: just realized this; but we've been using uniformzInitParams for NAACL 2009 - need to check what happened there
+//        // Hack: set useVarUpdates = true so that get() uses getCount rather than getProb
+//        // Otherwise, this does the same thing as uniform on the parameters, which introduces strange biases
+//        newInferState(ex, params, counts, InferSpec(1, true, false, false, false, false, true, 1, 0)).updateCounts
+//        //newInferState(ex, params, counts, InferSpec(1, true, false, false, false, false, false, 1, 0)).updateCounts
+//        if(log) end_track
+//      })
+//      params = counts
+//      params.addNoise_!(opts.initRandom, opts.initNoise)
+//      //params.div_!(examples.length) // This is more principled but does worse
+//      params.optimize_!(opts.initSmoothing)
+//      end_track
+//    }
     }
 
     protected void artificialInitParams()

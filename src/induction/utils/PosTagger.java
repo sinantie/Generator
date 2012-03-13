@@ -463,6 +463,8 @@ public class PosTagger
     private String retainFormatAndNormalise(String original, String tagged)
     {
         StringBuilder str = new StringBuilder();
+        if(!replaceNumbers)
+            original = original.replaceAll("\n", "\n ");
         String[] originalAr = original.split(" ");
         String[] taggedAr = tagged.split(" ");
         for(int i = 0; i < taggedAr.length; i++)
