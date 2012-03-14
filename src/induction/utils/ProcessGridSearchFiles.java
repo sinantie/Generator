@@ -117,9 +117,9 @@ public class ProcessGridSearchFiles
     
     public static void main(String[] args)
     {
-        String path = "results/output/atis/generation/dependencies/grid/";
+        String path = "results/output/atis/generation/dependencies_uniformZ/grid/";
         String formattedString = "model_3_$param1$-best_0.01_STOP_inter$param2$_condLM_hypRecomb_lmLEX_POS_predLength";
-        String outputFile = "results/output/atis/generation/dependencies/grid/grid.results";
+        String outputFile = "results/output/atis/generation/dependencies_uniformZ/grid/grid.results";
         Type type = Type.GENERATION;
         ProcessGridSearchFiles pgsf = new ProcessGridSearchFiles(path, formattedString, outputFile, type);
         pgsf.execute();

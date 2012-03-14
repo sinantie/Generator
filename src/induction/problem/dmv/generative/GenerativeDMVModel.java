@@ -197,7 +197,14 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         {
             if(opts.inputFileExt.equals("events"))
             {
-                String[] res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
+                String[] res;
+                if(opts.examplesInSingleFile)
+                    res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
+                else
+                {
+                    res = readExample(input.replaceAll("\\."+ opts.inputFileExt, 
+                                         opts.posAtSurfaceLevel ? ".text.tagged" : ".text"));                    
+                }
                 List words;
                 if(opts.useTagsAsWords)
                     words = posTag(res[1]);
@@ -205,8 +212,22 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                     words = Arrays.asList(res[1].split(" "));
                 if(words.size() <= opts.maxExampleLength)
                     examples.add(new DMVExample(this, InductionUtils.indexWordsOfText(wordIndexer, words), null, res[0]));
-            } // if
+            } // if            
         } // else
+    }
+    
+    private String[] readExample(String textPath)
+    {
+        String []res = new String[2];
+        res[0] = textPath;
+        try{
+            res[1] = Utils.readFileAsString(textPath).replaceAll("\n", " "); // flatten new lines
+        }
+        catch(IOException ioe)
+        {
+            LogInfo.error("Error reading file " + textPath);
+        }
+        return res;
     }
     
     /**
@@ -616,7 +637,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         {
             if(outputLog)            
                 Utils.begin_track("Example %s/%s", Utils.fmt(i+1), Utils.fmt(examples.size()));
-                initExample();
+            initExample();
             if(outputLog)
                 LogInfo.end_track();
             
