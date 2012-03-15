@@ -44,21 +44,33 @@ public class GenerationWeatherTest
     public void setUp() 
     {
          String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
-                    + "-inputFileExt events -stagedParamsFile "
+                    + "-inputFileExt events "
+                    + "-stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
-//                    + "dev/model_3_gabor_dev_cond_null_bigrams/prior_0.1/stage1.params.obj "
-                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 20 "
+//                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+                    + "pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz "
+                    + "-disallowConsecutiveRepeatFields"
+                    + " -kBest 20 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
 //                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
-                    + "-ngramWrapper srilm -allowConsecutiveEvents -reorderType "
-                    + "eventType -allowNoneEvent -maxPhraseLength 5 -binariseAtWordLevel "
+                    + "-ngramWrapper srilm "
+                    + "-allowConsecutiveEvents "
+                    + "-reorderType "
+                    + "eventType -allowNoneEvent "
+                    + "-maxPhraseLength 5 "
+                    + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
                     + "-numAsSymbol "
 //                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
                     + "-lengthPredictionStartIndex 4 "
-                    + "-oracleReranker";
+                    + "-numAsSymbol "
+                    + "-useDependencies "
+                    + "-interpolationFactor 0.5 "
+                    + "-posAtSurfaceLevel "
+                    + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
+                    + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz"; 
+//                 + "-oracleReranker";
 //                    + "-omitEmptyEvents";
 //                    + "-useGoldStandardOnly";
         /*initialisation procedure from Generation class*/
