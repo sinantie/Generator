@@ -152,7 +152,16 @@ public abstract class Event3InferState
             weight = get(getDepsParams().starts, indexInDepModel);
             head = new DepHead(indexInDepModel, pos, weight);
         }        
-        return new induction.problem.Pair<DepHead>(weight, head);      
+        return new induction.problem.Pair<DepHead>(weight, head);
+    }
+    
+    protected induction.problem.Pair<DepHead> getLeafCDDepHead(int pos)
+    {
+        int index = ((Event3Model)model).getDepsModel().getWordIndexer().getIndex("CD");
+        double weight = get(getDepsParams().starts, index);
+        DepHead head = new DepHead(index, pos, weight);
+        
+        return new induction.problem.Pair<DepHead>(weight, head);
     }
     protected int getIndexOfWordInDepModel(int wordIn)
     {

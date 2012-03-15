@@ -193,7 +193,7 @@ public abstract class NgramModel
     }
     
     public static double getNgramLMLogProb(NgramModel ngramModel, Indexer<String> vocabulary, 
-            boolean numbersAsSymbol, List<Integer> ngram)
+            boolean numbersAsSymbol, boolean posAtSurfaceLevel, List<Integer> ngram)
     {
 //            if(modelType == ModelType.semParse)
 //                return 1.0; // we currently don't support LM for semantic parsing
@@ -206,19 +206,19 @@ public abstract class NgramModel
                 return -99;
             // ngram inferState needs to convert numbers to symbol <num>
             // syntax parser can process numbers
-            ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp) : temp;
+            ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel) : temp;
         }
 
         return ngramModel.getLogProb(ngramStr);
     }
     
     public static double getSentenceLMLogProb(NgramModel ngramModel, Indexer<String> vocabulary, 
-            boolean numbersAsSymbol, int N, List<Integer> text)
+            boolean numbersAsSymbol, boolean posAtSurfaceLevel, int N, List<Integer> text)
     {
         double res = 0.0;
         for(int k = 0; k <= text.size() - N; k++)
         {                    
-            res += getNgramLMLogProb(ngramModel, vocabulary, numbersAsSymbol, text.subList(k, k + N));            
+            res += getNgramLMLogProb(ngramModel, vocabulary, numbersAsSymbol, posAtSurfaceLevel, text.subList(k, k + N));            
         }
         return res;
     }

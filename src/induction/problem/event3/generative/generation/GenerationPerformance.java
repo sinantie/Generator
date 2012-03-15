@@ -51,8 +51,8 @@ public class GenerationPerformance extends AlignmentPerformance
     {
         if(trueWidget != null)
         {
-            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget, model.getOpts().posAtSurfaceLevel);
-            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), (GenWidget)trueWidget);
+            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget, model.getOpts().posAtSurfaceLevel).toLowerCase();
+            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), (GenWidget)trueWidget).toLowerCase();
 
 //            String predModifiedStr = modifyPredStr(predStr, trueStr, (GenWidget) predWidget, (GenWidget) trueWidget);
             // Compute BLEU

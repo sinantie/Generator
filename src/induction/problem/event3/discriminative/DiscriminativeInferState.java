@@ -295,6 +295,7 @@ public class DiscriminativeInferState extends Event3InferState
                 opts.oracleReranker,
                 opts.useDependencies,
                 opts.interpolationFactor,
+                opts.posAtSurfaceLevel,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),

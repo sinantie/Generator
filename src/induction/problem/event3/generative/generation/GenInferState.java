@@ -111,6 +111,7 @@ public class GenInferState extends InferState
                 opts.oracleReranker,
                 opts.useDependencies,
                 opts.interpolationFactor,
+                opts.posAtSurfaceLevel,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),
@@ -263,7 +264,7 @@ public class GenInferState extends InferState
             // Consider generating nums(i) from v            
             final NumFieldParams fparams = getNumFieldParams(event, field);
 
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_ROUNDUP);
                 }
@@ -272,6 +273,10 @@ public class GenInferState extends InferState
                         return null;
                     return new Pair(get(fparams.methodChoices,
                                         Parameters.M_ROUNDUP), vocabulary.getIndex("<num>"));
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafCDDepHead(i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -286,7 +291,7 @@ public class GenInferState extends InferState
                     return widget;
                 }
             });
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_ROUNDDOWN);
                 }
@@ -295,6 +300,10 @@ public class GenInferState extends InferState
                         return null;
                     return new Pair(get(fparams.methodChoices,
                                         Parameters.M_ROUNDDOWN), vocabulary.getIndex("<num>"));
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafCDDepHead(i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -310,7 +319,7 @@ public class GenInferState extends InferState
                     return widget;
                 }
             });
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_ROUNDCLOSE);
                 }
@@ -319,6 +328,10 @@ public class GenInferState extends InferState
                         return null;
                     return new Pair(get(fparams.methodChoices,
                                         Parameters.M_ROUNDCLOSE), vocabulary.getIndex("<num>"));
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafCDDepHead(i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -334,7 +347,7 @@ public class GenInferState extends InferState
                 }
             });
 
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
                 public double getWeight() {
                     return get(fparams.methodChoices, Parameters.M_IDENTITY);
                 }
@@ -343,6 +356,10 @@ public class GenInferState extends InferState
                         return null;
                     return new Pair(get(fparams.methodChoices,
                                         Parameters.M_IDENTITY), vocabulary.getIndex("<num>"));
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafCDDepHead(i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
@@ -357,7 +374,7 @@ public class GenInferState extends InferState
                     return widget;
                 }
             });
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
 
                 final double CONT = get(fparams.rightNoiseChoices, Parameters.S_CONTINUE);
                 final double STOP = get(fparams.rightNoiseChoices, Parameters.S_STOP);
@@ -380,6 +397,10 @@ public class GenInferState extends InferState
 //                                    get(fparams.rightNoiseChoices, Parameters.S_STOP),
 //                                    ((Event3Model)model).getWordIndex("<num>"));
                 }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafCDDepHead(i);
+                }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {
                     widget.getNumMethods()[c][i] = Parameters.M_NOISEUP;
@@ -393,7 +414,7 @@ public class GenInferState extends InferState
                     return widget;
                 }
             });
-            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoDepLM<GenWidget>() {
 
                 final double CONT = get(fparams.leftNoiseChoices, Parameters.S_CONTINUE);
                 final double STOP = get(fparams.leftNoiseChoices, Parameters.S_STOP);
@@ -415,6 +436,10 @@ public class GenInferState extends InferState
 //                                    Parameters.S_CONTINUE), MINUS_NOISE_MINUS_ONE) *
 //                                    get(fparams.leftNoiseChoices, Parameters.S_STOP),
 //                                    ((Event3Model)model).getWordIndex("<num>"));
+                }
+                public Pair getDepWeight(int word)
+                {
+                    return getLeafCDDepHead(i);
                 }
                 public void setPosterior(double prob) { }
                 public GenWidget choose(GenWidget widget) {

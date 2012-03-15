@@ -760,7 +760,7 @@ public class Utils
         input = input.replaceAll("\n", "\n ");
         for(String token : input.split(" "))
         {            
-            str.append(replaceNumber(token)).append(" ");
+            str.append(replaceNumber(token, false)).append(" ");
         } // for
         return str.toString();
     }
@@ -770,11 +770,13 @@ public class Utils
      * @param input
      * @return 
      */
-    public static String replaceNumber(String input)
+    public static String replaceNumber(String input, boolean posAtSurfaceLevel)
     {
+        if(posAtSurfaceLevel)
+            input = stripTag(input);
         return input.matches("-\\p{Digit}+|" + // negative numbers
                                  "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
                                  "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
                                  ? "<num>" : input;
-    }
+    }        
 }

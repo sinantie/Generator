@@ -688,8 +688,19 @@ public abstract class Event3Model extends WordModel
         else
         {
             eventInput = input;
-            textInput = input.replaceAll("\\."+ opts.inputFileExt, 
-                                         opts.posAtSurfaceLevel ? ".text.tagged" : ".text");            
+            String filename = Utils.stripExtension(input);
+            if(opts.posAtSurfaceLevel)
+            {
+                if(new File(filename + ".text.tagged").exists())
+                    textInput = filename + ".text.tagged";
+                else
+                    textInput = filename + ".text";
+                
+            }
+            else                
+                textInput = filename + ".text";
+//                textInput = input.replaceAll("\\."+ opts.inputFileExt, 
+//                                         opts.posAtSurfaceLevel ? ".text.tagged" : ".text");            
             name = textInput;
             alignInput = opts.modelType != ModelType.semParse ?
             input.replaceAll("\\."+ opts.inputFileExt, ".align") :

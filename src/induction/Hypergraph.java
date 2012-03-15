@@ -247,7 +247,7 @@ public class Hypergraph<Widget> {
 //                        this.weight.mult(head.getWeight());
                     }
                 }
-            }
+            } // if
             else
             {
                 Derivation d;
@@ -575,7 +575,7 @@ public class Hypergraph<Widget> {
                 temp = Utils.stripTag(token);
                 // ngram inferState needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
-                ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp) : temp;
+                ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel) : temp;
                 if(secondaryNgramModel != null)
                     posNgramStr[i] = Utils.stripWord(token, false);
             }
@@ -616,7 +616,7 @@ public class Hypergraph<Widget> {
   public NgramModel ngramModel, secondaryNgramModel;
   public Indexer<String> vocabulary;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, 
-                 enableFieldFeatures;
+                 enableFieldFeatures, posAtSurfaceLevel;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
@@ -641,7 +641,7 @@ public class Hypergraph<Widget> {
                                         int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
                                         boolean oracleReranker, boolean useDependencies, 
-                                        double interpolationFactor, int NUM,
+                                        double interpolationFactor, boolean posAtSurfaceLevel, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
@@ -660,6 +660,7 @@ public class Hypergraph<Widget> {
         this.oracleReranker = oracleReranker;
         this.useDependencies = useDependencies;
         this.interpolationFactor = interpolationFactor;
+        this.posAtSurfaceLevel = posAtSurfaceLevel;
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
@@ -685,17 +686,18 @@ public class Hypergraph<Widget> {
     {
         this.enableFieldFeatures = enableFieldFeatures;
     }
-  public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
+    public  void setupForSemParse(boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, 
-                                        boolean useDependencies, double interpolationFactor, int NUM,
+                                        boolean useDependencies, double interpolationFactor, 
+                                        boolean posAtSurfaceLevel, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
-  {
-      setup(null, debug, modelType, allowEmptyNodes, K, null, null, 2, reorderType, 
+    {
+        setup(null, debug, modelType, allowEmptyNodes, K, null, null, 2, reorderType, 
                          allowConsecutiveEvents, false, useDependencies, interpolationFactor, 
-                         NUM, ELIDED_SYMBOL, numbersAsSymbol, wordIndexer, ex, graph);
-  }
+                         posAtSurfaceLevel, NUM, ELIDED_SYMBOL, numbersAsSymbol, wordIndexer, ex, graph);
+    }
 
   // Things we're going to compute
   private double logZ = Double.NaN; // Normalization constant
