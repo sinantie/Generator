@@ -46,15 +46,23 @@ public class Example implements AExample<Widget>
             for(int i = 0; i < isPunctuationArray.length; i++)
             {
                 s = model.wordToString(text[i]);
-                isPunctuationArray[i] = model.getOpts().posAtSurfaceLevel ?
+                isPunctuationArray[i] = 
                         // if words have pos tag attached to them
                         s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
                         s.equals("-LRB-/-LRB-") || s.equals("-RRB-/-RRB-") ||
-                        (model.getOpts().andIsPunctuation && s.equals("and/CC")) :
-
+                        (model.getOpts().andIsPunctuation && s.equals("and/CC")) ||
                         s.equals(".") || s.equals(",") || s.equals("--") ||
                         s.equals("(") || s.equals(")") ||
                         (model.getOpts().andIsPunctuation && s.equals("and"));
+//                isPunctuationArray[i] = model.getOpts().posAtSurfaceLevel ?
+//                        // if words have pos tag attached to them
+//                        s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
+//                        s.equals("-LRB-/-LRB-") || s.equals("-RRB-/-RRB-") ||
+//                        (model.getOpts().andIsPunctuation && s.equals("and/CC")) :
+//
+//                        s.equals(".") || s.equals(",") || s.equals("--") ||
+//                        s.equals("(") || s.equals(")") ||
+//                        (model.getOpts().andIsPunctuation && s.equals("and"));
             }
         } 
     }

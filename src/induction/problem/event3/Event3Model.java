@@ -689,7 +689,7 @@ public abstract class Event3Model extends WordModel
         {
             eventInput = input;
             String filename = Utils.stripExtension(input);
-            if(opts.posAtSurfaceLevel)
+            if(opts.inputPosTagged)
             {
                 if(new File(filename + ".text.tagged").exists())
                     textInput = filename + ".text.tagged";
@@ -737,7 +737,7 @@ public abstract class Event3Model extends WordModel
                     textInput.split("\n") : Utils.readLines(textInput))
                 {
                     lineToStartText.add(textIndex);
-                    for(String s : (opts.posAtSurfaceLevel ? line : line.toLowerCase()).split(" "))
+                    for(String s : (opts.inputPosTagged ? line : line.toLowerCase()).split(" "))
                     {
                         textStr.add(s);
                         textIndex++;

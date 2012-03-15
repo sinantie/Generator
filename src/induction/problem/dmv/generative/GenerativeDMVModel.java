@@ -203,7 +203,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                 else
                 {
                     res = readExample(input.replaceAll("\\."+ opts.inputFileExt, 
-                                         opts.posAtSurfaceLevel ? ".text.tagged" : ".text"));                    
+                                         opts.inputPosTagged ? ".text.tagged" : ".text"));                    
                 }
                 List words;
                 if(opts.useTagsAsWords)

@@ -57,7 +57,8 @@ public class InductionWeatherTest
                  + "-Options.stage1.smoothing 0.1 "
                  + "-allowNoneEvent "
                  + "-conditionNoneEvent "
-                 + "-posAtSurfaceLevel";
+                 + "-posAtSurfaceLevel "
+                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

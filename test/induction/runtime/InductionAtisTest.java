@@ -54,6 +54,7 @@ public class InductionAtisTest
                  + "-initNoise 0 "
                  + "-dontCrossPunctuation "
                  + "-posAtSurfaceLevel "
+                 + "-inputPosTagged "                // IMPORTANT!
                  + "-Options.stage1.smoothing 0.01 "
 //                 + "-modelUnkWord "
                  + "-Options.stage1.useVarUpdates";
