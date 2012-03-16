@@ -1,8 +1,6 @@
 package induction.utils;
 
 import fig.exec.Execution;
-import induction.utils.PosTaggerOptions.TypeOfInput;
-import induction.utils.PosTaggerOptions.TypeOfPath;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -32,6 +30,7 @@ public class TestPosTagger extends TestCase
 //                                 "");
 //        posTagger.execute();
 //    }
+    
     @Test
     public void testWeatherGovPosTagger()
     {
@@ -46,8 +45,21 @@ public class TestPosTagger extends TestCase
         PosTaggerOptions opts = new PosTaggerOptions();
         Execution.init(args.split(" "), new Object[]{opts}); // parse input params
         posTagger = new PosTagger(opts);        
-        posTagger.execute();
-//        posTagger = new PosTagger("gaborLists/genDevListPathsGabor", 
-//        posTagger = new PosTagger("gaborLists/trainListPathsGabor",        
+        posTagger.execute();   
     }
+    
+//    @Test
+//    public void testDistributionOfFiles()
+//    {
+////        String list = "gaborLists/genDevListPathsGabor";
+//        String list = "gaborLists/genEvalListPathsGabor";
+//        for(String filename : Utils.readLines(list))
+//        {
+//            filename = filename.replaceAll("events", "text");
+//            try {
+//                System.out.println(Utils.readFileAsString(filename).split("\\p{Space}").length);
+//            }
+//            catch(IOException ioe) {}
+//        }
+//    }
 }

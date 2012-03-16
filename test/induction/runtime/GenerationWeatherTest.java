@@ -67,7 +67,7 @@ public class GenerationWeatherTest
                     + "-numAsSymbol "
                     + "-useDependencies "
                     + "-interpolationFactor 0.5 "
-                    + "-posAtSurfaceLevel "
+                    + "-posAtSurfaceLevel "                    
                     + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
                     + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz"; 
 //                 + "-oracleReranker";

@@ -9,7 +9,7 @@ java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/stanford-postagger-
 -inputPath ${input} \
 -typeOfPath list \
 -typeOfInput raw \
--posDictionaryPath ${posDictionary} \
 -extension text \
--replaceNumbers \
--forceTagger
+-posDictionaryPath ${posDictionary} \
+-forceTagger 
+#-replaceNumbers \

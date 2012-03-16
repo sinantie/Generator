@@ -1,8 +1,8 @@
 #!/bin/bash
 
 inputLists=../wsj/3.0/parsed/mrg/wsj
-execDir=results/output/wsj/dmv/train/wsj_mrg_POS_50
-numIters=50
+execDir=results/output/wsj/dmv/train/wsj_mrg_POS
+numIters=100
 numThreads=2
 # mrg, events
 ext=mrg
@@ -20,10 +20,12 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -execPoolDir ${execDir} \
 -inputFileExt ${ext} \
 -inputFormat ${format} \
--initType bait \
+-initType uniformz \
 -useTagsAsWords \
 -maxExampleLength 10 \
--removePunctuation
+-removePunctuation \
+-initSmoothing 0.01 \
+-initNoise 1e-3
 
 #-outputFullPred \
 #-Options.stage1.useVarUpdates \
