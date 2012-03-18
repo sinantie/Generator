@@ -119,7 +119,19 @@ public class ProcessGridSearchFiles
     {
         String path = "results/output/atis/generation/dependencies_uniformZ/grid/";
         String formattedString = "model_3_$param1$-best_0.01_STOP_inter$param2$_condLM_hypRecomb_lmLEX_POS_predLength";
-        String outputFile = "results/output/atis/generation/dependencies_uniformZ/grid/grid.results";
+        String outputFile = "results/output/atis/generation/dependencies_uniformZ/grid/grid.results";        
+        
+        if(args.length == 2)
+        {
+            path = args[0];            
+            outputFile = args[1];
+        }
+        if(args.length == 3)
+        {
+            path = args[0];
+            formattedString = args[1];
+            outputFile = args[2];
+        }
         Type type = Type.GENERATION;
         ProcessGridSearchFiles pgsf = new ProcessGridSearchFiles(path, formattedString, outputFile, type);
         pgsf.execute();
