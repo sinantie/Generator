@@ -43,15 +43,22 @@ public class GenerationRobocupTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType generate -testInputLists test/testRobocupEvents "
-                    + "-inputFileExt events -stagedParamsFile "
-                    + "results/output/robocup/alignments/"
-                    + "model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField_NEW_3/fold1/stage1.params.obj "
-                    + "-disallowConsecutiveRepeatFields -kBest 15 "
-                    + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
-                    + "-ngramWrapper kylm -reorderType eventType "
-                    + "-maxPhraseLength 5 -ngramSize 2 -useGoldStandardOnly "
-                    + "-binariseAtWordLevel -allowConsecutiveEvents";
+         String args = "-modelType generate "
+                     + "-testInputLists test/testRobocupEvents "
+                     + "-inputFileExt events "
+                     + "-stagedParamsFile "
+                     + "results/output/robocup/alignments/"
+                     + "model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField_NEW_3/fold1/stage1.params.obj "
+                     + "-disallowConsecutiveRepeatFields "
+                     + "-kBest 15 "
+                     + "-ngramModelFile robocupLM/srilm-abs-robocup-fold1-3-gram.model.arpa "
+                     + "-ngramWrapper kylm "
+                     + "-reorderType eventType "
+                     + "-maxPhraseLength 5 "
+                     + "-ngramSize 2 "
+                     + "-useGoldStandardOnly "
+                     + "-binariseAtWordLevel "
+                     + "-allowConsecutiveEvents";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
