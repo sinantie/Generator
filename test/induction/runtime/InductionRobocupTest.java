@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package induction.runtime;
 
 import fig.exec.Execution;
@@ -21,13 +16,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class InductionWeatherTest
+public class InductionRobocupTest
 {
     LearnOptions lopts;
     String name;
     GenerativeEvent3Model model;
 
-    public InductionWeatherTest() {
+    public InductionRobocupTest() {
     }
 
     @BeforeClass
@@ -43,27 +38,29 @@ public class InductionWeatherTest
     @Before
     public void setUp() 
     {
-         String args = 
-                   "-modelType event3 "
-                 + "-Options.stage1.numIters 15 "
+         String args = "-modelType event3 "
+                 + "-Options.stage1.numIters 10 "
                  + "-inputLists "
-                 + "test/testWeatherGovEvents "
-//                 + "gaborLists/trainListPathsGabor "
+//                 + "test/testRobocupEvents "
+                 + "robocupLists/robocupFold1PathsTrain "
                  + "-inputFileExt events "
-                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
+                 + "-oneEventPerExample 0,-1 "
                  + "-disallowConsecutiveRepeatFields "
-                 + "-indepWords 0,-1 "
-                 + "-dontCrossPunctuation "
+                 + "-allowConsecutiveEvents "
+                 + "-indepWords 0,5 "
+                 + "-binariseAtWordLevel "
+                 + "-initNoise 0 "
+                 + "-fixedGenericProb 0 "
                  + "-Options.stage1.smoothing 0.1 "
-                 + "-allowNoneEvent "
-                 + "-conditionNoneEvent "
-                 + "-posAtSurfaceLevel "
-                 + "-inputPosTagged"; // IMPORTANT
+                 + "-dontCrossPunctuation ";
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged ";                // IMPORTANT!
+
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
-        model.readExamples();
+        model.readExamples();        
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
         model.init(InitType.random, opts.initRandom, "");
@@ -82,8 +79,7 @@ public class InductionWeatherTest
     public void testRun()
     {
         System.out.println("run");
-        String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
-//        System.out.println(model.testInitLearn(name, lopts).trim());
+        String targetOutput = "0 0 0 0";
         assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
     }
 }

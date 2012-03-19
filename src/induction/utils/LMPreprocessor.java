@@ -220,10 +220,15 @@ public class LMPreprocessor
 
     public static void main(String[] args)
     {
+        //ATIS
 //        String source = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers";
 //        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.tags_only.sentences";
-        String source = "gaborLists/trainListPathsGabor";
-        String target = "weatherGovLM/gabor-srilm-abs-3-gram.model.tagged.sentences";
+        //WEATHERGOV
+//        String source = "gaborLists/trainListPathsGabor";
+//        String target = "weatherGovLM/gabor-srilm-abs-3-gram.model.tagged.sentences";
+        //ROBOCUP
+        String source = "robocupLists/robocupAllPathsTrain";
+        String target = "robocupLM/robocup-all-3-gram.tagged.sentences";
         String fileExtension = "text.tagged";
         boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;

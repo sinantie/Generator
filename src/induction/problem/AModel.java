@@ -608,8 +608,8 @@ public abstract class AModel
         }
 //        System.out.println(params.output());
 //        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
-        return widgetToFullString(examples.get(examples.size()-1), inferState.bestWidget);
-//        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
+        System.out.println(widgetToFullString(examples.get(examples.size()-1), inferState.bestWidget));
+        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
     
     /**

@@ -406,9 +406,10 @@ public class PosTagger
         } // if
         else // use pos dictionary. Warn in case of ambiguity without crashing.
         {
+            input = input.replace("'", " '"); // correctly tokenize words with apostrophe
             String[] tokens = input.split("\\p{Space}");
             StringBuilder taggedTextBuilder = new StringBuilder();
-            int countEmpty=0;
+            int countEmpty = 0;
             for(int i = 0; i < tokens.length; i++)
             {  
                 String token = tokens[i];
@@ -463,8 +464,9 @@ public class PosTagger
     private String retainFormatAndNormalise(String original, String tagged)
     {
         StringBuilder str = new StringBuilder();
-        if(!replaceNumbers)
+        if(!replaceNumbers) // if new lines have not been taken care of already
             original = original.replaceAll("\n", "\n ");
+        original = original.replace("'", " '"); // correctly tokenize words with apostrophe
         String[] originalAr = original.split(" ");
         String[] taggedAr = tagged.split(" ");
         for(int i = 0; i < taggedAr.length; i++)

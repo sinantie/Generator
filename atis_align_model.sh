@@ -26,7 +26,9 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -noneFieldSmoothing 0 \
 -outputFullPred \
 -Options.stage1.useVarUpdates \
--posAtSurfaceLevel
+-posAtSurfaceLevel \
+-inputPosTagged
+
 #-modelUnkWord \
 
 #-useGoldStandardOnly
