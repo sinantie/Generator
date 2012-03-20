@@ -22,6 +22,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -inputFormat ${format} \
 -initType uniformz \
 -useTagsAsWords \
+-inputPosTagged \
 -maxExampleLength 10 \
 -removePunctuation \
 -initSmoothing 0.01 \

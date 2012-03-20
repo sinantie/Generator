@@ -25,7 +25,6 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -allowConsecutiveEvents \
 -indepWords 0,5 \
 -posAtSurfaceLevel \
--inputPosTagged
-
-#-modelUnkWord \
-#-allowNoneEvent
+-inputPosTagged \
+-modelUnkWord \
+-allowNoneEvent

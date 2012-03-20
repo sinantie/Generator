@@ -429,7 +429,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     public void learn(String name, LearnOptions lopts)
     {
-        params.output(Execution.getFile("init.params"), ParamsType.PROBS);
+//        params.output(Execution.getFile("init.params"), ParamsType.PROBS);
         useHarmonicWeights = false;
         
         Record.begin(name);
