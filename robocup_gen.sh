@@ -10,7 +10,7 @@ interpolationFactor=$7
 numThreads=$8
 averageTextLength=$9
 
-java -Xmx1800m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
+java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -outputFullPred \
 -create \
@@ -32,6 +32,6 @@ java -Xmx1800m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -averageTextLength ${averageTextLength} \
 -ngramSize 2 \
 -binariseAtWordLevel \
--interpolationFactor ${interpolationFactor}
-#-posAtSurfaceLevel \
-#-useDependencies
+-interpolationFactor ${interpolationFactor} \
+-posAtSurfaceLevel \
+-useDependencies

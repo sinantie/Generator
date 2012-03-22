@@ -2,7 +2,6 @@ package induction.utils;
 
 import induction.Utils;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class ProcessGridSearchFiles
                 String[] res = parseDirName(f, posOfParams);
                 if(res != null)
                 {
-                    Result result = crossValidate ? new CrossResult(res) : new Result(res);
+                    Result result = crossValidate ? new CrossResult(res, weights) : new Result(res);
                     result.parseResults();
                     addResult(res[0], result);
                 }
@@ -54,9 +53,15 @@ public class ProcessGridSearchFiles
         } // if
     }
     
+    private String header()
+    {
+        return "k-best\tinterpolation factor\tBLEU-4\tBLEU-3\tMETEOR\tRecall\n";
+    }
+    
     private void saveOutputToFile()
     {
         StringBuilder str = new StringBuilder();
+        str.append(header());
         for(BlockOfResults block : blocksMap.values())
         {
             str.append(block).append("\n");
@@ -132,10 +137,10 @@ public class ProcessGridSearchFiles
 //        String path = "results/output/atis/generation/dependencies_uniformZ/grid/";
 //        String formattedString = "model_3_$param1$-best_0.01_STOP_inter$param2$_condLM_hypRecomb_lmLEX_POS_predLength";
 //        String outputFile = "results/output/atis/generation/dependencies_uniformZ/grid/grid.results";        
-        String path = "results/output/robocup/generation/dependencies/grid";        
+        String path = "results/output/robocup/generation/dependencies/NO_POS/";        
         String formattedString = "model_3_$param1$-best_inter$param2$_new4";
-        String outputFile = "results/output/robocup/generation/dependencies/grid/grid.results";        
-        double[] weights = {513.0, 365.0, 214.0, 311.0};
+        String outputFile = "results/output/robocup/generation/dependencies/NO_POS/grid.results";        
+        double[] weights = null;// = {513.0, 365.0, 214.0, 311.0};
         boolean crossValidate = true;
         
         if(args.length == 3)
@@ -153,7 +158,7 @@ public class ProcessGridSearchFiles
         }
         if(args.length == 5)
         {
-            String[] ar = args[3].split("#");
+            String[] ar = args[4].split("#");
             weights = new double[ar.length];
             for(int i = 0; i < ar.length; i++)
             {
@@ -189,7 +194,7 @@ public class ProcessGridSearchFiles
             addResult(res);
         }
         
-        public void addResult(Result res)
+        private void addResult(Result res)
         {
             block.add(res);
         }
@@ -262,16 +267,24 @@ public class ProcessGridSearchFiles
             String lines[] = Utils.readLines(filename);
             if (type == Type.GENERATION)
             {
-                boolean foundBleu = false, foundMeteor = false;
+                boolean foundBleu1 = false, foundBleu2 = false, foundMeteor = false;
                 for(String line : lines)
                 {
                     if(line.equals("BLEU scores"))
-                        foundBleu = true;
-                    if(foundBleu && line.contains("Averaged Bleu scores:"))
+                        foundBleu1 = true;
+//                    if(foundBleu && line.contains("Averaged Bleu scores:"))
+//                    {
+//                        res.add(parseResult(line));
+//                        foundBleu = false;
+//                    } // if BLEU-4
+                    if(foundBleu1 && line.equals("Cumulative N-gram scoring"))
+                        foundBleu2 = true;
+                    if(foundBleu1 && foundBleu2 && line.contains("BLEU:"))
                     {
-                        res.add(parseResult(line));
-                        foundBleu = false;
-                    } // if BLEU
+                        res.add(parseSingleResult(line, 4));
+                        res.add(parseSingleResult(line, 3));
+                        foundBleu1 = false; foundBleu2 = false;
+                    } // if BLEU-4, 3
                     if(line.equals("METEOR scores"))
                         foundMeteor = true;
                     if(foundMeteor && line.contains("Final score:"))
@@ -286,12 +299,29 @@ public class ProcessGridSearchFiles
             return res;
         }
         
+        /**
+         * Parse result from string that has the format Score_Name: score
+         * @param in
+         * @return 
+         */
         private Double parseResult(String in)
         {
 //            return Utils.fmt(Double.valueOf(in.split(":")[1].trim()));
             return Double.valueOf(in.split(":")[1].trim());
         }
          
+        /**
+         * Parse result at position <code>pos</code> 
+         * from line that has the format Score_Name: score_1 score_2 ... score_n
+         * @param in
+         * @param pos
+         * @return 
+         */
+        private Double parseSingleResult(String in, int pos)
+        {
+            return Double.valueOf(in.split(":")[1].trim().split("\\p{Blank}+")[pos - 1]);
+        }
+        
         public String toString()
         {
             StringBuilder str = new StringBuilder();
@@ -325,15 +355,15 @@ public class ProcessGridSearchFiles
         }
              
         @Override
-        protected List<Double> parseResults(String dirname)
+        protected List<Double> parseResults(String dirFilename)
         {
             List<Double> res = new ArrayList<Double>();
             int totalFolds = 0;
-            for(String foldDirname : new File(dirname).list())
+            for(String foldDirname : new File(dirFilename).list())
             {
                 if(foldDirname.matches("fold[0-9]+"))
                 {
-                    add(super.parseResults(dirName + "/" + foldDirname), res, 
+                    add(super.parseResults(dirFilename + "/" + foldDirname), res, 
                             Integer.valueOf(foldDirname.substring(foldDirname.indexOf("fold") + 4)));
                     totalFolds++;                    
                 }
@@ -348,13 +378,16 @@ public class ProcessGridSearchFiles
         
         private void add(List<Double> from, List<Double> to, int fold)
         {
-            if(from.isEmpty()) // first result set
-                to.addAll(from);
-            else                
+            if(to.isEmpty()) // first result set
+            {
+                for(Double d : from)
+                    to.add(weights == null ? d : weights[fold - 1] * d);
+            }
+            else 
+            {
                 for(int i = 0; i < Utils.same(from.size(), to.size()); i++)
-                {
-                    to.set(i, to.get(i) + (weights != null ? weights[fold] * from.get(i) : from.get(i)));
-                }
+                    to.set(i, to.get(i) + (weights != null ? weights[fold - 1] * from.get(i) : from.get(i)));
+            }
         }
     }
 }

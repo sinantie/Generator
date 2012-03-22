@@ -1,11 +1,11 @@
 #!/bin/bash
 
 exec=robocup_gen.sh
-kBest=25
-interpolationFactor=0.5
-output=results/output/robocup/generation/dependencies/model_3_${kBest}-best_inter${interpolationFactor}_new4
-model_path=results/output/robocup/alignments/model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField_NEW_4
-#model_path=results/output/robocup/alignments/model_3_percy_oneEvent_unk_no_generic_newField_POS
+kBest=$1
+interpolationFactor=$2
+output=results/output/robocup/generation/dependencies/POS/model_3_${kBest}-best_inter${interpolationFactor}_new4
+#model_path=results/output/robocup/alignments/model_3_percy_NO_NULL_semPar_values_oneEvent_unk_no_generic_newField_NEW_4
+model_path=results/output/robocup/alignments/model_3_percy_oneEvent_unk_no_generic_newField_POS
 dmv_path=results/output/robocup/dmv/train/robocup_uniformZ_initNoise_POS_100
 numThreads=2
 
