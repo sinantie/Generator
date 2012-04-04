@@ -14,5 +14,5 @@ public class Constants
     public static final String[] R_STR = {"left0", "left1", "right0", "right1"};
     // Stop Parameter : Continue, stop
     public static final int F_CONT = 0, F_STOP = 1, F = 2;
-    public static final String[] F_STR = {"continue", "stop"};
+    public static final String[] F_STR = {"continue", "stop"};       
 }
