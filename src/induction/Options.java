@@ -7,7 +7,7 @@ import induction.utils.ExtractFeatures;
 public class Options {
   public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, precompute, generate, discriminativeTrain, semParse, writeParams };
   public enum InitType { random, bait, supervised, uniformz, artificial, staged };
-  public enum InputFormat { raw, tag, mrg, seg };
+  public enum InputFormat { raw, tag, mrg, conll, seg };
   public enum AlignmentModel { m1, m2, hmm };
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
@@ -135,6 +135,11 @@ public class Options {
   @Option(gloss="use DMV model for integration") public boolean useDependencies = false;
   @Option(gloss="interpolation factor for DMV + LM integration") public double interpolationFactor = 1.0;
 
+  //Dependencies
+  @Option(gloss="Position of column of the word in the CONLL files (default=1)") public int connlWordPos = 1;
+  @Option(gloss="Position of column of the tag in the CONLL files (default=3)") public int connlTagPos = 3;
+  @Option(gloss="Position of column of the head in the CONLL files (default=6)") public int connlHeadPos = 6;
+  
   // Discriminative
   @Option(gloss="include negative ngrams feature") public boolean includeNegativeNgramsFeature = false;
   @Option(gloss="include bigrams feature") public boolean includeBigramsFeature = false;
