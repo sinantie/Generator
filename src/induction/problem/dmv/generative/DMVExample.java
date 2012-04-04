@@ -3,6 +3,7 @@ package induction.problem.dmv.generative;
 import induction.DepTree;
 import induction.problem.wordproblem.Example;
 import induction.problem.wordproblem.WordModel;
+import java.util.List;
 
 /**
  *
@@ -10,7 +11,7 @@ import induction.problem.wordproblem.WordModel;
  */
 public class DMVExample extends Example<DepTree>
 {
-    
+    private String[][] rawText; // contains input example in the CoNLL format
     
     public DMVExample(WordModel model, int[] text, DepTree trueWidget)
     {
@@ -21,6 +22,13 @@ public class DMVExample extends Example<DepTree>
     {
         super(model, text, trueWidget, name);        
     }
+    
+    public DMVExample(WordModel model, int[] text, DepTree trueWidget, String name, String[][] rawText)
+    {
+        super(model, text, trueWidget, name);
+        this.rawText = rawText;
+    }
+    
     
     public String widgetToNiceFullString(DepTree widget)
     {
@@ -34,6 +42,10 @@ public class DMVExample extends Example<DepTree>
         return out.toString();
     }
     
+    public String widgetToNiceConllString(DepTree widget)
+    {
+        return "TBC";
+    }
     /**
      * Output argument-head dependency pairs
      * @param widget

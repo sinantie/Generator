@@ -39,7 +39,7 @@ import java.util.Map;
 
 /**
  * Rewrite of the DMV model (Klein and Manning 2006), based on the implementation
- * of Percy Liang in Scala. It can parse both mrg and raw files.
+ * of Percy Liang in Scala. It can parse mrg, conll and raw files.
  * @author konstas
  */
 public class GenerativeDMVModel extends WordModel implements Serializable
@@ -113,54 +113,78 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         }                
     }
     
+    /**
+     * Read multiple examples from a single file in either mrg, conll or raw format
+     * @param inputLists 
+     */
     @Override
     protected void readFromSingleFile(ArrayList<String> inputLists)
     {
         if (opts.inputFormat == Options.InputFormat.mrg)
-        {
-            for(String file : inputLists)
-            {
-                if(new File(file).exists())
-                {               
-                    try
-                    {
-                        List<Tree<String>> trees = Utils.loadTrees(file, opts.removePunctuation);
-                        for(Tree tree : trees)
-                        {
-                            readExamples(tree, maxExamples);
-                        }
-                    }
-                    catch(IOException ioe)
-                    {
-                        LogInfo.error("Error loading file " + file);
-                    }                
-                } // if  
-            } // for
-        }
+            readFromSingleFileMrg(inputLists);
         else if(opts.inputFormat == Options.InputFormat.raw)
             super.readFromSingleFile(inputLists);
+        else if(opts.inputFormat == Options.InputFormat.conll)
+            readFromSingleFileConll(inputLists);
     }
     
-    protected void readExamples(Tree input, int maxExamples)
-    {        
-        Tree tempTree = null;
-        try
+    private void readFromSingleFileMrg(ArrayList<String> inputLists)
+    {
+        for(String file : inputLists)
         {
-            tempTree = input;
-            List words = opts.useTagsAsWords ? input.getPreTerminalYield() : input.getYield();
-            if(words.size() <= opts.maxExampleLength)
-                examples.add(new DMVExample(this, InductionUtils.indexWordsOfText(wordIndexer, words), 
-                             DepTree.toDepTree(input), "Example_" + numExamples++));
-        }
-        catch(Exception e)
+            if(new File(file).exists())
+            {               
+                try
+                {
+                    List<Tree<String>> trees = Utils.loadTrees(file, opts.removePunctuation);
+                    for(Tree tree : trees)
+                    {
+                        readExample(tree, maxExamples);
+                    }
+                }
+                catch(IOException ioe)
+                {
+                    LogInfo.error("Error loading file " + file);
+                }                
+            } // if  
+        } // for
+    }
+    
+    private void readFromSingleFileConll(ArrayList<String> inputLists)
+    {
+        for(String file : inputLists)
         {
-            LogInfo.error("Error reading " + numExamples + " " + tempTree);
-            e.printStackTrace();
-        }        
+            if(new File(file).exists())
+            {           
+                List<String> example = new ArrayList<String>();
+                String[] lines = Utils.readLines(file);
+                String[] tokensOfFirstLine = lines[0].split("\t");                
+                int numOfColumns = tokensOfFirstLine.length;
+                if(opts.connlWordPos > numOfColumns - 1 || opts.connlTagPos > numOfColumns - 1 || opts.connlHeadPos > numOfColumns - 1)
+                {
+                    LogInfo.error("CoNLL word, tag and head column positions exceed the number of columns in the input file. Check your settings!");
+                    return;
+                }
+                boolean containsLabels = !tokensOfFirstLine[opts.connlHeadPos].equals("_");
+                for(String line : lines)
+                {
+                    if(line.equals(""))
+                    {                        
+                        readExample(example, numOfColumns, containsLabels);
+                        example.clear();
+                    } // if
+                    else
+                    {
+                        example.add(line);
+                    }
+                } // for
+            } // if  
+        } // for
     }
     
     /**
-     * In case we don't have the dependencies' information.
+     * Read example either in mrg (may contain more than one examples), 
+     * conll or raw format from  a single file
      * @param input
      * @param maxExamples 
      */
@@ -216,6 +240,34 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         } // else
     }
     
+    /**
+     * Parse a single example in tree format (mrg)
+     * @param input
+     * @param maxExamples 
+     */
+    private void readExample(Tree input, int maxExamples)
+    {        
+        Tree tempTree = null;
+        try
+        {
+            tempTree = input;
+            List words = opts.useTagsAsWords ? input.getPreTerminalYield() : input.getYield();
+            if(words.size() <= opts.maxExampleLength && examples.size() <= maxExamples)
+                examples.add(new DMVExample(this, InductionUtils.indexWordsOfText(wordIndexer, words), 
+                             DepTree.toDepTree(input), "Example_" + numExamples++));
+        }
+        catch(Exception e)
+        {
+            LogInfo.error("Error reading " + numExamples + " " + tempTree);
+            e.printStackTrace();
+        }        
+    }
+    
+    /**
+     * Read single example from flat file (raw)
+     * @param textPath
+     * @return 
+     */
     private String[] readExample(String textPath)
     {
         String []res = new String[2];
@@ -228,6 +280,39 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             LogInfo.error("Error reading file " + textPath);
         }
         return res;
+    }   
+    
+    /**
+     * Read single example from CoNLL file (conll)
+     * @param input 
+     */
+    private void readExample(List<String> input, int numOfColumns, boolean containsLabels)
+    {        
+        int numOfWords = input.size();
+        if(numOfWords > opts.maxExampleLength && examples.size() > maxExamples)
+            return;
+        String[][] rawText = new String[numOfWords][numOfColumns];        
+        int[] words = new int[numOfWords];
+        int[] parents = containsLabels ? new int[numOfWords] : null;
+        for(int i = 0; i < numOfWords; i++)
+        {
+            String[] tokens = input.get(i).split("\t");
+            words[i] = wordIndexer.getIndex(opts.useTagsAsWords ? tokens[opts.connlTagPos] : 
+                                            tokens[opts.connlWordPos]);
+            // CoNLL convention is that 0 is the root node, and the rest are indices
+            // to their parent 1-based. We convert to our internal representation,
+            // i.e. the root node is the parent of itself and the rest have a parent
+            // 0-based.
+            if(containsLabels)
+            {
+                int head = Integer.valueOf(tokens[opts.connlHeadPos]);
+                parents[i] = head == 0 ? i : head - 1;
+            }
+            rawText[i] = tokens;
+        } // for
+        examples.add(new DMVExample(this, words, 
+                     containsLabels ? new DepTree(parents) : null, 
+                     "Example_" + numExamples++, rawText));
     }
     
     /**
@@ -358,7 +443,10 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     @Override
     protected String widgetToFullString(AExample ex, AWidget widget)
     {
-        return ((DMVExample)ex).widgetToNiceFullString((DepTree)widget);
+        if(opts.inputFormat == Options.InputFormat.conll)
+            return ((DMVExample)ex).widgetToNiceConllString((DepTree)widget);
+        else
+            return ((DMVExample)ex).widgetToNiceFullString((DepTree)widget);
         // (it outputs the trueWidget dependencies, and a list of the heads for each word
 //        return super.widgetToFullString(ex, widget); 
     }
@@ -614,8 +702,8 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         this.useHarmonicWeights = false;
         return super.testGenerateVisualise(name, lopts);
-    }    
-    
+    }
+   
     protected class BatchBaitInit extends MyCallable
     {
 
