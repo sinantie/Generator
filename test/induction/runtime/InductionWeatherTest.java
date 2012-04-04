@@ -56,7 +56,7 @@ public class InductionWeatherTest
                  + "-dontCrossPunctuation "
                  + "-Options.stage1.smoothing 0.1 "
                  + "-allowNoneEvent "
-                 + "-conditionNoneEvent "
+//                 + "-conditionNoneEvent "
                  + "-posAtSurfaceLevel "
                  + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/

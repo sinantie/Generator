@@ -5,6 +5,7 @@ import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
 import induction.problem.dmv.generative.GenerativeDMVModel;
+import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,16 +23,21 @@ public class DMVTrainWSJTest
     public void setUp() 
     {        
          String args = "-modelType dmv "
-                    + "-Options.stage1.numIters 30 "
+                    + "-Options.stage1.numIters 60 "
                     + "-numThreads 1 "                    
                     + "-inputLists "
 //                    + "../wsj/train/ "
-                    + "wsjLists/unsupervised-train-wsj "
+//                    + "wsjLists/unsupervised-train-wsj "
+                    + "../wsj/3.0/conll/wsj-10-noP.deps "
 //                    + "-inputFileExt mrg "
-                    + "-inputFormat mrg "
+//                    + "-inputFormat mrg "
+                    + "-examplesInSingleFile "
+                    + "-inputFormat conll "
                     + "-dontOutputParams "
-                    + "-maxExampleLength 10 "
-                    + "-removePunctuation "
+//                    + "-maxExampleLength 10 "
+//                    + "-removePunctuation "
+                    + "-connlTagPos 3 "
+                    + "-connlHeadPos 6 "
                     + "-useTagsAsWords";
          
         /*initialisation procedure from Induction class*/
@@ -41,7 +47,7 @@ public class DMVTrainWSJTest
         model.readExamples();
         model.logStats();
         model.preInit();
-        model.init(InitType.bait, null, "stage1");
+        model.init(InitType.uniformz, null, "stage1");
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
