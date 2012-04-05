@@ -28,7 +28,7 @@ public class DMVTrainWSJTest
                     + "-inputLists "
 //                    + "../wsj/train/ "
 //                    + "wsjLists/unsupervised-train-wsj "
-                    + "../wsj/3.0/conll/wsj-10-noP.deps "
+                    + "../wsj/3.0/conll/wsj-10-noP-dev.deps "
 //                    + "-inputFileExt mrg "
 //                    + "-inputFormat mrg "
                     + "-examplesInSingleFile "

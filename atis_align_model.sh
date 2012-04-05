@@ -25,6 +25,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -Options.stage1.smoothing $smooth \
 -noneFieldSmoothing 0 \
 -outputFullPred \
+-useStopNode \
 -Options.stage1.useVarUpdates \
 -posAtSurfaceLevel \
 -inputPosTagged

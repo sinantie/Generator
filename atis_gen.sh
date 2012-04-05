@@ -34,6 +34,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -lengthPredictionStartIndex 2 \
 -lengthCompensation 0 \
 -posAtSurfaceLevel \
+-useStopNode \
 -interpolationFactor ${interpolationFactor} \
 -useDependencies
 #-oracleReranker

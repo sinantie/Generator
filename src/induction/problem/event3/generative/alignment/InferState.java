@@ -961,9 +961,8 @@ public class InferState extends Event3InferState
     {
         
         final TrackParams cparams = params.trackParams[c];
-        final TrackParams ccounts = counts != null ? counts.trackParams[c] : null;
-
-        if(i == j)
+        final TrackParams ccounts = counts != null ? counts.trackParams[c] : null;        
+        if(opts.useStopNode && i == j)
         {
             if(indepEventTypes())
                 return hypergraph.endNode;
@@ -1134,14 +1133,18 @@ public class InferState extends Event3InferState
         if (i == N)
         {
 //            System.out.println(String.format("END : [%d]", i));
-//            return hypergraph.endNode;
-            EventsNode node = new EventsNode(N, t0);
-            if(hypergraph.addSumNode(node))
+            if(opts.useStopNode)
             {
-                selectEnd(N, node, N, t0);
-                hypergraph.assertNonEmpty(node);
+                EventsNode node = new EventsNode(N, t0);
+                if(hypergraph.addSumNode(node))
+                {
+                    selectEnd(N, node, N, t0);
+                    hypergraph.assertNonEmpty(node);
+                }
+                return node;
             }
-            return node;
+            else
+                return hypergraph.endNode;
         }
         else
         {

@@ -465,7 +465,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 updateOptimizer(true, optimizer);
             // update the internal average model
             ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
-            record(String.valueOf(iter), name, complexity);            
+            record(String.valueOf(iter), name, complexity, true);            
             LogInfo.end_track();
             Record.end();
             // Final
@@ -626,7 +626,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 updateOptimizer(true, optimizer);
             // update the internal average model
             ((DefaultPerceptron)optimizer).forceUpdateAverageModel();
-            record(String.valueOf(iter), name, complexity);            
+            record(String.valueOf(iter), name, complexity, true);            
             LogInfo.end_track();
             Record.end();
             // Final
@@ -736,7 +736,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         // Final
 //        testPerformance.output(Execution.getFile(name+".test.performance"));
         Record.begin("generation");
-        record("results", name, complexity);
+        record("results", name, complexity, true);
         Record.end();
         LogInfo.end_track();
         

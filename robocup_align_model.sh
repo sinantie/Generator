@@ -27,4 +27,5 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -posAtSurfaceLevel \
 -inputPosTagged \
 -modelUnkWord \
+-useStopNode \
 -allowNoneEvent

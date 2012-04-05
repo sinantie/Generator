@@ -28,6 +28,8 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -outputExampleFreq 10000 \
 -conditionNoneEvent \
 -allowNoneEvent
+
+#-useStopNode \
 #-useGoldStandardOnly
 #-excludedEventTypes airline airport booking_class city entity fare_basis_code location transport
 #-excludedFields flight.stop

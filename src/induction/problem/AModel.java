@@ -378,19 +378,21 @@ public abstract class AModel
 
     // ext specifies the iteration or example number
     // Use the given params (which are actually counts so we can evaluate even in batch EM)
-    protected void record(String ext, String name, FullStatFig complexity)
+    protected void record(String ext, String name, FullStatFig complexity, boolean outputPerformance)
     {
         Utils.logs("Inference complexity: %s", complexity);
         if (!(trainPerformance == null || trainPerformance.isEmpty()))
         {
             trainPerformance.record("train");
-            trainPerformance.output(
+            if(outputPerformance)
+                trainPerformance.output(
                     Execution.getFile(name+".train.performance."+ext));
         }
         if (!(testPerformance == null || testPerformance.isEmpty()))
         {
             testPerformance.record("test");
-            testPerformance.output(
+            if(outputPerformance)
+                testPerformance.output(
                     Execution.getFile(name+".test.performance."+ext));
         }
     }

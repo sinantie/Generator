@@ -312,7 +312,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         } // for
         examples.add(new DMVExample(this, words, 
                      containsLabels ? new DepTree(parents) : null, 
-                     "Example_" + numExamples++, rawText));
+                     "Example_" + numExamples++, rawText, opts.connlHeadPos));
     }
     
     /**
@@ -562,12 +562,12 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             fullOutput = output && opts.outputFullPred;
             try
             {
-                trainPredOut = (output && existsTrain) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".train.pred."+iter)) : null;
-                testPredOut = (output && existsTest) ?
-                    IOUtils.openOut(Execution.getFile(
-                    name+".test.pred."+iter)) : null;
+//                trainPredOut = (output && existsTrain) ?
+//                    IOUtils.openOut(Execution.getFile(
+//                    name+".train.pred."+iter)) : null;
+//                testPredOut = (output && existsTest) ?
+//                    IOUtils.openOut(Execution.getFile(
+//                    name+".test.pred."+iter)) : null;
                 trainFullPredOut = (fullOutput && existsTrain) ?
                     IOUtils.openOut(Execution.getFile(
                     name+".train.full-pred."+iter)) : null;
@@ -607,7 +607,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
                 params.optimise(lopts.smoothing);
             }
             
-            record(String.valueOf(iter), name, complexity);
+            record(String.valueOf(iter), name, complexity, output);
             if(trainPredOut != null) trainPredOut.close();
             if(testPredOut != null) testPredOut.close();
             if(trainFullPredOut != null) trainFullPredOut.close();
@@ -687,10 +687,10 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         // Final
 //        testPerformance.output(Execution.getFile(name+".test.performance"));
         Record.begin("test");
-        record("results", name, complexity);
+        record("results", name, complexity, true);
         Record.end();
         LogInfo.end_track();
-    }       
+    }               
     
     public String testInitLearn(String name, LearnOptions lopts)
     {

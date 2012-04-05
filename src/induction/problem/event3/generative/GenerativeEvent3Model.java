@@ -289,7 +289,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 params.optimise(lopts.smoothing);
             }
             
-            record(String.valueOf(iter), name, complexity);
+            record(String.valueOf(iter), name, complexity, output);
             if(trainPredOut != null) trainPredOut.close();
             if(testPredOut != null) testPredOut.close();
             if(trainFullPredOut != null) trainFullPredOut.close();
@@ -395,7 +395,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         // Final
 //        testPerformance.output(Execution.getFile(name+".test.performance"));
         Record.begin("generation");
-        record("results", name, complexity);
+        record("results", name, complexity, true);
         Record.end();
         LogInfo.end_track();
     }    

@@ -12,6 +12,7 @@ import java.util.List;
 public class DMVExample extends Example<DepTree>
 {
     private String[][] rawText; // contains input example in the CoNLL format
+    private int conllHeadPos;
     
     public DMVExample(WordModel model, int[] text, DepTree trueWidget)
     {
@@ -23,10 +24,11 @@ public class DMVExample extends Example<DepTree>
         super(model, text, trueWidget, name);        
     }
     
-    public DMVExample(WordModel model, int[] text, DepTree trueWidget, String name, String[][] rawText)
+    public DMVExample(WordModel model, int[] text, DepTree trueWidget, String name, String[][] rawText, int conllHeadPos)
     {
         super(model, text, trueWidget, name);
         this.rawText = rawText;
+        this.conllHeadPos = conllHeadPos;
     }
     
     
@@ -44,8 +46,26 @@ public class DMVExample extends Example<DepTree>
     
     public String widgetToNiceConllString(DepTree widget)
     {
-        return "TBC";
+        StringBuilder out = new StringBuilder();
+        for(int i = 0; i < rawText.length; i++)
+        {
+            out.append(rawText[i][0]);
+            for(int j = 1; j < rawText[i].length; j++)
+            {
+                out.append("\t").append(j == conllHeadPos ? conllGetParent(widget, i) : rawText[i][j]);
+            }
+            out.append("\n");
+        }
+        out.append("\n");
+        return out.toString();
     }
+    
+    private int conllGetParent(DepTree widget, int pos)
+    {
+        int head = widget.getParent()[pos];
+        return head == pos ? 0 : head + 1;
+    }
+    
     /**
      * Output argument-head dependency pairs
      * @param widget
