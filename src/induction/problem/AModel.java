@@ -45,7 +45,8 @@ public abstract class AModel
     protected APerformance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
     protected WekaWrapper lengthPredictor;
-
+    protected String[] fullPredOutArray;
+    
     int currExample;
 
     protected MaxentTagger posTagger;
@@ -247,6 +248,10 @@ public abstract class AModel
             Utils.logss("readExamples: train: %s...%s; test: %s...%s",
                         opts.trainStart, opts.trainEnd,
                         opts.testStart, opts.testEnd);
+        }
+        if(opts.outputFullPred && opts.forceOutputOrder)
+        {
+            fullPredOutArray = new String[examples.size()];
         }
 //        examples = (Example[]) new AExample[examplesList.size()];
 //        examplesList.toArray(examples);
@@ -492,7 +497,10 @@ public abstract class AModel
                 }
                 if(trainFullPredOut != null)
                 {
-                    trainFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
+                    if(opts.forceOutputOrder)
+                        fullPredOutArray[i] = widgetToFullString(ex, inferState.bestWidget);
+                    else
+                        trainFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
                 }
             }
         }
@@ -512,12 +520,22 @@ public abstract class AModel
                 }
                 if(testFullPredOut != null)
                 {
-                    testFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
+                    if(opts.forceOutputOrder)
+                        fullPredOutArray[i] = widgetToFullString(ex, inferState.bestWidget);
+                    else
+                        testFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
                 }
             }
         }
     }
 
+    protected void writeFullPredOut(PrintWriter out)
+    {
+        for(String example : fullPredOutArray)
+        {
+            out.println(example);
+        }
+    }
     public String summary(int i)
     {
         if (isTrain(i))

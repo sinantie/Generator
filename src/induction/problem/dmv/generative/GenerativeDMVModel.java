@@ -610,8 +610,18 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             record(String.valueOf(iter), name, complexity, output);
             if(trainPredOut != null) trainPredOut.close();
             if(testPredOut != null) testPredOut.close();
-            if(trainFullPredOut != null) trainFullPredOut.close();
-            if(testFullPredOut != null) testFullPredOut.close();
+            if(trainFullPredOut != null)
+            {
+                if(opts.forceOutputOrder)
+                    writeFullPredOut(trainFullPredOut);
+                trainFullPredOut.close();
+            }
+            if(testFullPredOut != null) 
+            {
+                if(opts.forceOutputOrder)
+                    writeFullPredOut(testFullPredOut);
+                testFullPredOut.close();
+            }
 
             Execution.putOutput("currExample", examples.size());
             LogInfo.end_track();

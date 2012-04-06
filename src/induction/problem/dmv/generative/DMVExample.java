@@ -56,7 +56,7 @@ public class DMVExample extends Example<DepTree>
             }
             out.append("\n");
         }
-        out.append("\n");
+        //out.append("\n");
         return out.toString();
     }
     
