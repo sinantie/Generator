@@ -5,7 +5,7 @@ numThreads=2
 #inputLists=../wsj/3.0/parsed/mrg/wsj
 #inputLists=../wsj/3.0/conll/wsj-10-noP.deps
 inputLists=../childes/english/english_childes_train.unlabelled
-execDir=results/output/wsj/dmv/train/wsj_conll_POS/childes_uniformZ_${numIters}
+execDir=results/output/wsj/dmv/train/wsj_conll_POS/childes_uniformZ_forceOrder_${numIters}
 # mrg, events, deps
 ext=deps
 # mrg, raw, conll
@@ -28,6 +28,7 @@ java -Xmx3500m -ea -cp dist/Generator.jar:dist/lib/Helper.jar induction.runtime.
 -initSmoothing 0.01 \
 -initNoise 1e-3 \
 -useTagsAsWords \
+-forceOutputOrder \
 -connlTagPos 5 \
 -connlHeadPos 7
 
