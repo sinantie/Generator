@@ -45,8 +45,8 @@ public class ProcessGridSearchFiles
                 if(res != null)
                 {
                     Result result = crossValidate ? new CrossResult(res, weights) : new Result(res);
-                    result.parseResults();
-                    addResult(res[0], result);
+                    if(result.parseResults())
+                        addResult(res[0], result);
                 }
             } // for
             saveOutputToFile();
@@ -134,14 +134,14 @@ public class ProcessGridSearchFiles
     
     public static void main(String[] args)
     {
-//        String path = "results/output/atis/generation/dependencies_uniformZ/grid/";
-//        String formattedString = "model_3_$param1$-best_0.01_STOP_inter$param2$_condLM_hypRecomb_lmLEX_POS_predLength";
-//        String outputFile = "results/output/atis/generation/dependencies_uniformZ/grid/grid.results";        
-        String path = "results/output/robocup/generation/dependencies/NO_POS/";        
-        String formattedString = "model_3_$param1$-best_inter$param2$_new4";
-        String outputFile = "results/output/robocup/generation/dependencies/NO_POS/grid.results";        
+        String path = "results/output/weatherGov/generation/dependencies/final/";
+        String formattedString = "model_3_$param1$-best_0.01_NO_STOP_inter$param2$_hypRecomb_lmLEX_allowNone_POS_NO_STOP";
+        String outputFile = "results/output/weatherGov/generation/dependencies/final/grid.POS.results";
+//        String path = "results/output/robocup/generation/dependencies/NO_POS/";        
+//        String formattedString = "model_3_$param1$-best_inter$param2$_new4";
+//        String outputFile = "results/output/robocup/generation/dependencies/NO_POS/grid.results";        
         double[] weights = null;// = {513.0, 365.0, 214.0, 311.0};
-        boolean crossValidate = true;
+        boolean crossValidate = false;
         
         if(args.length == 3)
         {
@@ -248,7 +248,7 @@ public class ProcessGridSearchFiles
             this(res[0], res[1], res[2]);
         }
         
-        public void parseResults()
+        public boolean parseResults()
         {
             try
             {
@@ -257,7 +257,9 @@ public class ProcessGridSearchFiles
             catch(Exception e)
             {
                 System.err.println("Error in directory " + dirName);
+                return false;
             }
+            return true;
         }
         
         protected List<Double> parseResults(String dirname)
