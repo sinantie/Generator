@@ -65,18 +65,5 @@ public class HistMap<T>
         {
             return key.toString() + " : " + count;
         }
-    }
-
-    public static void main(String[] args)
-    {
-        HistMap<String> myMap = new HistMap<String>();
-        myMap.add("test");
-        myMap.add("test");
-        myMap.add("test");
-        myMap.add("test");
-        myMap.add("hello");
-        myMap.add("world");
-        myMap.add("hello");
-        System.out.println(myMap);
-    }
+    }    
 }

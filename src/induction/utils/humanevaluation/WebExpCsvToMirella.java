@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.humanevaluation;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;

@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.humanevaluation;
 
 import induction.Options;
 import induction.Utils;
@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,30 +27,22 @@ import java.util.TreeSet;
  *
  * @author konstas
  */
-public class ExportScenariosToWebExp2
+public class ExportScenarios
 {
-    private final String HUMAN = "human",
-                         MODEL = "model",
-                         BASELINE = "baseline",
-                         GABOR = "gabor";
-    private final String scenariosPath, imagesPathUrl, outputPath, goldPath;
+    private final String HUMAN = "human";
+    private String scenariosPath, imagesPathUrl, outputPath;
+    private String humanPath;
+    String[] permutationOrder;
+    Map<String, String> modelPaths;
     private boolean nullifyOrder, outputAllFields;
-    private final Properties properties;
-    private String modelPath, baselinePath, gaborPath;
+    private final Properties properties;    
     private GenerativeEvent3Model model;
     private List<Scenario> scenariosList;
-    private enum Type {model, baseline};
     private List<String> filterFieldsList;
 
-    public ExportScenariosToWebExp2(String scenariosPath, String imagesPathUrl,
-                                    String outputPath, String propertiesPath,
-                                    String goldPath)
-    {
-        this.scenariosPath = scenariosPath;
-        this.imagesPathUrl = imagesPathUrl;
-        this.outputPath = outputPath;
-        this.properties = new Properties();
-        this.goldPath = goldPath;
+    public ExportScenarios(String propertiesPath)
+    {        
+        this.properties = new Properties();        
         try
         {
             this.properties.load(new FileInputStream(propertiesPath));
@@ -58,100 +52,77 @@ public class ExportScenariosToWebExp2
             System.err.println("Cannot load properties file");
             System.exit(1);
         }
+        // first element in permutationOrder is an increment number that we use 
+        // to name the output file
+        String[] ar = properties.getProperty("permutationOrder").split(",");
+        this.outputPath = properties.getProperty("outputPath") + ar[0];
+        this.permutationOrder = Arrays.copyOfRange(ar, 1, ar.length);
+        // read our models' paths
+        modelPaths = new HashMap<String, String>();
+        for(String modelName : permutationOrder)
+        {
+            if(!modelName.equals("human"))
+                modelPaths.put(modelName, properties.getProperty(modelName + "Path"));
+        }
+        this.scenariosPath = properties.getProperty("scenariosPath");
+        this.imagesPathUrl = properties.getProperty("imagesPathUrl");
+        
+        this.humanPath = properties.getProperty("humanPath");
+        this.nullifyOrder = Boolean.getBoolean(properties.getProperty("nullifyOrder"));
+        this.outputAllFields = Boolean.getBoolean(properties.getProperty("outputAllFields"));        
+        
         Options opts = new Options();
         opts.useGoldStandardOnly = true;
         model = new GenerativeEvent3Model(opts);
         scenariosList = new ArrayList<Scenario>();
         filterFieldsList = new ArrayList<String>();
-    }
-
-    public void setBaselinePath(String baselinePath)
-    {
-        this.baselinePath = baselinePath;
-    }
-
-    public void setGaborPath(String gaborPath)
-    {
-        this.gaborPath = gaborPath;
-    }
-
-    public void setModelPath(String modelPath)
-    {
-        this.modelPath = modelPath;
-    }
-
-    public void setNullifyOrder(boolean nullifyOrder)
-    {
-        this.nullifyOrder = nullifyOrder;
-    }
-
-    public void setOutputAllFields(boolean outputAllFields)
-    {
-        this.outputAllFields = outputAllFields;
-    }
-
+    }        
+    
     public void execute()
     {
         try
         {
            BufferedReader scenariosReader = new BufferedReader(new FileReader(scenariosPath));
+           Map<String, Object> modelObjects = new HashMap<String, Object>();
            String[] humanLines = null;
-           if(goldPath != null)
-               humanLines = Utils.readLines(goldPath);
-           String[] modelLines = null;
-           if(modelPath != null)
-               modelLines = Utils.readLines(modelPath);
-           String[] baselineLines = null;
-           if(baselinePath != null)
-               baselineLines = Utils.readLines(baselinePath);
-           HashMap<String, GaborEntry> gaborEntries = null;
-           if(gaborPath != null) // parse guess, gold and guess_events in gabor file
+           if(humanPath != null)
+               humanLines = Utils.readLines(humanPath);                      
+           for(Entry<String, String> entry : modelPaths.entrySet())
            {
-               gaborEntries = new HashMap();
-               String[] lines = Utils.readLines(gaborPath);
-               for(int i = 0; i < lines.length; i++)
-               {
-                   if(lines[i].contains("<guess>"))
-                   {
-                       GaborEntry ge = new GaborEntry(lines[i],
-                               lines[i + 1], lines[i + 4]);
-                       gaborEntries.put(ge.gold, ge);
-                   }
-               }
-           } // if           
+               String name = entry.getKey();
+               modelObjects.put(name, readModel(name, entry.getValue()));
+           }
+           
            for(String line : Utils.readLines(scenariosPath))
            {
                String path = line.split("#")[0].trim(); // read the first string in the line
                if(path.equals(""))
-                   continue;
+                   continue;               
                 if(processHuman(path, humanLines))
-                    System.out.println(path + " human system processed succesfully");
+                    msg("system processed succesfully", path, HUMAN);
                 else
-                    System.out.println(path + " human system error!");
-                if(modelPath != null)
-                {
-                    if(processModel(path, modelLines, Type.model))
-                        System.out.println(path + " model system processed succesfully");
+                    msg("system error!", path, HUMAN);
+                for(Entry<String, Object> e : modelObjects.entrySet())
+                { 
+                    String name = e.getKey();
+                    if(name.equals("gabor"))
+                    {
+                        if(processGabor((HashMap)e.getValue()))
+                            msg("system processed succesfully", path, name);
+                        else
+                            msg("system error!", path, name);
+                    }
                     else
-                        System.out.println(path + " model system error!");
-                }
-                if(baselinePath != null)
-                {
-                    if(processModel(path, baselineLines, Type.baseline))
-                        System.out.println(path + " baseline system processed succesfully");
-                    else
-                        System.out.println(path + " baseline system error!");
-                }
-                if(gaborPath != null)
-                {
-                    if(processGabor(gaborEntries))
-                        System.out.println(path + " gabor system processed succesfully");
-                    else
-                        System.out.println(path + " gabor system error!");
-                }
+                    {
+                       if(processModel(path, (String[])e.getValue(), name))
+                            msg("system processed succesfully", path, name);
+                        else
+                            msg("system error!", path, name);
+                    }                        
+                } // for
            }
            scenariosReader.close();
-           // output in webExp2 format
+           // write output
            if(outputPath != null)
            {
                FileOutputStream fos = new FileOutputStream(outputPath);
@@ -161,20 +132,47 @@ public class ExportScenariosToWebExp2
 //               writeOutputWebExp(fos);
                writeOutputHumanEval(fos);
                fos.close();
-           }
-           
+           }           
         }
         catch(IOException ioe)
         {
             ioe.printStackTrace();
         }
     }
-
+    
+    private Object readModel(String name, String path)
+    {        
+        if(name.equals("gabor"))
+            return readGaborModel(path);
+        else
+            return Utils.readLines(path);
+    }
+    
     /**
-     * Process the gold standard text, events and alignments. Read all events
+     * parse predText, goldText and guess_events in gabor's system file
+     * @param path
+     * @return
+     */
+    private Map<String, CompetitorEntry> readGaborModel(String path)
+    {
+        Map<String, CompetitorEntry> entries = new HashMap();
+        String[] lines = Utils.readLines(path);
+        for(int i = 0; i < lines.length; i++)
+        {
+           if(lines[i].contains("<guess>"))
+           {
+               GaborEntry ge = new GaborEntry(lines[i],
+                       lines[i + 1], lines[i + 4]);
+               entries.put(ge.getGoldText(), ge);
+           }
+        }
+        return entries;
+    }
+    /**
+     * Process the goldText standard text, events and alignments. Read all events
      * and a new Scenario instance to the <code>scenariosList</code>
      * @param basename the stripped basename path of the scenario to be processed
-     * @param lines  the lines of the file that contains the gold input
+     * @param lines  the lines of the file that contains the goldText input
      * @return true if all corresponding files exist 
      */
     private boolean processHuman(String basename, String[] lines)
@@ -203,7 +201,7 @@ public class ExportScenariosToWebExp2
         Scenario scn = new Scenario(basename,
                                     model.readEvents(eventInput,
                                     new HashSet(), new HashSet()));
-        // read the gold-standard human events
+        // read the goldText-standard human events
         for(String eventLine : alignInput)
         {
             // each line holds line number and aligned event(s)
@@ -214,7 +212,7 @@ public class ExportScenariosToWebExp2
                 scn.getEventIndices(HUMAN).add(Integer.valueOf(lineEvents[i]));
             }
         }
-        // read the gold-standard text
+        // read the goldText-standard text
         String text = "";
         for(String line : textInput)
             text += line + " ";
@@ -223,7 +221,7 @@ public class ExportScenariosToWebExp2
     }
 
     /**
-     * Find the excerpt in the gold standard file (not the best solution for many searches!)
+     * Find the excerpt in the goldText standard file (not the best solution for many searches!)
      * @param basename the name-id of the example to look at
      * @param lines the input lines
      * @return the excerpt
@@ -252,12 +250,13 @@ public class ExportScenariosToWebExp2
     }
 
     /**
-     * Process the standard model/baseline output using the basename path as the key.
+     * Process the standard model(s)/baseline output using the basename path as the key.
      * @param keyBasename the basename path
      * @param lines  the lines of the file of the model output
+     * @param type  the type of the model to process
      * @return true if the entry was found in the file
      */
-    private boolean processModel(String keyBasename, String[] lines, Type modelType)
+    private boolean processModel(String keyBasename, String[] lines, String type)
     {
         for(int i = 0; i < lines.length; i++)
         {
@@ -267,23 +266,12 @@ public class ExportScenariosToWebExp2
             {                
                 // get current scenario
                 Scenario scn = scenariosList.get(scenariosList.size() - 1);
-                // next line is the text
-                if(modelType == Type.model)
-                {
-                    scn.setText(MODEL, lines[i + 1].trim().toUpperCase());
-                    // after two lines we have the generated events
-                    scn.getEventIndices(MODEL).addAll(processEventsLine(lines[i + 3],
-                                                  scn.getEventTypeNames(),
-                                                  scn, false));
-                }
-                else if(modelType == Type.baseline)
-                {
-                    scn.setText(BASELINE, lines[i + 1].trim().toUpperCase());
-                    // after two lines we have the generated events
-                    scn.getEventIndices(BASELINE).addAll(processEventsLine(lines[i + 3],
-                                                  scn.getEventTypeNames(),
-                                                  scn, false));
-                }
+                // next line is the text                
+                scn.setText(type, lines[i + 1].trim().toUpperCase());
+                // after two lines we have the generated events
+                scn.getEventIndices(type).addAll(processEventsLine(lines[i + 3],
+                                              scn.getEventTypeNames(),
+                                              scn, false));                                
                 return true;
             }
         }
@@ -322,18 +310,19 @@ public class ExportScenariosToWebExp2
     /**
      * Process the output of Gabor's system using the text of the scenario as the key.
      * @param gaborEntries a map containing entries from Gabor's input. The key is
-     * the gold-standard text.
+     * the goldText-standard text.
      * @return true if the entry was found in the file
      */
-    private boolean processGabor(HashMap<String, GaborEntry> gaborEntries)
+    private boolean processGabor(HashMap<String, CompetitorEntry> gaborEntries)
     {
+        final String GABOR = "gabor";
         // get current scenario
         Scenario scn = scenariosList.get(scenariosList.size() - 1);
-        GaborEntry ge = gaborEntries.get(scn.getText(HUMAN));
+        CompetitorEntry ge = gaborEntries.get(scn.getText(HUMAN));
         if(ge == null)
             return false;
-        scn.setText(GABOR, ge.guess);
-        scn.getEventIndices(GABOR).addAll(processEventsLine(ge.guessEvents,
+        scn.setText(GABOR, ge.getPredText());
+        scn.getEventIndices(GABOR).addAll(processEventsLine(ge.getPredEvents(),
             scn.getEventTypeNames(), scn, nullifyOrder));
         return true;
     }
@@ -343,9 +332,7 @@ public class ExportScenariosToWebExp2
         // write header
         writeLine(fos, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<resources>");
 
-        // write each scenario-system combination on one block.
-        // The permutation order is given from the properties file
-        String[] permutationOrder = properties.getProperty("permutationOrder").split(",");
+        // write each scenario-system combination on one block.        
         int perm = 0;
         for(Scenario scn : scenariosList)
         {
@@ -397,8 +384,6 @@ public class ExportScenariosToWebExp2
         writeLine(fos, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<resources>");
 
         // write each scenario-system combination on one block.
-        // The permutation order is given from the properties file
-        String[] permutationOrder = properties.getProperty("permutationOrder").split(",");
         int perm = 0;
         for(Scenario scn : scenariosList)
         {
@@ -501,20 +486,19 @@ public class ExportScenariosToWebExp2
         for(Scenario scn: scenariosList)
         {
             str.append(scn.getPath()).append("\n");
-            str.append(HUMAN).append(": ").append(scn.getText(HUMAN)).append("\n");
-            str.append(MODEL).append(": ").append(scn.getText(MODEL)).append("\n");
-            str.append(GABOR).append(": ").append(scn.getText(GABOR)).append("\n");
-            str.append(BASELINE).append(": ").append(scn.getText(BASELINE)).append("\n");
+            for(String modelName : permutationOrder)
+                str.append(modelName).append(": ").append(scn.getText(modelName)).append("\n");            
         }
         return str.toString();
     }
 
-    public static void main(String[] args)
+    private void msg(String message, String path, String name)
     {
-        String outputPath = null;
-        String imagesPathUrl = null;
-        String goldPath = null;
-        boolean nullifyOrder = false, outputAllFields = true;
+        System.out.println(String.format("%s: %s %s", path, name, message));
+    }
+    
+    public static void main(String[] args)
+    {        
         // we assume that the input path has a scenario on each seperate line
         // and does not have a file extension
 
@@ -549,26 +533,7 @@ public class ExportScenariosToWebExp2
 
         /**
          * HUMANEVAL-PHP
-         */
-        // atis
-        String scenariosPath = "data/atis/test/discriminativeAtisEvalScenariosRandomBest12";
-        imagesPathUrl = "resources/icons/";
-        outputPath = "../../Public/humaneval/data/datisExperiment4";
-        String propertiesPath = "../../Public/humaneval/data/atis.properties";
-        String modelPath = "results/output/atis/generation/discriminative/" +
-                           "baseline_ignore_ngrams_bigrams_numWordsField_hasCons_seg5_predLength_eventType_gen_BEST/stage1.test.full-pred-gen";
-        String gaborPath = "../Gabor/generation/outs/atis/1.exec/results-test.xml.tree";
-        String baselinePath = "results/output/atis/generation/discriminative/" +
-                           "calculate_baseline_weight_norm_predLength_gen_all/stage1.test.full-pred-gen";
-        goldPath = "data/atis/test/atis-test.txt";
-        nullifyOrder = true; // in the case of Gabor's system, all events are identified
-                                     // by their position in the file, rather than their id.
-                                     // As such, these ids may not correspond to the real event ids,
-                                     // as in the case of ATIS. Therefore, we ignore this order
-                                     // and instead match the true event's id based on the eventType's
-                                     // name. WARNING: this will not work correctly in the case of
-                                     // examples with more than one events of the same event type.
-        outputAllFields = false; // don't output fields that are emtpy, i.e. have value='--'
+         */        
         
         // weatherGov
 //        String scenariosPath = "gaborLists/weatherEvalScenariosPredLength12Events";
@@ -583,36 +548,18 @@ public class ExportScenariosToWebExp2
 //        goldPath = "data/atis/test/atis-test.txt";
 //        nullifyOrder = true; 
 //        outputAllFields = true;
-        if(args.length > 1)
-        {
-            scenariosPath = args[0];
-            imagesPathUrl = args[1];
-        }
-        ExportScenariosToWebExp2 estw = new ExportScenariosToWebExp2(scenariosPath, 
-                imagesPathUrl, outputPath, propertiesPath, goldPath);
-        estw.setModelPath(modelPath);
-        estw.setGaborPath(gaborPath);
-        estw.setBaselinePath(baselinePath);
-        estw.setNullifyOrder(nullifyOrder);
-        estw.setOutputAllFields(outputAllFields);
-        estw.execute();
-//        System.out.println(estw.exportTextFromSystems());
-    }
 
-    class GaborEntry
-    {
-        String guess, gold, guessEvents;
+        // weatherGov
+//        String propertiesPath = "weatherGov_humanEval.properties";
+        // atis        
+        String propertiesPath = "atis_humanEval.properties";
 
-        public GaborEntry(String guess, String gold, String guessEvents)
+        if(args.length > 0)
         {
-            this.guess = stripLine(guess, "guess").toUpperCase();
-            this.gold = stripLine(gold, "gold").toUpperCase();
-            this.guessEvents = stripLine(guessEvents, "guess_events");
+            propertiesPath = args[0];
         }
-
-        private String stripLine(String line, String token)
-        {
-            return line.replace("<"+token+">", "").replace("</"+token+">", "").trim();
-        }
-    }
+        ExportScenarios es = new ExportScenarios(propertiesPath);
+        es.execute();
+//        System.out.println(es.exportTextFromSystems());
+    }   
 }

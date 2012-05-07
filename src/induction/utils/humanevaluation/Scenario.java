@@ -1,5 +1,6 @@
-package induction.utils;
+package induction.utils.humanevaluation;
 
+import induction.Utils;
 import induction.problem.event3.Event;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,8 +65,8 @@ public class Scenario
     }
 
     public void setText(String system, String text)
-    {
-        systemsTextMap.put(system, text);
+    {        
+        systemsTextMap.put(system, Utils.stripTags(text));
     }
 
     public String getText(String system)

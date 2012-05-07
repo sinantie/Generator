@@ -27,7 +27,9 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -modelUnkWord \
 -outputExampleFreq 10000 \
 -conditionNoneEvent \
--allowNoneEvent
+-allowNoneEvent \
+-inputPosTagged
+
 
 #-useStopNode \
 #-useGoldStandardOnly

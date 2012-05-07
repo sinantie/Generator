@@ -718,6 +718,24 @@ public class Utils
     {
         return word.equals("</s>") || !word.contains("/") ? word : word.substring(0, word.lastIndexOf("/"));
     }
+
+    public static String[] stripTags(String[] words)
+    {
+        String[] out = new String[words.length];
+        for(int i = 0; i < out.length; i++)
+            out[i] = stripTag(words[i]);
+        return out;
+    }
+
+    public static String stripTags(String sentence)
+    {
+        StringBuilder str = new StringBuilder();
+        for(String s : stripTags(sentence.split(" ")))
+        {
+            str.append(s).append(" ");
+        }
+        return str.toString().trim();
+    }
     
     public static String stripWord(String word, boolean strict)
     {
