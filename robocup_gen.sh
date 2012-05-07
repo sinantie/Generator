@@ -28,7 +28,6 @@ java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -outputExampleFreq 100  \
 -reorderType eventType \
 -maxPhraseLength 5 \
--useGoldStandardOnly \
 -averageTextLength ${averageTextLength} \
 -ngramSize 2 \
 -binariseAtWordLevel \
@@ -36,3 +35,4 @@ java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -interpolationFactor ${interpolationFactor} \
 -posAtSurfaceLevel \
 -useDependencies
+#-useGoldStandardOnly
