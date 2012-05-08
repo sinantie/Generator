@@ -1250,7 +1250,9 @@ public class Hypergraph<Widget> {
                     {
                         cand.add(new Derivation(item.edge, tempMask, null, null));
                     }
-                    catch(NullPointerException npe) {}
+                    catch(NullPointerException npe) {
+//                        LogInfo.error("Error in ignore reordering");
+                    }
                 }
             }
         } // for

@@ -13,6 +13,7 @@ import induction.Options.InitType;
 import induction.Options.ModelType;
 import util.Stemmer;
 import induction.Utils;
+import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.NgramModel;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
@@ -1056,7 +1057,8 @@ public abstract class Event3Model extends WordModel
         opts.alignmentModel = lopts.alignmentModel;
         if(opts.ngramModelFile != null)
         {
-            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+//            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
             if(opts.secondaryNgramModelFile != null)
                 secondaryNgramModel = new SrilmNgramWrapper(opts.secondaryNgramModelFile, opts.ngramSize);
         }
@@ -1064,11 +1066,20 @@ public abstract class Event3Model extends WordModel
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
 //        AParams counts = newParams();
-        AExample ex = examples.get(0);
-        AInferState inferState =  createInferState(ex, 1, null, temperature,
+        AInferState inferState = null;
+        for(AExample ex : examples)
+        {
+            inferState =  createInferState(ex, 1, null, temperature,
                 lopts, 0, complexity);
-        testPerformance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-        return widgetToSGMLOutput(ex, inferState.bestWidget);
+            testPerformance.add(ex, inferState.bestWidget);
+            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        }
+        return widgetToSGMLOutput(examples.get(C), inferState.bestWidget);
+//        AExample ex = examples.get(0);
+//        AInferState inferState =  createInferState(ex, 1, null, temperature,
+//                lopts, 0, complexity);
+//        testPerformance.add(ex, inferState.bestWidget);
+//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//        return widgetToSGMLOutput(ex, inferState.bestWidget);        
     }
 }

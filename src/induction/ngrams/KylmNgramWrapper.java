@@ -128,9 +128,17 @@ public class KylmNgramWrapper extends NgramModel
     private int[] getIdsOfNgram(String[] ngram)
     {
         int[] ids = new int[ngram.length];
-        for(int i = 0; i < ngram.length; i++)
+        try
         {
-            ids[i] = lm.getId(ngram[i]);
+            for(int i = 0; i < ngram.length; i++)
+            {
+                ids[i] = lm.getId(ngram[i]);
+            }
+        }
+        catch(IllegalArgumentException e)
+        {
+            LogInfo.logs(e.getMessage());
+            Execution.finish();
         }
         return ids;
     }
