@@ -39,7 +39,8 @@ public class GenerationAtisTest
     public void setUp() 
     {
          String args = "-modelType generate "
-                    + "-testInputLists test/testAtisExamples "
+                    + "-testInputLists test/testAtisExamples2 "
+//                    + "-testInputLists data/atis/test/atis-test.txt "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-stagedParamsFile "
@@ -47,11 +48,11 @@ public class GenerationAtisTest
 //                    + "model_3/prior_0.01/stage1.params.obj "
                     + "model_3/prior_0.01_POS/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
-                    + "-kBest 40 "
+                    + "-kBest 80 "
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
 //                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
 //                    + "-ngramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.model.arpa "
-                    + "-ngramWrapper srilm "
+                    + "-ngramWrapper kylm "
                     + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
                     + "-maxPhraseLength 5 "
@@ -62,10 +63,11 @@ public class GenerationAtisTest
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
                     + "-useDependencies "
-                    + "-interpolationFactor 0.5 "
+                    + "-interpolationFactor 0.1 "
                     + "-posAtSurfaceLevel "
+                    + "-useStopNode "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
-                    + "atis_raw5000_full_indexers_001_POS_50/stage1.dmv.params.obj.gz";
+                    + "atis_raw5000_full_indexers_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz";
 //                    + "atis_raw5000_full_indexers_prior_01_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();

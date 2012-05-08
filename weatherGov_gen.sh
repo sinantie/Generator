@@ -11,7 +11,7 @@ kBest=1
 interpolationFactor=0.5
 #execDir=results/output/weatherGov/generation/dependencies/model_3_${kBest}-best_0.01_NO_STOP_inter${interpolationFactor}_condLM_hypRecomb_lmLEX_POS_NO_STOP
 execDir=results/output/weatherGov/generation/dependencies/model_3_${kBest}-best_0.01_NO_STOP_inter${interpolationFactor}_condLM_hypRecomb_lmLEX_NO_STOP
-java -Xmx4g -cp dist/Generator_no_STOP.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
+java -Xmx4g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -numThreads $numThreads \
@@ -34,7 +34,8 @@ dist/stanford-postagger-2010-05-26.jar \
 -lengthPredictionStartIndex 4 \
 -lengthCompensation 0 \
 -numAsSymbol \
--allowNoneEvent
+-allowNoneEvent \
+-outputFullPred
 
 #-useStopNode \
 #-binariseAtWordLevel \

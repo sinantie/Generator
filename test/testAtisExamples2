@@ -1,0 +1,68 @@
+Example_98
+what airline is dl
+.id:0	.type:const	@typed:airline	@value:dl
+0 0
+Example_366
+list the cheapest fare from charlotte to las vegas
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+0 1 2
+Example_274
+milwaukee to phoenix on saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_209
+list delta flights from seattle to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_223
+give me the flights from phoenix to milwaukee on wednesday on american airlines
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_407
+please list the flights from charlotte to newark
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_64
+list wednesday night flights from oakland to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:late
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_80
+i need information on flights from toronto to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_168
+list flights from denver to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_217
+give me the round trip flights from cleveland to miami next wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_242
+cheapest round trip fare from indianapolis to orlando on december twenty fifth
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+.id:4	.type:day_number	@day_number:25	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:december
+0 1 2 4 5
+Example_260
+cheapest fare from indianapolis to orlando on the twenty seventh of december
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+.id:4	.type:day_number	@day_number:27	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:december
+0 1 2 4 5
