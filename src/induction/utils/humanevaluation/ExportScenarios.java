@@ -553,11 +553,11 @@ public class ExportScenarios
 //        outputAllFields = true;
 
         // robocup
-//        String propertiesPath = "robocup_humanEval.properties";
+        String propertiesPath = "robocup_humanEval.properties";
         // weatherGov
 //        String propertiesPath = "weatherGov_humanEval.properties";
         // atis        
-        String propertiesPath = "atis_humanEval.properties";
+//        String propertiesPath = "atis_humanEval.properties";
 
         if(args.length > 0)
         {
