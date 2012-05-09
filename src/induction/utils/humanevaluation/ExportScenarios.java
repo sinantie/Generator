@@ -68,9 +68,9 @@ public class ExportScenarios
         this.imagesPathUrl = properties.getProperty("imagesPathUrl");
         
         this.humanPath = properties.getProperty("humanPath");
-        this.nullifyOrder = Boolean.getBoolean(properties.getProperty("nullifyOrder"));
-        this.outputAllFields = Boolean.getBoolean(properties.getProperty("outputAllFields"));        
-        this.exportStdOut = Boolean.getBoolean(properties.getProperty("exportStdOut"));
+        this.nullifyOrder = Boolean.valueOf(properties.getProperty("nullifyOrder"));
+        this.outputAllFields = Boolean.valueOf(properties.getProperty("outputAllFields"));        
+        this.exportStdOut = Boolean.valueOf(properties.getProperty("exportStdOut"));
         
         Options opts = new Options();
         opts.useGoldStandardOnly = true;
