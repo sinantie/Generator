@@ -303,10 +303,15 @@ public class ExportScenarios
             // double check we already know the eventType
             if(eventTypeNames.contains(tokens[i]))
             {                
-                ids.add(ignoreTrueId ? scn.getIdOfEvent(tokens[i]) :
-                                       Integer.valueOf(tokens[i + 1]));
-            }
-        }
+                if(ignoreTrueId)
+                    ids.add(scn.getIdOfEvent(tokens[i]));
+                else
+                {
+                    if(tokens[i + 1].matches("\\p{Digit}+"))
+                        ids.add(Integer.valueOf(tokens[i + 1]));
+                }
+            } // if
+        } // for
         return ids;
     }
 
@@ -485,10 +490,10 @@ public class ExportScenarios
 
     public String exportTextFromSystems()
     {
-        StringBuilder str = new StringBuilder();
+        StringBuilder str = new StringBuilder("\n");
         for(Scenario scn: scenariosList)
         {
-            str.append(scn.getPath()).append("\n");
+            str.append("\n").append(scn.getPath()).append("\n");
             for(String modelName : permutationOrder)
                 str.append(modelName).append(": ").append(scn.getText(modelName)).append("\n");            
         }

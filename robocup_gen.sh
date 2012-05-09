@@ -33,6 +33,6 @@ java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -binariseAtWordLevel \
 -useStopNode \
 -interpolationFactor ${interpolationFactor} \
--posAtSurfaceLevel \
--useDependencies
-#-useGoldStandardOnly
+-useDependencies \
+-useGoldStandardOnly
+#-posAtSurfaceLevel \
