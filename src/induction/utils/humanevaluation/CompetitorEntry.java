@@ -2,11 +2,15 @@ package induction.utils.humanevaluation;
 
 /**
  *
- * @author konstas
+ * @author sinantie
  */
 public interface CompetitorEntry
 {
-    public String getPredText();
-    public String getGoldText();
-    public String getPredEvents();
+
+    String getGoldText();
+
+    String getPredEvents();
+
+    String getPredText();
+    
 }

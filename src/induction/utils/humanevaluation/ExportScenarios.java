@@ -34,7 +34,7 @@ public class ExportScenarios
     private String humanPath;
     String[] permutationOrder;
     Map<String, String> modelPaths;
-    private boolean nullifyOrder, outputAllFields;
+    private boolean nullifyOrder, outputAllFields, exportStdOut;
     private final Properties properties;    
     private GenerativeEvent3Model model;
     private List<Scenario> scenariosList;
@@ -70,6 +70,7 @@ public class ExportScenarios
         this.humanPath = properties.getProperty("humanPath");
         this.nullifyOrder = Boolean.getBoolean(properties.getProperty("nullifyOrder"));
         this.outputAllFields = Boolean.getBoolean(properties.getProperty("outputAllFields"));        
+        this.exportStdOut = Boolean.getBoolean(properties.getProperty("exportStdOut"));
         
         Options opts = new Options();
         opts.useGoldStandardOnly = true;
@@ -132,7 +133,9 @@ public class ExportScenarios
 //               writeOutputWebExp(fos);
                writeOutputHumanEval(fos);
                fos.close();
-           }           
+           }
+           if(exportStdOut)
+                System.out.println(exportTextFromSystems());
         }
         catch(IOException ioe)
         {
@@ -549,6 +552,8 @@ public class ExportScenarios
 //        nullifyOrder = true; 
 //        outputAllFields = true;
 
+        // robocup
+//        String propertiesPath = "robocup_humanEval.properties";
         // weatherGov
 //        String propertiesPath = "weatherGov_humanEval.properties";
         // atis        
