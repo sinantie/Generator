@@ -91,7 +91,9 @@ public class ExportScenarios
            for(Entry<String, String> entry : modelPaths.entrySet())
            {
                String name = entry.getKey();
-               modelObjects.put(name, readModel(name, entry.getValue()));
+               String path = entry.getValue().trim();
+               if(!path.equals("") && path != null)
+                   modelObjects.put(name, readModel(name, path));
            }
            
            for(String line : Utils.readLines(scenariosPath))
@@ -341,12 +343,13 @@ public class ExportScenarios
         writeLine(fos, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<resources>");
 
         // write each scenario-system combination on one block.        
-        int perm = 0;
+        int perm = 0; int count = 0;
         for(Scenario scn : scenariosList)
         {
             // we cycle through all the systems in the permutationOrder array
             // and pick the corresponding scenario. We should output
             // scneariosList.size() in the end
+            count++;
             String system = permutationOrder[(perm++) % permutationOrder.length];
             // write block header
             writeLine(fos, String.format("<block id=\"%s_%s\">", scn.getPath(), system));
@@ -355,7 +358,7 @@ public class ExportScenarios
             // write resource body
             String events = "<html><head>"
                     + "<style type=\"text/css\">"+ properties.getProperty("style")+"</style></head>\n"
-                    + "<center>\n<h2>Categories</h2><table>\n";
+                    + "<center>\n<h2>Table</h2><table>\n";
             events += "<tr><th colspan=\"1\">Category"
                     + "</th><th colspan=\"2\">Fields - Values</th></tr>\n";
             for(Integer id : scn.getEventIndices(system))
@@ -364,10 +367,10 @@ public class ExportScenarios
             }
             events += "</table>\n";            
             // write text
-            String text = "<h2>Translation</h2>\n" +
-                          "<table id=\"text\"><tr><td>" +
-                          scn.getText(system) +
-                          "</td></tr></table></center>\n</html>";
+            String text = String.format("<h2>Translation %s</h2>\n" +
+                                        "<table id=\"text\"><tr><td>%s" +
+                                        "</td></tr></table></center>\n</html>", 
+                                        count, scn.getText(system));
 // fix-weatherX.sh script only
 //            String id = String.format("<id>%s_%s</id>", scn.getPath(), system);
 //            System.out.println(outputReplaceString(
@@ -392,9 +395,10 @@ public class ExportScenarios
         writeLine(fos, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<resources>");
 
         // write each scenario-system combination on one block.
-        int perm = 0;
+        int perm = 0; int count = 0;
         for(Scenario scn : scenariosList)
         {
+            count++;
             // we cycle through all the systems in the permutationOrder array
             // and pick the corresponding scenario. We should output
             // write block header
@@ -405,7 +409,7 @@ public class ExportScenarios
             // write div header
             writeLine(fos, String.format("<div class=\"resource\" id=\"%s_%s\">", scn.getPath(), system));
             // write resource body
-            String events = "\n<h2>Categories</h2><table>\n"
+            String events = "\n<h2>Table " + count + "</h2><table>\n"
                           + "<tr><th class=\"events\" colspan=\"2\">Category</th>"
                           + "<th class=\"events\" colspan=\"5\">Fields - Values</th></tr>\n"; // make colspan sth big to make sure it spans all cols
             for(Integer id : scn.getEventIndices(system))
@@ -413,11 +417,10 @@ public class ExportScenarios
                 events += eventToHtml(scn.getEvents().get(id));
             }
             events += "</table>\n";
-            // write text
-            String text = "<h2>Translation</h2>\n" +
-                          "<table class=\"text\" id=\"text\"><tr><td>" +
-                          scn.getText(system) +
-                          "</td></tr></table>";
+            // write text            
+            String text = String.format("<h2>Translation %s</h2>\n" +
+                          "<table class=\"text\" id=\"text\"><tr><td>%s</td></tr></table>",
+                          count, scn.getText(system));
             writeLine(fos, events+text);
 //            writeLine(fos, htmlEncode(events+text));
             // write div footer
@@ -443,7 +446,7 @@ public class ExportScenarios
                     // image if it exists
                     ((image =
                     properties.getProperty("eventType."+event.getEventTypeName()+".icon")) == null
-                    ? "" : 
+                    ? "<td></td>" : 
                     String.format("<td><img src=\"%s%s\" width=\"45\" height=\"45\" /></td>",imagesPathUrl, image)) +
                     // formatted eventType
                     "<td id=\"eventType\">"+properties.getProperty("eventType."+event.getEventTypeName()+".name") +
