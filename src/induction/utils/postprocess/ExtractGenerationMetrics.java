@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.postprocess;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,13 +15,13 @@ import org.w3c.dom.NodeList;
  *
  * @author sinantie
  */
-public class ParseGenerationFiles
+public class ExtractGenerationMetrics
 {
     final static int NUM_OF_METRICS = 4;
     final static String[] METRICS = {"bleu", "bleu_modified", "meteor", "ter"};
     String inputFile1, inputFile2, outputFile;
 
-    public ParseGenerationFiles(String inputFile1, String inputFile2, String outputFile)
+    public ExtractGenerationMetrics(String inputFile1, String inputFile2, String outputFile)
     {
         this.inputFile1 = inputFile1;
         this.inputFile2 = inputFile2;
@@ -44,7 +44,7 @@ public class ParseGenerationFiles
             double[][] scores2 = parseScores(f);
             sanityCheck(scores2);
 
-            FileOutputStream fos = new FileOutputStream(outputFile + "lists");
+            FileOutputStream fos = new FileOutputStream(outputFile);
 //            fos.write((inputFile1 + "\n").getBytes());
             writeToFile(scores1, fos);
 //            fos.write(("\n" + inputFile2 + "\n").getBytes());
@@ -126,7 +126,7 @@ public class ParseGenerationFiles
             System.out.println("Usage: [inputFile1 inputFile2 outputFile]");
             System.exit(1);
         }
-        ParseGenerationFiles pgf = new ParseGenerationFiles(args[0], args[1], args[2]);
+        ExtractGenerationMetrics pgf = new ExtractGenerationMetrics(args[0], args[1], args[2]);
         pgf.execute();
     }   
 }

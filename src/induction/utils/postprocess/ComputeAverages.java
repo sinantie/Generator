@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.postprocess;
 
 import induction.Utils;
 import induction.problem.event3.generative.GenerativeEvent3Model;

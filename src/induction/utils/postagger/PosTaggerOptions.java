@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.postagger;
 
 import fig.basic.Option;
 

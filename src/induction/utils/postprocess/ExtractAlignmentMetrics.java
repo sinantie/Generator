@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.postprocess;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,11 +13,11 @@ import java.util.TreeSet;
  *
  * @author konstas
  */
-public class ProcessPerformanceFiles
+public class ExtractAlignmentMetrics
 {
     private String dirPath;
 
-    public ProcessPerformanceFiles(String dirPath)
+    public ExtractAlignmentMetrics(String dirPath)
     {
         this.dirPath = dirPath;
     }
@@ -111,7 +111,7 @@ public class ProcessPerformanceFiles
             System.out.println("You need to enter a valid directory path");
             System.exit(1);
         }
-        ProcessPerformanceFiles ppf = new ProcessPerformanceFiles(args[0]);
+        ExtractAlignmentMetrics ppf = new ExtractAlignmentMetrics(args[0]);
         ppf.execute();
     }
 

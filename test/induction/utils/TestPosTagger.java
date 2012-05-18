@@ -1,5 +1,7 @@
 package induction.utils;
 
+import induction.utils.postagger.PosTagger;
+import induction.utils.postagger.PosTaggerOptions;
 import fig.exec.Execution;
 import junit.framework.TestCase;
 import org.junit.Test;

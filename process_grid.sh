@@ -21,7 +21,7 @@ output=results/output/atis/generation/dependencies_uniformZ_all/grid.results
 crossValidate=false
 #COMMENT weights parameter
 
-java -cp dist/Generator.jar induction.utils.ProcessGridSearchFiles \
+java -cp dist/Generator.jar induction.utils.postprocess.ProcessGridSearchFiles \
 ${input} \
 ${formattedString} \
 ${output} \

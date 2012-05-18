@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.postprocess;
 
 import edu.berkeley.nlp.mt.BatchBleuModifiedScorer;
 import edu.berkeley.nlp.mt.BatchBleuScorer;

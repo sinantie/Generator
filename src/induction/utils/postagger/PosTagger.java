@@ -1,7 +1,7 @@
-package induction.utils;
+package induction.utils.postagger;
 
-import induction.utils.PosTaggerOptions.TypeOfInput;
-import induction.utils.PosTaggerOptions.TypeOfPath;
+import induction.utils.postagger.PosTaggerOptions.TypeOfInput;
+import induction.utils.postagger.PosTaggerOptions.TypeOfPath;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;

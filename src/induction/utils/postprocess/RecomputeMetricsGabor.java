@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.postprocess;
 
 import edu.berkeley.nlp.mt.BatchBleuModifiedScorer;
 import edu.berkeley.nlp.mt.BatchBleuScorer;
@@ -20,7 +20,7 @@ import tercom.TERcalc;
  *
  * @author konstas
  */
-public class RecomputeGaborMetrics
+public class RecomputeMetricsGabor
 {
     private final String inputFile;
     BatchBleuScorer bleuScorer, bleuModifiedScorer;
@@ -29,7 +29,7 @@ public class RecomputeGaborMetrics
     TERMetric terScorer;
     double TERTotalEdits = 0.0, TERTotalWords = 0.0;
 
-    public RecomputeGaborMetrics(String inputFile)
+    public RecomputeMetricsGabor(String inputFile)
     {
         this.inputFile = inputFile;
         bleuScorer = new BatchBleuScorer();
@@ -162,7 +162,7 @@ public class RecomputeGaborMetrics
         else
             inputFile = args[0];
 
-        RecomputeGaborMetrics rgm = new RecomputeGaborMetrics(inputFile);
+        RecomputeMetricsGabor rgm = new RecomputeMetricsGabor(inputFile);
         rgm.execute();
     }
 }
