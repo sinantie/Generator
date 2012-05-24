@@ -9,25 +9,25 @@ import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
  * @author konstas
  */
-public class GenerationWeatherTest
+public class ServerGenerationWeatherTest
 {
     LearnOptions lopts;
     String name;
-    GenerativeEvent3Model model;
+    Event3Model model;
 
-    public GenerationWeatherTest() {
+    public ServerGenerationWeatherTest() {
     }
 
     @BeforeClass
@@ -78,9 +78,8 @@ public class GenerationWeatherTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
-        model.init(InitType.staged, opts.initRandom, "");
-        model.readExamples();
-        model.logStats();
+        model.init(InitType.staged, opts.initRandom, "");   
+        model.getWordIndexer().add("(boundary)"); // from readExamples
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
@@ -95,23 +94,8 @@ public class GenerationWeatherTest
      */
     @Test
     public void testRun()
-    {
-        System.out.println("run");
-//        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-//                            + "falls_church/2009-02-07-0.text\" genre=\"nw\"><p>"
-//                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
-//                            + "bleu_modified=\"0.8039183415894011\" "
-//                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-//                            + "mostly cloudy , with a low around 53 . southwest "
-//                            + "wind between 9 and 14 mph .</seg></p></doc>";
-        String targetOutput = "<doc docid=\"data/weather-data-full/data/virginia/"
-                            + "glen_allen/2009-02-08-1.text\" genre=\"nw\"><p>"
-                            + "<seg id=\"1\" bleu=\"0.8039183415894011\" "
-                            + "bleu_modified=\"0.8039183415894011\" "
-                            + "meteor=\"0.9390967447612161\" ter=\"0.058823529411764705\">"
-                            + "mostly cloudy , with a low around 56 . south "
-                            + "wind between 3 and 6 mph .</seg></p></doc>";
+    {               
         String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
-        assertEquals(in, targetOutput);
+        System.out.println(in);
     }
 }
