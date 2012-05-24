@@ -138,6 +138,9 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             Execution.finish();
         }
         LogInfo.end_track();
+        loadLengthPredictionModel();
+        loadPosTagger();
+        loadLanguageModel();
     }
 
     @Override
@@ -335,31 +338,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     {
         opts.alignmentModel = lopts.alignmentModel; // HACK
 //        saveParams("stage1");
-//        System.exit(1);
-        if(!opts.fullPredRandomBaseline)
-        {
-            Utils.begin_track("Loading Language Model: " + name);
-            if(opts.ngramWrapper == NgramWrapper.kylm)
-            {
-                ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-                if(opts.secondaryNgramModelFile != null) // pos tags LM
-                    secondaryNgramModel = new KylmNgramWrapper(opts.secondaryNgramModelFile);
-            }
-            else if(opts.ngramWrapper == NgramWrapper.srilm)
-            {
-                ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-                if(opts.secondaryNgramModelFile != null) // pos tags LM
-                    secondaryNgramModel = new SrilmNgramWrapper(opts.secondaryNgramModelFile, opts.ngramSize);
-            }
-            else if(opts.ngramWrapper == NgramWrapper.roark)
-            {
-                ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
-                if(opts.secondaryNgramModelFile != null)
-                    secondaryNgramModel = new RoarkNgramWrapper(opts.secondaryNgramModelFile);
-            }
-                
-            LogInfo.end_track();
-        }
+//        System.exit(1);   
         FullStatFig complexity = new FullStatFig(); // Complexity inference (number of hypergraph nodes)
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();       

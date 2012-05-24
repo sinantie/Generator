@@ -11,6 +11,7 @@ public class Options {
   public enum AlignmentModel { m1, m2, hmm };
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
+  public enum JsonFormat {wunderground};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();
@@ -172,6 +173,7 @@ public class Options {
   @Option public int testStart = 0;
   @Option public int testEnd = 0;
   @Option(gloss="all examples are in a single file (default=false)") public boolean examplesInSingleFile = false;
+//  @Option(gloss="JSON format, indicating origin of corpus (e.g. wunderground.com)") public JsonFormat jsonFormat;
   @Option(gloss="don't save parameter files (for tests only)") public boolean dontOutputParams = false;  
   @Option(gloss="Write output examples in their original order (thread-safe)") public boolean forceOutputOrder = false;
   

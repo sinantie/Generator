@@ -26,7 +26,6 @@ import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
-import induction.problem.dmv.generative.GenerativeDMVModel;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -140,6 +139,9 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             Execution.finish();
         }
         LogInfo.end_track();
+        loadLengthPredictionModel();
+        loadPosTagger();
+        loadLanguageModel();
     }
     
     private Params loadGenerativeModelParams()
@@ -678,14 +680,14 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public void generate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel; // HACK 
-        Utils.begin_track("Loading Language Model...");
-        if(opts.ngramWrapper == NgramWrapper.kylm)
-            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        else if(opts.ngramWrapper == NgramWrapper.srilm)
-            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-        else if(opts.ngramWrapper == NgramWrapper.roark)
-            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
-        LogInfo.end_track();
+//        Utils.begin_track("Loading Language Model...");
+//        if(opts.ngramWrapper == NgramWrapper.kylm)
+//            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+//        else if(opts.ngramWrapper == NgramWrapper.srilm)
+//            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+//        else if(opts.ngramWrapper == NgramWrapper.roark)
+//            ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+//        LogInfo.end_track();
         // Complexity inference (number of hypergraph nodes)
         FullStatFig complexity = new FullStatFig();
         testPerformance = newPerformance();       
@@ -766,8 +768,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
     public String testGenerate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-//        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-        ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+////        ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+//        ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
         FullStatFig complexity = new FullStatFig();        
         testPerformance = newPerformance();
         AExample ex = examples.get(0);

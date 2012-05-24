@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.FullStatFig;
 import induction.problem.event3.generative.generation.SemParseWidget;
 import induction.problem.event3.generative.generation.GenWidget;
@@ -10,14 +11,19 @@ import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import induction.Options.JsonFormat;
 import induction.Options.ModelType;
+import induction.Options.NgramWrapper;
 import util.Stemmer;
 import induction.Utils;
+import induction.WekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.NgramModel;
+import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
 import induction.problem.AInferState;
+import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
@@ -1026,6 +1032,66 @@ public abstract class Event3Model extends WordModel
        return null;
     }
 
+    protected void loadLengthPredictionModel()
+    {
+        if(opts.lengthPredictionModelFile != null)
+        {
+            Utils.begin_track("Loading Length Prediction Model...");
+            lengthPredictor = new WekaWrapper(
+                    opts.generativeModelParamsFile == null ?
+                            opts.stagedParamsFile : 
+                            opts.generativeModelParamsFile,
+                    opts.lengthPredictionModelFile,
+                    opts.lengthPredictionStartIndex,
+                    opts.lengthPredictionFeatureType, WekaWrapper.Mode.TEST);
+            LogInfo.end_track();
+        }
+        
+    }
+    
+    protected void loadPosTagger()
+    {
+        if(opts.usePosTagger)
+        {
+            try
+            {
+                posTagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
+            }
+            catch(Exception e)
+            {
+                Execution.finish();
+            }
+        }
+    }
+    
+    protected void loadLanguageModel()
+    {
+        if(!opts.fullPredRandomBaseline)
+        {
+            Utils.begin_track("Loading Language Model...");
+            if(opts.ngramWrapper == NgramWrapper.kylm)
+            {
+                ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+                if(opts.secondaryNgramModelFile != null) // pos tags LM
+                    secondaryNgramModel = new KylmNgramWrapper(opts.secondaryNgramModelFile);
+            }
+            else if(opts.ngramWrapper == NgramWrapper.srilm)
+            {
+                ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+                if(opts.secondaryNgramModelFile != null) // pos tags LM
+                    secondaryNgramModel = new SrilmNgramWrapper(opts.secondaryNgramModelFile, opts.ngramSize);
+            }
+            else if(opts.ngramWrapper == NgramWrapper.roark)
+            {
+                ngramModel = new RoarkNgramWrapper(opts.ngramModelFile);
+                if(opts.secondaryNgramModelFile != null)
+                    secondaryNgramModel = new RoarkNgramWrapper(opts.secondaryNgramModelFile);
+            }
+                
+            LogInfo.end_track();
+        }
+    }
+    
     public Options getOpts()
     {
         return opts;
@@ -1047,6 +1113,51 @@ public abstract class Event3Model extends WordModel
     }
     
     /**
+     * Process single example in JSON Format - for client-server use. 
+     * The method goes through the whole pipeline: convert JSON to event3 format,
+     * read events, create inferState and generate.
+     * @param example
+     * @return 
+     */
+    public String processSingleExampleJson(JsonFormat format, String example, LearnOptions lopts)
+    {
+        // convert json to events
+        JsonWrapper wrapper = new JsonWrapper(example, format);
+        
+        final HashSet<String> excludedFields = new HashSet<String>();
+        excludedFields.addAll(Arrays.asList(opts.excludedFields));
+        final HashSet<String> excludedEventTypes = new HashSet<String>();
+        excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
+        
+        
+        //Read events
+        Map<Integer, Event> events  = null;
+        try
+        {
+            events = readEvents(wrapper.getEventsArray(), excludedEventTypes, excludedFields);
+        }
+        catch(Exception e) 
+        {
+            System.out.println("Error in reading events!"); 
+            e.printStackTrace(); 
+            return JsonWrapper.ERROR_EVENTS;
+        }
+        
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        APerformance performance = newPerformance();
+        AInferState inferState = null;
+        for(AExample ex : examples)
+        {
+            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
+            performance.add(ex, inferState.bestWidget);
+            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        }
+        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
+    }
+    
+    /**
      * helper method for testing the generation output. Simulates generate(...) method
      * for a single example without the thread mechanism
      * @return a String with the generated SGML text output (contains results as well)
@@ -1055,13 +1166,6 @@ public abstract class Event3Model extends WordModel
     public String testGenerate(String name, LearnOptions lopts)
     {
         opts.alignmentModel = lopts.alignmentModel;
-        if(opts.ngramModelFile != null)
-        {
-//            ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
-            ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
-            if(opts.secondaryNgramModelFile != null)
-                secondaryNgramModel = new SrilmNgramWrapper(opts.secondaryNgramModelFile, opts.ngramSize);
-        }
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
@@ -1069,12 +1173,11 @@ public abstract class Event3Model extends WordModel
         AInferState inferState = null;
         for(AExample ex : examples)
         {
-            inferState =  createInferState(ex, 1, null, temperature,
-                lopts, 0, complexity);
+            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
             testPerformance.add(ex, inferState.bestWidget);
             System.out.println(widgetToFullString(ex, inferState.bestWidget));
         }
-        return widgetToSGMLOutput(examples.get(C), inferState.bestWidget);
+        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
 //        AExample ex = examples.get(0);
 //        AInferState inferState =  createInferState(ex, 1, null, temperature,
 //                lopts, 0, complexity);

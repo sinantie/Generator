@@ -13,7 +13,6 @@ import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
 import fig.basic.Pair;
-import induction.BigDouble;
 import induction.DepHead;
 import induction.problem.dmv.params.DMVParams;
 import induction.problem.event3.params.FieldParams;

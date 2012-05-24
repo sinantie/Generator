@@ -181,30 +181,7 @@ public abstract class AModel
     {
         Utils.begin_track("Reading examples");
         numExamples = 0;
-        examples.clear();
-        if(opts.usePosTagger)
-        {
-            try
-            {
-                posTagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
-            }
-            catch(Exception e)
-            {
-                Execution.finish();
-            }
-        }
-        if(opts.lengthPredictionModelFile != null)
-        {
-            Utils.begin_track("Loading Length Prediction Model...");
-            lengthPredictor = new WekaWrapper(
-                    opts.generativeModelParamsFile == null ?
-                            opts.stagedParamsFile : 
-                            opts.generativeModelParamsFile,
-                    opts.lengthPredictionModelFile,
-                    opts.lengthPredictionStartIndex,
-                    opts.lengthPredictionFeatureType, WekaWrapper.Mode.TEST);
-            LogInfo.end_track();
-        }
+        examples.clear();               
         boolean setTrainTest = !opts.testInputPaths.isEmpty() ||
                 !opts.testInputLists.isEmpty();
 
