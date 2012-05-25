@@ -5,7 +5,6 @@
 
 package induction.runtime;
 
-import fig.basic.Indexer;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
