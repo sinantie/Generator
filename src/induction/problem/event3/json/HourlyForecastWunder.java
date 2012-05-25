@@ -1,8 +1,8 @@
 package induction.problem.event3.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -10,110 +10,80 @@ import java.util.Map;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HourlyForecastWunder
-{    
-    List<Hour> hourly_forecast;
+{
+    JsonWrapper.MetricSystem system;
+    List<Prediction> predictions;
 
-    public List<Hour> getHourly_forecast()
+    @JsonProperty("system")   
+    public JsonWrapper.MetricSystem getSystem()
     {
-        return hourly_forecast;
-    }
-
-    public void setHourly_forecast(List<Hour> hourly_forecast)
+        return system;
+    }      
+    
+    @JsonProperty("hourly_forecast")
+    public List<Prediction> getPredictions()
     {
-        this.hourly_forecast = hourly_forecast;
-    }
+        return predictions;
+    }    
     
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Hour
+    public static class Prediction
     {
-        Map FCTTIME;
-        Measure temp;
+        Time time;
+        Measure temperature;
         String condition;
-        Integer sky;
-        Measure wspd;
-        Direction wdir;
-        Measure windchill;
-        Integer pop;
+        Integer skyCover;
+        Measure windSpeed;
+        Direction windDir;
+        Measure windChill;
+        Integer chanceOfPrecipitation;
 
-        public Map getFCTTIME()
+        @JsonProperty("FCTTIME")
+        public Time getTime()
         {
-            return FCTTIME;
-        }
-
-        public void setFCTTIME(Map FCTTIME)
-        {
-            this.FCTTIME = FCTTIME;
-        }
-                        
-        public Measure getTemp()
-        {
-            return temp;
+            return time;
         }
         
-        public void setTemp(Measure temp)
+        @JsonProperty("temp")
+        public Measure getTemperature()
         {
-            this.temp = temp;
+            return temperature;
         }
-        
+               
         public String getCondition()
         {
             return condition;
         }
+
+        @JsonProperty("sky")
+        public Integer getSkyCover()
+        {
+            return skyCover;
+        }
         
-        public void setCondition(String condition)
+        @JsonProperty("wspd")
+        public Measure getWindSpeed()
         {
-            this.condition = condition;
+            return windSpeed;
         }
 
-        public Integer getSky()
+        @JsonProperty("wdir")
+        public Direction getWindDir()
         {
-            return sky;
+            return windDir;
+        }
+        
+        @JsonProperty("windchill")
+        public Measure getWindChill()
+        {
+            return windChill;
         }
 
-        public void setSky(Integer sky)
+        @JsonProperty("pop")
+        public Integer getChanceOfPrecipitation()
         {
-            this.sky = sky;
-        }
-
-        public Measure getWspd()
-        {
-            return wspd;
-        }
-
-        public void setWspd(Measure wspd)
-        {
-            this.wspd = wspd;
-        }
-
-        public Direction getWdir()
-        {
-            return wdir;
-        }
-
-        public void setWdir(Direction wdir)
-        {
-            this.wdir = wdir;
-        }
-
-        public Measure getWindchill()
-        {
-            return windchill;
-        }
-
-        public void setWindchill(Measure windchill)
-        {
-            this.windchill = windchill;
-        }
-
-        public Integer getPop()
-        {
-            return pop;
-        }
-
-        public void setPop(Integer pop)
-        {
-            this.pop = pop;
-        }
+            return chanceOfPrecipitation;
+        }        
     }
         
     public static class Measure
@@ -123,22 +93,12 @@ public class HourlyForecastWunder
         public Integer getEnglish()
         {
             return english;
-        }
-
-        public void setEnglish(Integer english)
-        {
-            this.english = english;
-        }
+        }        
         
         public Integer getMetric()
         {
             return metric;
-        }
-
-        public void setMetric(Integer metric)
-        {
-            this.metric = metric;
-        }        
+        }  
     }
         
     public static class Direction
@@ -150,20 +110,10 @@ public class HourlyForecastWunder
         {
             return dir;
         }
-
-        public void setDir(String dir)
-        {
-            this.dir = dir;
-        }
-
+    
         public Integer getDegrees()
         {
             return degrees;
-        }
-
-        public void setDegrees(Integer degrees)
-        {
-            this.degrees = degrees;
         }
     }
     
@@ -171,15 +121,17 @@ public class HourlyForecastWunder
     public static class Time
     {
         Integer hour;
-
+        String day;
+        
         public Integer getHour()
         {
             return hour;
         }
-
-        public void setHour(Integer hour)
+        
+        @JsonProperty("weekday_name")
+        public String getDay()
         {
-            this.hour = hour;
-        }        
+            return day;
+        }
     }
 }
