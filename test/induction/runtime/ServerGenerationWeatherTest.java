@@ -5,12 +5,16 @@
 
 package induction.runtime;
 
+import fig.basic.Indexer;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import induction.Options.JsonFormat;
+import induction.Utils;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -25,8 +29,8 @@ public class ServerGenerationWeatherTest
 {
     LearnOptions lopts;
     String name;
-    Event3Model model;
-
+    Event3Model model;    
+    
     public ServerGenerationWeatherTest() {
     }
 
@@ -82,7 +86,8 @@ public class ServerGenerationWeatherTest
         model.getWordIndexer().add("(boundary)"); // from readExamples
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
-        name = "stage1";
+        opts.alignmentModel = lopts.alignmentModel;
+        name = "stage1";     
     }
 
     @After
@@ -94,8 +99,15 @@ public class ServerGenerationWeatherTest
      */
     @Test
     public void testRun()
-    {               
-        String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
-        System.out.println(in);
+    {
+        try
+        {
+            String example = Utils.readFileAsString("../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california.json");
+            String in = model.processSingleExampleJson(JsonFormat.wunderground, example, lopts);
+            System.out.println(in);
+        }
+        catch(IOException ioe){
+            ioe.printStackTrace();
+        }
     }
 }
