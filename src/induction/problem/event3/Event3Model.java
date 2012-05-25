@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.problem.event3.json.JsonWrapper;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.FullStatFig;
 import induction.problem.event3.generative.generation.SemParseWidget;
@@ -733,6 +734,21 @@ public abstract class Event3Model extends WordModel
             }
             catch(Exception e) {System.out.println("Error in:"+name); e.printStackTrace(); System.exit(0);}
             wordIndexer.add("(boundary)");
+            int textLength = opts.averageTextLength;
+            if(opts.modelType == Options.ModelType.generate && lengthPredictor != null)
+            {
+                try
+                {
+                    textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
+                            (int) lengthPredictor.predict(
+                            opts.examplesInSingleFile ? eventInput :
+                            Utils.readFileAsString(eventInput));
+                }
+                catch(Exception e)
+                {
+                    Utils.log(e);
+                }                
+            }
             // Read text
             if(textInputExists)
             {
@@ -779,7 +795,9 @@ public abstract class Event3Model extends WordModel
                                 getTestSetWordIndex(word) : getWordIndex(word);
                     }
                 }
-
+                // set text length
+                if(lengthPredictor == null)
+                    textLength = text.length; // use gold value                
                 // Read alignments
                 if (alignInputExists)
                 {
@@ -822,26 +840,9 @@ public abstract class Event3Model extends WordModel
 //                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
 //                    }                                        
                     if(opts.modelType == Options.ModelType.generate)
-                    {
-                        // predict length                        
-                        int predictedLength = text.length; // get a default value, if all else fails
-                        if(lengthPredictor != null)
-                        {
-                            try
-                            {
-                                predictedLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
-                                        (int) lengthPredictor.predict(
-                                        opts.examplesInSingleFile ? eventInput :
-                                        Utils.readFileAsString(eventInput));
-                            }
-                            catch(Exception e)
-                            {
-                                Utils.log(e);
-                            }
-                        }
-                        
+                    {                                            
                         examples.add(new Example(this, name, events,
-                            null, null, null, predictedLength,
+                            null, null, null, textLength,
 //                            null, null, null, text.length,
 //                            null, null, null, opts.averageTextLength,
 //                            null, null, null, events.size()*opts.maxPhraseLength,
@@ -880,7 +881,7 @@ public abstract class Event3Model extends WordModel
                     if(opts.modelType == Options.ModelType.generate) // for generation only
                     { 
                         examples.add(new Example(this, name, events,
-                            null, null, null, opts.averageTextLength,
+                            null, null, null, textLength,
                             new GenWidget(text)));
                     } // else (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.semParse)
@@ -906,7 +907,7 @@ public abstract class Event3Model extends WordModel
             else // for generation only without gold-standard
             {
                 examples.add(new Example(this, name, events,
-                        null, null, null, opts.averageTextLength, null));
+                        null, null, null, textLength, null));
             }
         } // if
     }
@@ -1122,39 +1123,51 @@ public abstract class Event3Model extends WordModel
     public String processSingleExampleJson(JsonFormat format, String example, LearnOptions lopts)
     {
         // convert json to events
-        JsonWrapper wrapper = new JsonWrapper(example, format);
+        JsonWrapper wrapper = new JsonWrapper(example, format, testSetWordIndexer);
         
         final HashSet<String> excludedFields = new HashSet<String>();
         excludedFields.addAll(Arrays.asList(opts.excludedFields));
         final HashSet<String> excludedEventTypes = new HashSet<String>();
         excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
-        
-        
+                
         //Read events
+        String eventInput = "";
         Map<Integer, Event> events  = null;
         try
         {
-            events = readEvents(wrapper.getEventsArray(), excludedEventTypes, excludedFields);
+            eventInput = wrapper.getEventsString();
+            events = readEvents(eventInput.split("\n"), excludedEventTypes, excludedFields);
         }
         catch(Exception e) 
         {
-            System.out.println("Error in reading events!"); 
-            e.printStackTrace(); 
+            Utils.log("Error in reading events!"); 
+            LogInfo.error(e);
             return JsonWrapper.ERROR_EVENTS;
         }
-        
-        opts.alignmentModel = lopts.alignmentModel;
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        APerformance performance = newPerformance();
-        AInferState inferState = null;
-        for(AExample ex : examples)
+        // set text length
+        int textLength = opts.averageTextLength;
+        if(lengthPredictor != null)
         {
-            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
-            performance.add(ex, inferState.bestWidget);
-            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            try
+            {
+                textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
+                                             (int) lengthPredictor.predict(eventInput);
+            }
+            catch(Exception e)
+            {
+                Utils.log(e);
+            }                
         }
-        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
+        // create example
+        AExample ex = new Example(this, wrapper.getName(), events, null, null, null, textLength, 
+                wrapper.hasText() ? new GenWidget(wrapper.getText()) : null);       
+        APerformance performance = newPerformance();
+        FullStatFig complexity = new FullStatFig();
+        AInferState inferState = createInferState(ex, 1, null, lopts.initTemperature, lopts, 0, complexity);
+        performance.add(ex, inferState.bestWidget);
+        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        return widgetToFullString(ex, inferState.bestWidget);
+//        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
     }
     
     /**
