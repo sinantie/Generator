@@ -60,28 +60,37 @@ public class JsonWrapper
         {
             HourlyForecastWunder forecast = mapper.readValue(example, HourlyForecastWunder.class);  
             List<Prediction> predictions = forecast.getPredictions();
-            // we are going to grab 3 12-hour forecasts in total 
-            Object[] forecasts = new Object[3];
+            // we are going to grab 2 12-hour forecasts in total 
+            Object[] forecasts = new Object[2];
             // get current hour to determine whether the first 12-hour part forecast is
             // going to be day or night (the boundary is 1700 hours)
-            int currentHour = predictions.get(0).getTime().getHour();
-            PercyForecast.PeriodOfDay period;
+            int currentHour = predictions.get(0).getTime().getHour();            
             if(currentHour >= PercyForecast.DAY_BEGIN && currentHour < PercyForecast.NIGHT_BEGIN)
             {
-                period = PercyForecast.PeriodOfDay.day;
-                forecasts[0] = new PercyForecast(predictions.subList(0, PercyForecast.DAY_END - currentHour), PercyForecast.PeriodOfDay.day, forecast.system);
-                int nightBeginIndex = currentHour - 2 * PercyForecast.DAY_END + PercyForecast.NIGHT_BEGIN;
-                forecasts[1] = new PercyForecast(predictions.subList(nightBeginIndex, PercyForecast.NIGHT_END), 
-                                                 PercyForecast.PeriodOfDay.night, forecast.system);
+                // day period                
+                int dayBeginIndex = 0;
+                int dayEndIndex = PercyForecast.DAY_END - currentHour;
+                forecasts[0] = new PercyForecast(predictions.subList(dayBeginIndex, dayEndIndex + 1), PercyForecast.PeriodOfDay.day, forecast.system);
+                // night period
+                int nightBeginIndex = dayEndIndex - (PercyForecast.DAY_END - PercyForecast.NIGHT_BEGIN);
+                int nightEndIndex = nightBeginIndex + (PercyForecast.NIGHT_END - PercyForecast.NIGHT_BEGIN);
+                forecasts[1] = new PercyForecast(predictions.subList(nightBeginIndex, nightEndIndex + 1), PercyForecast.PeriodOfDay.night, forecast.system);
             }
             else
-                period = PercyForecast.PeriodOfDay.night;
-            
-            
-            for(Prediction prediction : forecast.getPredictions())
             {
-              //  hour.getTime().hour
+                // night period
+                int nightBeginIndex = 0;
+                int nightEndIndex = PercyForecast.NIGHT_END - currentHour;
+                forecasts[0] = new PercyForecast(predictions.subList(nightBeginIndex, nightEndIndex + 1), PercyForecast.PeriodOfDay.night, forecast.system);
+                // day period
+                int dayBeginIndex = nightEndIndex;
+                int dayEndIndex =dayBeginIndex + (PercyForecast.DAY_END - PercyForecast.DAY_BEGIN);
+                forecasts[1] = new PercyForecast(predictions.subList(dayBeginIndex, dayEndIndex + 1), PercyForecast.PeriodOfDay.day, forecast.system);
             }
+            
+            System.out.println(((PercyForecast)forecasts[0]).getForecastEvents());
+            System.out.println("----------");
+            System.out.println(((PercyForecast)forecasts[1]).getForecastEvents());
             return true;
         }
         

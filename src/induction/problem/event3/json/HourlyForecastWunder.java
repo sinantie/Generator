@@ -83,7 +83,13 @@ public class HourlyForecastWunder
         public Integer getChanceOfPrecipitation()
         {
             return chanceOfPrecipitation;
-        }        
+        }
+
+        @Override
+        public String toString()
+        {
+            return "hour=" + time.getHour();
+        }                
     }
         
     public static class Measure

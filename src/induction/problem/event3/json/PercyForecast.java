@@ -15,18 +15,18 @@ public class PercyForecast
     public static int DAY_BEGIN = 6, 
                       DAY_END = 21, 
                       NIGHT_BEGIN = 17,
-                      NIGHT_END = DAY_BEGIN;
+                      NIGHT_END = 30;
     private final PeriodInterval PERIOD_ALL_DAY = new PeriodInterval(6, 21),
                                  PERIOD_D_EARLY_MORNING = new PeriodInterval(6, 9),
                                  PERIOD_D_MORNING = new PeriodInterval(6, 13),
                                  PERIOD_D_MORNING_EVENING = new PeriodInterval(9, 21),
                                  PERIOD_D_AFTERNOON_EVENING = new PeriodInterval(13, 21),
             
-                                 PERIOD_ALL_NIGHT = new PeriodInterval(17, 30),
+                                 PERIOD_ALL_NIGHT = new PeriodInterval(17, 06, "17", "30"),
                                  PERIOD_N_EVENING = new PeriodInterval(17, 21),
-                                 PERIOD_N_EVENING_NIGHT = new PeriodInterval(17, 26),
-                                 PERIOD_N_EVENING_DAWN = new PeriodInterval(21, 30),
-                                 PERIOD_N_DAWN = new PeriodInterval(26, 30);
+                                 PERIOD_N_EVENING_NIGHT = new PeriodInterval(17, 02, "17", "26"),
+                                 PERIOD_N_EVENING_DAWN = new PeriodInterval(21, 06, "21", "30"),
+                                 PERIOD_N_DAWN = new PeriodInterval(02, 06, "26", "30");
     private PeriodOfDay period;
     private List<Prediction> partlyForecast;
     private JsonWrapper.MetricSystem system;
@@ -41,11 +41,11 @@ public class PercyForecast
         this.system = system;
         temperature = new EventType<Integer>();
         windChill = new EventType<Integer>();
-        
+        parseJsonForecast();
         
     }
       
-    public void parseJsonForecast()
+    private void parseJsonForecast()
     {
         for(Prediction p : partlyForecast)
         {
@@ -68,6 +68,8 @@ public class PercyForecast
                                    new Field("max", temperature.getMean(PERIOD_ALL_NIGHT)))
                 
                   ).append("\n");
+        
+        forecastEvents = str.toString();
     }
 
     public String getForecastEvents()
@@ -119,7 +121,7 @@ public class PercyForecast
                         v = value;                        
                 }
             } // for
-            return v;
+            return v == -9999 || v == -999 ? 0 : v; // Null or N/A numbers
         }
         
         public int getMean(PeriodInterval interval)
@@ -187,17 +189,26 @@ public class PercyForecast
     private class PeriodInterval
     {
         int begin, end;
-
+        String outBegin, outEnd; // in case we need to print different/begin end times (e.g. 06:00 becomes 30)
         public PeriodInterval(int begin, int end)
         {            
             this.begin = begin;
             this.end = end;
         }
+        
+        public PeriodInterval(int begin, int end, String outBegin, String outEnd)
+        {            
+            this.begin = begin;
+            this.end = end;
+            this.outBegin = outBegin;
+            this.outEnd = outEnd;
+        }
 
         @Override
         public String toString()
         {
-            return String.format("@time:%s-%s", begin, end);
+            return String.format("@time:%s-%s", outBegin == null ? begin : outBegin, 
+                                                outEnd == null ? end : outEnd);
         }
         
     }
