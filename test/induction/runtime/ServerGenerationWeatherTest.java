@@ -101,7 +101,7 @@ public class ServerGenerationWeatherTest
     {
         try
         {
-            String example = Utils.readFileAsString("../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california.json");
+            String example = Utils.readFileAsString("../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california_2.json");
             String in = model.processSingleExampleJson(JsonFormat.wunderground, example, lopts);
             System.out.println(in);
         }
