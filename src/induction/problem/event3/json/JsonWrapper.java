@@ -9,7 +9,6 @@ import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import induction.Options.JsonFormat;
 import induction.problem.event3.json.HourlyForecastWunder.Prediction;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
