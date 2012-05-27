@@ -67,7 +67,7 @@ public class ServerGenerationWeatherTest
                     + "-numAsSymbol "
                     + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
-                    + "-lengthPredictionStartIndex 4 "
+                    + "-lengthPredictionStartIndex 2 " // IMPORTANT!!!
                     + "-numAsSymbol "
 //                    + "-useDependencies "
                     + "-interpolationFactor 0.5 "
@@ -102,7 +102,7 @@ public class ServerGenerationWeatherTest
         try
         {
             String example = Utils.readFileAsString("../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california_2.json");
-            String in = model.processSingleExampleJson(JsonFormat.wunderground, example, lopts);
+            String in = model.processExamplesJson(JsonFormat.wunderground, example, lopts);
             System.out.println(in);
         }
         catch(IOException ioe){
