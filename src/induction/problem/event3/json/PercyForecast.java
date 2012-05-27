@@ -208,21 +208,7 @@ public class PercyForecast
        
         forecastEvents = str.toString();
     }
-    
-    private String createEvent(int id, EventType eventType, Interval interval, Field... fields)
-    {
-        StringBuilder str = new StringBuilder();
-        str.append(period == PeriodOfDay.day ? 
-                    new Event(id, eventType, fields) :
-                    new Event(id, eventType, new Field("time", PERIOD_ALL_NIGHT), 
-                                   new Field("min", temperature.getMin(PERIOD_ALL_NIGHT)),
-                                   new Field("mean", temperature.getMean(PERIOD_ALL_NIGHT)),
-                                   new Field("max", temperature.getMax(PERIOD_ALL_NIGHT)))
-                
-                  ).append("\n");
-        return str.toString();
-    }
-    
+
     public String getForecastEvents()
     {
         return forecastEvents;
@@ -302,7 +288,8 @@ public class PercyForecast
          * @return 
          */
         public T getMode(Interval interval, Properties dictionary)
-        {            
+        {
+            boolean found = false;
             Map<T, Integer> hist = new HashMap<T, Integer>();
             List dictValues = dictionary == null ? null : Arrays.asList(dictionary.getProperty(type).split(","));
             for(Map.Entry<Integer, T> entry : hourlyValues.entrySet())
@@ -311,6 +298,7 @@ public class PercyForecast
                 if(interval.begin < interval.end && (key >= interval.begin && key <= interval.end) ||
                    interval.begin > interval.end && (key >= interval.begin || key <= interval.end))
                 {
+                    found = true;
                     T origValue = entry.getValue();
                     if(dictionary == null)
                     {
@@ -338,7 +326,8 @@ public class PercyForecast
                     mode = key;
                 }
             }
-            return mode;
+            // sanity check: in case we are out of bounds output "--"
+            return found ? mode : (T)"--";
         }
         
         /**
@@ -352,6 +341,7 @@ public class PercyForecast
          */
         public String getModeBucket(int min, int max, int size, Interval interval)
         {
+            boolean found = false;
             final int bucketSize = (max - min) / size;
             int[] counts = new int[size];
             Interval[] buckets = new Interval[size];            
@@ -361,6 +351,7 @@ public class PercyForecast
             }
             for(Map.Entry<Integer, T> entry : hourlyValues.entrySet())
             {
+                found = true;
                 Integer key = entry.getKey();
                 T value = entry.getValue();
                 if(interval.begin < interval.end && (key >= interval.begin && key <= interval.end) ||
@@ -368,8 +359,9 @@ public class PercyForecast
                 {
                     counts[bucketIndex(buckets, (Integer)value)]++;
                 }
-            }            
-            return buckets[Utils.maxIndex(counts)].toString();
+            }
+            // sanity check: in case we are out of bounds choose the smallest bucket
+            return found ? buckets[Utils.maxIndex(counts)].toString() : buckets[0].toString();
         }
         
         /**

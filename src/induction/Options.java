@@ -159,7 +159,7 @@ public class Options {
   @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
   @Option(gloss="Feature type for length prediction vector (default=value)") public ExtractFeatures.FeatureType
     lengthPredictionFeatureType = ExtractFeatures.FeatureType.VALUES;
-  @Option(gloss="Position of eventType interface events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;
+  @Option(gloss="Position of eventType in events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;
   @Option(gloss="Length compensation due to mismatch (default=0)") public String lengthCompensation = "0";
 
   // Semantic Parsing

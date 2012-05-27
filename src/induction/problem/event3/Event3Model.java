@@ -956,6 +956,11 @@ public abstract class Event3Model extends WordModel
         {
         super.readExamples();
         }catch(Exception e){e.printStackTrace();}
+        postSetupReadExamples(examples);
+    }
+    
+    private void postSetupReadExamples(List<AExample> exAr)
+    {
         if(opts.initType != InitType.staged)
         {
             eventTypes = new EventType[eventTypesBuffer.size()];
@@ -988,15 +993,13 @@ public abstract class Event3Model extends WordModel
         } // for
         LogInfo.end_track();
         Utils.begin_track("Setting up examples");
-        for(AExample ex: examples)
+        for(AExample ex: exAr)
         {
             ((Example)ex).computeEventTypeCounts();
 //            ex.computeTrackEvents();
         }
         LogInfo.end_track();
-
     }
-
     private HashSet<Integer> getSet(String str)
     {
         HashSet<Integer> set = new HashSet<Integer>();
@@ -1120,7 +1123,7 @@ public abstract class Event3Model extends WordModel
      * @param example
      * @return 
      */
-    public String processSingleExampleJson(JsonFormat format, String example, LearnOptions lopts)
+    public String processExamplesJson(JsonFormat format, String example, LearnOptions lopts)
     {
         // convert json to events
         JsonWrapper wrapper = new JsonWrapper(example, format, testSetWordIndexer);
@@ -1129,47 +1132,57 @@ public abstract class Event3Model extends WordModel
         excludedFields.addAll(Arrays.asList(opts.excludedFields));
         final HashSet<String> excludedEventTypes = new HashSet<String>();
         excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
-                
-        //Read events
-        String eventInput = "";
-        Map<Integer, Event> events  = null;
-        try
+        List<AExample> examplesList = new ArrayList<AExample>(wrapper.getNumberOfOutputs());
+        for(int i = 0; i < wrapper.getNumberOfOutputs(); i++)
         {
-            eventInput = wrapper.getEventsString();
-            events = readEvents(eventInput.split("\n"), excludedEventTypes, excludedFields);
-        }
-        catch(Exception e) 
-        {
-            Utils.log("Error in reading events!"); 
-            LogInfo.error(e);
-            return JsonWrapper.ERROR_EVENTS;
-        }
-        // set text length
-        int textLength = opts.averageTextLength;
-        if(lengthPredictor != null)
-        {
+            //Read events
+            String eventInput = "";
+            Map<Integer, Event> events  = null;
             try
             {
-                textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
-                                             (int) lengthPredictor.predict(eventInput);
+                eventInput = wrapper.getEventsString()[i];
+                events = readEvents(eventInput.split("\n"), excludedEventTypes, excludedFields);
             }
-            catch(Exception e)
+            catch(Exception e) 
             {
-                Utils.log(e);
-            }                
-        }
-        // create example
-        AExample ex = new Example(this, wrapper.getName(), events, null, null, null, textLength, 
-                wrapper.hasText() ? new GenWidget(wrapper.getText()) : null);       
+                Utils.log("Error in reading events!"); 
+                LogInfo.error(e);
+                return JsonWrapper.ERROR_EVENTS;
+            }
+            // set text length
+            int textLength = opts.averageTextLength;
+            if(lengthPredictor != null)
+            {
+                try
+                {
+                    textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
+                                                 (int) lengthPredictor.predict(eventInput);
+                }
+                catch(Exception e)
+                {
+                    Utils.log(e);
+                }                
+            }
+            // create example
+            examplesList.add((new Example(this, wrapper.getName()[i], events, null, null, null, textLength, 
+                    wrapper.hasText() ? new GenWidget(wrapper.getText().get(i)) : null)));
+        } // for
+        postSetupReadExamples(examplesList);
+        // generate text !
         APerformance performance = newPerformance();
         FullStatFig complexity = new FullStatFig();
-        AInferState inferState = createInferState(ex, 1, null, lopts.initTemperature, lopts, 0, complexity);
-        performance.add(ex, inferState.bestWidget);
-        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-        return widgetToFullString(ex, inferState.bestWidget);
+        AInferState inferState = null;
+        StringBuilder str = new StringBuilder();
+        for(AExample ex : examplesList)
+        {
+            inferState =  createInferState(ex, 1, null, lopts.initTemperature, lopts, 0, complexity);
+            performance.add(ex, inferState.bestWidget);
+            str.append(widgetToFullString(ex, inferState.bestWidget)).append("\n\n");
+        }
+        return str.toString();
 //        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
     }
-    
+       
     /**
      * helper method for testing the generation output. Simulates generate(...) method
      * for a single example without the thread mechanism
