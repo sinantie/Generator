@@ -24,6 +24,7 @@ import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
 import induction.problem.AInferState;
+import induction.problem.AParams;
 import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
@@ -34,6 +35,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1117,16 +1119,45 @@ public abstract class Event3Model extends WordModel
     }
     
     /**
+     * helper method for testing the generation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the generated SGML text output (contains results as well)
+     */
+    @Override
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+//        AParams counts = newParams();
+        AInferState inferState = null;
+        for(AExample ex : examples)
+        {
+            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
+            testPerformance.add(ex, inferState.bestWidget);
+            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+        }
+        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
+//        AExample ex = examples.get(0);
+//        AInferState inferState =  createInferState(ex, 1, null, temperature,
+//                lopts, 0, complexity);
+//        testPerformance.add(ex, inferState.bestWidget);
+//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//        return widgetToSGMLOutput(ex, inferState.bestWidget);        
+    }
+    
+    /**
      * Process single example in JSON Format - for client-server use. 
      * The method goes through the whole pipeline: convert JSON to event3 format,
      * read events, create inferState and generate.
      * @param example
      * @return 
      */
-    public String processExamplesJson(JsonFormat format, String example, LearnOptions lopts)
+    public String processExamplesJson(JsonFormat format, String example, LearnOptions lopts, String... args)
     {
         // convert json to events
-        JsonWrapper wrapper = new JsonWrapper(example, format, testSetWordIndexer);
+        JsonWrapper wrapper = new JsonWrapper(example, format, testSetWordIndexer, args);
         
         final HashSet<String> excludedFields = new HashSet<String>();
         excludedFields.addAll(Arrays.asList(opts.excludedFields));
@@ -1159,9 +1190,7 @@ public abstract class Event3Model extends WordModel
                                                  (int) lengthPredictor.predict(eventInput);
                 }
                 catch(Exception e)
-                {
-                    Utils.log(e);
-                }                
+                {Utils.log(e);}                
             }
             // create example
             examplesList.add((new Example(this, wrapper.getName()[i], events, null, null, null, textLength, 
@@ -1171,44 +1200,64 @@ public abstract class Event3Model extends WordModel
         // generate text !
         APerformance performance = newPerformance();
         FullStatFig complexity = new FullStatFig();
-        AInferState inferState = null;
-        StringBuilder str = new StringBuilder();
-        for(AExample ex : examplesList)
+        Collection<JsonBatchEM> list = new ArrayList(examplesList.size());
+        for(int i = 0; i < examplesList.size(); i++)
         {
-            inferState =  createInferState(ex, 1, null, lopts.initTemperature, lopts, 0, complexity);
-            performance.add(ex, inferState.bestWidget);
-            str.append(widgetToFullString(ex, inferState.bestWidget)).append("\n\n");
+            list.add(new JsonBatchEM(i, examplesList.get(i), null, lopts.initTemperature, 
+                    lopts, 0, complexity, performance));
+        }               
+        List<JsonResult> results = Utils.parallelForeachWithResults(opts.numThreads, list);
+        // return results in correct order
+        StringBuilder str = new StringBuilder();
+        Collections.sort(results);
+        for(JsonResult res : results)
+        {
+            str.append(res.getOutput()).append("\n\n");
         }
         return str.toString();
 //        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
     }
        
-    /**
-     * helper method for testing the generation output. Simulates generate(...) method
-     * for a single example without the thread mechanism
-     * @return a String with the generated SGML text output (contains results as well)
-     */
-    @Override
-    public String testGenerate(String name, LearnOptions lopts)
+    protected class JsonBatchEM extends BatchEM
     {
-        opts.alignmentModel = lopts.alignmentModel;
-        FullStatFig complexity = new FullStatFig();
-        double temperature = lopts.initTemperature;
-        testPerformance = newPerformance();
-//        AParams counts = newParams();
-        AInferState inferState = null;
-        for(AExample ex : examples)
+        final APerformance performance;
+        public JsonBatchEM(int i, AExample ex, AParams counts, double temperature,
+                LearnOptions lopts, int iter, FullStatFig complexity, APerformance performance)
         {
-            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
-            testPerformance.add(ex, inferState.bestWidget);
-            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            super(i, ex, counts, temperature, lopts, iter, complexity);
+            this.performance = performance;
         }
-        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
-//        AExample ex = examples.get(0);
-//        AInferState inferState =  createInferState(ex, 1, null, temperature,
-//                lopts, 0, complexity);
-//        testPerformance.add(ex, inferState.bestWidget);
-//        System.out.println(widgetToFullString(ex, inferState.bestWidget));
-//        return widgetToSGMLOutput(ex, inferState.bestWidget);        
+
+        @Override
+        public JsonResult call() throws Exception
+        {
+            AInferState inferState =  createInferState(ex, i, null, temperature, lopts, 0, complexity);
+            synchronized(performance)
+            {
+                performance.add(ex, inferState.bestWidget);
+            }
+            return new JsonResult(i, widgetToFullString(ex, inferState.bestWidget));
+        }                
+    }
+    protected class JsonResult implements Comparable<JsonResult>
+    {
+        int index; String output;
+        public JsonResult(int index, String result)
+        {
+            this.index = index;
+            this.output = result;
+        }
+
+        public String getOutput()
+        {
+            return output;
+        }
+
+        @Override
+        public int compareTo(JsonResult o)
+        {
+            return this.index - o.index;
+        }
+
     }
 }

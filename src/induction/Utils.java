@@ -19,12 +19,14 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.collections15.list.TreeList;
 
 /**
  *
@@ -322,9 +324,9 @@ public class Utils
     }
 
     public static <A extends MyCallable, B>
-            ArrayList<B> parallelForeachWithResults(int numOfThreads, Collection<A> actions)
-    {
-        ArrayList<B> results = new ArrayList<B>();
+            List<B> parallelForeachWithResults(int numOfThreads, Collection<A> actions)
+    {        
+        List<B> results = Collections.synchronizedList(new ArrayList<B>());
         if(actions.size() == 1)
         {
             try

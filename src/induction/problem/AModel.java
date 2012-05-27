@@ -691,14 +691,14 @@ public abstract class AModel
         }
     }
 
-    protected class BatchEM extends MyCallable
+    protected class BatchEM<T> extends MyCallable
     {
-        private AExample ex;
-        private int i, iter;
-        private AParams counts;
-        private double temperature;
-        private LearnOptions lopts;
-        private FullStatFig complexity;
+        protected  AExample ex;
+        protected  int i, iter;
+        protected  AParams counts;
+        protected  double temperature;
+        protected  LearnOptions lopts;
+        protected  FullStatFig complexity;
 
         public BatchEM(int i, AExample ex, AParams counts, double temperature,
                 LearnOptions lopts, int iter, FullStatFig complexity)
@@ -712,7 +712,7 @@ public abstract class AModel
             this.complexity = complexity;
         }
         @Override
-        public Object call() throws Exception
+        public T call() throws Exception
         {
             processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
             if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)

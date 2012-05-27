@@ -2,6 +2,7 @@ package induction.problem.event3.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import induction.problem.event3.json.JsonWrapper.MetricSystem;
 import java.util.List;
 
 /**
@@ -14,11 +15,16 @@ public class HourlyForecastWunder
     JsonWrapper.MetricSystem system;
     List<Prediction> predictions;
 
-    @JsonProperty("system")   
-    public JsonWrapper.MetricSystem getSystem()
+    public void setSystem(MetricSystem system)
     {
-        return system;
-    }      
+        this.system = system;
+    }
+
+//    @JsonProperty("system")   
+//    public JsonWrapper.MetricSystem getSystem()
+//    {
+//        return system;
+//    }      
     
     @JsonProperty("hourly_forecast")
     public List<Prediction> getPredictions()

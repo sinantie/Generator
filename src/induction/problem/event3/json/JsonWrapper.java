@@ -27,7 +27,7 @@ public class JsonWrapper
     private List<int[]> text;
     private int numberOfOutputs;
     
-    public JsonWrapper(String example, JsonFormat jsonFormat, Indexer<String> wordIndexer)
+    public JsonWrapper(String example, JsonFormat jsonFormat, Indexer<String> wordIndexer, String... args)
     {
         this.wordIndexer = wordIndexer;
         if(jsonFormat == JsonFormat.wunderground)
@@ -37,7 +37,7 @@ public class JsonWrapper
             eventsString = new String[numberOfOutputs]; 
             text = new ArrayList<int[]>(numberOfOutputs);
             name = new String[numberOfOutputs];
-            processWundergroundJsonFile(example);            
+            processWundergroundJsonFile(example, args[0]);            
         }
     }
 
@@ -66,12 +66,13 @@ public class JsonWrapper
         return name;
     }
 
-    private boolean processWundergroundJsonFile(String example)
+    private boolean processWundergroundJsonFile(String example, String system)
     {
         ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
         try 
         {
-            HourlyForecastWunder forecast = mapper.readValue(example, HourlyForecastWunder.class);  
+            HourlyForecastWunder forecast = mapper.readValue(example, HourlyForecastWunder.class);
+            forecast.setSystem(system.equals("metric") ? MetricSystem.metric : MetricSystem.english);
             List<Prediction> predictions = forecast.getPredictions();
             // we are going to grab 2 12-hour forecasts in total 
             Object[] forecasts = new Object[2];
