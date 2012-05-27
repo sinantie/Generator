@@ -15,9 +15,14 @@ public class KnockKnockClient
 {
 
     public static void main(String[] args) throws IOException
-    {
+    {        
         String host = "localhost";
         int port = 4444;
+        if(args.length > 1)
+        {
+            host = args[0];
+            port = Integer.valueOf(args[1]);
+        }
         Socket kkSocket = null;
         PrintWriter out = null;
         BufferedReader in = null;
@@ -39,19 +44,27 @@ public class KnockKnockClient
         BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
         String fromServer;
         String fromUser;
-
-        while ((fromServer = in.readLine()) != null) {
-            System.out.println("Server: " + fromServer);
-            if (fromServer.equals("Bye.")) {
-                break;
-            }
-
-            fromUser = stdIn.readLine();
-            if (fromUser != null) {
-                System.out.println("Client: " + fromUser);
-                out.println(fromUser);
-            }
+                            
+        fromUser = stdIn.readLine();
+        if (fromUser != null) {
+            System.out.println("Client: " + fromUser);
+            out.println(fromUser);
         }
+        fromServer = in.readLine();
+        System.out.println("Server: " + fromServer);            
+
+//        while ((fromServer = in.readLine()) != null) {
+//            System.out.println("Server: " + fromServer);
+//            if (fromServer.equals("Bye.")) {
+//                break;
+//            }
+//
+//            fromUser = stdIn.readLine();
+//            if (fromUser != null) {
+//                System.out.println("Client: " + fromUser);
+//                out.println(fromUser);
+//            }
+//        }
 
         out.close();
         in.close();

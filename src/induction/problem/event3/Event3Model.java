@@ -29,8 +29,10 @@ import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
+import induction.problem.event3.json.JsonResult;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -378,8 +380,8 @@ public abstract class Event3Model extends WordModel
             }
             return ex.widgetToNiceFullString((Widget)widget);
         }
-    }
-
+    }   
+    
     @Override
     protected String exampleToString(AExample aex)
     {
@@ -1151,13 +1153,13 @@ public abstract class Event3Model extends WordModel
      * Process single example in JSON Format - for client-server use. 
      * The method goes through the whole pipeline: convert JSON to event3 format,
      * read events, create inferState and generate.
-     * @param example
+     * @param queryLink
      * @return 
      */
-    public String processExamplesJson(JsonFormat format, String example, LearnOptions lopts, String... args)
+    public String processExamplesJson(JsonFormat format, String queryLink, LearnOptions lopts, String... args)
     {
         // convert json to events
-        JsonWrapper wrapper = new JsonWrapper(example, format, testSetWordIndexer, args);
+        JsonWrapper wrapper = new JsonWrapper(queryLink, format, testSetWordIndexer, args);
         
         final HashSet<String> excludedFields = new HashSet<String>();
         excludedFields.addAll(Arrays.asList(opts.excludedFields));
@@ -1207,15 +1209,18 @@ public abstract class Event3Model extends WordModel
                     lopts, 0, complexity, performance));
         }               
         List<JsonResult> results = Utils.parallelForeachWithResults(opts.numThreads, list);
-        // return results in correct order
-        StringBuilder str = new StringBuilder();
+        // return results in correct order        
         Collections.sort(results);
-        for(JsonResult res : results)
+        String out = "";
+        try
         {
-            str.append(res.getOutput()).append("\n\n");
+            out = JsonWrapper.mapper.writeValueAsString(results);
         }
-        return str.toString();
-//        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
+        catch(Exception ioe)
+        {
+            out = JsonWrapper.ERROR_EXPORT_JSON;
+        }
+        return out;
     }
        
     protected class JsonBatchEM extends BatchEM
@@ -1236,28 +1241,13 @@ public abstract class Event3Model extends WordModel
             {
                 performance.add(ex, inferState.bestWidget);
             }
-            return new JsonResult(i, widgetToFullString(ex, inferState.bestWidget));
+            return widgetToJson(i, ex, inferState.bestWidget);
         }                
-    }
-    protected class JsonResult implements Comparable<JsonResult>
+    }  
+    
+    protected JsonResult widgetToJson(int i, AExample aex, AWidget widget)
     {
-        int index; String output;
-        public JsonResult(int index, String result)
-        {
-            this.index = index;
-            this.output = result;
-        }
-
-        public String getOutput()
-        {
-            return output;
-        }
-
-        @Override
-        public int compareTo(JsonResult o)
-        {
-            return this.index - o.index;
-        }
-
+        return ((Example)aex).genWidgetToJson(i, (GenWidget)widget);
     }
+    
 }

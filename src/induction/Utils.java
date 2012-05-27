@@ -26,7 +26,6 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.collections15.list.TreeList;
 
 /**
  *
@@ -413,13 +412,7 @@ public class Utils
         String[] out = new String[linesList.size()];
         return linesList.toArray(out);
     }
-
-    public static void main(String[] args)
-    {
-        boolean bAr[] = {false, false, false, true, false, false, false, true};
-        System.out.println("");
-
-    }
+   
     public static String[] readLines(String path)
     {
         return readLines(path, Integer.MAX_VALUE);
@@ -798,5 +791,44 @@ public class Utils
                                  "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
                                  "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!
                                  ? "<num>" : input;
-    }        
+    }
+    
+    public static String deTokenize(String input)
+    {
+        boolean capitalise = false;
+        StringBuilder str = new StringBuilder();
+        String[] ar = input.split(" ");
+        // capitalise first word
+        str.append(capitalise(ar[0])).append(" ");
+        for(int i = 1; i < ar.length; i++)
+        {
+            String current = ar[i];
+            // remove space before delimeter
+            if(current.equals(",") || current.equals("?"))
+            {
+                str.deleteCharAt(str.length() - 1).append(current);
+//                str.append(current);
+            }
+            // capitalise next word and delete space before a fullstop
+            else if(current.equals("."))
+            {
+                str.deleteCharAt(str.length() - 1).append(current);
+                capitalise = true;
+            }
+            else if(capitalise)
+            {
+                str.append(capitalise(current));
+                capitalise = false;
+            }
+            else
+                str.append(current);
+            str.append(" ");
+        }
+        return str.toString().trim();
+    }
+    
+    public static String capitalise(String input)
+    {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 }

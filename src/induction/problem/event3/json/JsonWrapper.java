@@ -8,9 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import induction.Options.JsonFormat;
+import induction.Utils;
 import induction.problem.event3.json.HourlyForecastWunder.Prediction;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  *
@@ -18,26 +22,45 @@ import java.util.List;
  */
 public class JsonWrapper
 {
-    public static final String ERROR_EVENTS = "error_events";
-    public static enum MetricSystem {metric, english};
-    
+    public static final String ERROR_EVENTS = "<div id=\"alert\">Error reading events!</div>";
+    public static final String ERROR_EXPORT_JSON = "<div id=\"alert\">Error exporting json!</div>";
+    public static enum MetricSystem {metric, english};    
     private Indexer<String> wordIndexer;
     private String[] name;
     private String[] eventsString;
     private List<int[]> text;
-    private int numberOfOutputs;
+    private int numberOfOutputs;    
+    public static ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
     
-    public JsonWrapper(String example, JsonFormat jsonFormat, Indexer<String> wordIndexer, String... args)
+    public JsonWrapper(String query, JsonFormat jsonFormat, Indexer<String> wordIndexer, String... args)
     {
         this.wordIndexer = wordIndexer;
         if(jsonFormat == JsonFormat.wunderground)
         {
-            // 2 12-hour forecasts
+            // 2 12-hour forecasts            
             numberOfOutputs = 2;
             eventsString = new String[numberOfOutputs]; 
             text = new ArrayList<int[]>(numberOfOutputs);
             name = new String[numberOfOutputs];
-            processWundergroundJsonFile(example, args[0]);            
+            Properties prop = new Properties();
+            try
+            {
+                prop.load(getClass().getResourceAsStream("wunderground.properties"));
+                // construct url
+//                String apiKey = prop.getProperty("api.key");
+//                String apiUrl = prop.getProperty("api.url");
+//                String apiQueryUrl = prop.getProperty("api.queryUrl");
+//                String url = apiUrl + apiKey + apiQueryUrl + query;
+//                processWundergroundJsonFile(url, args[0]);
+                // query is a string
+                processWundergroundJsonFile(Utils.readFileAsString(query), args[0]);
+                
+                
+            }
+            catch(IOException ioe)
+            {
+                LogInfo.error(ioe);
+            }            
         }
     }
 
@@ -66,12 +89,12 @@ public class JsonWrapper
         return name;
     }
 
-    private boolean processWundergroundJsonFile(String example, String system)
-    {
-        ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
+    private boolean processWundergroundJsonFile(String exampleUrl, String system)
+    {        
         try 
         {
-            HourlyForecastWunder forecast = mapper.readValue(example, HourlyForecastWunder.class);
+//            HourlyForecastWunder forecast = mapper.readValue(new URL(exampleUrl), HourlyForecastWunder.class);
+            HourlyForecastWunder forecast = mapper.readValue(exampleUrl, HourlyForecastWunder.class);
             forecast.setSystem(system.equals("metric") ? MetricSystem.metric : MetricSystem.english);
             List<Prediction> predictions = forecast.getPredictions();
             // we are going to grab 2 12-hour forecasts in total 

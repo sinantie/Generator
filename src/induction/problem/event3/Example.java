@@ -4,6 +4,7 @@ import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.AExample;
+import induction.problem.event3.json.JsonResult;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -115,6 +116,13 @@ public class Example implements AExample<Widget>
             out += trueWidget.performance + "\n";
         return out;
 //        return out + "\n\n" + widgetToNiceFullString(widget);
+    }
+    
+    JsonResult genWidgetToJson(int i, GenWidget widget)
+    {
+        
+        return new JsonResult(i, name, Utils.deTokenize(genPrediction(widget)), genWidgetToSemantics(widget), 
+                              trueWidget != null ? trueWidget.performance : "");
     }
 
     String semParseWidgetToNiceFullString(GenWidget widget)
