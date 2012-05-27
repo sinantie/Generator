@@ -3,6 +3,7 @@ package induction.problem.event3.json;
 import fig.basic.LogInfo;
 import induction.problem.event3.json.HourlyForecastWunder.Prediction;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,10 @@ public class PercyForecast
             skyCover.add(hour, p.getSkyCover());            
             precipPotential.add(hour, p.getChanceOfPrecipitation());            
             thunderChance.add(hour, p.getCondition());
+            rainChance.add(hour, p.getCondition());
+            snowChance.add(hour, p.getCondition());
+            freezingRainChance.add(hour, p.getCondition());
+            sleetChance.add(hour, p.getCondition());
             
         }
         StringBuilder str = new StringBuilder();
@@ -158,7 +163,7 @@ public class PercyForecast
                     new Event(10, precipPotential, new Field("time", PERIOD_ALL_NIGHT), 
                                    new Field("min", precipPotential.getMin(PERIOD_ALL_NIGHT)),
                                    new Field("mean", precipPotential.getMean(PERIOD_ALL_NIGHT)),
-                                   new Field("max", precipPotential.getMax(PERIOD_ALL_NIGHT)))               
+                                   new Field("max", precipPotential.getMax(PERIOD_ALL_NIGHT)))
                   ).append("\n");
         // thunderChance
         for(int i = 0; i < ALL_DAY_PERIODS.length; i++)
@@ -166,7 +171,39 @@ public class PercyForecast
                         new Event(11+i, thunderChance, new Field("time", ALL_DAY_PERIODS[i]), 
                                        new Field("mode", thunderChance.getMode(ALL_DAY_PERIODS[i], dictionary), dictionary)) :
                         new Event(11+i, thunderChance, new Field("time", ALL_NIGHT_PERIODS[i]), 
-                                       new Field("mode", thunderChance.getMode(ALL_NIGHT_PERIODS[i], dictionary), dictionary))                
+                                       new Field("mode", thunderChance.getMode(ALL_NIGHT_PERIODS[i], dictionary), dictionary))
+                      ).append("\n");
+        // rainChance
+        for(int i = 0; i < ALL_DAY_PERIODS.length; i++)
+            str.append(period == PeriodOfDay.day ? 
+                        new Event(16+i, rainChance, new Field("time", ALL_DAY_PERIODS[i]), 
+                                       new Field("mode", rainChance.getMode(ALL_DAY_PERIODS[i], dictionary), dictionary)) :
+                        new Event(16+i, rainChance, new Field("time", ALL_NIGHT_PERIODS[i]), 
+                                       new Field("mode", rainChance.getMode(ALL_NIGHT_PERIODS[i], dictionary), dictionary))
+                      ).append("\n");
+        // snowChance
+        for(int i = 0; i < ALL_DAY_PERIODS.length; i++)
+            str.append(period == PeriodOfDay.day ? 
+                        new Event(21+i, snowChance, new Field("time", ALL_DAY_PERIODS[i]), 
+                                       new Field("mode", snowChance.getMode(ALL_DAY_PERIODS[i], dictionary), dictionary)) :
+                        new Event(21+i, snowChance, new Field("time", ALL_NIGHT_PERIODS[i]), 
+                                       new Field("mode", snowChance.getMode(ALL_NIGHT_PERIODS[i], dictionary), dictionary))
+                      ).append("\n");
+        // freezingRainChance
+        for(int i = 0; i < ALL_DAY_PERIODS.length; i++)
+            str.append(period == PeriodOfDay.day ? 
+                        new Event(26+i, freezingRainChance, new Field("time", ALL_DAY_PERIODS[i]), 
+                                       new Field("mode", freezingRainChance.getMode(ALL_DAY_PERIODS[i], dictionary), dictionary)) :
+                        new Event(26+i, freezingRainChance, new Field("time", ALL_NIGHT_PERIODS[i]), 
+                                       new Field("mode", freezingRainChance.getMode(ALL_NIGHT_PERIODS[i], dictionary), dictionary))
+                      ).append("\n");
+        // sleetChance
+        for(int i = 0; i < ALL_DAY_PERIODS.length; i++)
+            str.append(period == PeriodOfDay.day ? 
+                        new Event(31+i, sleetChance, new Field("time", ALL_DAY_PERIODS[i]), 
+                                       new Field("mode", sleetChance.getMode(ALL_DAY_PERIODS[i], dictionary), dictionary)) :
+                        new Event(31+i, sleetChance, new Field("time", ALL_NIGHT_PERIODS[i]), 
+                                       new Field("mode", sleetChance.getMode(ALL_NIGHT_PERIODS[i], dictionary), dictionary))
                       ).append("\n");
        
         forecastEvents = str.toString();
@@ -228,11 +265,11 @@ public class PercyForecast
             int v = findMin ? Integer.MAX_VALUE : Integer.MIN_VALUE;
             for(Map.Entry<Integer, T> entry : hourlyValues.entrySet())
             {
-                Integer key = entry.getKey();
-                Integer value = (Integer)entry.getValue();
+                Integer key = entry.getKey();                
                 if(interval.begin < interval.end && (key >= interval.begin && key <= interval.end) ||
                    interval.begin > interval.end && (key >= interval.begin || key <= interval.end))
                 {
+                    Integer value = (Integer)entry.getValue();
                     if(findMin && value < v || !findMin && value > v)
                         v = value;                        
                 }
@@ -246,30 +283,47 @@ public class PercyForecast
             
             for(Map.Entry<Integer, T> entry : hourlyValues.entrySet())
             {
-                Integer key = entry.getKey();
-                Integer value = (Integer)entry.getValue();
+                Integer key = entry.getKey();                
                 if(interval.begin < interval.end && (key >= interval.begin && key <= interval.end) ||
                    interval.begin > interval.end && (key >= interval.begin || key <= interval.end))
-                {
-                    total += value;                        
+                {                   
+                    total += (Integer)entry.getValue();
                 }
             } // for
             int res = Math.round(total / (float)hourlyValues.size());
             return res < - 999 ? 0 : res; // Null or N/A numbers
         }
         
+        /**
+         * Find mode of the given distribution of values. In case of a dictionary
+         * search for particular terms for the specified eventType.
+         * @param interval
+         * @param dictionary
+         * @return 
+         */
         public T getMode(Interval interval, Properties dictionary)
         {            
             Map<T, Integer> hist = new HashMap<T, Integer>();
+            List dictValues = dictionary == null ? null : Arrays.asList(dictionary.getProperty(type).split(","));
             for(Map.Entry<Integer, T> entry : hourlyValues.entrySet())
             {
-                Integer key = entry.getKey();
-                T value = entry.getValue();
+                Integer key = entry.getKey();                
                 if(interval.begin < interval.end && (key >= interval.begin && key <= interval.end) ||
                    interval.begin > interval.end && (key >= interval.begin || key <= interval.end))
                 {
-                    Integer i = hist.get(value);
-                    hist.put(value, i == null ? 1 : i + 1);
+                    T origValue = entry.getValue();
+                    if(dictionary == null)
+                    {
+                        Integer i = hist.get(origValue);
+                        hist.put(origValue, i == null ? 1 : i + 1);
+                    }
+                    else
+                    {
+                        // works only for string values
+                        String targetValue = dictValues.contains((String)origValue) ? (String)origValue : "--";
+                        Integer i = hist.get(targetValue);
+                        hist.put((T)targetValue, i == null ? 1 : i + 1);
+                    }
                 }
             }
             // assume a single mode
