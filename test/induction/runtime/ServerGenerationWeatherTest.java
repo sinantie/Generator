@@ -28,7 +28,7 @@ public class ServerGenerationWeatherTest
 {
     LearnOptions lopts;
     String name;
-    Event3Model model;    
+    Event3Model model;
     
     public ServerGenerationWeatherTest() {
     }
@@ -99,14 +99,9 @@ public class ServerGenerationWeatherTest
     @Test
     public void testRun()
     {
-        try
-        {
-            String example = Utils.readFileAsString("../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california_2.json");
-            String in = model.processExamplesJson(JsonFormat.wunderground, example, lopts, "english");
-            System.out.println(in);
-        }
-        catch(IOException ioe){
-            ioe.printStackTrace();
-        }
+        String exampleUrl = "../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california_2.json";
+        String in = model.processExamplesJson(JsonFormat.wunderground, exampleUrl, lopts, "english");
+        System.out.println(in);
+
     }
 }

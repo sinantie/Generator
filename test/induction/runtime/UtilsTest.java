@@ -96,6 +96,13 @@ public class UtilsTest {
          String pred = "min[5_v1] mode-bucket-0-20-2[10-20_v] max[7_v1]";
          String tr = "min[5_v1] max[7_v1]";
          assertEquals(new Float(Utils.computeWER(pred, tr)), new Float(0.5));
+     }      
+     
+     @Test
+     public void detokeniseTest()
+     {
+         String input = "mostly sunny , cloudy , with a high near 64 . west wind between 19 and 20 mph .";
+         System.out.println(Utils.deTokenize(input));
      }                                   
 
 }
