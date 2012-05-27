@@ -68,12 +68,12 @@ public class ServerGenerationWeatherTest
                     + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType VALUES "
                     + "-lengthPredictionStartIndex 2 " // IMPORTANT!!!
-                    + "-numAsSymbol "
+                    + "-numAsSymbol ";
 //                    + "-useDependencies "
-                    + "-interpolationFactor 0.5 "
+//                    + "-interpolationFactor 0.5 "
 //                    + "-posAtSurfaceLevel "                    
-                    + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
-                    + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz"; 
+//                    + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
+//                    + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz"; 
 //                 + "-oracleReranker";
 //                    + "-omitEmptyEvents";
 //                    + "-useGoldStandardOnly";
@@ -102,7 +102,7 @@ public class ServerGenerationWeatherTest
         try
         {
             String example = Utils.readFileAsString("../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california_2.json");
-            String in = model.processExamplesJson(JsonFormat.wunderground, example, lopts);
+            String in = model.processExamplesJson(JsonFormat.wunderground, example, lopts, "english");
             System.out.println(in);
         }
         catch(IOException ioe){
