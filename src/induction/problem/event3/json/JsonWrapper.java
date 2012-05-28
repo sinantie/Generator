@@ -47,13 +47,13 @@ public class JsonWrapper
             {
                 prop.load(getClass().getResourceAsStream("wunderground.properties"));
                 // construct url
-//                String apiKey = prop.getProperty("api.key");
-//                String apiUrl = prop.getProperty("api.url");
-//                String apiQueryUrl = prop.getProperty("api.queryUrl");
-//                String url = apiUrl + apiKey + apiQueryUrl + query;
-//                processWundergroundJsonFile(url, args[0]);
+                String apiKey = prop.getProperty("api.key");
+                String apiUrl = prop.getProperty("api.url");
+                String apiQueryUrl = prop.getProperty("api.queryUrl");
+                String url = apiUrl + apiKey + apiQueryUrl + query;
+                processWundergroundJsonFile(url, args[0]);
                 // query is a string
-                processWundergroundJsonFile(Utils.readFileAsString(query), args[0]);
+//                processWundergroundJsonFile(Utils.readFileAsString(query), args[0]);
                 
                 
             }
@@ -93,8 +93,8 @@ public class JsonWrapper
     {        
         try 
         {
-//            HourlyForecastWunder forecast = mapper.readValue(new URL(exampleUrl), HourlyForecastWunder.class);
-            HourlyForecastWunder forecast = mapper.readValue(exampleUrl, HourlyForecastWunder.class);
+            HourlyForecastWunder forecast = mapper.readValue(new URL(exampleUrl), HourlyForecastWunder.class);
+//            HourlyForecastWunder forecast = mapper.readValue(exampleUrl, HourlyForecastWunder.class);
             forecast.setSystem(system.equals("metric") ? MetricSystem.metric : MetricSystem.english);
             List<Prediction> predictions = forecast.getPredictions();
             // we are going to grab 2 12-hour forecasts in total 
@@ -120,7 +120,7 @@ public class JsonWrapper
             {
                 // night period
                 int nightBeginIndex = 0;
-                int nightEndIndex = PercyForecast.NIGHT_END - currentHour;
+                int nightEndIndex = (currentHour < PercyForecast.DAY_BEGIN ? PercyForecast.NIGHT_END_ALT : PercyForecast.NIGHT_END) - currentHour;
                 forecasts[0] = new PercyForecast(predictions.subList(nightBeginIndex, nightEndIndex + 1), PercyForecast.PeriodOfDay.night, forecast.system);
                 name[0] = dayName + " Night";
                 // day period

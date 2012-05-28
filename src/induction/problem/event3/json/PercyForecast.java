@@ -20,7 +20,8 @@ public class PercyForecast
     public static int DAY_BEGIN = 6, 
                       DAY_END = 21, 
                       NIGHT_BEGIN = 17,
-                      NIGHT_END = 30;
+                      NIGHT_END = 30,
+                      NIGHT_END_ALT = 6;
     private final Interval PERIOD_ALL_DAY = new Interval(6, 21),
                                  PERIOD_D_EARLY_MORNING = new Interval(6, 9),
                                  PERIOD_D_MORNING = new Interval(6, 13),
