@@ -5,6 +5,7 @@ import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.JsonFormat;
+import induction.Utils;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class MultiServer
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
 //                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
                     + "-ngramWrapper srilm "
-                    + "-allowConsecutiveEvents "
+//                    + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
                     + "-allowNoneEvent "
 //                    + "-conditionNoneEvent "
@@ -72,6 +73,7 @@ public class MultiServer
         lopts = opts.stage1;
         opts.alignmentModel = lopts.alignmentModel;
         name = "stage1";     
+        Utils.logs("\nFinished loading. Generator running in server mode using " + opts.numThreads + " threads");
     }
 
     public static LearnOptions getLopts()
@@ -112,14 +114,15 @@ public class MultiServer
         int port = 4444;
         
         if(args.length > 1)
-        {
-            String f = args[0];            
-            if(f.equals("wundergound"))
+        {            
+            String f = args[0].trim();
+            if(f.equals("wunderground"))
                 format = JsonFormat.wunderground;
             else
                 error("Only 'wunderground' format is supported at the moment");
-            port = Integer.valueOf(args[1]);
+            port = Integer.valueOf(args[1]);            
         }
+        System.out.println("Listening on port: "+port);
         MultiServer ms = new MultiServer(format, port);
         ms.execute();
     }

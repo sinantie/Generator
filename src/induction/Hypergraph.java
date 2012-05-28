@@ -1331,7 +1331,7 @@ public class Hypergraph<Widget> {
             }catch(Exception e){System.out.println("error here "+dest.get(i));}
             d = (Derivation) dest.get(i).derivations.get(mask[i]);
             if(d.eventTypeSet != null)
-            {                
+            {
                 if (d.eventTypeSet.contains(currentEventType))
                 {
                     return true;

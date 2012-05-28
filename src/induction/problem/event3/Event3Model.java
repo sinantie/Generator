@@ -1203,14 +1203,16 @@ public abstract class Event3Model extends WordModel
         APerformance performance = newPerformance();
         FullStatFig complexity = new FullStatFig();
         Collection<JsonBatchEM> list = new ArrayList(examplesList.size());
+//        List<JsonResult> results = Collections.synchronizedList(new ArrayList<JsonResult>());
+        JsonResult[] results = new JsonResult[examplesList.size()];
         for(int i = 0; i < examplesList.size(); i++)
         {
-            list.add(new JsonBatchEM(i, examplesList.get(i), null, lopts.initTemperature, 
+            list.add(new JsonBatchEM(i, results, examplesList.get(i), null, lopts.initTemperature, 
                     lopts, 0, complexity, performance));
-        }               
-        List<JsonResult> results = Utils.parallelForeachWithResults(opts.numThreads, list);
+        }                       
+        Utils.parallelForeach(opts.numThreads, list);
         // return results in correct order        
-        Collections.sort(results);
+//        Collections.sort(results);
         String out = "";
         try
         {
@@ -1226,10 +1228,12 @@ public abstract class Event3Model extends WordModel
     protected class JsonBatchEM extends BatchEM
     {
         final APerformance performance;
-        public JsonBatchEM(int i, AExample ex, AParams counts, double temperature,
+        final JsonResult[] results;
+        public JsonBatchEM(int i, JsonResult[] results, AExample ex, AParams counts, double temperature,
                 LearnOptions lopts, int iter, FullStatFig complexity, APerformance performance)
         {
             super(i, ex, counts, temperature, lopts, iter, complexity);
+            this.results = results;
             this.performance = performance;
         }
 
@@ -1241,7 +1245,12 @@ public abstract class Event3Model extends WordModel
             {
                 performance.add(ex, inferState.bestWidget);
             }
-            return widgetToJson(i, ex, inferState.bestWidget);
+            synchronized(results)
+            {
+                results[i] = widgetToJson(i, ex, inferState.bestWidget);
+            }
+            return null;
+//            return widgetToJson(i, ex, inferState.bestWidget);
         }                
     }  
     
