@@ -57,7 +57,7 @@ public class ServerGenerationWeatherTest
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
 //                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
                     + "-ngramWrapper srilm "
-                    + "-allowConsecutiveEvents "
+//                    + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
                     + "-allowNoneEvent "
 //                    + "-conditionNoneEvent "
@@ -99,7 +99,7 @@ public class ServerGenerationWeatherTest
     @Test
     public void testRun()
     {
-        String exampleUrl = "../../Dropbox/Documents/EDI/Reports/Generator/wunderground/hourly_california_2.json";
+        String exampleUrl = "../../Dropbox/Documents/EDI/Reports/Generator/wunderground/heidelberg.json";
         String in = model.processExamplesJson(JsonFormat.wunderground, exampleUrl, lopts, "english");
         System.out.println(in);
 
