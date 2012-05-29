@@ -477,7 +477,7 @@ public abstract class Event3Model extends WordModel
                 // Set up event type
                 EventType currentEventType = null;
                 int id = -1;
-                if (eventTypeIndex == eventTypesBuffer.size()) // New event type
+                if (eventTypeIndex >= eventTypesBuffer.size()) // New event type (CAREFUL, changed from == to >=)
                 {
                     // parse fields
                     fields = new ArrayList<Field>(tokens.length);
@@ -1178,9 +1178,10 @@ public abstract class Event3Model extends WordModel
             }
             catch(Exception e) 
             {
-                Utils.log("Error in reading events!"); 
+                Utils.log("Error in reading events!");                 
                 LogInfo.error(e);
-                return JsonWrapper.ERROR_EVENTS;
+                e.printStackTrace();
+                return encodeToJson(new JsonResult[] {JsonWrapper.ERROR_EVENTS});
             }
             // set text length
             int textLength = opts.averageTextLength;
@@ -1213,19 +1214,23 @@ public abstract class Event3Model extends WordModel
         Utils.parallelForeach(opts.numThreads, list);
         // return results in correct order        
 //        Collections.sort(results);
-        String out = "";
-        try
-        {
-            out = JsonWrapper.mapper.writeValueAsString(results);
-        }
-        catch(Exception ioe)
-        {
-            out = JsonWrapper.ERROR_EXPORT_JSON;
-        }
+        String out = encodeToJson(results);        
         Utils.logs("Finished generating " + queryLink);
         return out;
     }
-       
+    
+    private String encodeToJson(JsonResult[] results)
+    {
+        try
+        {
+            return JsonWrapper.mapper.writeValueAsString(results);
+        }
+        catch(Exception ioe)
+        {
+            return JsonWrapper.ERROR_EXPORT_JSON.toString();
+        }
+    }
+    
     protected class JsonBatchEM extends BatchEM
     {
         final APerformance performance;

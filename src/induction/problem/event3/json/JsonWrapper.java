@@ -13,6 +13,7 @@ import induction.problem.event3.json.HourlyForecastWunder.Prediction;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,21 +23,23 @@ import java.util.Properties;
  */
 public class JsonWrapper
 {
-    public static final String ERROR_EVENTS = "<div id=\"alert\">Error reading events!</div>";
-    public static final String ERROR_EXPORT_JSON = "<div id=\"alert\">Error exporting json!</div>";
+    public static final JsonResult ERROR_EVENTS = new JsonResult("Error", "Error reading events!");
+    public static final JsonResult ERROR_EXPORT_JSON = new JsonResult("Error", "Error exporting json!");
     public static enum MetricSystem {metric, english};    
     private Indexer<String> wordIndexer;
+    private final Indexer<String> days = new Indexer();
     private String[] name;
     private String[] eventsString;
     private List<int[]> text;
     private int numberOfOutputs;    
     public static ObjectMapper mapper = new ObjectMapper(); // can reuse, share globally
-    
+    private boolean processUrl = true;
     public JsonWrapper(String query, JsonFormat jsonFormat, Indexer<String> wordIndexer, String... args)
     {
         this.wordIndexer = wordIndexer;
         if(jsonFormat == JsonFormat.wunderground)
         {
+            days.add("Monday");days.add("Tuesday");days.add("Wednesday");days.add("Thursday");days.add("Friday");days.add("Saturday");days.add("Sunday");
             // 2 12-hour forecasts            
             numberOfOutputs = 2;
             eventsString = new String[numberOfOutputs]; 
@@ -47,13 +50,20 @@ public class JsonWrapper
             {
                 prop.load(getClass().getResourceAsStream("wunderground.properties"));
                 // construct url
-                String apiKey = prop.getProperty("api.key");
-                String apiUrl = prop.getProperty("api.url");
-                String apiQueryUrl = prop.getProperty("api.queryUrl");
-                String url = apiUrl + apiKey + apiQueryUrl + query;
-                processWundergroundJsonFile(url, args[0]);
-                // query is a string
-//                processWundergroundJsonFile(Utils.readFileAsString(query), args[0]);
+                if(query.contains("/q/"))
+                {
+                    processUrl = true;
+                    String apiKey = prop.getProperty("api.key");
+                    String apiUrl = prop.getProperty("api.url");
+                    String apiQueryUrl = prop.getProperty("api.queryUrl");
+                    String url = apiUrl + apiKey + apiQueryUrl + query;                
+                    processWundergroundJsonFile(url, args[0]);
+                }
+                else // query is a string                                
+                {
+                    processUrl = false;
+                    processWundergroundJsonFile(Utils.readFileAsString(query), args[0]);
+                }
                 
                 
             }
@@ -93,8 +103,11 @@ public class JsonWrapper
     {        
         try 
         {
-            HourlyForecastWunder forecast = mapper.readValue(new URL(exampleUrl), HourlyForecastWunder.class);
-//            HourlyForecastWunder forecast = mapper.readValue(exampleUrl, HourlyForecastWunder.class);
+            HourlyForecastWunder forecast;
+            if(processUrl)
+                forecast = mapper.readValue(new URL(exampleUrl), HourlyForecastWunder.class);
+            else
+                forecast = mapper.readValue(exampleUrl, HourlyForecastWunder.class);
             forecast.setSystem(system.equals("metric") ? MetricSystem.metric : MetricSystem.english);
             List<Prediction> predictions = forecast.getPredictions();
             // we are going to grab 2 12-hour forecasts in total 
@@ -127,7 +140,8 @@ public class JsonWrapper
                 int dayBeginIndex = nightEndIndex;
                 int dayEndIndex =dayBeginIndex + (PercyForecast.DAY_END - PercyForecast.DAY_BEGIN);
                 forecasts[1] = new PercyForecast(predictions.subList(dayBeginIndex, dayEndIndex + 1), PercyForecast.PeriodOfDay.day, forecast.system);
-                name[1] = dayName;
+                // roll dayName
+                name[1] = days.getObject((days.getIndex(dayName) + 1) % 7);
             }
             // copy event strings
             for(int i = 0; i < forecasts.length; i++)

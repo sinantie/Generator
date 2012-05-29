@@ -19,6 +19,11 @@ public class JsonResult implements Comparable<JsonResult>
         this.performance = performance;
     }
 
+    public JsonResult(String title, String text)
+    {
+        this(0, title, text, "", "");
+    }
+    
     public int getIndex()
     {
         return index;
@@ -74,4 +79,10 @@ public class JsonResult implements Comparable<JsonResult>
     {
         return this.index - o.index;
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("[{\"title\":%s\"\", \"text\":\"%s\"}]", title, text);
+    }        
 }
