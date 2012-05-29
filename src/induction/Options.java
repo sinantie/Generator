@@ -176,6 +176,10 @@ public class Options {
 //  @Option(gloss="JSON format, indicating origin of corpus (e.g. wunderground.com)") public JsonFormat jsonFormat;
   @Option(gloss="don't save parameter files (for tests only)") public boolean dontOutputParams = false;  
   @Option(gloss="Write output examples in their original order (thread-safe)") public boolean forceOutputOrder = false;
+
+  // Server mode
+  @Option(gloss="Input domain to process") public JsonFormat jsonFormat = JsonFormat.wunderground;
+  @Option(gloss="Port number the server listens on") public int port = 4444;
   
   // Learning
 //  @Option public InitType initType = InitType.random;

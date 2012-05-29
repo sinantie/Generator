@@ -4,7 +4,6 @@ import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
-import induction.Options.JsonFormat;
 import induction.Utils;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
@@ -19,53 +18,19 @@ public class MultiServer
 {
     static LearnOptions lopts;
     String name;
-    Event3Model model;    
-    JsonFormat format;
-    int port;
+    Event3Model model;
+    Options opts;
     
-    public MultiServer(JsonFormat format, int port)
+    public MultiServer(String[] args)
     {
-        this.format = format;
-        this.port = port;
-        setUp();
+        setUp(args);
     }
     
-    private void setUp() 
+    private void setUp(String[] args) 
     {
-         String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
-                    + "-inputFileExt events "
-                    + "-stagedParamsFile "
-                    + "results/output/weatherGov/alignments/"
-                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
-//                    + "pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz "
-                    + "-disallowConsecutiveRepeatFields"
-                    + " -kBest 20 "
-                    + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
-//                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
-                    + "-ngramWrapper srilm "
-//                    + "-allowConsecutiveEvents "
-                    + "-reorderType eventType "
-                    + "-allowNoneEvent "
-//                    + "-conditionNoneEvent "
-                    + "-maxPhraseLength 5 "
-                    + "-binariseAtWordLevel "
-                    + "-ngramSize 3 "
-                    + "-numAsSymbol "
-                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
-                    + "-lengthPredictionFeatureType VALUES "
-                    + "-lengthPredictionStartIndex 2 " // IMPORTANT!!!
-                    + "-numAsSymbol ";
-//                    + "-useDependencies "
-//                    + "-interpolationFactor 0.5 "
-//                    + "-posAtSurfaceLevel "                    
-//                    + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
-//                    + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz"; 
-//                 + "-oracleReranker";
-//                    + "-omitEmptyEvents";
-//                    + "-useGoldStandardOnly";
         /*initialisation procedure from Generation class*/
-        Options opts = new Options();
-        Execution.init(args.split(" "), new Object[] {opts}); // parse input params
+        opts = new Options();
+        Execution.init(args, new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");   
         model.getWordIndexer().add("(boundary)"); // from readExamples
@@ -73,7 +38,8 @@ public class MultiServer
         lopts = opts.stage1;
         opts.alignmentModel = lopts.alignmentModel;
         name = "stage1";     
-        Utils.logs("\nFinished loading. Generator running in server mode using " + opts.numThreads + " threads");
+        Utils.logs("\nFinished loading. Generator running in server mode using "
+                + "%s threads and listening on port %s", opts.numThreads, opts.port);
     }
 
     public static LearnOptions getLopts()
@@ -87,15 +53,15 @@ public class MultiServer
         boolean listening = true;        
             
         try {
-            serverSocket = new ServerSocket(port);
+            serverSocket = new ServerSocket(opts.port);
         }
         catch (IOException e) {
-            error("Could not listen on port: " + port);
+            error("Could not listen on port: " + opts.port);
             
         }
         try {
             while (listening)             
-                new MultiServerThread(model, format, serverSocket.accept()).start();            
+                new MultiServerThread(model, opts.jsonFormat, serverSocket.accept()).start();            
         }
         catch(IOException ioe) {
             message("Could not establish connection!");
@@ -108,22 +74,8 @@ public class MultiServer
         }
     }
     public static void main(String[] args) throws IOException
-    {
-        // default to wunderground protocol
-        JsonFormat format = JsonFormat.wunderground;
-        int port = 4444;
-        
-        if(args.length > 1)
-        {            
-            String f = args[0].trim();
-            if(f.equals("wunderground"))
-                format = JsonFormat.wunderground;
-            else
-                error("Only 'wunderground' format is supported at the moment");
-            port = Integer.valueOf(args[1]);            
-        }
-        System.out.println("Listening on port: "+port);
-        MultiServer ms = new MultiServer(format, port);
+    {        
+        MultiServer ms = new MultiServer(args);
         ms.execute();
     }
     

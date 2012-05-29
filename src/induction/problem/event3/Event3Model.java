@@ -1222,6 +1222,7 @@ public abstract class Event3Model extends WordModel
         {
             out = JsonWrapper.ERROR_EXPORT_JSON;
         }
+        Utils.logs("Finished generating " + queryLink);
         return out;
     }
        
