@@ -43,6 +43,8 @@ public class MultiServerThread extends Thread
             Protocol p;
             switch(format)
             {
+                case lowjet : 
+                    p = new LowJetProtocol(model, client); break;
                 case wunderground : default : 
                     p = new WundergroundProtocol(model, client); break;
             }                        

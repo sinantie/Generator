@@ -72,6 +72,10 @@ public class JsonWrapper
                 LogInfo.error(ioe);
             }            
         }
+        else if(jsonFormat == JsonFormat.lowjet)
+        {
+            // TO-DO
+        }
     }
 
     public String[] getEventsString()

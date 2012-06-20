@@ -1,5 +1,6 @@
 package induction.runtime.server;
 
+import fig.basic.SysInfoUtils;
 import induction.Options.JsonFormat;
 import induction.problem.event3.Event3Model;
 
@@ -28,7 +29,7 @@ public class WundergroundProtocol implements Protocol
         String[] in = input.split("@"); // in[0] = system, in[1] = link     
         String system = in[0];
         String link = in[1];
-        MultiServer.message("Client " + client + " requested " + link + " in the " + system + " system");
+        MultiServer.message(SysInfoUtils.getCurrentDateStr() + ": Client " + client + " requested " + link + " in the " + system + " system");
         String output = model.processExamplesJson(JsonFormat.wunderground, link, MultiServer.getLopts(), system);
         return output;
     }

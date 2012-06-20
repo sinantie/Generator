@@ -11,7 +11,7 @@ public class Options {
   public enum AlignmentModel { m1, m2, hmm };
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
-  public enum JsonFormat {wunderground};
+  public enum JsonFormat {wunderground,lowjet};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();
