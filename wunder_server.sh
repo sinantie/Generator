@@ -28,7 +28,10 @@ dist/stanford-postagger-2010-05-26.jar \
 -lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model \
 -lengthPredictionFeatureType VALUES \
 -lengthPredictionStartIndex 2 \
--numAsSymbol
+-numAsSymbol \
+-excludedEventTypes gust
+#-allowConsecutiveEvents \
+
 #-allowConsecutiveEvents
 #-conditionNoneEvent
 
