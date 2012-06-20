@@ -12,7 +12,6 @@ dist/stanford-postagger-2010-05-26.jar \
 -jsonFormat ${format} \
 -port ${port} \
 -modelType generate \
--testInputLists test/testWeatherGovEvents \
 -inputFileExt events \
 -stagedParamsFile ${stagedParamsFile} \
 -disallowConsecutiveRepeatFields \
