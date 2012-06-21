@@ -29,7 +29,6 @@ dist/stanford-postagger-2010-05-26.jar \
 -maxPhraseLength 5 \
 -binariseAtWordLevel \
 -ngramSize 3 \
--numAsSymbol \
 -lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model \
 -lengthPredictionFeatureType COUNTS \
 -lengthPredictionStartIndex 2 \
