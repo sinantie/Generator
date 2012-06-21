@@ -19,8 +19,7 @@ public class EventType<T>
 {
 
     String type;
-    Map<Integer, T> hourlyValues;
-    Field[] fields;
+    Map<Integer, T> hourlyValues;    
 
     public EventType(String type)
     {

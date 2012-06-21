@@ -173,17 +173,11 @@ public class JsonWrapper
     {        
         try 
         {
-            AtisLowJet booking = mapper.readValue(example, AtisLowJet.class);            
-//            List<Record> records = booking.getRecords();
-            // we are going to grab 2 12-hour forecasts in total 
-            Object atisBooking = null;//new PercyForecast(predictions.subList(dayBeginIndex, dayEndIndex + 1), PercyForecast.PeriodOfDay.day, forecast.system);
-            name[0] = "Output";                
-
-        // copy event strings            
-            eventsString[0] = ((PercyForecast)atisBooking).getForecastEvents();
-//            System.out.println(((PercyForecast)forecasts[0]).getForecastEvents());
-//            System.out.println("----------");
-//            System.out.println(((PercyForecast)forecasts[1]).getForecastEvents());
+            PercyAtis booking = new PercyAtis(mapper.readValue(example, AtisLowJet.class));
+            name[0] = "Output";
+           // copy event strings            
+            eventsString[0] = booking.getAtisEvents();
+            System.out.println(eventsString[0]);
             return true;
         }
         
