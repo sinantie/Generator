@@ -52,7 +52,7 @@ public class GenerationAtisTest
                     + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
 //                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
 //                    + "-ngramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.model.arpa "
-                    + "-ngramWrapper kylm "
+                    + "-ngramWrapper srilm "
                     + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
                     + "-maxPhraseLength 5 "
