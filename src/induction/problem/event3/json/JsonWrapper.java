@@ -13,7 +13,6 @@ import induction.problem.event3.json.HourlyForecastWunder.Prediction;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -74,7 +73,11 @@ public class JsonWrapper
         }
         else if(jsonFormat == JsonFormat.lowjet)
         {
-            // TO-DO
+            numberOfOutputs = 1;
+            eventsString = new String[numberOfOutputs]; 
+            text = new ArrayList<int[]>(numberOfOutputs);
+            name = new String[numberOfOutputs];            
+            processLowJetJsonFile(query);
         }
     }
 
@@ -150,6 +153,34 @@ public class JsonWrapper
             // copy event strings
             for(int i = 0; i < forecasts.length; i++)
                 eventsString[i] = ((PercyForecast)forecasts[i]).getForecastEvents();
+//            System.out.println(((PercyForecast)forecasts[0]).getForecastEvents());
+//            System.out.println("----------");
+//            System.out.println(((PercyForecast)forecasts[1]).getForecastEvents());
+            return true;
+        }
+        
+        catch (Exception ex) 
+        {
+            LogInfo.error(ex);
+            ex.printStackTrace();
+        }               
+        return false;
+        // process text if it exists
+//        text[i] = wordIndexer.getIndex(word);
+    }
+    
+    private boolean processLowJetJsonFile(String example)
+    {        
+        try 
+        {
+            AtisLowJet booking = mapper.readValue(example, AtisLowJet.class);            
+//            List<Record> records = booking.getRecords();
+            // we are going to grab 2 12-hour forecasts in total 
+            Object atisBooking = null;//new PercyForecast(predictions.subList(dayBeginIndex, dayEndIndex + 1), PercyForecast.PeriodOfDay.day, forecast.system);
+            name[0] = "Output";                
+
+        // copy event strings            
+            eventsString[0] = ((PercyForecast)atisBooking).getForecastEvents();
 //            System.out.println(((PercyForecast)forecasts[0]).getForecastEvents());
 //            System.out.println("----------");
 //            System.out.println(((PercyForecast)forecasts[1]).getForecastEvents());

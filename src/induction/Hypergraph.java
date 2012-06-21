@@ -1732,7 +1732,7 @@ public class Hypergraph<Widget> {
 
          // choose intermediate non-terminal nodes
           widget = (Widget)derivation.edge.info.choose(widget);
-    //          System.out.println(derivation.edge);
+//              System.out.println(derivation.edge + " " + derivation.head);
     //          if(setPosterior) derivation.edge.info.setPosterior(1.0);
           if(calculateLogVZ)
               logWeight += derivation.weight.toLogDouble();
