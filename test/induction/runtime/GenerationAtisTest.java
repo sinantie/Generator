@@ -39,7 +39,7 @@ public class GenerationAtisTest
     public void setUp() 
     {
          String args = "-modelType generate "
-                    + "-testInputLists test/testAtisExamples2 "
+                    + "-testInputLists test/testAtisExamples "
 //                    + "-testInputLists data/atis/test/atis-test.txt "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
