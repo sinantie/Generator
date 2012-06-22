@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
@@ -823,6 +824,19 @@ public class Utils
             else
                 str.append(current);
             str.append(" ");
+        }
+        return str.toString().trim();
+    }
+    
+    public static String applyDictionary(String input, Properties dictionary)
+    {
+        if (dictionary.isEmpty())
+            return input;
+        StringBuilder str = new StringBuilder();
+        for(String token : input.split(" "))
+        {
+            str.append(dictionary.containsKey(token) ? dictionary.getProperty(token) : token).append(" ");
+                
         }
         return str.toString().trim();
     }

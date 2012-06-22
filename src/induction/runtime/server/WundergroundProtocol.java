@@ -30,7 +30,7 @@ public class WundergroundProtocol implements Protocol
         String system = in[0];
         String link = in[1];
         MultiServer.message(SysInfoUtils.getCurrentDateStr() + ": Client " + client + " requested " + link + " in the " + system + " system");
-        String output = model.processExamplesJson(JsonFormat.wunderground, link, MultiServer.getLopts(), system);
+        String output = model.processExamplesJson(JsonFormat.wunderground, link, MultiServer.getLopts(), "", system);
         return output;
     }
 }

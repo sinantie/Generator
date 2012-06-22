@@ -29,6 +29,7 @@ import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
+import induction.problem.event3.json.AtisLowJet;
 import induction.problem.event3.json.JsonResult;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
@@ -37,12 +38,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A model of events and their text summaries (ACL 2009).
@@ -971,7 +972,10 @@ public abstract class Event3Model extends WordModel
             eventTypesBuffer.toArray(eventTypes);
         }
         // if InitType == staged ignore eventTypesBuffer, everything is already loaded
-        eventTypesBuffer.clear();
+        
+        // NOTE commented out, as it interfered with readExamples() being called many times
+        // and not just once, in the case of corpora with variable number of records (e.g. ATIS)
+        //eventTypesBuffer.clear();
         eventTypeAllowedOnTrack = new HashSet[C];
 
         if(opts.modelUnkWord)
@@ -1156,7 +1160,8 @@ public abstract class Event3Model extends WordModel
      * @param queryLink
      * @return 
      */
-    public String processExamplesJson(JsonFormat format, String queryLink, LearnOptions lopts, String... args)
+    public String processExamplesJson(JsonFormat format, 
+            String queryLink, LearnOptions lopts, String... args)
     {
         // convert json to events
         JsonWrapper wrapper = new JsonWrapper(queryLink, format, testSetWordIndexer, args);
@@ -1203,13 +1208,26 @@ public abstract class Event3Model extends WordModel
         // generate text !
         APerformance performance = newPerformance();
         FullStatFig complexity = new FullStatFig();
-        Collection<JsonBatchEM> list = new ArrayList(examplesList.size());
+        Collection<JsonExampleProcessor> list = new ArrayList(examplesList.size());
 //        List<JsonResult> results = Collections.synchronizedList(new ArrayList<JsonResult>());
-        JsonResult[] results = new JsonResult[examplesList.size()];
+        // get dictionary that may contain translation of terms
+        Properties dictionary = new Properties();
+        if(args.length > 0 && args[0].endsWith("properties"))
+        {
+            try
+            {
+                dictionary.load(wrapper.getClass().getResourceAsStream(args[0]));
+            }
+            catch(IOException ioe)
+            {
+                LogInfo.error(ioe);
+            }
+        }
+        JsonResult[] results = new JsonResult[examplesList.size()];        
         for(int i = 0; i < examplesList.size(); i++)
         {
-            list.add(new JsonBatchEM(i, results, examplesList.get(i), null, lopts.initTemperature, 
-                    lopts, 0, complexity, performance));
+            list.add(addExampleJson(i, results, examplesList.get(i), null, lopts.initTemperature, 
+                                    lopts, 0, complexity, performance, dictionary));
         }                       
         Utils.parallelForeach(opts.numThreads, list);
         // return results in correct order        
@@ -1217,7 +1235,7 @@ public abstract class Event3Model extends WordModel
         String out = encodeToJson(results);        
         Utils.logs("Finished generating " + queryLink);
         return out;
-    }
+    }        
     
     private String encodeToJson(JsonResult[] results)
     {
@@ -1231,16 +1249,27 @@ public abstract class Event3Model extends WordModel
         }
     }
     
-    protected class JsonBatchEM extends BatchEM
+    protected JsonExampleProcessor addExampleJson(int i, JsonResult[] results, AExample ex, 
+                AParams counts, double temperature, LearnOptions lopts, int iter, 
+                FullStatFig complexity, APerformance performance, Properties dictionary)
     {
-        final APerformance performance;
-        final JsonResult[] results;
-        public JsonBatchEM(int i, JsonResult[] results, AExample ex, AParams counts, double temperature,
-                LearnOptions lopts, int iter, FullStatFig complexity, APerformance performance)
+        return new JsonExampleProcessor(i, results, ex, counts, temperature, 
+                                        lopts, iter, complexity, performance, dictionary);
+    }
+    
+    protected class JsonExampleProcessor extends BatchEM
+    {
+        protected final APerformance performance;
+        protected final JsonResult[] results;      
+        protected final Properties dictionary;
+        public JsonExampleProcessor(int i, JsonResult[] results, AExample ex, 
+                AParams counts, double temperature, LearnOptions lopts, int iter, 
+                FullStatFig complexity, APerformance performance, Properties dictionary)
         {
             super(i, ex, counts, temperature, lopts, iter, complexity);
             this.results = results;
-            this.performance = performance;
+            this.performance = performance;            
+            this.dictionary = dictionary;
         }
 
         @Override
@@ -1253,16 +1282,16 @@ public abstract class Event3Model extends WordModel
             }
             synchronized(results)
             {
-                results[i] = widgetToJson(i, ex, inferState.bestWidget);
+                results[i] = widgetToJson(i, ex, inferState.bestWidget, dictionary);
             }
             return null;
 //            return widgetToJson(i, ex, inferState.bestWidget);
         }                
     }  
     
-    protected JsonResult widgetToJson(int i, AExample aex, AWidget widget)
+    protected JsonResult widgetToJson(int i, AExample aex, AWidget widget, Properties dictionary)
     {
-        return ((Example)aex).genWidgetToJson(i, (GenWidget)widget);
+        return ((Example)aex).genWidgetToJson(i, (GenWidget)widget, dictionary);
     }
     
 }

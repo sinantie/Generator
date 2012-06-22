@@ -56,12 +56,12 @@ public class JsonWrapper
                     String apiUrl = prop.getProperty("api.url");
                     String apiQueryUrl = prop.getProperty("api.queryUrl");
                     String url = apiUrl + apiKey + apiQueryUrl + query;                
-                    processWundergroundJsonFile(url, args[0]);
+                    processWundergroundJsonFile(url, args[1]);
                 }
                 else // query is a string                                
                 {
                     processUrl = false;
-                    processWundergroundJsonFile(Utils.readFileAsString(query), args[0]);
+                    processWundergroundJsonFile(Utils.readFileAsString(query), args[1]);
                 }
                 
                 

@@ -59,7 +59,7 @@ import java.util.Map;
  * a) using the original generative baseline inferState
  * b) by computing w.f(e) at each edge:
  * w.f(e) = 
- *      pecreptron_weight * 1 (omitted, since it is equivalent to the count of 
+ *      perceptron_weight * 1 (omitted, since it is equivalent to the count of 
  *          the alignment inferState rule, which is always included in f(e)) + 
  *      ... (other features) + 
  *      logP(baseline)

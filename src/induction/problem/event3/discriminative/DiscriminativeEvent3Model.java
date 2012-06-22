@@ -36,6 +36,7 @@ import induction.problem.event3.discriminative.optimizer.GradientBasedOptimizer;
 import induction.problem.event3.discriminative.params.DiscriminativeParams;
 import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.GenerationPerformance;
+import induction.problem.event3.json.JsonResult;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 
 /**
@@ -811,7 +813,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         return modelFeatures;
     }
     
-    protected AInferState createInferState(Example ex, double stepSize,
+    public AInferState createInferState(Example ex, double stepSize,
             LearnOptions lopts, int iter, boolean calculateOracle)
     {
         InferSpec ispec = new InferSpec(1, !lopts.hardUpdate, true, lopts.hardUpdate,
@@ -934,6 +936,55 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                         LogInfo.end_track();
                     }
             }            
+            return null;
+        }
+    }
+    
+    protected JsonExampleProcessor addExampleJson(int i, JsonResult[] results, AExample ex, 
+                AParams counts, double temperature, LearnOptions lopts, int iter, 
+                FullStatFig complexity, APerformance performance, Properties dictionary)
+    {
+        return new JsonDiscriminativeExampleProcessor(i, results, ex, counts, temperature, lopts, iter, complexity, performance, dictionary);
+    }
+    
+    protected class JsonDiscriminativeExampleProcessor extends JsonExampleProcessor 
+    {
+        public JsonDiscriminativeExampleProcessor(int i, JsonResult[] results, AExample ex, 
+                AParams counts, double temperature, LearnOptions lopts, int iter, 
+                FullStatFig complexity, APerformance performance, Properties dictionary)
+        {
+            super(i, results, ex, counts, temperature, lopts, iter, complexity, performance, dictionary);
+        }
+        
+        @Override
+        public JsonResult call() throws Exception
+        {
+            boolean calculateOracle = false;
+            // create an inference state model
+            DiscriminativeInferState inferState = 
+                    (DiscriminativeInferState) createInferState(
+                    (Example)ex, 1, lopts, iter, calculateOracle);            
+            // create hypergraph - precompute local features on the fly
+            inferState.setCalculateOracle(calculateOracle);       
+            try{
+            inferState.createHypergraph();
+            inferState.setFeatures(modelFeatures);
+            inferState.doInference();
+            }
+            catch(Exception e)
+            {
+                System.out.println("Error in example: " + ex.getName());
+                e.printStackTrace();
+            }            
+            
+            synchronized(performance)
+            {
+                performance.add(ex, inferState.bestWidget);
+            }
+            synchronized(results)
+            {
+                results[i] = widgetToJson(i, ex, inferState.bestWidget, dictionary);
+            }
             return null;
         }
     }

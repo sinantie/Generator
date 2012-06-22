@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeSet;
 
 /**
@@ -118,10 +119,11 @@ public class Example implements AExample<Widget>
 //        return out + "\n\n" + widgetToNiceFullString(widget);
     }
     
-    JsonResult genWidgetToJson(int i, GenWidget widget)
+    JsonResult genWidgetToJson(int i, GenWidget widget, Properties dictionary)
     {
         
-        return new JsonResult(i, name, Utils.deTokenize(genPrediction(widget)), genWidgetToSemantics(widget), 
+        return new JsonResult(i, name, Utils.deTokenize(Utils.applyDictionary(genPrediction(widget), dictionary)), 
+                              genWidgetToSemantics(widget), 
                               trueWidget != null ? trueWidget.performance : "");
     }
 

@@ -25,7 +25,7 @@ public class LowJetProtocol implements Protocol
     public String processInput(String input)
     {
         MultiServer.message(SysInfoUtils.getCurrentDateStr() + ": Client " + client + " made a request");
-        String output = model.processExamplesJson(JsonFormat.lowjet, input, MultiServer.getLopts());
+        String output = model.processExamplesJson(JsonFormat.lowjet, input, MultiServer.getLopts(), "lowjet.properties");
         return output;
     }
 }
