@@ -46,13 +46,11 @@ public class JsonWrapperTest
 
     @Test
     public void testLowJetJson()
-    {
-        String trueExample = ".id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:atlanta	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--\n"+
-                             ".id:1	.type:search	@of:flight	@typed:max	@what:fare\n"+
-                             ".id:2	.type:search	@of:departure_time	@typed:argmin	@what:flight";
-        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"round_trip\",\"from\":\"atlanta\",\"stop\":\"--\",\"to\":\"boston\"},\"search\":[{\"of\":\"flight\",\"typed\":\"max\",\"what\":\"fare\"},{\"of\":\"departure_time\",\"typed\":\"argmin\",\"what\":\"flight\"}]}";
-//        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"round_trip\",\"from\":\"atlanta\",\"stop\":\"--\",\"to\":\"boston\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}]}";
+    {        
+//        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"round_trip\",\"from\":\"atlanta\",\"stop\":\"--\",\"to\":\"boston\"},\"search\":[{\"of\":\"flight\",\"typed\":\"max\",\"what\":\"fare\"},{\"of\":\"departure_time\",\"typed\":\"argmin\",\"what\":\"flight\"}]}";
+//        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"--\",\"from\":\"--\",\"stop\":\"--\",\"to\":\" --\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}],\"dates\":[{\"depArRet\":\"departure\",\"dayNumber\":\"--\",\"day\":\"--\",\"month\":\"july\",\"when\":\"--\"},{\"depArRet\":\"arrival\",\"dayNumber\":\"17\",\"day\":\"--\",\"month\":\"--\",\"when\":\"--\"}]}";
+        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"--\",\"from\":\"--\",\"stop\":\"--\",\"to\":\" --\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}],\"dates\":[]}";
         JsonWrapper wrapper = new JsonWrapper(example, JsonFormat.lowjet, new Indexer<String>());
-        assertEquals(trueExample, wrapper.getEventsString()[0]);
+        System.out.println(wrapper.getEventsString()[0]);
     }
 }
