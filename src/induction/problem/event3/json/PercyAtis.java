@@ -17,8 +17,9 @@ public class PercyAtis
                       search = new EventType<String>("search"),
                       dayNumber = new EventType<String>("day_number"),
                       day = new EventType<String>("day"),
-                      month = new EventType<String>("month");
-    private Properties dictionary;
+                      month = new EventType<String>("month"),
+                      when = new EventType<String>("when");
+//    private Properties dictionary;
     private String atisEvents;
     
     public PercyAtis(AtisLowJet booking)
