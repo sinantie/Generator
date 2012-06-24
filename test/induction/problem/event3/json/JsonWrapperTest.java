@@ -48,8 +48,8 @@ public class JsonWrapperTest
     public void testLowJetJson()
     {        
 //        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"round_trip\",\"from\":\"atlanta\",\"stop\":\"--\",\"to\":\"boston\"},\"search\":[{\"of\":\"flight\",\"typed\":\"max\",\"what\":\"fare\"},{\"of\":\"departure_time\",\"typed\":\"argmin\",\"what\":\"flight\"}]}";
-//        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"--\",\"from\":\"--\",\"stop\":\"--\",\"to\":\" --\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}],\"dates\":[{\"depArRet\":\"departure\",\"dayNumber\":\"--\",\"day\":\"--\",\"month\":\"july\",\"when\":\"--\"},{\"depArRet\":\"arrival\",\"dayNumber\":\"17\",\"day\":\"--\",\"month\":\"--\",\"when\":\"--\"}]}";
-        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"--\",\"from\":\"--\",\"stop\":\"--\",\"to\":\" --\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}],\"dates\":[]}";
+        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"--\",\"from\":\"--\",\"stop\":\"--\",\"to\":\" --\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}],\"dates\":[{\"depArRet\":\"departure\",\"dayNumber\":\"--\",\"day\":\"--\",\"month\":\"july\",\"when\":\"--\"},{\"depArRet\":\"arrival\",\"dayNumber\":\"17\",\"day\":\"--\",\"month\":\"--\",\"when\":\"--\"}]}";
+//        String example = "{\"flight\":{\"class_type\":\"--\",\"direction\":\"--\",\"from\":\"--\",\"stop\":\"--\",\"to\":\" --\"},\"search\":[{\"of\":\"--\",\"typed\":\"lambda\",\"what\":\"flight\"}],\"dates\":[]}";
         JsonWrapper wrapper = new JsonWrapper(example, JsonFormat.lowjet, new Indexer<String>());
         System.out.println(wrapper.getEventsString()[0]);
     }
