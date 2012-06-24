@@ -91,7 +91,7 @@ public class PercyAtis
                                  )
                       ).append("\n");
         if(!d.getWhen().equals("--"))
-            str.append(new Event(id++, month, new Field("dep_ar", depArRet), 
+            str.append(new Event(id++, when, new Field("dep_ar", depArRet), 
                                        new Field("when", d.getWhen())
                                  )
                       ).append("\n");
