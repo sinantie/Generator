@@ -177,7 +177,7 @@ public class JsonWrapper
             name[0] = "Output";
            // copy event strings            
             eventsString[0] = booking.getAtisEvents();
-            System.out.println(eventsString[0]);
+//            System.out.println(eventsString[0]);
             return true;
         }
         
