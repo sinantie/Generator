@@ -7,6 +7,7 @@ import induction.Options.InitType;
 import induction.Utils;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import java.io.IOException;
 import java.net.ServerSocket;
 
@@ -31,7 +32,8 @@ public class MultiServer
         /*initialisation procedure from Generation class*/
         opts = new Options();
         Execution.init(args, new Object[] {opts}); // parse input params
-        model = new GenerativeEvent3Model(opts);
+//        model = new GenerativeEvent3Model(opts);
+        model = new DiscriminativeEvent3Model(opts);        
         model.init(InitType.staged, opts.initRandom, "");   
         model.getWordIndexer().add("(boundary)"); // from readExamples
         opts.outputIterFreq = opts.stage1.numIters;
