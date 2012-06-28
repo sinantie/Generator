@@ -32,8 +32,8 @@ public class MultiServer
         /*initialisation procedure from Generation class*/
         opts = new Options();
         Execution.init(args, new Object[] {opts}); // parse input params
-//        model = new GenerativeEvent3Model(opts);
-        model = new DiscriminativeEvent3Model(opts);        
+        model = new GenerativeEvent3Model(opts);
+//        model = new DiscriminativeEvent3Model(opts);        
         model.init(InitType.staged, opts.initRandom, "");   
         model.getWordIndexer().add("(boundary)"); // from readExamples
         opts.outputIterFreq = opts.stage1.numIters;

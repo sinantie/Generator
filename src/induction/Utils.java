@@ -845,4 +845,52 @@ public class Utils
     {
         return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
+    
+    public static List[] partitionList(List list, int folds)
+    {
+        List[] partitions = new List[folds];
+        int partitionSize = list.size() / folds, index;
+        for(int i = 0; i < folds; i++)
+        {
+            index = i * partitionSize;
+            partitions[i] = list.subList(index,
+                    i < folds - 1 ? index + partitionSize : list.size());
+        } // for
+        return partitions;
+    }
+    
+    public static void writePartitions(List[] partitions, int folds, String destPath, String prefixName)
+    {
+        for(int i = 0; i < folds; i++)
+        {
+            String trainFile = String.format("%s/%sFold%dPathsTrain", destPath, prefixName, i+1);
+            List<List> subs = new ArrayList<List>(folds-1);
+            for(int j = 0; j < folds; j++)
+            {
+                if(i !=j)
+                    subs.add(partitions[j]);
+            }
+            writePaths(trainFile, subs);
+            String evalFile = String.format("%s/%sFold%dPathsEval", destPath, prefixName, i+1);
+            subs.clear();subs.add(partitions[i]);
+            writePaths(evalFile, subs);
+        }
+    }
+    
+    public static void writePaths(String filename, List<List> lists)
+    {
+        try
+        {
+            PrintWriter out = IOUtils.openOut(filename);
+            for(List list : lists)
+            {
+                IOUtils.printLines(out, list);
+            }
+            out.close();
+        }
+        catch(IOException ioe)
+        {
+            System.out.println(ioe.getMessage());
+        }
+    }
 }
