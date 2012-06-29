@@ -227,13 +227,17 @@ public class LMPreprocessor
 //        String source = "gaborLists/trainListPathsGabor";
 //        String target = "weatherGovLM/gabor-srilm-abs-3-gram.model.tagged.sentences";
         //ROBOCUP
-        String source = "robocupLists/robocupAllPathsTrain";
-        String target = "robocupLM/robocup-all-3-gram.tagged.sentences";
+//        String source = "robocupLists/robocupAllPathsTrain";
+//        String target = "robocupLM/robocup-all-3-gram.tagged.sentences";
+        //WINHELP
+        int i = 7;
+        String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
+        String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";
         String fileExtension = "text.tagged";
         boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;
         LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
-                                                SourceType.LIST, fileExtension, 
+                                                SourceType.FILE, fileExtension, 
                                                 replaceNumbers, toLowerCase, stripWords);
         lmp.execute(tokeniseOnly);
     }
