@@ -105,4 +105,17 @@ public class UtilsTest {
          System.out.println(Utils.deTokenize(input));
      }                                   
 
+     @Test
+     public void bitShiftTest()
+     {
+         int hash = 0;
+         int[] pos = {2, 3, 5, 4, 0, 1};
+         double[] val = {0.5, -0.3, 0.8, -0.2, -0.3, 0.9};
+         for(int i = 0; i < pos.length; i++)
+         {
+             if(val[pos[i]] >= 0)
+                 hash = hash | (1 << pos[i]);
+         }
+         System.out.println(hash);
+     }
 }
