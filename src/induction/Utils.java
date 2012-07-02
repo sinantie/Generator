@@ -855,7 +855,7 @@ public class Utils
             index = i * partitionSize;
             partitions[i] = list.subList(index,
                     i < folds - 1 ? index + partitionSize : list.size());
-        } // for
+        } // for        
         return partitions;
     }
     

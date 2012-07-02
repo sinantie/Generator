@@ -57,11 +57,13 @@ public class PartitionDataset
 
     public static void main(String[] args)
     {
-        String outputPath = "../Gabor/generation/data/atis/";
+        // 509 505 506 515 508 510 505 484 500 471
+        int fold = 10;
+        String outputPath = "../Gabor/generation/data/winHelp.sents/fold"+fold+"/";
 //        String inputFilename = "../atis/lambda/percy/train/atis5000.sents.full";
-        String inputFilename = "../atis/lambda/percy/test/atis-test.txt";
+        String inputFilename = "data/branavan/winHelpHLA/folds/winHelpFold"+fold+"PathsEval";
 //        int startIndex = 0; // the initial number to use as filename
-        int startIndex = 4962; // the initial number to use as filename
+        int startIndex = 471; // the initial number to use as filename
         PartitionDataset pd = new PartitionDataset(outputPath, inputFilename, startIndex);
         pd.execute();
     }
