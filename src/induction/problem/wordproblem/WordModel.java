@@ -47,10 +47,10 @@ public abstract class WordModel extends AModel
             return "";
     }
     
-    public static String wordToString(Indexer<String> wordIndexer, int w, boolean stripPosTag)
+    public static String wordToString(Indexer<String> wordIndexer, int w, boolean stripPosTag, String tagDelimiter)
     {
         if(w > -1)
-            return stripPosTag ? Utils.stripTag(wordIndexer.getObject(w)) : 
+            return stripPosTag ? Utils.stripTag(wordIndexer.getObject(w), tagDelimiter) : 
                     wordIndexer.getObject(w);
         else
             return "";

@@ -66,7 +66,7 @@ public class InferState extends Event3InferState
         for(int w = 0; w < nums.length; w++)
         {
             String word = ((Event3Model)model).wordToString(words[w]);            
-            nums[w] = Constants.str2num(opts.posAtSurfaceLevel ? Utils.stripTag(word)  : word);
+            nums[w] = Constants.str2num(opts.posAtSurfaceLevel ? Utils.stripTag(word, opts.tagDelimiter)  : word);
         }
         labels = ex.getLabels();
 

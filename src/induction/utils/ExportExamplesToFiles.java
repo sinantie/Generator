@@ -10,12 +10,12 @@ import induction.problem.event3.generative.GenerativeEvent3Model;
  *
  * @author konstas
  */
-public class PartitionDataset
+public class ExportExamplesToFiles
 {
     private String outputPath, inputFilename;
     private int startIndex;
 
-    public PartitionDataset(String outputPath, String inputFilename, int startIndex)
+    public ExportExamplesToFiles(String outputPath, String inputFilename, int startIndex)
     {
         this.outputPath = outputPath;
         this.inputFilename = inputFilename;
@@ -64,7 +64,7 @@ public class PartitionDataset
         String inputFilename = "data/branavan/winHelpHLA/folds/winHelpFold"+fold+"PathsEval";
 //        int startIndex = 0; // the initial number to use as filename
         int startIndex = 471; // the initial number to use as filename
-        PartitionDataset pd = new PartitionDataset(outputPath, inputFilename, startIndex);
+        ExportExamplesToFiles pd = new ExportExamplesToFiles(outputPath, inputFilename, startIndex);
         pd.execute();
     }
 }

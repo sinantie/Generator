@@ -9,15 +9,15 @@ import java.util.HashMap;
  *
  * @author konstas
  */
-public class SemanticLMPreprocessor extends LMPreprocessor
+public class SemanticLMPreprocessor extends ExportExamplesToSentences
 {
     private final boolean includeEvents, includeFieldNames, noise, useCorrectPredictionsOnly;
     public SemanticLMPreprocessor(String targetFile, String sourceDir, int ngramSize,
                           SourceType type, String fileExtension, boolean includeEvents,
                           boolean includeValues, boolean noise, boolean useCorrectPredictionsOnly,
-                          boolean replaceNumbers, boolean toLowerCase)
+                          boolean replaceNumbers, boolean toLowerCase, String tagDelimiter)
     {
-        super(targetFile, sourceDir, ngramSize, type, fileExtension, replaceNumbers, toLowerCase, false);
+        super(targetFile, sourceDir, ngramSize, type, fileExtension, replaceNumbers, toLowerCase, false, tagDelimiter);
         this.includeEvents = includeEvents;
         this.includeFieldNames = includeValues;
         this.noise = noise;
@@ -148,11 +148,12 @@ public class SemanticLMPreprocessor extends LMPreprocessor
         boolean useCorrectPredictionsOnly = false;
         boolean replaceNumbers = true;
         boolean toLowerCase = true;
-        LMPreprocessor lmp = new SemanticLMPreprocessor(target, source, ngramSize,
+        String tagDelimiter = "_";
+        ExportExamplesToSentences lmp = new SemanticLMPreprocessor(target, source, ngramSize,
                                               SourceType.PATH, fileExtension, 
                                               includeEvents, includeFieldNames, noise,
                                               useCorrectPredictionsOnly, replaceNumbers,
-                                              toLowerCase);
+                                              toLowerCase, tagDelimiter);
         lmp.execute(tokeniseOnly);
     }
 }

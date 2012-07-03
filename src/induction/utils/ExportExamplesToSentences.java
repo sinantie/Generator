@@ -19,21 +19,22 @@ import opennlp.tools.tokenize.SimpleTokenizer;
  * <num>
  * @author konstas
  */
-public class LMPreprocessor
+public class ExportExamplesToSentences
 {
     String target, source, HEADER = "", fileExtension;
     int ngramSize;
     BufferedOutputStream bos;
     SimpleTokenizer tokenizer;
+    String tagDelimiter;
     
     public enum SourceType {PATH, LIST, FILE};
     SourceType type;
     boolean replaceNumbers, toLowerCase, stripWords;
 
-    public LMPreprocessor(String targetFile, String sourceDir, int ngramSize, 
+    public ExportExamplesToSentences(String targetFile, String sourceDir, int ngramSize, 
                           SourceType type, String fileExtension, 
                           boolean replaceNumbers, boolean toLowerCase,
-                          boolean stripWords)
+                          boolean stripWords, String tagDelimiter)
     {
         this.target = targetFile;
         this.source = sourceDir;
@@ -44,6 +45,7 @@ public class LMPreprocessor
         this.replaceNumbers = replaceNumbers;
         this.toLowerCase = toLowerCase;
         this.stripWords = stripWords;
+        this.tagDelimiter = tagDelimiter;
     }
 
     public void execute(boolean tokeniseOnly)
@@ -170,7 +172,7 @@ public class LMPreprocessor
         StringBuilder textOut = new StringBuilder(HEADER);
         for(String s : input.trim().split(" "))
         {
-            String word = stripWords ? Utils.stripWord(s, true) : s;            
+            String word = stripWords ? Utils.stripWord(s, true, tagDelimiter) : s;            
             textOut.append( (replaceNumbers && (word.matches("-\\p{Digit}+|" + // negative numbers
                          "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
                          (word.matches("\\p{Digit}+") && // numbers
@@ -229,16 +231,22 @@ public class LMPreprocessor
         //ROBOCUP
 //        String source = "robocupLists/robocupAllPathsTrain";
 //        String target = "robocupLM/robocup-all-3-gram.tagged.sentences";
-        //WINHELP
-        int i = 7;
-        String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
-        String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";
-        String fileExtension = "text.tagged";
+        //WINHELP        
         boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;
-        LMPreprocessor lmp = new LMPreprocessor(target, source, ngramSize, 
-                                                SourceType.FILE, fileExtension, 
-                                                replaceNumbers, toLowerCase, stripWords);
-        lmp.execute(tokeniseOnly);
+        int folds = 1;
+        for(int i = 0; i < folds; i++)    
+        {
+            String tagDelimiter = "_";
+    //        String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
+            String source = "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged";
+    //        String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";
+            String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.tagged.sentences";
+            String fileExtension = "text.tagged";            
+            ExportExamplesToSentences lmp = new ExportExamplesToSentences(target, source, ngramSize, 
+                                                    SourceType.FILE, fileExtension, 
+                                                    replaceNumbers, toLowerCase, stripWords, tagDelimiter);
+            lmp.execute(tokeniseOnly);
+        }
     }
 }

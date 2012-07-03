@@ -312,7 +312,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         {
             for(String word : wordIndexer.getObjects())
             {
-                String tag = Utils.stripWord(word, true);
+                String tag = Utils.stripWord(word, true, opts.tagDelimiter);
                 if(tag != null)
                     depsModelWordIndexer.add(tag);
             } // for
@@ -931,7 +931,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                     {
                         Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
                                  Utils.fmt(examples.size()), summary(i));
-                        LogInfo.logs(GenerationPerformance.widgetToString(wordIndexer, (GenWidget)inferState.bestWidget));
+                        LogInfo.logs(GenerationPerformance.widgetToString(wordIndexer, (GenWidget)inferState.bestWidget, opts.tagDelimiter));
                         Execution.putOutput("currExample", i);
                         LogInfo.end_track();
                     }

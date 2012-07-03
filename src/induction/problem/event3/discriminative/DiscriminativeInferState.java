@@ -296,6 +296,7 @@ public class DiscriminativeInferState extends Event3InferState
                 opts.useDependencies,
                 opts.interpolationFactor,
                 opts.posAtSurfaceLevel,
+                opts.tagDelimiter,
                 /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
                 vocabulary.getIndex("<num>"),
                 vocabulary.getIndex("ELIDED_SYMBOL"),

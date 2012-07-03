@@ -53,6 +53,7 @@ public class PosTagger
     private Map<String, String> universalMaps;       
     private Map<String, List<String>> posDictionary;
     private ExecutorService writerService;
+    private String[] writerList;
     private final int NUM_OF_THREADS = Runtime.getRuntime().availableProcessors();
 //    private final int NUM_OF_THREADS = 1;
     
@@ -73,7 +74,7 @@ public class PosTagger
             {
                 System.err.println(ioe.getMessage());
                 System.exit(1);
-            }
+            }            
         }
         writerService = Executors.newFixedThreadPool(NUM_OF_THREADS);
         this.typeOfPath = opts.typeOfPath;
@@ -108,11 +109,14 @@ public class PosTagger
     {
         try
         {
-            List<String[]> examples = null; 
+            List<Example> examples = null; 
             if(typeOfPath == TypeOfPath.list)            
                 examples = readFromList();
             else if(typeOfPath == TypeOfPath.file)                                    
+            {
                 examples = readExamplesFromSingleFile();
+                writerList = new String[examples.size()];
+            }
             else
             {
                 System.err.println("Invalid argument");
@@ -123,7 +127,12 @@ public class PosTagger
                 list.add(new Worker(i, examples.get(i)));
             Utils.parallelForeach(NUM_OF_THREADS, list);
             if(fileOutputStream != null)
+            {
+                Writer w = new Writer(fileOutputStream);
+                for(String s : writerList)
+                    w.write(s);
                 fileOutputStream.close();
+            }
             shutDownWriterService();
             // save vocabulary to disk
             if(posDictionary == null)
@@ -161,21 +170,23 @@ public class PosTagger
      * @return
      * @throws IOException 
      */
-    private List<String[]> readFromList() throws IOException
+    private List<Example> readFromList() throws IOException
     {
-        List<String[]> out = new ArrayList<String[]>();
+        List<Example> out = new ArrayList<Example>();
         BufferedReader fin = new BufferedReader(new FileReader(path));
-        String line = "";            
+        String line = "";
+        int counter = 0;
         while((line = fin.readLine()) != null)
         {
             if(!extension.equals("") && !line.endsWith(extension))
             {
-                out.add(readFile(IOUtils.stripFileExt(line) + "." + extension));
+                out.add(new Example(readFile(IOUtils.stripFileExt(line) + "." + extension), counter));
             }              
             else
             {
-                out.add(readFile(line));
-            }               
+                out.add(new Example(readFile(line), counter));
+            }
+            counter++;
         }
         fin.close();
         return out;
@@ -186,11 +197,12 @@ public class PosTagger
      * @return
      * @throws IOException 
      */
-    private List<String[]> readExamplesFromSingleFile() throws IOException
+    private List<Example> readExamplesFromSingleFile() throws IOException
     {
-        List<String[]> out = new ArrayList<String[]>();        
+        List<Example> out = new ArrayList<Example>();
         if(new File(path).exists())
         {
+            int counter = 0;
             if(typeOfInput == TypeOfInput.events)
             {
                 String key = null;
@@ -201,14 +213,14 @@ public class PosTagger
                     {
                         if(key != null) // only for the first example
                         {                      
-                            out.add(readExample(str.toString()));
+                            out.add(new Example(readExample(str.toString()), counter++));
                             str = new StringBuilder();
                         }
                         key = line;
                     } // if                   
-                    str.append(line).append("\n");
+                    str.append(line).append("\n");                    
                 }  // for           
-                out.add(readExample(str.toString())); // don't forget last example
+                out.add(new Example(readExample(str.toString()), counter)); // don't forget last example
             } // if
             else
             {
@@ -218,7 +230,7 @@ public class PosTagger
                 for(String sentence : sentences)
                 {
                     String[] ar = {("Example_" + ++i), sentence};
-                    out.add(ar);
+                    out.add(new Example(ar, counter++));
                 }
             }
         } // if        
@@ -306,7 +318,7 @@ public class PosTagger
         return map;
     }
     
-    private void parse(String[] example)
+    private void parse(Example example)
     {
         String taggedText = tag(example);
         
@@ -335,7 +347,7 @@ public class PosTagger
         
     }
 
-    private void saveToFile(String[] example, String taggedText) throws IOException
+    private void saveToFile(Example example, String taggedText) throws IOException
     {              
         if(typeOfPath == TypeOfPath.file)
         {
@@ -344,18 +356,23 @@ public class PosTagger
                 str.append(taggedText).append("\n");
             else
             {
-                for(int i = 0; i < example.length; i++)
+                for(int i = 0; i < example.body.length; i++)
                 {
                     if(i == 1)
                         str.append(taggedText).append("\n");
                     else
-                        str.append(example[i]).append("\n");
+                        str.append(example.body[i]).append("\n");
                 } // for
             } // else
-            writerService.submit(new Writer(fileOutputStream, str.toString()));
+            //writerService.submit(new Writer(fileOutputStream, str.toString()));
+            // delay writing until after all threads are done to preserve order
+            synchronized(writerList)
+            {
+                writerList[example.id] = str.toString();
+            } 
         } // if
         else        
-            writerService.submit(new Writer(example[0], taggedText));
+            writerService.submit(new Writer(example.body[0], taggedText));
         
         
 //        synchronized(fileOutputStream)
@@ -377,17 +394,17 @@ public class PosTagger
 //        }
     }
     
-    public String tag(String[] example)
+    public String tag(Example example)
     {
         String input; 
 //        if(typeOfInput == TypeOfInput.raw)
 //            input = example[0];
 //        else
-        input = example[1]; // res[0] = name, res[1] = text
+        input = example.body[1]; // res[0] = name, res[1] = text
         String taggedText;
         if(posDictionary == null) // use trained pos tagger
         {
-            taggedText = tagger.tagString(input);
+            taggedText = tagger.tagTokenizedString(input);
             if(!useUniversalTags) // only update word/tag vocabulary
                 syncVocabulary.addAll(Arrays.asList(taggedText.split("\\p{Space}")));        
             else
@@ -429,7 +446,7 @@ public class PosTagger
                                 System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
                             else
                                 System.err.println("Ambiguity in word '" + token + 
-                                        "' in example " + example[0]); 
+                                        "' in example " + example.body[0]); 
                         }
                             
                     } // if
@@ -493,9 +510,9 @@ public class PosTagger
     protected class Worker extends MyCallable
     {
         int counter;
-        String[] example;
+        Example example;
 
-        public Worker(int counter, String[] example)
+        public Worker(int counter, Example example)
         {
             this.example = example;
             this.counter = counter;
@@ -527,7 +544,12 @@ public class PosTagger
             {
                 ioe.printStackTrace();
             }
-        }        
+        }
+
+        public Writer(FileOutputStream fos)
+        {        
+            this.fos = fos;
+        }
         
         public Writer(FileOutputStream fos, String text)
         {
@@ -536,18 +558,47 @@ public class PosTagger
         }
         
         @Override
-        public Object call() throws Exception
+        public Object call()
         {
             try
-            {                 
-                fos.write(text.getBytes());
-                fos.close();
+            {
+                write(text);
             }
             catch(IOException ioe)
             {
                 ioe.printStackTrace();
             }
             return null;
-        }       
-    }        
+        }
+        
+        public void write(String[] list)
+        {
+            try
+            {
+                for(String s : list)
+                    write(s);
+            }
+            catch(IOException ioe)
+            {
+                ioe.printStackTrace();
+            }
+        }
+        
+        private void write(String text) throws IOException
+        {
+            fos.write(text.getBytes());
+        }
+    }
+    
+    protected class Example {
+        String[] body;
+        int id;
+
+        public Example(String[] body, int id)
+        {
+            this.body = body;
+            this.id = id;
+        }
+                
+    }
 }

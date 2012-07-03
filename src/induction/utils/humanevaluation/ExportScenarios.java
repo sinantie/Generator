@@ -39,7 +39,8 @@ public class ExportScenarios
     private GenerativeEvent3Model model;
     private List<Scenario> scenariosList;
     private List<String> filterFieldsList;
-
+    private String tagDelimiter;
+    
     public ExportScenarios(String propertiesPath)
     {        
         this.properties = new Properties();        
@@ -71,12 +72,12 @@ public class ExportScenarios
         this.nullifyOrder = Boolean.valueOf(properties.getProperty("nullifyOrder"));
         this.outputAllFields = Boolean.valueOf(properties.getProperty("outputAllFields"));        
         this.exportStdOut = Boolean.valueOf(properties.getProperty("exportStdOut"));
-        
+        this.tagDelimiter = properties.getProperty("tagDelimiter");
         Options opts = new Options();
         opts.useGoldStandardOnly = true;
         model = new GenerativeEvent3Model(opts);
         scenariosList = new ArrayList<Scenario>();
-        filterFieldsList = new ArrayList<String>();
+        filterFieldsList = new ArrayList<String>();        
     }        
     
     public void execute()
@@ -205,7 +206,7 @@ public class ExportScenarios
         // read all the events from the .events file
         Scenario scn = new Scenario(basename,
                                     model.readEvents(eventInput,
-                                    new HashSet(), new HashSet()));
+                                    new HashSet(), new HashSet()), tagDelimiter);
         // read the goldText-standard human events
         for(String eventLine : alignInput)
         {

@@ -51,8 +51,8 @@ public class GenerationPerformance extends AlignmentPerformance
     {
         if(trueWidget != null)
         {
-            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget, model.getOpts().posAtSurfaceLevel).toLowerCase();
-            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), (GenWidget)trueWidget).toLowerCase();
+            String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget, model.getOpts().posAtSurfaceLevel, model.getOpts().tagDelimiter).toLowerCase();
+            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), (GenWidget)trueWidget, model.getOpts().tagDelimiter).toLowerCase();
 
 //            String predModifiedStr = modifyPredStr(predStr, trueStr, (GenWidget) predWidget, (GenWidget) trueWidget);
             // Compute BLEU
@@ -136,18 +136,18 @@ public class GenerationPerformance extends AlignmentPerformance
         return subResult;
     }
 
-    public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget)
+    public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget, String tagDelimiter)
     {
-        return widgetToString(wordIndexer, widget, false);
+        return widgetToString(wordIndexer, widget, false, tagDelimiter);
     }
     
-    public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget, boolean stripPosTags)
+    public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget, boolean stripPosTags, String tagDelimiter)
     {
         StringBuilder out = new StringBuilder();
         for(int i = 0; i < widget.text.length; i++)
         {            
             out.append(widget.nums[i] > -1 ? widget.nums[i] :
-                    WordModel.wordToString(wordIndexer, widget.text[i], stripPosTags)).append(" ");
+                    WordModel.wordToString(wordIndexer, widget.text[i], stripPosTags, tagDelimiter)).append(" ");
         }
         return out.toString().trim();
     }

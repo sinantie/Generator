@@ -128,6 +128,7 @@ public class Options {
   @Option(gloss="binarise at word level (default=false)") public boolean binariseAtWordLevel = false;
   @Option(gloss="binarise at word level (default=false)") public boolean useStopNode = false;
   @Option(gloss="surface level contains pos tags (default=false)") public boolean posAtSurfaceLevel = false;
+  @Option(gloss="tag delimiter (default=/)") public String tagDelimiter = "/";
   @Option(gloss="input files are POS tagged (default=false)") public boolean inputPosTagged = false;
   @Option(gloss="use POS tagging at surface level (changes vocabulary) (default=false)") public boolean usePosTagger = false;
   @Option(gloss="use gold standard events only as input (default=false)") public boolean useGoldStandardOnly = false;

@@ -13,12 +13,12 @@ import java.util.List;
  *
  * @author konstas
  */
-public class CrossFoldPartition
+public class CrossFoldPartitionDataset
 {
     private String source, destPath, prefixName;
     private int folds;
 
-    private CrossFoldPartition(String source, String destPath, String prefixName, int folds)
+    private CrossFoldPartitionDataset(String source, String destPath, String prefixName, int folds)
     {
         this.source = source;
         this.destPath = destPath;
@@ -42,7 +42,7 @@ public class CrossFoldPartition
         String destPath = "robocupLists/randomFolds";
         String prefixName = "robocup";
         int folds = 4;
-        CrossFoldPartition cfp = new CrossFoldPartition(source, destPath, prefixName, folds);
+        CrossFoldPartitionDataset cfp = new CrossFoldPartitionDataset(source, destPath, prefixName, folds);
         cfp.execute();
     }
 }

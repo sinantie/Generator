@@ -509,7 +509,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
     {
         for(String word : wordIndexer1.getObjects())
         {
-            String tagOrWord = opts.posAtSurfaceLevel ? Utils.stripWord(word, true) : word;
+            String tagOrWord = opts.posAtSurfaceLevel ? Utils.stripWord(word, true, opts.tagDelimiter) : word;
             crossWordMap.put(wordIndexer1.getIndex(word), wordIndexer2.contains(tagOrWord) ? wordIndexer2.getIndex(tagOrWord) : null);
         }
     }

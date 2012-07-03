@@ -572,12 +572,12 @@ public class Hypergraph<Widget> {
             for(int i = 0; i < ngram.size(); i++)
             {
                 String token = vocabulary.getObject(ngram.get(i));
-                temp = Utils.stripTag(token);
+                temp = Utils.stripTag(token, tagDelimiter);
                 // ngram inferState needs to convert numbers to symbol <num>
                 // syntax parser can process numbers
-                ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel) : temp;
+                ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel, tagDelimiter) : temp;
                 if(secondaryNgramModel != null)
-                    posNgramStr[i] = Utils.stripWord(token, false);
+                    posNgramStr[i] = Utils.stripWord(token, false, tagDelimiter);
             }
 
             return secondaryNgramModel == null ? ngramModel.getProb(ngramStr) : 
@@ -617,6 +617,7 @@ public class Hypergraph<Widget> {
   public Indexer<String> vocabulary;
   public boolean numbersAsSymbol = true, allowConsecutiveEvents, oracleReranker, 
                  enableFieldFeatures, posAtSurfaceLevel;
+  private String tagDelimiter;
   private static final int UNKNOWN_EVENT = Integer.MAX_VALUE, IGNORE_REORDERING = -1;
   public Example ex;
   private Options.ModelType modelType;
@@ -641,7 +642,8 @@ public class Hypergraph<Widget> {
                                         int M, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents,
                                         boolean oracleReranker, boolean useDependencies, 
-                                        double interpolationFactor, boolean posAtSurfaceLevel, int NUM,
+                                        double interpolationFactor, boolean posAtSurfaceLevel, 
+                                        String tagDelimiter, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
   {
@@ -661,6 +663,7 @@ public class Hypergraph<Widget> {
         this.useDependencies = useDependencies;
         this.interpolationFactor = interpolationFactor;
         this.posAtSurfaceLevel = posAtSurfaceLevel;
+        this.tagDelimiter = tagDelimiter;
         /*add NUM category and ELIDED_SYMBOL to word vocabulary. Useful for the LM calculations*/
         this.NUM = NUM;
         this.ELIDED_SYMBOL = ELIDED_SYMBOL;
@@ -690,13 +693,13 @@ public class Hypergraph<Widget> {
                                         int K, Options.ReorderType reorderType,
                                         boolean allowConsecutiveEvents, 
                                         boolean useDependencies, double interpolationFactor, 
-                                        boolean posAtSurfaceLevel, int NUM,
+                                        boolean posAtSurfaceLevel, String tagDelimiter, int NUM,
                                         int ELIDED_SYMBOL, boolean numbersAsSymbol,
                                         Indexer<String> wordIndexer, Example ex, Graph graph)
     {
         setup(null, debug, modelType, allowEmptyNodes, K, null, null, 2, reorderType, 
                          allowConsecutiveEvents, false, useDependencies, interpolationFactor, 
-                         posAtSurfaceLevel, NUM, ELIDED_SYMBOL, numbersAsSymbol, wordIndexer, ex, graph);
+                         posAtSurfaceLevel, tagDelimiter, NUM, ELIDED_SYMBOL, numbersAsSymbol, wordIndexer, ex, graph);
     }
 
   // Things we're going to compute
@@ -964,7 +967,7 @@ public class Hypergraph<Widget> {
         if(oracleReranker) // Perform oracle reranking, against BLEU-4 score
         {
             BatchBleuScorer bleuScorer = new BatchBleuScorer();
-            String trueStr = GenerationPerformance.widgetToString(vocabulary, (GenWidget)ex.getTrueWidget());
+            String trueStr = GenerationPerformance.widgetToString(vocabulary, (GenWidget)ex.getTrueWidget(), tagDelimiter);
             TreeSet<DerivationWithBleu> set = new TreeSet<DerivationWithBleu>();
             for(int k = 0; k < startNodeInfo.derivations.size(); k++)
             {
@@ -1054,7 +1057,7 @@ public class Hypergraph<Widget> {
             // get the k-best derivation
             recurseKBest();
 //            chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(k), !discriminative);
-            predStr = GenerationPerformance.widgetToString(vocabulary, (GenWidget)chooser.widget);
+            predStr = GenerationPerformance.widgetToString(vocabulary, (GenWidget)chooser.widget, tagDelimiter);
             // score it
             score = bleuScorer.evaluateBleu(predStr, trueStr);
         }

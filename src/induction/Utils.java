@@ -710,42 +710,42 @@ public class Utils
         return trees;
     }
     
-    public static String stripTag(String word)
+    public static String stripTag(String word, String tagDelimiter)
     {
-        return word.equals("</s>") || !word.contains("/") ? word : word.substring(0, word.lastIndexOf("/"));
+        return word.equals("</s>") || !word.contains(tagDelimiter) ? word : word.substring(0, word.lastIndexOf(tagDelimiter));
     }
 
-    public static String[] stripTags(String[] words)
+    public static String[] stripTags(String[] words, String tagDelimiter)
     {
         String[] out = new String[words.length];
         for(int i = 0; i < out.length; i++)
-            out[i] = stripTag(words[i]);
+            out[i] = stripTag(words[i], tagDelimiter);
         return out;
     }
 
-    public static String stripTags(String sentence)
+    public static String stripTags(String sentence, String tagDelimiter)
     {
         StringBuilder str = new StringBuilder();
-        for(String s : stripTags(sentence.split(" ")))
+        for(String s : stripTags(sentence.split(" "), tagDelimiter))
         {
             str.append(s).append(" ");
         }
         return str.toString().trim();
     }
     
-    public static String stripWord(String word, boolean strict)
+    public static String stripWord(String word, boolean strict, String tagDelimiter)
     {
         if(strict)            
-            return word.equals("</s>") || !word.contains("/") ? null : word.substring(word.lastIndexOf("/") + 1);
+            return word.equals("</s>") || !word.contains(tagDelimiter) ? null : word.substring(word.lastIndexOf(tagDelimiter) + 1);
         else
-            return !word.contains("/") || word.equals("</s>") ? word : word.substring(word.lastIndexOf("/") + 1);
+            return !word.contains(tagDelimiter) || word.equals("</s>") ? word : word.substring(word.lastIndexOf(tagDelimiter) + 1);
     }
     
-    public static String[] stripWords(String[] words)
+    public static String[] stripWords(String[] words, String tagDelimiter)
     {
         String[] out = new String[words.length];
         for(int i = 0; i < out.length; i++)
-            out[i] = stripWord(words[i], false);
+            out[i] = stripWord(words[i], false, tagDelimiter);
         return out;
     }
 
@@ -774,7 +774,7 @@ public class Utils
         input = input.replaceAll("\n", "\n ");
         for(String token : input.split(" "))
         {            
-            str.append(replaceNumber(token, false)).append(" ");
+            str.append(replaceNumber(token, false, "")).append(" ");
         } // for
         return str.toString();
     }
@@ -784,10 +784,10 @@ public class Utils
      * @param input
      * @return 
      */
-    public static String replaceNumber(String input, boolean posAtSurfaceLevel)
+    public static String replaceNumber(String input, boolean posAtSurfaceLevel, String tagDelimiter)
     {
         if(posAtSurfaceLevel)
-            input = stripTag(input);
+            input = stripTag(input, tagDelimiter);
         return input.matches("-\\p{Digit}+|" + // negative numbers
                                  "-?\\p{Digit}+\\.\\p{Digit}+|" + // decimals
                                  "\\p{Digit}+[^(am|pm)]|\\p{Digit}+") // numbers, but not hours!

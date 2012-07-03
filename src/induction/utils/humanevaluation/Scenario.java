@@ -16,7 +16,7 @@ public class Scenario
 {
     private Map<Integer, Event> events;
     private Set<String> eventTypeNames;
-    private String path;
+    private String path, tagDelimiter;
     /**
      * a map of systems and their corresponding text
      */
@@ -27,17 +27,18 @@ public class Scenario
      */
     private HashMap<String, TreeSet<Integer>> systemsEventMap;
     
-    private Scenario(String path)
+    private Scenario(String path, String tagDelimiter)
     {
         this.path = path;
+        this.tagDelimiter = tagDelimiter;
         this.systemsTextMap = new HashMap<String, String>();
         this.systemsEventMap = new HashMap<String, TreeSet<Integer>>();            
         this.eventTypeNames = new HashSet<String>();
     }
 
-    public Scenario(String path, Map<Integer, Event> events)
+    public Scenario(String path, Map<Integer, Event> events, String tagDelimiter)
     {
-        this(path);
+        this(path, tagDelimiter);
         this.events = events;
         for(Event event : events.values())
         {
@@ -66,7 +67,7 @@ public class Scenario
 
     public void setText(String system, String text)
     {        
-        systemsTextMap.put(system, Utils.stripTags(text));
+        systemsTextMap.put(system, Utils.stripTags(text, tagDelimiter));
     }
 
     public String getText(String system)
