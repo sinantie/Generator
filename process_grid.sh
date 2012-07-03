@@ -15,10 +15,17 @@
 #COMMENT weights parameter
 
 #Atis
-input=results/output/atis/generation/dependencies_uniformZ_all/
-formattedString=model_3_\$param1\$-best_0.01_STOP_inter\$param2\$_condLM_hypRecomb_lmLEX_POS_predLength
-output=results/output/atis/generation/dependencies_uniformZ_all/grid.results
-crossValidate=false
+#input=results/output/atis/generation/dependencies_uniformZ_all/
+#formattedString=model_3_\$param1\$-best_0.01_STOP_inter\$param2\$_condLM_hypRecomb_lmLEX_POS_predLength
+#output=results/output/atis/generation/dependencies_uniformZ_all/grid.results
+#crossValidate=false
+#COMMENT weights parameter
+
+#WinHelp
+input=results/output/winHelp/generation/generative/no_pos/no_null
+formattedString=model_3_no_null_\$param1\$-best_inter\$param2\$_goldLength
+output=results/output/winHelp/generation/generative/no_pos/no_null/grid_no_null.results
+crossValidate=true
 #COMMENT weights parameter
 
 java -cp dist/Generator.jar induction.utils.postprocess.ProcessGridSearchFiles \

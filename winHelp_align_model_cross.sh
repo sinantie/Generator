@@ -1,25 +1,18 @@
 #!/bin/bash
 
 exec=winHelp_align_model.sh
-output_path=results/output/winHelp/alignments/model_3
+inputPath=data/branavan/winHelpHLA/folds
+outputPath=results/output/winHelp/alignments/model_3
 numIters=15
 numThreads=2
+folds=10
 
-mkdir -p $output_path
+mkdir -p $outputPath
 
-#Fold 1
-./${exec} robocupLists/robocupFold1PathsTrain \
-${output_path}/fold1 ${numIters} ${numThreads}
-
-#Fold 2
-./${exec} robocupLists/robocupFold2PathsTrain \
-${output_path}/fold2 ${numIters} ${numThreads}
-#Fold 3
-./${exec} robocupLists/robocupFold3PathsTrain \
-${output_path}/fold3 ${numIters} ${numThreads}
-#Fold 4
-./${exec} robocupLists/robocupFold4PathsTrain \
-${output_path}/fold4 ${numIters} ${numThreads}
+for (( f=1; f<=folds; f++ ))
+do
+	./${exec} ${inputPath}/winHelpFold${f}PathsTrain ${outputPath}/fold${f} ${numIters} ${numThreads}
+done
 
 #All
 #./${exec} robocupLists/robocupAllPathsTrain \

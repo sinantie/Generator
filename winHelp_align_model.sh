@@ -9,6 +9,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -create \
 -modeltype event3 \
 -inputLists ${input} \
+-examplesInSingleFile \
 -execDir ${output} \
 -Options.stage1.numIters ${numIters} \
 -inputFileExt events \
@@ -17,15 +18,17 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -disallowConsecutiveRepeatFields \
 -dontCrossPunctuation \
 -initNoise 0 \
--Options.stage1.smoothing 0.1 \
--outputFullPred \
+-Options.stage1.smoothing 0.01 \
 -fixedGenericProb 0 \
--oneEventPerExample 0,-1 \
--binariseAtWordLevel \
--allowConsecutiveEvents \
+-indepEventTypes 0,10 \
+-indepFields 0,5 \
+-newEventTypeFieldPerWord 0,5 \
+-newFieldPerWord 0,5 \
 -indepWords 0,5 \
--posAtSurfaceLevel \
--inputPosTagged \
--modelUnkWord \
 -useStopNode \
--allowNoneEvent
+-allowNoneEvent \
+-outputFullPred
+
+#-allowConsecutiveEvents \
+#-allowNoneEvent \
+#-modelUnkWord \

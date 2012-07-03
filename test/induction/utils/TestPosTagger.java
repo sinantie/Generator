@@ -32,6 +32,21 @@ public class TestPosTagger extends TestCase
 //                                 "");
 //        posTagger.execute();
 //    }
+    @Test
+    public void testWinHelpPosTagger()
+    {                      
+        String args =
+                  "-inputPath data/branavan/winHelpHLA/winHelpRL.sents.all "
+                + "-typeOfPath file "
+                + "-typeOfInput events "
+//                + "-posDictionaryPath  "
+                + "-extension text "
+                + "-forceTagger";
+        PosTaggerOptions opts = new PosTaggerOptions();
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+        posTagger = new PosTagger(opts);        
+        posTagger.execute();   
+    }
     
 //    @Test
 //    public void testWeatherGovPosTagger()
@@ -50,23 +65,23 @@ public class TestPosTagger extends TestCase
 //        posTagger.execute();   
 //    }
     
-    @Test
-    public void testRobocupPosTagger()
-    {
-        String args =
-                  "-inputPath robocupLists/robocupAllPathsTrain "
-//                  "-inputPath robocupLists/error_tagged "
-                + "-typeOfPath list "
-                + "-typeOfInput raw "
-                + "-posDictionaryPath robocupLists/robocup_vocabulary_manual "
-                + "-extension text "
-//                + "-replaceNumbers "
-                + "-forceTagger";
-        PosTaggerOptions opts = new PosTaggerOptions();
-        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
-        posTagger = new PosTagger(opts);        
-        posTagger.execute();   
-    }
+//    @Test
+//    public void testRobocupPosTagger()
+//    {
+//        String args =
+//                  "-inputPath robocupLists/robocupAllPathsTrain "
+////                  "-inputPath robocupLists/error_tagged "
+//                + "-typeOfPath list "
+//                + "-typeOfInput raw "
+//                + "-posDictionaryPath robocupLists/robocup_vocabulary_manual "
+//                + "-extension text "
+////                + "-replaceNumbers "
+//                + "-forceTagger";
+//        PosTaggerOptions opts = new PosTaggerOptions();
+//        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+//        posTagger = new PosTagger(opts);        
+//        posTagger.execute();   
+//    }
     
 //    @Test
 //    public void testDistributionOfFiles()

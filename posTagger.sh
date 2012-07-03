@@ -1,15 +1,17 @@
 #!/bin/bash
 threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor, test/testWeatherGovEvents
-input=gaborLists/trainListPathsGabor
+input=data/branavan/winHelpHLA/winHelpRL.sents.all
 memory=-Xmx500m
-posDictionary=gaborLists/trainListPathsGabor_vocabulary_manual
+#posDictionary=gaborLists/trainListPathsGabor_vocabulary_manual
+posDictionary=
 
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/stanford-postagger-2010-05-26.jar -ea induction.utils.postagger.PosTaggerExecutor \
 -inputPath ${input} \
--typeOfPath list \
--typeOfInput raw \
--extension text \
+-typeOfPath file \
+-typeOfInput events \
 -posDictionaryPath ${posDictionary} \
--forceTagger 
+-forceTagger
+#-extension text \
+#-forceTagger 
 #-replaceNumbers \
