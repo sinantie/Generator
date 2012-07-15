@@ -59,6 +59,22 @@ public class WekaWrapperTest {
                         + ".id:2	.type:when	@dep-ar:departure	@when:early";
         assertEquals((int)lengthPredictor.predict(events), 13);
     }
+    
+    @Test
+    public void testTrainWinHelpWrapper()
+    {
+        boolean serialise = false;
+        modelFilename = "data/branavan/data/branavan/winHelpHLA/lengthPrediction.counts.linear-reg.model";
+        paramsFilename = "results/output/winHelp/alignments/model_3_no_null_pos_auto/all/stage1.params.obj.gz";
+        WekaWrapper lengthPredictor = new WekaWrapper(paramsFilename, modelFilename,
+                                                      2, FeatureType.COUNTS, WekaWrapper.Mode.TRAIN);
+        lengthPredictor.train("data/atis/train/atis5000.sents.full.counts.features.csv", serialise);
+        // original text: click start , point to settings , and then click control panel (12 words)
+        String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button " 
+                        +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button "
+                        +".id:2	.type:action	@envCmd:left click 	@objName:Control Panel	@objType:Button ";
+        assertEquals((int)lengthPredictor.predict(events), 12);
+    }
 
     @Test
     public void testTrainWeatherGovWrapper()

@@ -235,13 +235,13 @@ public class ExportExamplesToSentences
         boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;
         int folds = 1;
-        for(int i = 0; i < folds; i++)    
+        for(int i = 1; i <= folds; i++)    
         {
             String tagDelimiter = "_";
-    //        String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
-            String source = "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged";
-    //        String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";
-            String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.tagged.sentences";
+//            String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
+            String source = "data/branavan/winHelpHLA/winHelpRL.sents.all";
+//            String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";
+            String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.sentences";
             String fileExtension = "text.tagged";            
             ExportExamplesToSentences lmp = new ExportExamplesToSentences(target, source, ngramSize, 
                                                     SourceType.FILE, fileExtension, 

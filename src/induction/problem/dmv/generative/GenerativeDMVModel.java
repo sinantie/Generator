@@ -326,7 +326,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         String[] tokens = opts.posAtSurfaceLevel ? sentence.split(" ") : 
                           posTagger.tagString(sentence).split(" ");
         for(String token : tokens)
-            out.add(token.substring(token.lastIndexOf("/") + 1));
+            out.add(token.substring(token.lastIndexOf(opts.tagDelimiter) + 1));
         return out;
     }
     

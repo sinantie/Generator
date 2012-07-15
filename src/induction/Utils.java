@@ -863,7 +863,7 @@ public class Utils
     {
         for(int i = 0; i < folds; i++)
         {
-            String trainFile = String.format("%s/%sFold%dPathsTrain", destPath, prefixName, i+1);
+            String trainFile = String.format("%s/%sFold%dTrain", destPath, prefixName, i+1);
             List<List> subs = new ArrayList<List>(folds-1);
             for(int j = 0; j < folds; j++)
             {
@@ -871,7 +871,7 @@ public class Utils
                     subs.add(partitions[j]);
             }
             writePaths(trainFile, subs);
-            String evalFile = String.format("%s/%sFold%dPathsEval", destPath, prefixName, i+1);
+            String evalFile = String.format("%s/%sFold%dEval", destPath, prefixName, i+1);
             subs.clear();subs.add(partitions[i]);
             writePaths(evalFile, subs);
         }

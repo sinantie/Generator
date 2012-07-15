@@ -1,0 +1,4 @@
+LM		|||	0.1	Opt	-Inf	+Inf	-1	+1
+first model	|||	0.2	Opt	-Inf	+Inf	-1	+1
+second model	|||	-0.1	Opt	-Inf	+Inf	-1	+1
+normalization = none

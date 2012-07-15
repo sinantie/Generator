@@ -41,7 +41,7 @@ public class InductionWinHelpTest
          String args = "-modelType event3 "
                  + "-Options.stage1.numIters 15 "
                  + "-inputLists "
-                 + "data/branavan/winHelpHLA/winHelpHLA.sents.all "
+                 + "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged "
 //                 + "test/testWinHelpExamples  "
                  + "-examplesInSingleFile "
                  + "-indepEventTypes 0,10 "
@@ -52,8 +52,8 @@ public class InductionWinHelpTest
                  + "-indepWords 0,5 "
                  + "-initNoise 0 "
                  + "-dontCrossPunctuation "
-//                 + "-posAtSurfaceLevel "
-//                 + "-inputPosTagged "                // IMPORTANT!
+                 + "-posAtSurfaceLevel "
+                 + "-inputPosTagged "                // IMPORTANT!
                  + "-Options.stage1.smoothing 0.01 ";
 //                 + "-modelUnkWord "
 //                 + "-Options.stage1.useVarUpdates";

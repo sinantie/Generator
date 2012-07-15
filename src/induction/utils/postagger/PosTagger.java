@@ -50,6 +50,7 @@ public class PosTagger
     private final TypeOfPath typeOfPath;
     private final TypeOfInput typeOfInput;
     private boolean useUniversalTags, replaceNumbers, verbose;
+    String tagDelimeter;
     private Map<String, String> universalMaps;       
     private Map<String, List<String>> posDictionary;
     private ExecutorService writerService;
@@ -83,6 +84,7 @@ public class PosTagger
         this.replaceNumbers = opts.replaceNumbers;
         this.extension = opts.extension;
         this.verbose = opts.verbose;
+        this.tagDelimeter = opts.tagDelimiter;
         if(this.useUniversalTags)
         {
             universalMaps = new HashMap<String, String>();
@@ -128,9 +130,9 @@ public class PosTagger
             Utils.parallelForeach(NUM_OF_THREADS, list);
             if(fileOutputStream != null)
             {
-                Writer w = new Writer(fileOutputStream);
+//                Writer w = new Writer(fileOutputStream);
                 for(String s : writerList)
-                    w.write(s);
+                    fileOutputStream.write(s.getBytes());
                 fileOutputStream.close();
             }
             shutDownWriterService();
@@ -298,10 +300,10 @@ public class PosTagger
 
     private Map<String, List<String>> readPosDictionary(String path)
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        Map<String, List<String>> map = new HashMap<String, List<String>>();        
         for(String line : Utils.readLines(path))
         {
-            int indexOfDelimeter = line.lastIndexOf("/");
+            int indexOfDelimeter = line.lastIndexOf(tagDelimeter);
             String word = line.substring(0, indexOfDelimeter);
             String tag = line.substring(indexOfDelimeter + 1);
             if(!map.containsKey(word))
@@ -338,7 +340,7 @@ public class PosTagger
                 String[] tokens = taggedText.split("\\p{Space}");
                 for(String token : tokens)
                 {
-                    int index = token.lastIndexOf("/");
+                    int index = token.lastIndexOf(tagDelimeter);
                     syncVocabulary.add(token.substring(0, index + 1) + 
                                        universalMaps.get(token.substring(index + 1)));
                 }
@@ -437,7 +439,7 @@ public class PosTagger
                     {
                         if(opts.forceTagger)
                         {
-                            taggedTextBuilder.append(tagger.tagString(input).split(" ")[i - countEmpty]).append(" ");
+                            taggedTextBuilder.append(tagger.tagTokenizedString(input).split(" ")[i - countEmpty]).append(" ");
                         }
                         else
                         {
@@ -451,7 +453,7 @@ public class PosTagger
                             
                     } // if
                     else                    
-                        taggedTextBuilder.append(String.format("%s/%s", token, tags.get(0))).append(" ");
+                        taggedTextBuilder.append(String.format("%s%s%s", token, tagDelimeter, tags.get(0))).append(" ");
                 } // if
                 else
                     countEmpty++;
@@ -464,7 +466,7 @@ public class PosTagger
     private String[] splitWordTagToken(String token)
     {
         String[] ar = new String[2];
-        int index = token.lastIndexOf("/");
+        int index = token.lastIndexOf(tagDelimeter);
         ar[0] = token.substring(0, index);
         ar[1] = token.substring(index + 1);
         return ar;
@@ -522,7 +524,7 @@ public class PosTagger
         public Object call() throws Exception
         {
             parse(example);               
-            if(counter++ % 10000 == 0)
+            if(counter++ % opts.outputExampleFreq == 0)
                 System.out.println("Processed " + counter + " examples");              
             return null;
         }
@@ -563,6 +565,7 @@ public class PosTagger
             try
             {
                 write(text);
+                fos.close();
             }
             catch(IOException ioe)
             {

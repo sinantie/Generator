@@ -61,7 +61,7 @@ public class ExportExamplesToFiles
         int fold = 10;
         String outputPath = "../Gabor/generation/data/winHelp.sents/fold"+fold+"/";
 //        String inputFilename = "../atis/lambda/percy/train/atis5000.sents.full";
-        String inputFilename = "data/branavan/winHelpHLA/folds/winHelpFold"+fold+"PathsEval";
+        String inputFilename = "data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Eval";
 //        int startIndex = 0; // the initial number to use as filename
         int startIndex = 471; // the initial number to use as filename
         ExportExamplesToFiles pd = new ExportExamplesToFiles(outputPath, inputFilename, startIndex);

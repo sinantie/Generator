@@ -27,7 +27,9 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -indepWords 0,5 \
 -useStopNode \
 -allowNoneEvent \
--outputFullPred
+-outputFullPred \
+-posAtSurfaceLevel \
+-inputPosTagged
 
 #-allowConsecutiveEvents \
 #-allowNoneEvent \

@@ -32,7 +32,11 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -averageTextLength ${averageTextLength} \
 -ngramSize 3 \
 -binariseAtWordLevel \
--useStopNode
+-useStopNode \
+-interpolationFactor ${interpolationFactor} \
+-useDependencies \
+-posAtSurfaceLevel \
+-tagDelimiter "_"
 #-allowNoneEvent
 
 #-lengthPredictionModelFile data/winHelpHLA/lengthPrediction.counts.linear-reg.model \

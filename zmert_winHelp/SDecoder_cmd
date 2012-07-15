@@ -1,0 +1,1 @@
+java SimpleDecoder SDecoder_cfg.txt src.txt nbest.out

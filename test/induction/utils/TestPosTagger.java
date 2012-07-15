@@ -36,12 +36,15 @@ public class TestPosTagger extends TestCase
     public void testWinHelpPosTagger()
     {                      
         String args =
-                  "-inputPath data/branavan/winHelpHLA/winHelpRL.sents.all "
+                  "-inputPath data/branavan/winHelpHLA/folds/winHelpFold3Train "
+//                  "-inputPath data/branavan/winHelpHLA/winHelpRL.sents.all "
                 + "-typeOfPath file "
                 + "-typeOfInput events "
-//                + "-posDictionaryPath  "
+//                + "-posDictionaryPath data/branavan/winHelpHLA/winHelpRL.sents.all.vocabulary "
+                + "-outputExampleFreq 100 "
                 + "-extension text "
-                + "-forceTagger";
+                + "-tagDelimiter _ ";
+//                + "-forceTagger";
         PosTaggerOptions opts = new PosTaggerOptions();
         Execution.init(args.split(" "), new Object[]{opts}); // parse input params
         posTagger = new PosTagger(opts);        

@@ -22,11 +22,11 @@
 #COMMENT weights parameter
 
 #WinHelp
-input=results/output/winHelp/generation/generative/no_pos/no_null
-formattedString=model_3_no_null_\$param1\$-best_inter\$param2\$_goldLength
-output=results/output/winHelp/generation/generative/no_pos/no_null/grid_no_null.results
+input=results/output/winHelp/generation/generative/pos/no_null
+formattedString=model_3_no_null_pos_auto_\$param1\$-best_inter\$param2\$_goldLength
+output=${input}/grid_no_null.results
 crossValidate=true
-#COMMENT weights parameter
+weights=509#505#506#515#508#510#505#484#500#471
 
 java -cp dist/Generator.jar induction.utils.postprocess.ProcessGridSearchFiles \
 ${input} \
