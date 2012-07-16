@@ -1,7 +1,2 @@
-cands_file=cand_database.txt
-cands_per_sen=50
-top_n=10
-
-LM 1.2
-first model 1.0
-second model 0.5
+kBest 40
+interpolationFactor 0.5

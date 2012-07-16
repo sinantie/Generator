@@ -1,1 +1,18 @@
-java SimpleDecoder SDecoder_cfg.txt src.txt nbest.out
+SDecoder_cfg.txt
+
+exec=winHelp_gen.sh
+kBest=$1
+interpolationFactor=$2
+inputLists=data/branavan/winHelpHLA/winHelpRL.sents.all.tagged
+output=results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_zmert_goldLength
+modelPath=results/output/winHelp/alignments/model_3_no_null_pos_auto
+
+./${exec} ${inputLists} \
+	${output} \
+	${modelPath}/all \
+	${dmvPath}/all \
+	winHelpLM/srilm-abs-winHelpRL-split-3-gram.model.arpa \
+	${kBest} \
+	${interpolationFactor} \
+	${numThreads} \
+	12

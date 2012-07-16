@@ -1,15 +1,15 @@
 ### Commonly used parameters
 -dir	zmert_winHelp                     # working directory (i.e. location of relevant files)
--r	ref                     # target sentences file name (in this case, file name prefix)
--rps	4                       # references per sentence
+-r	data/branavan/winHelpHLA/winHelpRL-split-3-gram_noSOS.sentences                     # target sentences file name (in this case, file name prefix)
+-rps	1                       # references per sentence
 -p	params.txt              # parameter file
 -m	BLEU 4 closest          # evaluation metric and its options
 -maxIt	15                      # maximum MERT iterations
 -ipi	20                      # number of intermediate initial points per iteration
 -cmd	./SDecoder_cmd          # file containing commands to run decoder
--decOut	nbest.out               # file prodcued by decoder
+-decOut	results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_zmert_goldLength/stage1.test.pred               # file produced by decoder
 -dcfg	SDecoder_cfg.txt        # decoder config file
--N	10                      # size of N-best list generated each iteration
+-N	1                      # size of N-best list generated each iteration
 -v	1                       # verbosity level (0-2; higher value => more verbose)
 -seed   12341234                # random number generator seed
 

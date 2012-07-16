@@ -18,10 +18,10 @@ mkdir -p $output
 for (( f=1; f<=folds; f++ ))
 do	
 	./${exec} ${inputLists}/winHelpFold${f}Eval \
-	${output}/fold${f} \
-	${modelPath}/fold${f} \
+	${output} \
+	${modelPath}/all \
 	${dmvPath}/fold${f} \
-	winHelpLM/srilm-abs-winHelpRL-split-fold${f}-3-gram.model.arpa \
+	winHelpLM/srilm-abs-winHelpRL-split-3-gram.model.arpa \
 	${kBest} \
 	${interpolationFactor} \
 	${numThreads} \
