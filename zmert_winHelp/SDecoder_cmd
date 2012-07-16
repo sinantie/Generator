@@ -1,11 +1,14 @@
 SDecoder_cfg.txt
 
-exec=winHelp_gen.sh
+exec=winHelp_gen_zmert.sh
 kBest=$1
 interpolationFactor=$2
 inputLists=data/branavan/winHelpHLA/winHelpRL.sents.all.tagged
 output=results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_zmert_goldLength
 modelPath=results/output/winHelp/alignments/model_3_no_null_pos_auto
+
+rm -fr ${output}
+mkdir -p ${output}
 
 ./${exec} ${inputLists} \
 	${output} \

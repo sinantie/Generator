@@ -119,6 +119,12 @@ public class Example implements AExample<Widget>
 //        return out + "\n\n" + widgetToNiceFullString(widget);
     }
     
+    String genWidgetToMertFullString(GenWidget widget)
+    {        
+        return String.format(" ||| %s ||| ", genPrediction(widget));
+//        return out + "\n\n" + widgetToNiceFullString(widget);
+    }
+    
     JsonResult genWidgetToJson(int i, GenWidget widget, Properties dictionary)
     {
         

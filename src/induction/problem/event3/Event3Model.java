@@ -12,6 +12,7 @@ import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import induction.Options.InputFormat;
 import induction.Options.JsonFormat;
 import induction.Options.ModelType;
 import induction.Options.NgramWrapper;
@@ -29,7 +30,6 @@ import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
-import induction.problem.event3.json.AtisLowJet;
 import induction.problem.event3.json.JsonResult;
 import induction.problem.wordproblem.WordModel;
 import java.io.File;
@@ -373,7 +373,10 @@ public abstract class Event3Model extends WordModel
         {
             if(opts.modelType == ModelType.generate || opts.modelType == ModelType.discriminativeTrain)
             {
-                return ex.genWidgetToNiceFullString((GenWidget)widget);
+                if(opts.inputFormat == InputFormat.zmert)
+                    return ex.genWidgetToMertFullString((GenWidget)widget);
+                else
+                    return ex.genWidgetToNiceFullString((GenWidget)widget);
             }
             else if(opts.modelType == ModelType.semParse)
             {

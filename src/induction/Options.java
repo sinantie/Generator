@@ -7,7 +7,7 @@ import induction.utils.ExtractFeatures;
 public class Options {
   public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, precompute, generate, discriminativeTrain, semParse, writeParams };
   public enum InitType { random, bait, supervised, uniformz, artificial, staged };
-  public enum InputFormat { raw, tag, mrg, conll, seg };
+  public enum InputFormat { raw, tag, mrg, conll, seg, zmert };
   public enum AlignmentModel { m1, m2, hmm };
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};

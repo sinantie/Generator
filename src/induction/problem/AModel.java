@@ -11,6 +11,7 @@ import induction.MyCallable;
 import induction.ngrams.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
+import induction.Options.InputFormat;
 import induction.Utils;
 import induction.WekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
@@ -508,9 +509,13 @@ public abstract class AModel
 
     protected void writeFullPredOut(PrintWriter out)
     {
+        int i = 0;
         for(String example : fullPredOutArray)
         {
-            out.println(example);
+            if(opts.inputFormat == InputFormat.zmert)
+                out.println((i++) + example + "\n");
+            else
+                out.println(example);
         }
     }
     public String summary(int i)
