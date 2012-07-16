@@ -1,21 +1,24 @@
-SDecoder_cfg.txt
+#!/bin/bash
 
+params=( `cat "SDecoder_cfg.txt" `)
 exec=winHelp_gen_zmert.sh
-kBest=$1
-interpolationFactor=$2
+kBest=${params[0]}
+interpolationFactor=${params[1]}
 inputLists=data/branavan/winHelpHLA/winHelpRL.sents.all.tagged
 output=results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_zmert_goldLength
 modelPath=results/output/winHelp/alignments/model_3_no_null_pos_auto
 
-rm -fr ${output}
-mkdir -p ${output}
+echo $kBest
+echo $interpolationFactor
+#rm -fr ${output}
+#mkdir -p ${output}
 
-./${exec} ${inputLists} \
-	${output} \
-	${modelPath}/all \
-	${dmvPath}/all \
-	winHelpLM/srilm-abs-winHelpRL-split-3-gram.model.arpa \
-	${kBest} \
-	${interpolationFactor} \
-	${numThreads} \
-	12
+#./${exec} ${inputLists} \
+#	${output} \
+#	${modelPath}/all \
+#	${dmvPath}/all \
+#	winHelpLM/srilm-abs-winHelpRL-split-3-gram.model.arpa \
+#	${kBest} \
+#	${interpolationFactor} \
+#	${numThreads} \
+#	12
