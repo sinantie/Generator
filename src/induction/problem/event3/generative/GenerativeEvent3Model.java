@@ -372,7 +372,12 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         LogInfo.end_track();
         list.clear();
 
-        if(testFullPredOut != null) testFullPredOut.close();
+        if(testFullPredOut != null) 
+        {
+            if(opts.forceOutputOrder)
+                writeFullPredOut(testFullPredOut);
+            testFullPredOut.close();
+        }
         if(testPredOut != null)
         {
             // write prediction file footer, conforming to SGML NIST standard

@@ -510,10 +510,11 @@ public abstract class AModel
     protected void writeFullPredOut(PrintWriter out)
     {
         int i = 0;
+        System.out.println("here");
         for(String example : fullPredOutArray)
         {
             if(opts.inputFormat == InputFormat.zmert)
-                out.println((i++) + example + "\n");
+                out.println(String.format("%d%s%s %s", i++, example, opts.kBest, opts.interpolationFactor));
             else
                 out.println(example);
         }

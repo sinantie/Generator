@@ -121,7 +121,7 @@ public class Example implements AExample<Widget>
     
     String genWidgetToMertFullString(GenWidget widget)
     {        
-        return String.format(" ||| %s ||| ", genPrediction(widget));
+        return String.format(" ||| %s ||| ", Utils.stripTags(genPrediction(widget), model.getOpts().tagDelimiter));
 //        return out + "\n\n" + widgetToNiceFullString(widget);
     }
     
