@@ -1,8 +1,10 @@
 package induction.utils.postprocess;
 
+import induction.utils.postprocess.ExtractGenerationMetricsOptions.TypeOfPath;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import induction.Utils;
+
 import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -39,8 +41,20 @@ public class ExtractGenerationMetrics
     {
         try
         {
-            processFile(opts.inputFile1, opts.inputFile1Type);
-            processFile(opts.inputFile2, opts.inputFile2Type);
+            if(opts.inputFile1TypeOfPath == TypeOfPath.file)
+                processFile(opts.inputFile1, opts.inputFile1Type);
+            else
+            {
+                for(String inputFile : Utils.readLines(opts.inputFile1))
+                    processFile(inputFile, opts.inputFile1Type);
+            }
+            if(opts.inputFile2TypeOfPath == TypeOfPath.file)
+                processFile(opts.inputFile2, opts.inputFile2Type);
+            else
+            {
+                for(String inputFile : Utils.readLines(opts.inputFile2))
+                    processFile(inputFile, opts.inputFile2Type);
+            }
 //            if(scores1 == null || scores2 == null)
             if(sanityCheck(opts.trimSize))
             {
@@ -78,7 +92,7 @@ public class ExtractGenerationMetrics
     {
         File f = new File(file);
         if(!f.exists())
-            throw new FileNotFoundException();
+            throw new FileNotFoundException(file + " not found!");
         parseScores(f, typeOfInput);        
     }        
 

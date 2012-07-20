@@ -18,7 +18,9 @@ public class ExtractGenerationMetricsOptions
     @Option(required=true) public String inputFile2;    
     @Option(required=true) public String outputFile;
     @Option public TypeOfInput inputFile1Type = TypeOfInput.percy;
+    @Option public TypeOfPath inputFile1TypeOfPath = TypeOfPath.file;
     @Option public TypeOfInput inputFile2Type = TypeOfInput.percy;
+    @Option public TypeOfPath inputFile2TypeOfPath = TypeOfPath.file;
     @Option(gloss="Deletes examples from either model if they don't exist in both") public boolean trimSize = false;
     @Option(gloss="Execute wilcoxon signed test using gnu octave (works on linux only)") public boolean calculateStatSig = false;
 }
