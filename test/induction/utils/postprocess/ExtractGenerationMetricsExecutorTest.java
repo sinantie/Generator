@@ -55,7 +55,9 @@ public class ExtractGenerationMetricsExecutorTest
                 + "-inputFile2 results/output/weatherGov/generation/dependencies/model_3_15-best_0.01_NO_STOP_inter1_hypRecomb_lmLEX_allowNone_NO_STOP/stage1.tst.xml "
                 + "-outputFile results/output/weatherGov/generation/stat_significance/baseline_vs_lm "
                 + "-inputFile1Type percy "
-                + "-inputFile2Type percy ";
+                + "-inputFile2Type percy "
+                + "-trimSize "
+                + "-calculateStatSig ";
         ExtractGenerationMetricsOptions opts = new ExtractGenerationMetricsOptions();
         Execution.init(args.split(" "), new Object[]{opts}); // parse input params
         egm = new ExtractGenerationMetrics(opts);
