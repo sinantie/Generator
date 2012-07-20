@@ -32,7 +32,6 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -outputExampleFreq 100  \
 -reorderType eventType \
 -maxPhraseLength 5 \
--averageTextLength ${averageTextLength} \
 -ngramSize 3 \
 -binariseAtWordLevel \
 -useStopNode \
@@ -41,6 +40,7 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -posAtSurfaceLevel \
 -tagDelimiter "_"
 
+#-averageTextLength ${averageTextLength} \
 #-allowNoneEvent
 
 #-lengthPredictionModelFile data/winHelpHLA/lengthPrediction.counts.linear-reg.model \
