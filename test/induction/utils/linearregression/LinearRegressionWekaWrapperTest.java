@@ -1,9 +1,9 @@
-package induction.runtime;
+package induction.utils.linearregression;
 
 import induction.Utils;
-import induction.LinearRegressionWekaWrapper;
+import induction.utils.linearregression.LinearRegressionWekaWrapper;
 import java.io.IOException;
-import induction.utils.ExtractLengthPredictionFeatures.FeatureType;
+import induction.utils.linearregression.ExtractLengthPredictionFeatures.FeatureType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -68,7 +68,7 @@ public class LinearRegressionWekaWrapperTest {
         paramsFilename = "results/output/winHelp/alignments/model_3_no_null_pos_auto/all/stage1.params.obj.gz";
         LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
                                                       2, FeatureType.COUNTS, LinearRegressionWekaWrapper.Mode.TRAIN);
-        lengthPredictor.train("data/atis/train/atis5000.sents.full.counts.features.csv", serialise);
+        lengthPredictor.train("data/branavan/data/branavan/winHelpHLA/winHelpRL.sents.all.counts.features.csv", serialise);
         // original text: click start , point to settings , and then click control panel (12 words)
         String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button " 
                         +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button "
