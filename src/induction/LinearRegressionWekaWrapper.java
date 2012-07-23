@@ -1,8 +1,8 @@
 package induction;
 
-import induction.utils.ExtractFeatures;
-import induction.utils.ExtractFeatures.Feature;
-import induction.utils.ExtractFeatures.FeatureType;
+import induction.utils.ExtractLengthPredictionFeatures;
+import induction.utils.ExtractLengthPredictionFeatures.Feature;
+import induction.utils.ExtractLengthPredictionFeatures.FeatureType;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import weka.classifiers.Classifier;
@@ -17,24 +17,24 @@ import weka.core.SparseInstance;
  *
  * @author sinantie
  */
-public class WekaWrapper
+public class LinearRegressionWekaWrapper
 {
     private String modelFilename;
     private Classifier model;
     private Instances dataset;
     private int numberOfAttributes;
-    private ExtractFeatures featureExtractor;
+    private ExtractLengthPredictionFeatures featureExtractor;
     private FeatureType featureType;
     public enum Mode {TRAIN, TEST};
     private Mode mode;
 
-    public WekaWrapper(String paramsFilename, String modelFilename, int startIndex,
+    public LinearRegressionWekaWrapper(String paramsFilename, String modelFilename, int startIndex,
             FeatureType featureType, Mode mode)
     {
         try
         {            
             // load featureExtractor
-            featureExtractor = new ExtractFeatures(paramsFilename, featureType, startIndex);
+            featureExtractor = new ExtractLengthPredictionFeatures(paramsFilename, featureType, startIndex);
             this.numberOfAttributes = featureExtractor.getVectorLength();
             this.featureType = featureType;
             this.mode = mode;

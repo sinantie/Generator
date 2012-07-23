@@ -18,7 +18,7 @@ import induction.Options.ModelType;
 import induction.Options.NgramWrapper;
 import util.Stemmer;
 import induction.Utils;
-import induction.WekaWrapper;
+import induction.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.NgramModel;
 import induction.ngrams.RoarkNgramWrapper;
@@ -1052,13 +1052,13 @@ public abstract class Event3Model extends WordModel
         if(opts.lengthPredictionModelFile != null)
         {
             Utils.begin_track("Loading Length Prediction Model...");
-            lengthPredictor = new WekaWrapper(
+            lengthPredictor = new LinearRegressionWekaWrapper(
                     opts.generativeModelParamsFile == null ?
                             opts.stagedParamsFile : 
                             opts.generativeModelParamsFile,
                     opts.lengthPredictionModelFile,
                     opts.lengthPredictionStartIndex,
-                    opts.lengthPredictionFeatureType, WekaWrapper.Mode.TEST);
+                    opts.lengthPredictionFeatureType, LinearRegressionWekaWrapper.Mode.TEST);
             LogInfo.end_track();
         }
         

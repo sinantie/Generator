@@ -13,7 +13,7 @@ import induction.Options;
 import induction.Options.InitType;
 import induction.Options.InputFormat;
 import induction.Utils;
-import induction.WekaWrapper;
+import induction.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AParams.ParamsType;
@@ -45,7 +45,7 @@ public abstract class AModel
     protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
     protected APerformance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
-    protected WekaWrapper lengthPredictor;
+    protected LinearRegressionWekaWrapper lengthPredictor;
     protected String[] fullPredOutArray;
     
     int currExample;

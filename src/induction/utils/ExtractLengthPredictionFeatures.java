@@ -27,7 +27,7 @@ import java.util.Map;
  * take into account datasets which have more than one events of the same eventType)
  * @author konstas
  */
-public class ExtractFeatures
+public class ExtractLengthPredictionFeatures
 {
     private String outputFilename, inputFilename, header;
     private Map<String, Integer> eventTypesIndex;
@@ -49,7 +49,7 @@ public class ExtractFeatures
      * @param examplesInOneFile
      * @param startIndex
      */
-    public ExtractFeatures(String outputFilename, String inputFilename, 
+    public ExtractLengthPredictionFeatures(String outputFilename, String inputFilename, 
             String paramsFilename, FeatureType type, boolean examplesInOneFile, int startIndex)
     {
         this(paramsFilename, type, startIndex);
@@ -58,7 +58,7 @@ public class ExtractFeatures
         this.examplesInOneFile = examplesInOneFile;        
     }
 
-    public ExtractFeatures(String paramsFilename, FeatureType type, int startIndex)
+    public ExtractLengthPredictionFeatures(String paramsFilename, FeatureType type, int startIndex)
     {
         this.type = type;
         this.startIndex = startIndex;
@@ -304,7 +304,7 @@ public class ExtractFeatures
         FeatureType type = FeatureType.VALUES;
         boolean examplesInOneFile = true;
         
-        ExtractFeatures ef = new ExtractFeatures(outputFilename, inputFilename, 
+        ExtractLengthPredictionFeatures ef = new ExtractLengthPredictionFeatures(outputFilename, inputFilename, 
                 paramsFilename, type, examplesInOneFile, startIndex);
         ef.execute();
     }
