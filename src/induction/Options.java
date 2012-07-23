@@ -2,7 +2,7 @@ package induction;
 
 import java.util.*;
 import fig.basic.*;
-import induction.utils.ExtractLengthPredictionFeatures;
+import induction.utils.linearregression.ExtractLengthPredictionFeatures;
 
 public class Options {
   public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, precompute, generate, discriminativeTrain, semParse, writeParams };

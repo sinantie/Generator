@@ -13,7 +13,7 @@ import induction.Options;
 import induction.Options.InitType;
 import induction.Options.InputFormat;
 import induction.Utils;
-import induction.LinearRegressionWekaWrapper;
+import induction.utils.linearregression.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AParams.ParamsType;

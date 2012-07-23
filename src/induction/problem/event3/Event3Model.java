@@ -18,7 +18,7 @@ import induction.Options.ModelType;
 import induction.Options.NgramWrapper;
 import util.Stemmer;
 import induction.Utils;
-import induction.LinearRegressionWekaWrapper;
+import induction.utils.linearregression.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.NgramModel;
 import induction.ngrams.RoarkNgramWrapper;

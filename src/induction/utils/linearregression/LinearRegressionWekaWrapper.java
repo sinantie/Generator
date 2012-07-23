@@ -1,8 +1,9 @@
-package induction;
+package induction.utils.linearregression;
 
-import induction.utils.ExtractLengthPredictionFeatures;
-import induction.utils.ExtractLengthPredictionFeatures.Feature;
-import induction.utils.ExtractLengthPredictionFeatures.FeatureType;
+import induction.Utils;
+import induction.utils.linearregression.ExtractLengthPredictionFeatures;
+import induction.utils.linearregression.ExtractLengthPredictionFeatures.Feature;
+import induction.utils.linearregression.ExtractLengthPredictionFeatures.FeatureType;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import weka.classifiers.Classifier;

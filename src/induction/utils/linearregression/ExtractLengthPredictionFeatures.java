@@ -1,4 +1,4 @@
-package induction.utils;
+package induction.utils.linearregression;
 
 import fig.basic.IOUtils;
 import induction.Utils;
