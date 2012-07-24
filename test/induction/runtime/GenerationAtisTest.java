@@ -67,7 +67,8 @@ public class GenerationAtisTest
                     + "-posAtSurfaceLevel "
                     + "-useStopNode "
                     + "-dmvModelParamsFile results/output/atis/dmv/train/"
-                    + "atis_raw5000_full_indexers_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz";
+                    + "atis_raw5000_full_indexers_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz "
+                    + "-forceOutputOrder";
 //                    + "atis_raw5000_full_indexers_prior_01_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
