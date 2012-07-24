@@ -1,9 +1,7 @@
 package induction.utils.linearregression;
 
-import induction.Utils;
-import induction.utils.linearregression.LinearRegressionWekaWrapper;
-import java.io.IOException;
-import induction.utils.linearregression.ExtractLengthPredictionFeatures.FeatureType;
+import induction.utils.linearregression.LinearRegressionOptions.FeatureType;
+import induction.utils.linearregression.LinearRegressionOptions.Mode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -48,7 +46,7 @@ public class LinearRegressionWekaWrapperTest {
 //        paramsFilename = "results/output/atis/alignments/"
 //                    + "model_3/15_iter_no_null_no_smooth_STOP/stage1.params.obj";
 //        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-//                                                      2, FeatureType.COUNTS, LinearRegressionWekaWrapper.Mode.TRAIN);
+//                                                      2, FeatureType.counts, LinearRegressionWekaWrapper.Mode.train);
 //        lengthPredictor.train("data/atis/train/atis5000.sents.full.counts.features.csv", serialise);
 //        // original text: i need an early flight from milwaukee to denver (9 words)
 //        String events = ".id:0	.type:flight	@aircraft_code:--	@airline:--	"
@@ -67,7 +65,7 @@ public class LinearRegressionWekaWrapperTest {
         modelFilename = "data/branavan/data/branavan/winHelpHLA/lengthPrediction.counts.linear-reg.model";
         paramsFilename = "results/output/winHelp/alignments/model_3_no_null_pos_auto/all/stage1.params.obj.gz";
         LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-                                                      2, FeatureType.COUNTS, LinearRegressionWekaWrapper.Mode.TRAIN);
+                                                      2, FeatureType.counts, Mode.train);
         lengthPredictor.train("data/branavan/data/branavan/winHelpHLA/winHelpRL.sents.all.counts.features.csv", serialise);
         // original text: click start , point to settings , and then click control panel (12 words)
         String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button " 
@@ -84,7 +82,7 @@ public class LinearRegressionWekaWrapperTest {
 //        paramsFilename = "results/output/weatherGov/alignments/"
 //                    + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj";
 //        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-//                                                      4, FeatureType.VALUES, LinearRegressionWekaWrapper.Mode.TRAIN);
+//                                                      4, FeatureType.values, Mode.train);
 //        lengthPredictor.train("gaborLists/trainListPathsGabor.values.features.csv", serialise);
 //        // original text: Mostly cloudy , with a low around 39 . Southwest wind between 9 and 14 mph . (17 words)
 //        String events = "";
@@ -112,7 +110,7 @@ public class LinearRegressionWekaWrapperTest {
 //                        + ".id:1	.type:search	@of:--	@typed:lambda	@what:flight"
 //                        + ".id:2	.type:when	@dep-ar:departure	@when:early";
 //        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-//                                                      2, FeatureType.COUNTS, LinearRegressionWekaWrapper.Mode.TEST);
+//                                                      2, FeatureType.counts, Mode.test);
 //        assertEquals((int)lengthPredictor.predict(events), 13);
 //    }
 //
@@ -131,7 +129,7 @@ public class LinearRegressionWekaWrapperTest {
 //        }
 //        catch(IOException ioe){}
 //        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-//                                                      4, FeatureType.VALUES, LinearRegressionWekaWrapper.Mode.TEST);
+//                                                      4, FeatureType.values, LinearRegressionWekaWrapper.Mode.test);
 //        assertEquals((int)lengthPredictor.predict(events), 18);
 //    }
 }
