@@ -63,7 +63,7 @@ public class GenerationWeatherTest
                     + "-ngramSize 3 "
                     + "-numAsSymbol "
                     + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
-                    + "-lengthPredictionFeatureType VALUES "
+                    + "-lengthPredictionFeatureType values "
                     + "-lengthPredictionStartIndex 4 "
                     + "-numAsSymbol "
 //                    + "-useDependencies "

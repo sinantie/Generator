@@ -16,13 +16,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class GenerationAtisTest
+public class GenerationWinHelpTest
 {
     LearnOptions lopts;
     String name;
     GenerativeEvent3Model model;
 
-    public GenerationAtisTest() {
+    public GenerationWinHelpTest() {
     }
 
     @BeforeClass
@@ -39,36 +39,35 @@ public class GenerationAtisTest
     public void setUp() 
     {
          String args = "-modelType generate "
-                    + "-testInputLists test/testAtisExamples "
-//                    + "-testInputLists data/atis/test/atis-test.txt "
+//                    + "-testInputLists data/branavan/winHelpHLA/folds/winHelpFold1Eval "
+                    + "-testInputLists test/winHelpFold1EvalTest "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-stagedParamsFile "
-                    + "results/output/atis/alignments/"
-//                    + "model_3/prior_0.01/stage1.params.obj "
-                    + "model_3/prior_0.01_POS/stage1.params.obj.gz "
+                    + "results/output/winHelp/alignments/"
+                    + "model_3_no_null_pos_auto/fold1/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
-                    + "-kBest 80 "
-                    + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
-//                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
-//                    + "-ngramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.model.arpa "
+                    + "-kBest 205 "
+                    + "-ngramModelFile winHelpLM/srilm-abs-winHelpRL-split-fold1-3-gram.model.arpa "
                     + "-ngramWrapper srilm "
                     + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
                     + "-maxPhraseLength 5 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
-                    + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
+                    + "-lengthPredictionModelFile data/branavan/winHelpHLA/folds/winHelpFold1Train.lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType counts "
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
                     + "-useDependencies "
                     + "-interpolationFactor 0.1 "
                     + "-posAtSurfaceLevel "
+                    + "-tagDelimiter _ "
                     + "-useStopNode "
-                    + "-dmvModelParamsFile results/output/atis/dmv/train/"
-                    + "atis_raw5000_full_indexers_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz";
-//                    + "atis_raw5000_full_indexers_prior_01_LEX_100/stage1.dmv.params.obj.gz";
+                    + "-dmvModelParamsFile results/output/winHelp/dmv/train/"
+                    + "winHelp_uniformZ_initNoise_POS_auto_100/fold1/stage1.dmv.params.obj.gz "
+                    + "-forceOutputOrder";
+         
         /*initialisation procedure from Generation class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
@@ -92,11 +91,13 @@ public class GenerationAtisTest
     public void testRun()
     {
         System.out.println("run");
-        String targetOutput = "<doc docid=\"Example_1\" genre=\"nw\"><p>"
-                + "<seg id=\"1\" bleu=\"0.4673945708424301\" bleu_modified=\"0.4673945708424301\" "
-                + "meteor=\"0.6853734613927462\" ter=\"0.42857142857142855\">"
-                + "show me flights from dallas to baltimore</seg></p></doc>";
+        String targetOutput = "<doc docid=\"Example_22188_sent_0\" genre=\"nw\">"
+                + "<p><seg id=\"1\" bleu=\"0.619945900436246\" bleu_modified=\"0.619945900436246\" "
+                + "meteor=\"0.8376686317842197\" ter=\"0.3333333333333333\">"
+                + "click_NNS to_TO settings_NNS ,_, and_CC then_RB click_NNS start_VBP ,_, "
+                + "and_CC then_RB click_VB control_NN panel_NN</seg></p></doc>";
         String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
+        
         assertEquals(in, targetOutput);
     }
 }
