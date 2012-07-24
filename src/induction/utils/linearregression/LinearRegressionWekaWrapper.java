@@ -1,9 +1,10 @@
 package induction.utils.linearregression;
 
+import fig.basic.LogInfo;
 import induction.Utils;
-import induction.utils.linearregression.ExtractLengthPredictionFeatures;
 import induction.utils.linearregression.ExtractLengthPredictionFeatures.Feature;
-import induction.utils.linearregression.ExtractLengthPredictionFeatures.FeatureType;
+import induction.utils.linearregression.LinearRegressionOptions.FeatureType;
+import induction.utils.linearregression.LinearRegressionOptions.Mode;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import weka.classifiers.Classifier;
@@ -19,29 +20,46 @@ import weka.core.SparseInstance;
  * @author sinantie
  */
 public class LinearRegressionWekaWrapper
-{
+{    
+    
     private String modelFilename;
     private Classifier model;
     private Instances dataset;
     private int numberOfAttributes;
     private ExtractLengthPredictionFeatures featureExtractor;
     private FeatureType featureType;
-    public enum Mode {TRAIN, TEST};
-    private Mode mode;
+    
 
+    public LinearRegressionWekaWrapper(LinearRegressionOptions opts)
+    {
+        // extract features first
+        if(opts.extractFeatures)
+        {
+            LogInfo.logs("Extracting feature vectors...");
+            featureExtractor = new ExtractLengthPredictionFeatures(opts.outputFeaturesFile, 
+                    opts.inputFeaturesFile, opts.paramsFile, opts.type, opts.examplesInSingleFile, opts.startIndex);
+            featureExtractor.execute();
+        }
+        init(opts.paramsFile, opts.modelFile, opts.startIndex, opts.type, opts.mode);
+    }
     public LinearRegressionWekaWrapper(String paramsFilename, String modelFilename, int startIndex,
             FeatureType featureType, Mode mode)
+    {
+        init(paramsFilename, modelFilename, startIndex, featureType, mode);
+    }
+
+    public final void init(String paramsFilename, String modelFilename, int startIndex, FeatureType featureType, Mode mode)
     {
         try
         {            
             // load featureExtractor
-            featureExtractor = new ExtractLengthPredictionFeatures(paramsFilename, featureType, startIndex);
+            if(featureExtractor == null)
+                featureExtractor = new ExtractLengthPredictionFeatures(paramsFilename, featureType, startIndex);
             this.numberOfAttributes = featureExtractor.getVectorLength();
             this.featureType = featureType;
-            this.mode = mode;
             this.modelFilename = modelFilename;
             // load weka model (test mode)
-            if(mode == Mode.TEST)
+            if(mode == Mode.test)
                 model = (Classifier) SerializationHelper.read(modelFilename);
             // create host dataset
             String[] header = featureExtractor.getHeader().split(",");
@@ -50,7 +68,7 @@ public class LinearRegressionWekaWrapper
             {
                 switch(featureType)
                 {
-                    case VALUES: // treat nominal values (if they exist) differently
+                    case values: // treat nominal values (if they exist) differently
                     {
                         switch(feature.getType())
                         {
@@ -60,7 +78,7 @@ public class LinearRegressionWekaWrapper
                         }
 
                     } break;
-                    case COUNTS: case BINARY: default: attrs.add(new Attribute(feature.getName()));
+                    case counts: case binary: default: attrs.add(new Attribute(feature.getName()));
                 } // switch
             } // for
             dataset = new Instances("pred", attrs, 1);
@@ -71,7 +89,7 @@ public class LinearRegressionWekaWrapper
             e.printStackTrace();
         }
     }
-
+    
     public void train(String datasetFilename, boolean serialise)
     {
         String[] lines = Utils.readLines(datasetFilename);
@@ -121,8 +139,8 @@ public class LinearRegressionWekaWrapper
             String s = extractedValues[i];
             switch(featureType)
             {
-                case COUNTS: featureVector.setValue(i, Integer.valueOf(s)); break;
-                case VALUES: // treat nominal values (if they exist) differently
+                case counts: featureVector.setValue(i, Integer.valueOf(s)); break;
+                case values: // treat nominal values (if they exist) differently
                 {
                     switch(featureExtractor.getFeatures().get(i).getType())
                     {

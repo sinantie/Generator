@@ -32,6 +32,7 @@ import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
 import induction.problem.event3.json.JsonResult;
 import induction.problem.wordproblem.WordModel;
+import induction.utils.linearregression.LinearRegressionOptions;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -1058,7 +1059,7 @@ public abstract class Event3Model extends WordModel
                             opts.generativeModelParamsFile,
                     opts.lengthPredictionModelFile,
                     opts.lengthPredictionStartIndex,
-                    opts.lengthPredictionFeatureType, LinearRegressionWekaWrapper.Mode.TEST);
+                    opts.lengthPredictionFeatureType, LinearRegressionOptions.Mode.test);
             LogInfo.end_track();
         }
         

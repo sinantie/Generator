@@ -2,7 +2,7 @@ package induction;
 
 import java.util.*;
 import fig.basic.*;
-import induction.utils.linearregression.ExtractLengthPredictionFeatures;
+import induction.utils.linearregression.LinearRegressionOptions;
 
 public class Options {
   public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, precompute, generate, discriminativeTrain, semParse, writeParams };
@@ -158,8 +158,8 @@ public class Options {
   // length prediction
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
   @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
-  @Option(gloss="Feature type for length prediction vector (default=value)") public ExtractLengthPredictionFeatures.FeatureType
-    lengthPredictionFeatureType = ExtractLengthPredictionFeatures.FeatureType.VALUES;
+  @Option(gloss="Feature type for length prediction vector (default=value)") public LinearRegressionOptions.FeatureType
+    lengthPredictionFeatureType = LinearRegressionOptions.FeatureType.values;
   @Option(gloss="Position of eventType in events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;
   @Option(gloss="Length compensation due to mismatch (default=0)") public String lengthCompensation = "0";
 

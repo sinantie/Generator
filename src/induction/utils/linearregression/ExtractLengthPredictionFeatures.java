@@ -7,6 +7,8 @@ import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
+import induction.utils.linearregression.LinearRegressionOptions.FeatureType;
+import induction.utils.linearregression.LinearRegressionOptions.FieldType;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -32,8 +34,7 @@ public class ExtractLengthPredictionFeatures
     private String outputFilename, inputFilename, header;
     private Map<String, Integer> eventTypesIndex;
     private String[] emptyVector;    
-    public enum FeatureType {BINARY, COUNTS, VALUES};
-    public enum FieldType {CAT, NUM};
+    
     private FeatureType type;
     private boolean examplesInOneFile;
     private int startIndex, vectorLength;
@@ -115,7 +116,7 @@ public class ExtractLengthPredictionFeatures
     public void execute()
     {
         try
-        {
+        {            
             FileWriter fos = new FileWriter(outputFilename);
             fos.append(header);
             String example[];
@@ -176,7 +177,7 @@ public class ExtractLengthPredictionFeatures
     {
         String[] tokens = event.split("\t");
         int index = eventTypesIndex.get(tokens[1].split(":")[1]); // 2nd token holds the type (.type:xxx)
-//        vector[index] = type == FeatureType.BINARY ? "1" : String.valueOf(Integer.valueOf(vector[index]) + 1);;
+//        vector[index] = type == FeatureType.binary ? "1" : String.valueOf(Integer.valueOf(vector[index]) + 1);;
 
         for(int i = startIndex; i < tokens.length; i++)
         {
@@ -185,11 +186,11 @@ public class ExtractLengthPredictionFeatures
             String value = subTokens.length > 1 ? subTokens[1] : "--";
             if(!value.equals("--"))
             {
-                if(type == FeatureType.BINARY)
+                if(type == FeatureType.binary)
                     vector[currentIndex] = "1";
-                else if(type == FeatureType.COUNTS)
+                else if(type == FeatureType.counts)
                     vector[currentIndex] = String.valueOf(Integer.valueOf(vector[currentIndex]) + 1);
-                else if(type == FeatureType.VALUES)
+                else if(type == FeatureType.values)
                     // account only for the first event of this eventType
                     if(vector[currentIndex].equals("--"))
                     {
@@ -203,11 +204,11 @@ public class ExtractLengthPredictionFeatures
     {        
         String[] out = new String[numberOfElements];
         // Variant (1) - binary values
-        if(type==FeatureType.BINARY || type==FeatureType.COUNTS)
+        if(type==FeatureType.binary || type==FeatureType.counts)
         {
             Arrays.fill(out, "0");
         }
-        else if (type==FeatureType.VALUES)
+        else if (type==FeatureType.values)
         {
             Arrays.fill(out, "--");
         }
@@ -301,7 +302,7 @@ public class ExtractLengthPredictionFeatures
             inputFilename = "gaborLists/genEvalListPathsGabor";
             startIndex = 4; // 4 for weatherGov, 2 for atis
         }
-        FeatureType type = FeatureType.VALUES;
+        FeatureType type = FeatureType.values;
         boolean examplesInOneFile = true;
         
         ExtractLengthPredictionFeatures ef = new ExtractLengthPredictionFeatures(outputFilename, inputFilename, 
