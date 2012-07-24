@@ -1141,14 +1141,16 @@ public abstract class Event3Model extends WordModel
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
 //        AParams counts = newParams();
+        List<String> outList = new ArrayList<String>();
         AInferState inferState = null;
         for(AExample ex : examples)
         {
             inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
             testPerformance.add(ex, inferState.bestWidget);
             System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            outList.add(widgetToSGMLOutput(ex, inferState.bestWidget));
         }
-        return widgetToSGMLOutput(examples.get(0), inferState.bestWidget);
+        return outList.get(0);
 //        AExample ex = examples.get(0);
 //        AInferState inferState =  createInferState(ex, 1, null, temperature,
 //                lopts, 0, complexity);
