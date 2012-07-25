@@ -58,6 +58,7 @@ public class GenerationWeatherTest
                     + "-reorderType eventType "
                     + "-allowNoneEvent "
 //                    + "-conditionNoneEvent "
+                    + "-useEventSalienceModel "
                     + "-maxPhraseLength 5 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
