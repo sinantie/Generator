@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -826,6 +827,34 @@ public class Utils
             str.append(" ");
         }
         return str.toString().trim();
+    }
+    
+    public static String[] tokenize(String input)
+    {
+        return input.toLowerCase().split("\\s");
+    }
+    
+    public static String[] removeStopWords(String[] tokens, Set<String> stopWords)
+    {
+        List<String> res = new ArrayList<String>();
+        for(String token : tokens)
+        {
+            if(!stopWords.contains(token))
+                res.add(token);
+        }
+        return res.toArray(new String[0]);
+    }
+    
+    public static String tokensToString(String[] tokens)
+    {
+        if(tokens.length == 0)
+            return "";
+        StringBuilder str = new StringBuilder(tokens[0]);              
+        for(int i = 1; i < tokens.length; i++)
+        {
+            str.append(" ").append(tokens[i]);
+        }
+        return str.toString();
     }
     
     public static String applyDictionary(String input, Properties dictionary)
