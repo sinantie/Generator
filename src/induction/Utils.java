@@ -5,6 +5,7 @@ import edu.berkeley.nlp.ling.Trees;
 import edu.berkeley.nlp.ling.Trees.PennTreeReader;
 import edu.berkeley.nlp.ling.Trees.StandardTreeNormalizer;
 import fig.basic.IOUtils;
+import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.problem.event3.Constants;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -28,6 +31,13 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.math.FunctionEvaluationException;
+import org.apache.commons.math.analysis.ComposableFunction;
+import org.apache.commons.math.exception.MathIllegalNumberException;
+import org.apache.commons.math.exception.util.LocalizedFormats;
+import org.apache.commons.math.linear.ArrayRealVector;
+import org.apache.commons.math.linear.OpenMapRealVector;
+import org.apache.commons.math.linear.RealVector;
 
 /**
  *
@@ -921,5 +931,76 @@ public class Utils
         {
             System.out.println(ioe.getMessage());
         }
+    }
+    
+    public static String[] tokenizeToUnigrams(String sentence, Set<String> stopWords)
+    {
+        return stopWords == null ? Utils.tokenize(sentence) : Utils.removeStopWords(Utils.tokenize(sentence), stopWords);
+    }
+    
+    public static String[] tokenizeToBigrams(String sentence, Set<String> stopWords)
+    {
+        return null;
+    }
+    
+    public static RealVector[] extractFeatures(List<String[]> docs, Indexer<String> terms, boolean tfIdf)
+    {
+        RealVector[] vectors = new RealVector[docs.size()];        
+        RealVector df = tfIdf ? new ArrayRealVector(terms.size()) : null;
+        int i = 0;        
+        for(String[] doc: docs)
+        {
+            RealVector v = new OpenMapRealVector(terms.size());            
+            Set<Integer> uniqTokensPos = tfIdf ? new HashSet<Integer>() : null;
+            for(String token : doc)
+            {                
+                int pos = terms.getIndex(token);
+                v.setEntry(pos, v.getEntry(pos) + 1); // compute term count
+                if(tfIdf)
+                    uniqTokensPos.add(pos);
+            } // for
+            if(tfIdf)
+            {
+                v.mapDivideToSelf(doc.length); // compute tf of the vector
+                for(int pos : uniqTokensPos) // compute df for each unique term in the document
+                    df.setEntry(pos, df.getEntry(pos) + 1);
+            } 
+            vectors[i++] = v;
+        }
+        if(tfIdf)
+        {
+            try
+            {
+                // compute idf
+//                df.mapToSelf(ComposableFunction.LOG).mapPowToSelf(-1).mapMultiplyToSelf(docs.size());
+                df.mapPowToSelf(-1).mapMultiplyToSelf(docs.size()).mapToSelf(ComposableFunction.LOG10);
+                // compute tf * idf
+                for(RealVector v : vectors)
+                {
+                    Iterator<RealVector.Entry> it = v.sparseIterator();
+                    while(it.hasNext())
+                    {
+                        RealVector.Entry entry = it.next();
+                        entry.setValue(entry.getValue() * df.getEntry(entry.getIndex()));
+                    } // while
+                } // for
+            } 
+            catch (FunctionEvaluationException ex)
+            {
+                System.err.println(ex);
+            }            
+        }
+            
+        return vectors;
+    }
+    
+    public static double cosine(RealVector vec1, RealVector vec2) throws Exception
+    {
+        final double norm1 = vec1.getNorm();
+        final double norm2 = vec2.getNorm();
+
+        if (norm1 == 0 || norm2 == 0) 
+            throw new Exception("Division by zero");
+        return vec1.dotProduct(vec2) / (norm1 * norm2);
     }
 }
