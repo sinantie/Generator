@@ -940,7 +940,13 @@ public class Utils
     
     public static String[] tokenizeToBigrams(String sentence, Set<String> stopWords)
     {
-        return null;
+        List<String> bigrams = new ArrayList<String>();
+        String[] unigrams = Utils.tokenize("<s> " + sentence.replaceAll(", ", "") + " </s>");
+        for(int i = 1; i < unigrams.length; i++)
+        {
+            bigrams.add(unigrams[i-1] + "_" + unigrams[i]);
+        }
+        return bigrams.toArray(new String[0]);
     }
     
     public static RealVector[] extractFeatures(List<String[]> docs, Indexer<String> terms, boolean tfIdf)
