@@ -176,7 +176,7 @@ public class ExtractLengthPredictionFeatures
     private void fillVector(String[] vector, String event)
     {
         String[] tokens = event.split("\t");
-        int index = eventTypesIndex.get(tokens[1].split(":")[1]); // 2nd token holds the type (.type:xxx)
+        int index = eventTypesIndex.get(tokens[findToken(tokens, "type")].split(":")[1]); // 2nd token holds the type (.type:xxx)
 //        vector[index] = type == FeatureType.binary ? "1" : String.valueOf(Integer.valueOf(vector[index]) + 1);;
 
         for(int i = startIndex; i < tokens.length; i++)
@@ -200,6 +200,13 @@ public class ExtractLengthPredictionFeatures
         } // for
     }
 
+    private int findToken(String[] tokens, String key)
+    {
+        for(int i = 0; i < tokens.length; i++)
+            if(tokens[i].contains(key))
+                return i;
+        return -1;
+    }
     private String[] createEmptyVector(int numberOfElements)
     {        
         String[] out = new String[numberOfElements];
