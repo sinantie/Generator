@@ -7,7 +7,7 @@ public class LearnOptions {
   @Option(gloss="Number of training iterations") public int numIters = 0;  
   @Option(gloss="Online") public boolean online = false;
   @Option(gloss="Incremental EM (keep around suff stats)") public boolean incremental = false;
-  @Option(gloss="Hard EM") public boolean hardUpdate = false;
+  @Option(gloss="Viterbi/Hard EM") public boolean hardUpdate = false;
   @Option public double stepSizeOffset = 2;
   @Option(gloss="Step size power 1/T^power") public double stepSizeReductionPower = 0.5;
   @Option(gloss="Add sufficient statistics to parameters (!)") public boolean mixParamsCounts = false;

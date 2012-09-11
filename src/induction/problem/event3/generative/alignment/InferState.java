@@ -165,8 +165,8 @@ public class InferState extends Event3InferState
     public void doInference()
     {        
         StopWatchSet.begin("computePosteriors");
-//        hypergraph.computePosteriors(ispec.isHardUpdate());
-        hypergraph.computePosteriors(false);
+        hypergraph.computePosteriors(ispec.isHardUpdate());
+//        hypergraph.computePosteriors(false);
         StopWatchSet.end();
         // Hard inference
         if (hardInfer)
