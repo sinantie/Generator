@@ -46,9 +46,10 @@ public class InductionWeatherTest
          String args = 
                    "-modelType event3 "
                  + "-Options.stage1.numIters 15 "
+                 + "-Options.stage1.hardUpdate "        // Viterbi EM
                  + "-inputLists "
-                 + "test/testWeatherGovEvents "
-//                 + "gaborLists/trainListPathsGabor "
+//                 + "test/testWeatherGovEvents "
+                 + "gaborLists/genDevListPathsGabor "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
@@ -56,10 +57,10 @@ public class InductionWeatherTest
                  + "-dontCrossPunctuation "
                  + "-Options.stage1.smoothing 0.1 "
                  + "-allowNoneEvent "
-                 + "-maxExamples 5 "
-//                 + "-conditionNoneEvent "
-                 + "-posAtSurfaceLevel "
-                 + "-inputPosTagged"; // IMPORTANT
+//                 + "-maxExamples 5 "
+                 + "-conditionNoneEvent ";
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
