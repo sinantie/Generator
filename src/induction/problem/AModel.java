@@ -108,6 +108,11 @@ public abstract class AModel
         return exampleToString(ex) + " " + Utils.mkString(widgetToIntSeq(widget), " ");
     }
 
+    public List<AExample> getExamples()
+    {
+        return examples;
+    }
+    
     protected abstract String exampleToString(AExample ex);
 
     protected void supervisedInitParams()
