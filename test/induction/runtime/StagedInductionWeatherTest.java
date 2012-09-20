@@ -43,13 +43,28 @@ public class StagedInductionWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType event3 -Options.stage1.numIters 1 -testInputLists "
-                + "test/testWeatherGovEvents -inputFileExt events "
-//                + "gaborLists/genEvalListPathsGabor -inputFileExt events "
-                + "-Options.stage1.smoothing 0.1 -initNoise 0 -initType staged "
-                + "-stagedParamsFile results/output/weatherGov/alignments/"
-                + "model_3_gabor/1.exec/stage1.params.obj -dontCrossPunctuation "
-                + "-disallowConsecutiveRepeatFields -allowNoneEvent -useGoldStandardOnly";
+        String args = 
+                   "-modelType event3 "
+                 + "-Options.stage1.numIters 15 "
+                 + "-inputLists "
+                 + "test/testWeatherGovEvents "
+//                 + "gaborLists/trainListPathsGabor "
+                 + "-stagedParamsFile "
+                    + "results/output/weatherGov/alignments/"
+                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+                 + "-inputFileExt events "
+                 + "-ngramWrapper kylm "
+                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
+                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
+                 + "-disallowConsecutiveRepeatFields "
+                 + "-indepWords 0,-1 "
+                 + "-dontCrossPunctuation "
+                 + "-Options.stage1.smoothing 0.1 "
+                 + "-allowNoneEvent "
+                 + "-maxExamples 5 "
+//                 + "-conditionNoneEvent "
+                 + "-posAtSurfaceLevel "
+                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
