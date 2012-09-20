@@ -30,7 +30,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -dmvModelParamsFile ${dmvModelParamsFile} \
 -ngramModelFile atisLM/atis-all-train-3-gram.model.arpa \
 -lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model \
--lengthPredictionFeatureType COUNTS \
+-lengthPredictionFeatureType counts \
 -lengthPredictionStartIndex 2 \
 -lengthCompensation 0 \
 -posAtSurfaceLevel \

@@ -8,7 +8,8 @@ ngramModelFile=$5
 kBest=$6
 interpolationFactor=$7
 numThreads=$8
-averageTextLength=$9
+lengthPredictionModelFile=$9
+lengthPredictionFeatureType=$10
 
 java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
@@ -29,16 +30,20 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -outputExampleFreq 100  \
 -reorderType eventType \
 -maxPhraseLength 5 \
--averageTextLength ${averageTextLength} \
+-lengthPredictionModelFile ${lengthPredictionModelFile} \
+-lengthPredictionFeatureType ${lengthPredictionFeatureType} \
+-lengthPredictionStartIndex 2 \
 -ngramSize 3 \
 -binariseAtWordLevel \
 -useStopNode \
 -interpolationFactor ${interpolationFactor} \
 -useDependencies \
 -posAtSurfaceLevel \
--tagDelimiter "_"
+-tagDelimiter "_" \
+-forceOutputOrder
 #-allowNoneEvent
 
+#-averageTextLength ${averageTextLength} \
 #-lengthPredictionModelFile data/winHelpHLA/lengthPrediction.counts.linear-reg.model \
 #-lengthPredictionFeatureType COUNTS \
 #-lengthPredictionStartIndex 2 \

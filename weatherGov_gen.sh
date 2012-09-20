@@ -30,7 +30,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile} \
 -dmvModelParamsFile ${dmvModelParamsFile} \
 -ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa \
--lengthPredictionFeatureType VALUES \
+-lengthPredictionFeatureType values \
 -lengthPredictionStartIndex 4 \
 -lengthCompensation 0 \
 -numAsSymbol \

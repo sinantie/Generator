@@ -8,10 +8,11 @@
 #weights=513#365#214#311
 
 #WeatherGov
-#input=results/output/weatherGov/generation/dependencies/
+input=results/output/weatherGov/generation/
 #formattedString=model_3_\$param1\$-best_0.01_STOP_inter\$param2\$_condLM_hypRecomb_lmLEX_POS_predLength
-#output=results/output/weatherGov/generation/dependencies/grid.results
-#crossValidate=false
+formattedString=model_3_15-best_0.01_NO_STOP_inter1_\$param1\$
+output=results/output/weatherGov/generation/learning_curve.grid.results
+crossValidate=false
 #COMMENT weights parameter
 
 #Atis
@@ -22,15 +23,15 @@
 #COMMENT weights parameter
 
 #WinHelp
-input=results/output/winHelp/generation/generative/pos/no_null
-formattedString=model_3_no_null_pos_auto_\$param1\$-best_inter\$param2\$_goldLength
-output=${input}/grid_no_null.results
-crossValidate=true
-weights=509#505#506#515#508#510#505#484#500#471
+#input=results/output/winHelp/generation/generative/pos/no_null
+#formattedString=model_3_no_null_pos_auto_\$param1\$-best_inter\$param2\$_goldLength
+#output=${input}/grid_no_null.results
+#crossValidate=true
+#weights=509#505#506#515#508#510#505#484#500#471
 
 java -cp dist/Generator.jar induction.utils.postprocess.ProcessGridSearchFiles \
 ${input} \
 ${formattedString} \
 ${output} \
-${crossValidate} \
-${weights}
+${crossValidate}
+#${weights}

@@ -2,18 +2,17 @@
 threads=2
 #genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 input=gaborLists/genDevListPathsGabor
-output=results/output/weatherGov/alignments/dev/model_3_gabor_cond_null_bigrams_correct
+output=results/output/weatherGov/alignments/dev/model_3_gabor_cond_null_bigrams_viterbiEM_uniformz
 memory=-Xmx2g
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
-dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.Induction \
+dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
 -create \
 -modeltype event3 \
 -inputLists $input \
--execPoolDir $output \
+-execDir $output \
 -Options.stage1.numIters 15 \
 -inputFileExt events \
 -numThreads $threads \
--initNoise 0 \
 -indepEventTypes 0,10 \
 -indepFields 0,5 \
 -indepWords 0,5 \
@@ -25,10 +24,16 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -noneFieldSmoothing 0 \
 -outputFullPred \
 -modelUnkWord \
--outputExampleFreq 10000 \
+-outputExampleFreq 500 \
 -conditionNoneEvent \
 -allowNoneEvent \
--inputPosTagged
+-initType uniformz \
+-initNoise 0 \
+-initSmoothing 0.01 \
+-initNoise 1e-3 \
+-Options.stage1.hardUpdate
+
+#-inputPosTagged
 
 
 #-useStopNode \

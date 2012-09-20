@@ -5,11 +5,14 @@ kBest=$1
 interpolationFactor=$2
 inputLists=data/branavan/winHelpHLA/folds
 #output=results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_${kBest}-best_inter${interpolationFactor}_goldLength
-output=results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_${kBest}-best_inter${interpolationFactor}_goldLength
+output=results/output/winHelp/generation/generative/pos/no_null/model_3_no_null_pos_auto_${kBest}-best_inter${interpolationFactor}_countPredLength
 #modelPath=results/output/winHelp/alignments/model_3
 modelPath=results/output/winHelp/alignments/model_3_no_null_pos_auto
 
 dmvPath=results/output/winHelp/dmv/train/winHelp_uniformZ_initNoise_POS_auto_100
+lengthPredictionModelFolder=data/branavan/winHelpHLA/folds
+lengthPredictionFeatureType=counts
+
 numThreads=2
 folds=10
 
@@ -22,11 +25,12 @@ do
 	${output}/fold${f} \
 	${modelPath}/fold${f} \
 	${dmvPath}/fold${f} \
-	winHelpLM/srilm-abs-winHelpRL-split-3-gram.model.arpa \
+	winHelpLM/srilm-abs-winHelpRL-split-fold${f}3-gram.model.arpa \
 	${kBest} \
 	${interpolationFactor} \
 	${numThreads} \
-	12
+	${lengthPredictionModelFolder}/winHelpFold${f}Train.lengthPrediction.${lengthPredictionFeatureType}.linear-reg.model \
+	${lengthPredictionFeatureType}
 done
 
 
