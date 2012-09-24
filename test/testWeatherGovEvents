@@ -1,4 +1,5 @@
 #data/weather-data-full/data/california/los_angeles/2009-02-07-0.events
+data/weather-data-full/data/alabama/dothan/2009-02-10-1.events
 data/weather-data-full/data/california/los_angeles/2009-02-07-1.events
 data/weather-data-full/data/california/los_angeles/2009-02-08-0.events
 data/weather-data-full/data/california/los_angeles/2009-02-08-1.events
@@ -7,4 +8,6 @@ data/weather-data-full/data/california/los_angeles/2009-02-09-1.events
 data/weather-data-full/data/california/los_angeles/2009-02-10-0.events
 data/weather-data-full/data/california/los_angeles/2009-02-10-1.events
 data/weather-data-full/data/virginia/glen_allen/2009-02-08-1.events
+data/weather-data-full/data/alabama/fairfield/2009-02-10-1.events
+data/weather-data-full/data/alabama/enterprise/2009-02-10-1.events
 #test/middle_valley/2009-02-09-0.events

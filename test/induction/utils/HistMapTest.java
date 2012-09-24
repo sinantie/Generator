@@ -54,6 +54,7 @@ public class HistMapTest
         myMap.add("hello");
         myMap.add("world");
         myMap.add("hello");
-        assertEquals(myMap.toString(), "hello : 2, test : 4, world : 1");
+        System.out.println(myMap.toString());
+        assertEquals(myMap.toString(), "hello : 2\ntest : 4\nworld : 1\n");
     }
 }
