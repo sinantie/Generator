@@ -1082,7 +1082,7 @@ public abstract class Event3Model extends WordModel
     
     protected void loadLanguageModel()
     {
-        if(!opts.fullPredRandomBaseline)
+        if(!opts.fullPredRandomBaseline && opts.ngramModelFile != null)
         {
             Utils.begin_track("Loading Language Model...");
             if(opts.ngramWrapper == NgramWrapper.kylm)

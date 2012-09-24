@@ -16,7 +16,7 @@ public class PosTaggerOptions
     @Option(required=true) public TypeOfInput typeOfInput;
     @Option public String extension = "";
     @Option public String posDictionaryPath = "";
-    @Option public boolean useUniversalTags = false;        
+    @Option public boolean useUniversalTags = false;
     @Option(gloss="tag delimiter (default=/)") public String tagDelimiter = "/";
     @Option(gloss="Replace numbers with the <num> tag") public boolean replaceNumbers = false;
     @Option(gloss="Don't apply tag on numbers.") public boolean dontTagNumbers = false;

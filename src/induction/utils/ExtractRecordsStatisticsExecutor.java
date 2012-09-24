@@ -1,7 +1,6 @@
 package induction.utils;
 
 import fig.exec.Execution;
-import induction.Options;
 
 /**
  *
@@ -9,7 +8,7 @@ import induction.Options;
  */
 public class ExtractRecordsStatisticsExecutor implements Runnable
 {
-    Options opts = new Options();
+    ExtractRecordsStatisticsOptions opts = new ExtractRecordsStatisticsOptions();
     
     @Override
     public void run()

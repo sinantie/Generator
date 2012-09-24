@@ -3,17 +3,18 @@ package induction.utils;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
-import induction.Options;
 import induction.Options.InitType;
 import induction.problem.AExample;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.utils.HistMap.Counter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  *
@@ -21,31 +22,48 @@ import java.util.List;
  */
 public class ExtractRecordsStatistics
 {
-    Options opts;    
+    ExtractRecordsStatisticsOptions opts;    
     Event3Model model;
-    List<Permutation> examples;
-
-    public ExtractRecordsStatistics(Options opts)
+    List<ExampleRecords> examples;
+    HistMap<Integer> repeatedRecords;
+    HistMap<String> sentenceNgrams;
+    
+    public ExtractRecordsStatistics(ExtractRecordsStatisticsOptions opts)
     {
         this.opts = opts;
     }                
     
     public void execute()
     {
-        model = new GenerativeEvent3Model(opts);
-        model.init(InitType.staged, opts.initRandom, "");
+        model = new GenerativeEvent3Model(opts.modelOpts);
+        model.init(InitType.staged, opts.modelOpts.initRandom, "");
         model.readExamples();
-        examples = new ArrayList<Permutation>(model.getExamples().size());
-        convertToEventTypeStrings(false);
-        LogInfo.logs("Writing permutations...");
-        writePermutations();
+        examples = new ArrayList<ExampleRecords>(model.getExamples().size());
+        parseExamples();
+        if(opts.writePermutations)
+        {
+            LogInfo.logs("Writing permutations...");
+            writePermutations();
+        }
+        if(opts.countRepeatedRecords)
+        {
+            LogInfo.logs("Count repeated records in a permutation...");
+            countRepeatedRecords();
+            writeObject(repeatedRecords, "repeatedRecords");
+        }
+        if(opts.countSentenceNgrams)
+        {
+            LogInfo.logs("Count ngrams in each sentence...");
+            countSentenceNgrams();
+            writeObject(sentenceNgrams, "sentenceNgrams");
+        }
     }
     
-    public void convertToEventTypeStrings(boolean splitClauses)
+    public void parseExamples()
     {       
         for(AExample ex: model.getExamples())
         {
-            Permutation p = new Permutation();
+            ExampleRecords er = new ExampleRecords();
             Example e = (Example)ex;
             int[] text = e.getText();
             int[] startIndices = e.getStartIndices();
@@ -58,23 +76,27 @@ public class ExtractRecordsStatistics
                     int eventId = events[startIndices[i-1]];
                     if(eventId != -1)
                     {                        
-//                        int eventType = e.events.get(eventId).getEventTypeIndex();
-                        int eventType = eventId;
+                        int element = -1;
+                        switch(opts.exportType)
+                        {
+                            case record : element = eventId; break;
+                            default: case recordType : element = e.events.get(eventId).getEventTypeIndex(); break;
+                        }
                         // collapse consecutive records having the same type                        
 //                        if(eventTypes.isEmpty() || eventType != eventTypes.get(eventTypes.size() - 1))
                         // we don't allow repetitions of record types in the same sentence
-                        if(eventTypes.isEmpty() || !eventTypes.contains(eventType))
-                            eventTypes.add(eventType);
+                        if(eventTypes.isEmpty() || !eventTypes.contains(element))
+                            eventTypes.add(element);
                     }
                 }
                 // default input is each clause (splitted at punctuation) goes to a seperate line
-                if(splitClauses || endOfSentence(model.wordToString(text[startIndices[i]-1])))
+                if(!eventTypes.isEmpty() && (opts.splitClauses || endOfSentence(model.wordToString(text[startIndices[i]-1]))))
                 {
-                    p.addSentence(new ArrayList(eventTypes));
+                    er.addSentence(new ArrayList(eventTypes));
                     eventTypes.clear();
                 } // if
             } // for
-            examples.add(p);
+            examples.add(er);
         } // for
     }
     
@@ -88,7 +110,7 @@ public class ExtractRecordsStatistics
         try
         {
             PrintWriter out = IOUtils.openOut(Execution.getFile("permutations"));
-            for(Permutation p : examples)
+            for(ExampleRecords p : examples)
                 out.println(p);
             out.close();
         } catch (IOException ex)
@@ -100,22 +122,74 @@ public class ExtractRecordsStatistics
         }        
     }
     
-    public void testExecute()
+    private void countRepeatedRecords()
     {
-        model = new GenerativeEvent3Model(opts);
-        model.init(InitType.staged, opts.initRandom, "");
-        model.readExamples();
-        examples = new ArrayList<Permutation>(model.getExamples().size());
-        convertToEventTypeStrings(false);
-        for(Permutation p : examples)
-            System.out.println(p);
+        repeatedRecords = new HistMap<Integer>();
+        for(ExampleRecords er : examples)
+        {
+            HistMap<Integer> repRecsInSent = new HistMap<Integer>();
+            for(Integer i : er.getPermutation())
+                repRecsInSent.add(i);            
+            for(Entry e : repRecsInSent.getEntries())
+            {
+                if(((Counter)e.getValue()).getValue() > 1)
+                    repeatedRecords.add(((Integer)e.getKey()));
+            }
+        } // for
     }
     
-    class Permutation
+    private void countSentenceNgrams()
     {
-        List<List<Integer>> sentences;
+        sentenceNgrams = new HistMap<String>();
+        for(ExampleRecords er : examples)
+        {
+            for(int i = 0; i < er.numberOfSentences(); i++)
+                sentenceNgrams.add(er.sentenceToString(i));
+        } // for
+    }
+    
+    private void writeObject(Object obj, String filename)
+    {
+        try
+        {
+            PrintWriter out = IOUtils.openOut(Execution.getFile(filename));
+            out.print(obj);
+            out.close();
+        }
+        catch(Exception e)
+        {
+            LogInfo.error(e);
+        }
+    }
+    public void testExecute()
+    {
+        model = new GenerativeEvent3Model(opts.modelOpts);
+        model.init(InitType.staged, opts.modelOpts.initRandom, "");
+        model.readExamples();
+        examples = new ArrayList<ExampleRecords>(model.getExamples().size());
+        parseExamples();
+        if(opts.writePermutations)
+            for(ExampleRecords p : examples)
+            {
+                System.out.println(p);
+            }
+        if(opts.countRepeatedRecords)
+        {
+            countRepeatedRecords();
+            System.out.println(repeatedRecords);
+        }
+        if(opts.countSentenceNgrams)
+        {
+            countSentenceNgrams();
+            System.out.println(sentenceNgrams);
+        }
+    }
+    
+    class ExampleRecords
+    {
+        private List<List<Integer>> sentences;
 
-        public Permutation()
+        public ExampleRecords()
         {
             sentences = new ArrayList<List<Integer>>();
         }
@@ -125,6 +199,30 @@ public class ExtractRecordsStatistics
             sentences.add(types);
         }
 
+        List<Integer> getPermutation()
+        {
+            List<Integer> permutation = new ArrayList<Integer>();
+            for(List<Integer> sentence : sentences)
+            {
+                for(Integer i : sentence)
+                    permutation.add(i);
+            }
+            return permutation;
+        }
+        
+        int numberOfSentences()
+        {
+            return sentences.size();
+        }
+        String sentenceToString(int i)
+        {
+            assert i < sentences.size();
+            StringBuilder str = new StringBuilder();
+            for(Integer r : sentences.get(i))
+                str.append(r).append(" ");
+            return str.toString();
+        }
+        
         @Override
         public String toString()
         {
@@ -133,6 +231,8 @@ public class ExtractRecordsStatistics
             {
                 for(Integer i : sentence)
                     str.append(i).append(" ");
+                if(opts.delimitSentences)
+                    str.append("| ");
             }
             return str.toString().trim();
         }        

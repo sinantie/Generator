@@ -1,69 +1,87 @@
 package induction.utils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
  * @author konstas
  */
-public class HistMap<T> 
+public class HistMap<T>
 {
-    HashMap<T, Hist> map = new HashMap<T, Hist>();
+    private HashMap<T, Counter> map = new HashMap<T, Counter>();
 
     public void add(T word)
     {
-        Hist current = new Hist(word);
-        if(map.containsKey(word))
+        Counter counter = map.get(word);
+        if (counter == null) 
         {
-            map.get(word).count++;
+            counter = new Counter(word);
+            map.put(word, counter);
         }
-        else
-            map.put(word, current);
+        counter.incr();
     }
-
+   
+    public Set<Entry<T, Counter>> getEntries()
+    {
+        return map.entrySet();
+    }
+    
+    /**
+     * Returns frequency map in decreasing order
+     * @return 
+     */
     @Override
     public String toString()
     {
         StringBuilder str = new StringBuilder();
-        for(Hist h : map.values())
-        {
-            str.append(h).append(", ");
-        }
-        str.delete(str.lastIndexOf(","), str.length());
+        List<Counter> list = new ArrayList<Counter>(map.values());
+        Collections.sort(list);
+        for(Counter c : list)
+            str.append(c).append("\n");
+//        for(Entry<T, Counter> e : map.entrySet())
+//        {
+//            str.append(String.format("%s : %s\n", e.getKey(), e.getValue()));
+//        }
+//        str.delete(str.lastIndexOf(","), str.length());
         return str.toString();
     }
-
-    class Hist<T>
+    
+    final class Counter implements Comparable
     {
-        T key;
-        int count;
+        private T key;
+        private int value;
 
-        public Hist(T word)
+        public Counter(T key)
         {
-            this.key = word;
-            this.count = 1;
+            this.key = key;
+        }
+        
+        public int getValue()
+        {
+            return value;
         }
 
-        @Override
-        public boolean equals(Object obj)
+        public void incr()
         {
-            assert obj instanceof Hist;
-            Hist h = (Hist)obj;
-            return h.key.equals(key);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            int hash = 7;
-            hash = 11 * hash + (this.key != null ? this.key.hashCode() : 0);
-            return hash;
+            value++;
         }
 
         @Override
         public String toString()
         {
-            return key.toString() + " : " + count;
+//            return String.valueOf(value);
+            return String.format("%s : %s", key, value);
         }
-    }    
+
+        @Override
+        public int compareTo(Object o)
+        {            
+            return ((Counter)o).value - value;            
+        }
+    }         
 }
