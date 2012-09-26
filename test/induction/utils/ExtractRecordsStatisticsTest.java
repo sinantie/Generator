@@ -1,12 +1,12 @@
 package induction.utils;
 
-import induction.Options;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import fig.exec.Execution;
 import induction.Utils;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -41,6 +41,32 @@ public class ExtractRecordsStatisticsTest
 //        }
 //        Utils.write("/home/sinantie/data.out", str.toString());
 //        System.exit(0);
+        
+        try
+        {
+            FileOutputStream fos = new FileOutputStream("/home/konstas/EDI/wsj/3.0/conll/wsj-10_percy");
+            StringBuilder str = new StringBuilder();
+            for(String line : Utils.readLines("/home/konstas/EDI/wsj/3.0/conll/wsj-10_words_tags"))
+            {
+                if(line.equals(""))
+                {
+                    str.append("\n");
+                    fos.write(str.toString().getBytes());
+                    str = new StringBuilder();
+                }
+                else
+                {
+                    String[] ar = line.split("\t");
+                    str.append(ar[1]).append(" ").append(ar[0]).append(" ");
+                }
+            }
+            fos.close();
+        }
+        catch(IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+        System.exit(0);
     }
    
     /**
