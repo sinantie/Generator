@@ -26,7 +26,7 @@ public class ExtractRecordsStatistics
     Event3Model model;
     List<ExampleRecords> examples;
     HistMap<Integer> repeatedRecords;
-    HistMap<String> sentenceNgrams;
+    HistMap<String> sentenceNgrams, documentNgrams;
     
     public ExtractRecordsStatistics(ExtractRecordsStatisticsOptions opts)
     {
@@ -56,6 +56,12 @@ public class ExtractRecordsStatistics
             LogInfo.logs("Count ngrams in each sentence...");
             countSentenceNgrams();
             writeObject(sentenceNgrams, "sentenceNgrams");
+        }
+        if(opts.countDocumentNgrams)
+        {
+            LogInfo.logs("Count ngrams in each document...");
+            countDocumentNgrams();
+            writeObject(documentNgrams, "documentNgrams");
         }
     }
     
@@ -148,6 +154,15 @@ public class ExtractRecordsStatistics
         } // for
     }
     
+    private void countDocumentNgrams()
+    {        
+        documentNgrams = new HistMap<String>();        
+        for(ExampleRecords er : examples)
+        {
+            documentNgrams.add(er.toString());            
+        } // for
+    }
+    
     private void writeObject(Object obj, String filename)
     {
         try
@@ -182,6 +197,11 @@ public class ExtractRecordsStatistics
         {
             countSentenceNgrams();
             System.out.println(sentenceNgrams);
+        }
+        if(opts.countDocumentNgrams)
+        {
+            countDocumentNgrams();
+            System.out.println(documentNgrams);
         }
     }
     

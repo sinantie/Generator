@@ -18,5 +18,6 @@ public class ExtractRecordsStatisticsOptions
     @Option public boolean writePermutations = false;
     @Option public boolean countRepeatedRecords = false;    
     @Option public boolean countSentenceNgrams = false;    
+    @Option public boolean countDocumentNgrams = false;    
     @Option public boolean delimitSentences = false;    
 }
