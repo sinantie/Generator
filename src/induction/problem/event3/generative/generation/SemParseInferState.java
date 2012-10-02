@@ -295,7 +295,8 @@ public class SemParseInferState extends GenInferState
     protected TrackNode genTrack(final int i, final int j, final int t0, final int c,
                        boolean allowNone, boolean allowReal)
     {
-        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+//        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+        TrackNode node = new TrackNode(i, j, t0, c);
         final TrackParams cparams = params.trackParams[c];
         // WARNING: allowNone/allowReal might not result in any valid nodes
         if(hypergraph.addSumNode(node))

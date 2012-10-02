@@ -10,6 +10,7 @@ execDir=weatherGovLM/recordStatistics
 java -Xmx4g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.utils.ExtractRecordsStatisticsExecutor \
+-exportType recordType \
 -create \
 -overwriteExecDir \
 -modelType event3 \
@@ -19,4 +20,14 @@ dist/stanford-postagger-2010-05-26.jar \
 -inputLists ${inputLists} \
 -execDir ${execDir} \
 -stagedParamsFile ${stagedParamsFile} \
--ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa
+-extractNoneEvent \
+-delimitSentences \
+-writePermutations \
+-countSentenceNgrams \
+-countDocumentNgrams
+
+#-countRepeatedRecords
+#-countSentenceNgrams
+#-countDocumentNgrams
+#-writePermutations
+#-delimitSentences

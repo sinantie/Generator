@@ -141,7 +141,8 @@ public class VisualiseHypergraph extends javax.swing.JFrame {
         DelegateTree graph  =
                 new DelegateTree<HyperEdge, Node>();
         EventsNode ev0 = new EventsNode(0, 5);
-        TrackNode tr1 = new TrackNode(0, 1, 0, 0, true, true);
+//        TrackNode tr1 = new TrackNode(0, 1, 0, 0, true, true);
+        TrackNode tr1 = new TrackNode(0, 1, 0, 0);
         EventsNode ev1 = new EventsNode(1, 0);
         graph.addVertex(ev0);
         graph.addChild(new HyperEdge(1.0), ev0, ev1);

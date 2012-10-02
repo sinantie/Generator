@@ -1488,7 +1488,8 @@ public class DiscriminativeInferState extends Event3InferState
         {                      
             return genStopNode(i, t0, modelCParams, baseCParams);
         } // if (i == j)
-        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+//        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
+        TrackNode node = new TrackNode(i, j, t0, c);
         // WARNING: allowNone/allowReal might not result in any valid nodes
         if(hypergraph.addSumNode(node))
         {

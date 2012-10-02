@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package induction.runtime;
 
 import fig.exec.Execution;
@@ -21,13 +16,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class InductionWeatherTest
+public class InductionPCFGWeatherTest
 {
     LearnOptions lopts;
     String name;
     GenerativeEvent3Model model;
 
-    public InductionWeatherTest() {
+    public InductionPCFGWeatherTest() {
     }
 
     @BeforeClass
@@ -44,7 +39,7 @@ public class InductionWeatherTest
     public void setUp() 
     {
          String args = 
-                   "-modelType event3 "
+                   "-modelType event3pcfg "
                  + "-Options.stage1.numIters 15 "
 //                 + "-Options.stage1.hardUpdate "        // Viterbi EM
                  + "-inputLists "

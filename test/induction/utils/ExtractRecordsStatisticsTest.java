@@ -78,8 +78,11 @@ public class ExtractRecordsStatisticsTest
         String args = 
                    "-exportType recordType "
 //                 + "-countRepeatedRecords "
-                 + "-countSentenceNgrams "
-                 + "-countDocumentNgrams "
+                 + "-extractRecordTrees "
+                 + "-extractNoneEvent "
+//                 + "-useEventTypeNames "
+//                 + "-countSentenceNgrams "
+//                 + "-countDocumentNgrams "
                  + "-writePermutations "
                  + "-delimitSentences "
                  + "-modelType event3 "

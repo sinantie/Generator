@@ -34,7 +34,6 @@ import induction.problem.event3.nodes.FieldsNode;
 import induction.problem.event3.nodes.NoneEventNode;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
-import induction.problem.event3.nodes.PCEventsNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.StopNode;
 import induction.problem.event3.nodes.StringFieldValueNode;
@@ -49,9 +48,9 @@ import java.util.HashMap;
  *
  * @author konstas
  */
-public class InferState extends Event3InferState
+public class InferStatePCFG extends Event3InferState
 {    
-    public InferState(Event3Model model, Example ex, Params params, Params counts,
+    public InferStatePCFG(Event3Model model, Example ex, Params params, Params counts,
             InferSpec ispec)
     {
         super(model, ex, params, counts, ispec);
@@ -92,11 +91,6 @@ public class InferState extends Event3InferState
     @Override
     protected Widget newWidget()
     {
-//        int[] eventTypeIndices = new int[ex.events.length];
-//        for(int i = 0; i < eventTypeIndices.length && ex.events[i] != null; i++)
-//        {
-//           eventTypeIndices[i] = ex.events[i].getEventTypeIndex();
-//        }
         HashMap<Integer, Integer> eventTypeIndices =
                             new HashMap<Integer, Integer>(ex.events.size());
         for(Event e : ex.events.values())
@@ -168,7 +162,7 @@ public class InferState extends Event3InferState
         hypergraph.computePosteriors(ispec.isHardUpdate());
 //        hypergraph.computePosteriors(false);
         StopWatchSet.end();
-        // Hard inference
+        // Hard inference (Viterbi EM)
         if (hardInfer)
         {
             HyperpathResult result = hypergraph.fetchBestHyperpath(newWidget());
@@ -646,9 +640,6 @@ public class InferState extends Event3InferState
                                         eventTypeParams.boundary_f, prob);
                             }
                             public Widget choose(Widget widget) {
-//                                System.out.println(String.format("FieldsNode i=%d, end=%d, e=%s, f0=%s", i,
-//                                                    end, inferState.eventTypeToString(event),
-//                                                    inferState.getEventTypes()[event].fieldToString(f0)));
                                 return widget;
                             }
                         });
@@ -722,10 +713,6 @@ public class InferState extends Event3InferState
                         update(eventTypeCounts.fieldChoices[f0], fIter, prob);
                     }
                     public Widget choose(Widget widget) {
-//                        System.out.println(String.format("event=%s, i=%d, j=%d, f0=%s, f=%s",
-//                              ex.events[event].toString(), i, j,
-//                              inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
-//                              inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
                         for(int k = i; k < j; k++)
                         {
                             widget.getFields()[c][k] = fIter;                            
@@ -956,12 +943,11 @@ public class InferState extends Event3InferState
 
     // Generate track c in i...j (t0 is previous event type for track 0);
     // allowNone and allowReal specify what event types we can use
-    protected Object genTrack(final int i, final int j, final int t0, final int c,
-                       boolean allowNone, boolean allowReal)
+    protected Object genTrack(final int i, final int j, final int t0, boolean allowNone)
     {
         
-        final TrackParams cparams = params.trackParams[c];
-        final TrackParams ccounts = counts != null ? counts.trackParams[c] : null;        
+        final TrackParams cparams = params.trackParams[0];
+        final TrackParams ccounts = counts != null ? counts.trackParams[0] : null;        
         if(opts.useStopNode && i == j)
         {
             if(indepEventTypes())
@@ -971,160 +957,75 @@ public class InferState extends Event3InferState
                 return genStopNode(i, t0, cparams, ccounts);
             } // else
         } // if (i == j)
-//        TrackNode node = new TrackNode(i, j, t0, c, allowNone, allowReal);
-        TrackNode node = new TrackNode(i, j, t0, c);
+        TrackNode node = new TrackNode(i, j, t0, 0);
         // WARNING: allowNone/allowReal might not result in any valid nodes
         if(hypergraph.addSumNode(node))
         {
             // (1) Choose the none event
           if (allowNone && (!trueInfer || ex.getTrueWidget() == null ||
-              ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, c)))
+              ex.getTrueWidget().hasNoReachableContiguousEvents(i, j, 0)))
           {
 //              final int remember_t = t0; // Don't remember none_t (since [if] t == none_t, skip t)
-              final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not
-              Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
-              if(opts.useEventTypeDistrib)
-              {
-                  hypergraph.addEdge(node,
-                      genNoneEvent(i, j, c), recurseNode,
-                      new Hypergraph.HyperedgeInfo<Widget>() {
-                          public double getWeight() {
-                              if(prevIndepEventTypes())
-                                  return get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t);
-                              else
-                                  return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
+              final int remember_t = opts.conditionNoneEvent ? cparams.none_t : t0; // Condition on none_t or not             
+              hypergraph.addEdge(node, genNoneEvent(i, j, 0), genEvents(j, remember_t),
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight() {
+                          if(prevIndepEventTypes())
+                              return get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t);
+                          else
+                              return get(cparams.getEventTypeChoices()[t0], cparams.none_t);
+                      }
+                      public void setPosterior(double prob) {
+                           update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
+                      }
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[0][k] = Parameters.none_e;
                           }
-                          public void setPosterior(double prob) {
-                               update(ccounts.getEventTypeChoices()[t0], cparams.none_t, prob);
-//                               if (ex.getTrueWidget() != null && i == 0) // HACK
-//                               {
-//                                   ex.getTrueWidget().setEventPosterior(
-//                                           Parameters.none_e, ex.events.size(), prob);
-//                               }
-                          }
-                          public Widget choose(Widget widget) {
-                              for(int k = i; k < j; k++)
-                              {
-                                  widget.getEvents()[c][k] = Parameters.none_e;
-                              }
-                              return widget;
-                          }
-                      });
-              } // if
-              else
-              {
-                  hypergraph.addEdge(node,
-                      genNoneEvent(i, j, c), recurseNode,
-                      new Hypergraph.HyperedgeInfo<Widget>() {
-                          public double getWeight() {
-                              return 1.0;
-                          }
-                          public void setPosterior(double prob) { }
-                          public Widget choose(Widget widget) {
-                              for(int k = i; k < j; k++)
-                              {
-                                  widget.getEvents()[c][k] = Parameters.none_e;
-                              }
-                              return widget;
-                          }
-                      });
-              } // else
+                          return widget;
+                      }
+              });                            
           } // if
           // (2) Choose an event type t and event e for track c
-//          for(int e = 0; e < ex.trackEvents[c].length && ex.events[e] != null; e++)
           for(final Event e : ex.events.values())
           {
               final int eventId = e.getId();
               final int eventTypeIndex = e.getEventTypeIndex();
-//              final int eventTypeIndex = ex.events[eventId].getEventTypeIndex();
-//              final int eventTypeIndex = ex.events.get(eventId).getEventTypeIndex();
-              if (allowReal && 
-                      (!trueInfer || ex.getTrueWidget() == null ||
+              if ((!trueInfer || ex.getTrueWidget() == null ||
                       ex.getTrueWidget().hasContiguousEvents(i, j, eventId)))
               {
 //                  final int remember_t = (indepEventTypes()) ? ((Event3Model)inferState).none_t() : eventTypeIndex;
-                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;
-                  final Object recurseNode = (c == 0) ? genEvents(j, remember_t) : hypergraph.endNode;
-                  if (opts.useEventTypeDistrib)
-                  {
-                      hypergraph.addEdge(node,
-                      genEvent(i, j, c, eventId), recurseNode,
-                      new Hypergraph.HyperedgeInfo<Widget>() {
-                          public double getWeight()
-                          {
-                              if(prevIndepEventTypes())
+                  final int remember_t = (indepEventTypes()) ? cparams.boundary_t : eventTypeIndex;             
+                  hypergraph.addEdge(node, genEvent(i, j, 0, eventId), genEvents(j, remember_t),
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight()
+                      {
+                          if(prevIndepEventTypes())
 //                                  return get(cparams.getEventTypeChoices()[((Event3Model)inferState).none_t()],
-                                  return get(cparams.getEventTypeChoices()[cparams.boundary_t],
-                                          eventTypeIndex) *
-                                          (1.0d/(double)ex.getEventTypeCounts()[eventTypeIndex]); // remember_t = t under indepEventTypes
-                              else
-                                  return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
-                                          (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
+                              return get(cparams.getEventTypeChoices()[cparams.boundary_t],
+                                      eventTypeIndex) *
+                                      (1.0d/(double)ex.getEventTypeCounts()[eventTypeIndex]); // remember_t = t under indepEventTypes
+                          else
+                              return get(cparams.getEventTypeChoices()[t0], eventTypeIndex) *
+                                      (1.0/(double)ex.getEventTypeCounts()[eventTypeIndex]);
+                      }
+                      public void setPosterior(double prob) {
+                           update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
+                      }
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[0][k] = eventId;
                           }
-                          public void setPosterior(double prob) {
-                               update(ccounts.getEventTypeChoices()[t0], eventTypeIndex, prob);
-//                               if (ex.getTrueWidget() != null && i == 0) // HACK
-//                               {
-////                                   ex.getTrueWidget().setEventPosterior(eventId, ex.events.size(), prob);
-//                                   ex.getTrueWidget().setEventPosterior(eventTypeIndex, ex.events.size(), prob);
-//                               }
-                          }
-                          public Widget choose(Widget widget) {
-                              for(int k = i; k < j; k++)
-                              {
-                                  widget.getEvents()[c][k] = eventId;
-//                                  System.out.println(String.format("TrackNode i=%d, j=%d, t0=%s, e=%s",
-//                                        i, j,
-//                                        inferState.eventTypeToString(t0),
-//                                        inferState.eventTypeToString(eIter)));
-                              }
-                              return widget;
-                          }
-                      });
-                  } // if
-                  else
-                  {
-                      hypergraph.addEdge(node,
-                      genEvent(i, j, c, eventId), recurseNode,
-                      new Hypergraph.HyperedgeInfo<Widget>() {
-                          public double getWeight() {
-                                  return 1.0;
-                          }
-                          public void setPosterior(double prob) { }
-                          public Widget choose(Widget widget) {
-                              for(int k = i; k < j; k++)
-                              {
-                                  widget.getEvents()[c][k] = eventId;
-                              }
-                              return widget;
-                          }
-                      });
-                  } // else
+                          return widget;
+                      }
+                  });                  
               } // if
           } // for
         } // if        
         return node;
-    }
-
-    // pc says for each c whether the event type on track c can be none_t or not
-    protected PCEventsNode genPCEvents(int i, int j, int t0, int pc)
-    {
-        PCEventsNode node = new PCEventsNode(i, j, t0, pc);
-        if(hypergraph.addProdNode(node))
-        {
-            // For each track, do independently
-            for(int c = 0; c < ((Event3Model)model).getC(); c++)
-            {
-                hypergraph.addEdge(node, genTrack(i, j, t0, c, opts.allowNoneEvent,
-                        allowReal(c, pc)) );
-            }
-           // Note: there might be nothing consistent with pc
-           // (one track has no events and pc says we need events)
-           if (pc == wildcard_pc)
-               hypergraph.assertNonEmpty(node);
-        }
-        return node;
-    }    
+    }   
    
     // Generate segmentation of i...N into event types; previous event type is t0
     // Incorporate eventType distributions
@@ -1133,7 +1034,6 @@ public class InferState extends Event3InferState
         
         if (i == N)
         {
-//            System.out.println(String.format("END : [%d]", i));
             if(opts.useStopNode)
             {
                 EventsNode node = new EventsNode(N, t0);
@@ -1149,7 +1049,6 @@ public class InferState extends Event3InferState
         }
         else
         {
-//            System.out.println(String.format("Father : [%d]", i));
             EventsNode node = new EventsNode(i, t0);
             if(hypergraph.addSumNode(node))
             {
@@ -1193,30 +1092,7 @@ public class InferState extends Event3InferState
     }
 
     protected void selectEnd(int j, EventsNode node, int i, int t0)
-    {       
-        if (opts.jointEventTypeDecision)
-        {
-            for(int pc = 0; pc < ((Event3Model)model).getPC(); pc++) // Choose track bitmask pc
-            {
-                final int pcIter = pc;
-                hypergraph.addEdge(node, genPCEvents(i, j, t0, pc),
-                    new Hypergraph.HyperedgeInfo<Widget>() {
-                        public double getWeight() {
-                            return get(params.trackChoices, pcIter);
-                        }
-                        public void setPosterior(double prob) {
-                             update(counts.trackChoices, pcIter, prob);
-                        }
-                        public Widget choose(Widget widget) {
-                            return widget;
-                        }
-                    });
-            } // for
-        } // if
-        else
-        { // Do each track independently
-//            System.out.println(String.format("[%d] => [%d,%d]", i, i, j));
-            hypergraph.addEdge(node, genPCEvents(i, j, t0, wildcard_pc));
-        }
+    {               
+        hypergraph.addEdge(node, genTrack(i, j, t0, opts.allowNoneEvent));        
     }
 }

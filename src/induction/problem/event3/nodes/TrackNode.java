@@ -5,16 +5,23 @@ package induction.problem.event3.nodes;
  * @author konstas
  */
 public class TrackNode extends EventsNode{
-    int c; boolean allowNone, allowReal;
-    public TrackNode(int i, int j, int t0, int c, boolean allowNone, boolean allowReal) {
+    int c;// boolean allowNone, allowReal;
+//    public TrackNode(int i, int j, int t0, int c, boolean allowNone, boolean allowReal) {
+//        super(i, j, t0);
+//        this.c = c;
+//        this.allowNone = allowNone;
+//        this.allowReal = allowReal;
+//    }
+    
+    public TrackNode(int i, int j, int t0, int c) {
         super(i, j, t0);
-        this.c = c;
-        this.allowNone = allowNone;
-        this.allowReal = allowReal;
+        this.c = c;        
     }
+        
     @Override
     public String toString() {
-        return debug(this.getClass().getSimpleName(), i, j, t0, c, allowNone, allowReal);
+//        return debug(this.getClass().getSimpleName(), i, j, t0, c, allowNone, allowReal);
+        return debug(this.getClass().getSimpleName(), i, j, t0, c);
     }
     @Override
     public boolean equals(Object obj) {
@@ -22,8 +29,8 @@ public class TrackNode extends EventsNode{
         if(!(obj instanceof TrackNode))
             return false;
         TrackNode node = (TrackNode) obj;
-        return i == node.i && j == node.j && t0 == node.t0 && c == node.c &&
-                allowNone == node.allowNone && allowReal == node.allowReal;
+        return i == node.i && j == node.j && t0 == node.t0 && c == node.c;// &&
+//                allowNone == node.allowNone && allowReal == node.allowReal;
     }
     @Override
     public int hashCode() {
@@ -32,8 +39,8 @@ public class TrackNode extends EventsNode{
         hash = 29 * hash + this.j;
         hash = 29 * hash + this.t0;
         hash = 29 * hash + this.c;
-        hash = 29 * hash + (this.allowNone ? 1 : 0);
-        hash = 29 * hash + (this.allowReal ? 1 : 0);
+//        hash = 29 * hash + (this.allowNone ? 1 : 0);
+//        hash = 29 * hash + (this.allowReal ? 1 : 0);
         return hash;
     }
 }

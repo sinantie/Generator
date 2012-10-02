@@ -32,6 +32,7 @@ import induction.problem.event3.generative.alignment.AlignmentPerformance;
 import induction.problem.event3.generative.generation.GenInferState;
 import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.alignment.InferState;
+import induction.problem.event3.generative.alignment.InferStatePCFG;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
 import java.io.IOException;
@@ -462,6 +463,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         {
             case generate : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
             case semParse : return new SemParseInferState(this, ex, params, counts, ispec, ngramModel);
+            case event3pcfg : return new InferStatePCFG(this, ex, params, counts, ispec);
             case event3 : default : return new InferState(this, ex, params, counts, ispec);
         }
     }

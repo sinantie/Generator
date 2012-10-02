@@ -31,6 +31,11 @@ public class HistMap<T>
         return map.entrySet();
     }
     
+    public Set<T> getKeys()
+    {
+        return map.keySet();
+    }
+    
     /**
      * Returns frequency map in decreasing order
      * @return 
