@@ -248,14 +248,14 @@ public class ExtractRecordsStatistics
     private int[][] createConstituencyMatrix(ExampleRecords p, Map<Integer, Set<Sentence>> ngrams, Integer[] ngramsLength)
     {
         int N = p.getSize();
-        int[][] matrix = constituencyMatrixFactory(N);        
+        int[][] matrix = constituencyMatrixFactory(N);
         int pos = 0;
         for(Sentence sentence : p.getSentences())
         {
             int sentLength = sentence.getSize();
             // fill diagonal with terminal symbol
             for(int i = 0; i < sentLength; i++)
-                matrix[pos + i][pos + i] = sentence.getTokens().get(i);            
+                matrix[pos + i][pos + i] = sentence.getTokens().get(i);
             // find the smallest prefix (leftmost) ngram that spans the sentence
             if(sentLength > 1) // spans of size=1 are already covered
             {

@@ -10,10 +10,11 @@ import java.util.List;
 
 
 public class TreeUtils {
+    
   // (Markov) order = size of history to remember
   // Create new labels such as @S-NP
   // If order == -1, then don't even put @
-  public static Tree<String> binarize(Tree<String> tree, int order) {
+  public static Tree<String> leftBinarize(Tree<String> tree, int order) {
     String rootLabel = tree.getLabel();
 
     if( tree.getChildren().isEmpty())
@@ -21,12 +22,48 @@ public class TreeUtils {
     if(tree.getChildren().size() == 1)
       return new Tree<String>(rootLabel,
         tree.isIntermediateNode(),
-        ListUtils.newList(binarize(tree.getChildren().get(0), order)));
+        ListUtils.newList(leftBinarize(tree.getChildren().get(0), order)));
 
     // Binarize all children
     List<Tree<String>> newChildren = new ArrayList();
     for(Tree<String> child : tree.getChildren())
-      newChildren.add(binarize(child, order));
+      newChildren.add(leftBinarize(child, order));
+
+    // Construct the labels of the intermediate nodes
+    List<String> intermediateLabels = new ArrayList();
+    for(Tree<String> child : tree.getChildren())
+      intermediateLabels.add(child.getLabel());
+    for(int i = intermediateLabels.size()-1; i >= 0; i--) {
+      StringBuilder buf = new StringBuilder((order == -1 ? "" : "@")+tree.getLabel());
+      for(int k = 0; k < order && i-k >= 0; k++)
+            buf.append("-").append(intermediateLabels.get(i-k));
+      intermediateLabels.set(i, buf.toString());
+    }
+
+    // Build tree with intermediate nodes
+    Tree<String> newTree = newChildren.get(0);
+    for(int i = 1; i < intermediateLabels.size(); i++) {
+      String intermediateLabel =
+        (i == intermediateLabels.size() - 1 ? rootLabel : intermediateLabels.get(i+1));
+      newTree = new Tree<String>(intermediateLabel, i < intermediateLabels.size() - 1,
+                              ListUtils.newList(newTree, newChildren.get(i)));
+    }
+    return newTree;
+  }
+  public static Tree<String> rightBinarize(Tree<String> tree, int order) {
+    String rootLabel = tree.getLabel();
+
+    if( tree.getChildren().isEmpty())
+      return tree;
+    if(tree.getChildren().size() == 1)
+      return new Tree<String>(rootLabel,
+        tree.isIntermediateNode(),
+        ListUtils.newList(rightBinarize(tree.getChildren().get(0), order)));
+
+    // Binarize all children
+    List<Tree<String>> newChildren = new ArrayList();
+    for(Tree<String> child : tree.getChildren())
+      newChildren.add(rightBinarize(child, order));
 
     // Construct the labels of the intermediate nodes
     List<String> intermediateLabels = new ArrayList();
@@ -52,7 +89,7 @@ public class TreeUtils {
 
   private static final HeadFinder headFinder = new CollinsHeadFinder();
   // Binarize direction based on heads
-  // First binarize right arguments and then binarize left arguments
+  // First rightBinarize right arguments and then rightBinarize left arguments
   // In (X A B C D E), if C is the head, then the result is
   // (X A (Xl B (Xr (Xr C D) E)))
   public static Tree<String> headBinarize(Tree<String> tree, int order) {
@@ -65,7 +102,7 @@ public class TreeUtils {
         tree.isIntermediateNode(),
         ListUtils.newList(headBinarize(tree.getChildren().get(0), order)));
 
-    // Recursively binarize all children
+    // Recursively rightBinarize all children
     List<Tree<String>> newChildren = new ArrayList();
     for(Tree<String> child : tree.getChildren())
       newChildren.add(headBinarize(child, order));
