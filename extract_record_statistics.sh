@@ -22,10 +22,11 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile} \
 -extractNoneEvent \
 -delimitSentences \
--writePermutations \
--countSentenceNgrams \
--countDocumentNgrams
+-useEventTypeNames \
+-extractRecordTrees
 
+#-useEventTypeNames
+#-extractRecordTrees
 #-countRepeatedRecords
 #-countSentenceNgrams
 #-countDocumentNgrams

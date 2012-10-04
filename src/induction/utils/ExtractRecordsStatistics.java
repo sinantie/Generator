@@ -1,7 +1,11 @@
 package induction.utils;
 
+import edu.berkeley.nlp.ling.Tree;
+import edu.berkeley.nlp.ling.Trees.PennTreeReader;
+import edu.berkeley.nlp.ling.Trees.PennTreeRenderer;
 import fig.basic.IOUtils;
 import fig.basic.Indexer;
+import fig.basic.ListUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.Options.InitType;
@@ -13,14 +17,13 @@ import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.utils.HistMap.Counter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  *
@@ -34,6 +37,7 @@ public class ExtractRecordsStatistics
     HistMap repeatedRecords;
     HistMap<Sentence> sentenceNgrams;
     HistMap<String> documentNgrams;
+    Set<String> rules;
     Indexer indexer = new Indexer();
     
     public ExtractRecordsStatistics(ExtractRecordsStatisticsOptions opts)
@@ -84,7 +88,7 @@ public class ExtractRecordsStatistics
     {       
         for(AExample ex: model.getExamples())
         {
-            ExampleRecords er = new ExampleRecords();
+            ExampleRecords er = new ExampleRecords(ex.getName());
             Example e = (Example)ex;
             int[] text = e.getText();
             int[] startIndices = e.getStartIndices();
@@ -113,7 +117,7 @@ public class ExtractRecordsStatistics
                     } // if                    
                 }
                 if(opts.extractNoneEvent && w.getEvents()[0][startIndices[i-1]] == -1)
-                    eventTypes.add(indexer.getIndex(opts.useEventTypeNames ? "(none)" : -1));
+                    eventTypes.add(indexer.getIndex(opts.useEventTypeNames ? "none" : -1));
                 // default input is each clause (splitted at punctuation) goes to a seperate line
                 if(!eventTypes.isEmpty() && (opts.splitClauses || endOfSentence(model.wordToString(text[startIndices[i]-1]))))
                 {
@@ -200,104 +204,79 @@ public class ExtractRecordsStatistics
     
     private void extractRecordTrees()
     {
-        // make a lexicon of unique sentence ngram ordered by token length
-        Map<Integer, Set<Sentence>> ngrams = new TreeMap<Integer, Set<Sentence>>();
-        for(Sentence ngram : sentenceNgrams.getKeys())
+        rules = new TreeSet<String>();
+        try
         {
-            int n = ngram.getSize();
-            Set<Sentence> list = ngrams.get(n);
-            if(list == null)
-            {
-                list = new HashSet<Sentence>();
-                list.add(ngram);                
-            }
-            else if(!list.contains(ngram))
-                list.add(ngram);
-            ngrams.put(n, list);
-        } // for
-        Integer[] ngramsLength = ngrams.keySet().toArray(new Integer[0]);
-        for(ExampleRecords p : examples)
-        {
-            int[][] matrix = createConstituencyMatrix(p, ngrams, ngramsLength);
-            for(Sentence sentence : p.getSentences())
-            {
-                
-            }
-        }
-//        def renderTree(words:Array[Int], matrix:Array[Array[Int]]) = {
-//    def create(i:Int, j:Int) : Tree = {
-//      val k = matrix(i)(j)
-//      if (i == j) {
-//        val tag = if (opts.fixPreTags) ptstr(k) else "p"+k
-//        new Tree(tag, false, fig.basic.ListUtils.newList(new Tree(wstr(words(i)), false)))
-//      }
-//      else {
-//        val tag = "n"+k
-//        foreach(i, j, { k:Int => // Find the split point
-//          if (matrix(i)(k) != -1 && matrix(k+1)(j) != -1)
-//            return new Tree(tag, false,
-//              fig.basic.ListUtils.newList(create(i, k), create(k+1, j)))
-//        })
-//        throw new RuntimeException("Bad")
-//      }
-//    }
-//    edu.berkeley.nlp.ling.Trees.PennTreeRenderer.render(create(0, words.length-1))
-//  }
-    }
-    
-    private int[][] createConstituencyMatrix(ExampleRecords p, Map<Integer, Set<Sentence>> ngrams, Integer[] ngramsLength)
-    {
-        int N = p.getSize();
-        int[][] matrix = constituencyMatrixFactory(N);
-        int pos = 0;
-        for(Sentence sentence : p.getSentences())
-        {
-            int sentLength = sentence.getSize();
-            // fill diagonal with terminal symbol
-            for(int i = 0; i < sentLength; i++)
-                matrix[pos + i][pos + i] = sentence.getTokens().get(i);
-            // find the smallest prefix (leftmost) ngram that spans the sentence
-            if(sentLength > 1) // spans of size=1 are already covered
-            {
-                for(int j = 0 ; j < ngramsLength.length; j++) // we assume that ngramsLength is ordered ascending
-                {
-                    int n = ngramsLength[j];
-                    if(n > 1) // consider ngrams with span greater than 1
-                    {
-                        Sentence fragment = new Sentence(sentence.getFragment(0, n));
-                        if(ngrams.get(n).contains(fragment))
-                        {
-                            
-                        }
-                    } // if
-                } // for
-            } // if
+            PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank"));
             
-            pos += sentLength;
+            for(ExampleRecords p : examples)
+            {
+                // Create a flat structured tree in Penn Treebank-style. 
+                // The start symbol S emits sentences in a single rule.
+                // The intermediate symbol of each sentence is the aggregation of each
+                // children non-terminals.
+                StringBuilder str = new StringBuilder("(S "); // start symbol span
+                for(Sentence sentence : p.getSentences())
+                {
+                    str.append(sentence.toPennTreebankStyle());
+                }
+                str.append(")"); // close start symbol span
+                // Read the tree and binarize. We slightly tweak the naming of Xbar rules,
+                // by integrating children RHS in the name of the LHS symbol.
+                Tree<String> tree = leftBinarize(new PennTreeReader(new StringReader(str.toString())).next());
+                out.println(p.getName());
+                out.println(PennTreeRenderer.render(tree));
+//                System.out.println(PennTreeRenderer.render(tree));
+            } // for
+            out.close();
+            out = IOUtils.openOut(Execution.getFile("treebankRules"));
+            for(String rule : rules.toArray(new String[0]))
+                out.println(rule);
+            out.close();
         }
-        System.out.println(printConstituencyMatrix(matrix));
-        return matrix;
-    }
-    
-    private int[][] constituencyMatrixFactory(int N)
-    {
-        int[][] matrix = new int[N][N];
-        for(int[] row : matrix)
-            Arrays.fill(row, -1);
-        return matrix;
-    }
-    
-    private String printConstituencyMatrix(int[][] matrix)
-    {
-        StringBuilder str = new StringBuilder();
-        for(int[] row : matrix)
+        catch(IOException ioe)
         {
-            for(int el : row)
-                str.append(el != -1 ? indexer.getObject(el) : "_").append("\t");
-            str.append("\n");
+            LogInfo.error(ioe);
         }
-        return str.toString();
+        
+//        System.out.println(rules);
+        
     }
+      
+    
+    public Tree<String> leftBinarize(Tree<String> tree) 
+    {
+        String rootLabel = tree.getLabel();
+
+        if (tree.getChildren().isEmpty())
+        {
+            return tree;
+        }
+        if (tree.getChildren().size() == 1)
+        {
+            return new Tree<String>(rootLabel,
+                    tree.isIntermediateNode(),
+                    ListUtils.newList(leftBinarize(tree.getChildren().get(0))));
+        }
+
+        // Binarize all children
+        List<Tree<String>> newChildren = new ArrayList();
+        for (Tree<String> child : tree.getChildren())
+        {
+            newChildren.add(leftBinarize(child));
+        }
+
+        // Build tree with intermediate nodes
+        Tree<String> newTree = newChildren.get(0);
+        for (int i = 1; i < newChildren.size(); i++)
+        {
+            String intermediateLabel =
+                    i == newChildren.size() - 1 ? rootLabel : (newTree.getLabel() + "_" + newChildren.get(i).getLabel());
+            rules.add(String.format("%s -> %s %s", intermediateLabel, newTree.getLabel(), newChildren.get(i).getLabel()));
+            newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newTree, newChildren.get(i)));            
+        }
+        return newTree;
+    }      
     
     public void testExecute()
     {
@@ -337,13 +316,20 @@ public class ExtractRecordsStatistics
     
     class ExampleRecords
     {
+        private String name;
         private List<Sentence> sentences;
 
-        public ExampleRecords()
+        public ExampleRecords(String name)
         {
+            this.name = name;
             sentences = new ArrayList<Sentence>();
         }
-                
+
+        public String getName()
+        {
+            return name;
+        }
+                       
         void addSentence(List types)
         {
             sentences.add(new Sentence(types));
@@ -422,6 +408,33 @@ public class ExtractRecordsStatistics
         {
             assert i > 0 && j < size && i < j;
             return tokens.subList(i, j+1);
+        }
+        
+        public String generateIntermediateLabel()
+        {
+            StringBuilder str = new StringBuilder();
+            for(Integer r : tokens)
+                str.append(indexer.getObject(r)).append("-");
+            return str.toString();
+        }
+        
+        public String toPennTreebankStyle()
+        {
+            StringBuilder intermediateLabel = new StringBuilder();
+            StringBuilder str = new StringBuilder();
+            for(Integer r : tokens)
+            {
+                String tok = String.valueOf(indexer.getObject(r));
+                str.append("(").append(tok).append(") ");
+                intermediateLabel.append(tok).append("_");
+            }
+            if(tokens.size() > 1)
+            {
+                str.insert(0, "(" + intermediateLabel.substring(0, intermediateLabel.length() - 1) + " ");
+                str.append(")");
+            }
+            
+            return str.toString();
         }
         
         @Override

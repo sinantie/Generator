@@ -54,13 +54,13 @@ public class TreeUtilsTest
     public void testRightBinarize()
     {
         System.out.println("rightBinarize");
-        int order = 1;
+        int order = -1;
 //        PennTreeReader reader = new PennTreeReader(new StringReader("(S (SENT1 (6 a) (8 b) (7 c) ) (SENT2 (5 d) (0 e) ) (SENT3 (3 f) (2 g) ) )"));
         PennTreeReader reader = new PennTreeReader(new StringReader("(S (6-8-7 (6 a) (8 b) (7 c) ) (5-0 (5 d) (0 e) ) (3-2 (3 f) (2 g) ) )"));
         Tree<String> tree = reader.next();
-        System.out.println(PennTreeRenderer.render(tree));   
+        System.out.println("Input:\n" + PennTreeRenderer.render(tree));   
         Tree<String> result =  TreeUtils.rightBinarize(tree, order);    
-        System.out.println(PennTreeRenderer.render(result));    
+        System.out.println("Output:\n" + PennTreeRenderer.render(result));    
         
 //        Tree expResult = null;        
 //        assertEquals(expResult, result);        
@@ -73,13 +73,13 @@ public class TreeUtilsTest
     public void testLeftBinarize()
     {
         System.out.println("leftBinarize");
-        int order = 1;
+        int order = -1;
 //        PennTreeReader reader = new PennTreeReader(new StringReader("(S (SENT1 (6 a) (8 b) (7 c) ) (SENT2 (5 d) (0 e) ) (SENT3 (3 f) (2 g) ) )"));
         PennTreeReader reader = new PennTreeReader(new StringReader("(S (6-8-7 (6 a) (8 b) (7 c) ) (5-0 (5 d) (0 e) ) (3-2 (3 f) (2 g) ) )"));
         Tree<String> tree = reader.next();
-        System.out.println(PennTreeRenderer.render(tree));   
+        System.out.println("Input:\n" + PennTreeRenderer.render(tree));   
         Tree<String> result =  TreeUtils.leftBinarize(tree, order);    
-        System.out.println(PennTreeRenderer.render(result));    
+        System.out.println("Output:\n" + PennTreeRenderer.render(result));    
         
 //        Tree expResult = null;        
 //        assertEquals(expResult, result);        
@@ -88,7 +88,7 @@ public class TreeUtilsTest
     /**
      * Test of headBinarize method, of class TreeUtils.
      */
-    @Test
+//    @Test
     public void testHeadBinarize()
     {
         System.out.println("headBinarize");
@@ -104,7 +104,7 @@ public class TreeUtilsTest
     /**
      * Test of removeUnaries method, of class TreeUtils.
      */
-    @Test
+//    @Test
     public void testRemoveUnaries()
     {
         System.out.println("removeUnaries");
@@ -119,7 +119,7 @@ public class TreeUtilsTest
     /**
      * Test of replaceTerminalsWithPreterminals method, of class TreeUtils.
      */
-    @Test
+//    @Test
     public void testReplaceTerminalsWithPreterminals()
     {
         System.out.println("replaceTerminalsWithPreterminals");
@@ -134,7 +134,7 @@ public class TreeUtilsTest
     /**
      * Test of transformNonterminals method, of class TreeUtils.
      */
-    @Test
+//    @Test
     public void testTransformNonterminals()
     {
         System.out.println("transformNonterminals");
@@ -154,12 +154,11 @@ public class TreeUtilsTest
     public void testIsPunctuationTag()
     {
         System.out.println("isPunctuationTag");
-        String tag = "";
+        String tag = "./.";
         boolean expResult = false;
         boolean result = TreeUtils.isPunctuationTag(tag);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -168,12 +167,10 @@ public class TreeUtilsTest
     @Test
     public void testRemovePunctuation()
     {
-        System.out.println("removePunctuation");
-        Tree<String> tree = null;
-        Tree expResult = null;
+        System.out.println("removePunctuation");       
+        Tree<String> tree = new PennTreeReader(new StringReader("(S (NP (PRP I)) (VP (VBD ate) (. .)) )")).next();
+        Tree expResult = new PennTreeReader(new StringReader("(S (NP (PRP I)) (VP (VBD ate)) )")).next();
         Tree result = TreeUtils.removePunctuation(tree);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertEquals(expResult.toString(), result.toString());        
     }
 }
