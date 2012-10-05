@@ -2,9 +2,6 @@ package induction.utils;
 
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import fig.exec.Execution;
-import induction.Utils;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,17 +74,20 @@ public class ExtractRecordsStatisticsTest
     {     
         String args = 
                    "-exportType recordType "
+                 +  "-examplesInSingleFile "
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
+                 + "-binarize right "
                  + "-extractNoneEvent "
-//                 + "-useEventTypeNames "
+                 + "-useEventTypeNames "
 //                 + "-countSentenceNgrams "
 //                 + "-countDocumentNgrams "
                  + "-writePermutations "
                  + "-delimitSentences "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "test/testWeatherGovEvents "
+                 + "data/weatherGov/weatherGovGenDevGabor.gz "
+//                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
                  + "weatherGovLM/recordStatistics "
