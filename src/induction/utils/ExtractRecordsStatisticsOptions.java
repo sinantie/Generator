@@ -11,6 +11,8 @@ import induction.Options;
 public class ExtractRecordsStatisticsOptions
 {
     public enum Type {record, recordType};
+    public enum Direction {left, right};
+    
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();
     
     @Option(required=true) public Type exportType = Type.recordType;    
@@ -23,4 +25,5 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Count the number of record (type) sentence ngrams per document") public boolean countDocumentNgrams = false;    
     @Option(gloss="Output a delimiter '|' between sentences") public boolean delimitSentences = false;
     @Option(gloss="Write record (type) assignments as an mrg tree") public boolean extractRecordTrees  = false;
+    @Option(gloss="Left binarize or right binarize") public Direction binarize = Direction.left;
 }

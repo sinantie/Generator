@@ -932,28 +932,59 @@ public abstract class Event3Model extends WordModel
     {
         String[] res = new String[4];
         String ar[] = input.split("\n");
-        res[0] = ar[0]; // name
-        if(!ar[1].startsWith(".id")) // text was found
-            res[1] = ar[1];
-        int i;
         StringBuilder str = new StringBuilder();
-        for(i = res[1] == null ? 1 : 2; i < ar.length; i++)
+        if(ar[0].equals("$NAME")) // event3 v.2 format
         {
-            if(ar[i].startsWith(".id")) // event line
-                str.append(ar[i]).append("\n");
-            else
-                break;
-        } // for
-        res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
-        if(i < ar.length) // didn't reach the end of input, so there is align data
-        {
+            res[0] = ar[1]; // name
+            // parse text
+            int i = 3; // 2nd line is the $TEXT tag
+            while(i< ar.length && !ar[i].equals("$EVENTS")) 
+            {
+                str.append(ar[i++]).append("\n");                
+            }            
+            res[1] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
             str = new StringBuilder();
-            for(int j = i; j < ar.length; j++)
-                str.append(ar[j]).append("\n");
-            res[3] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            i++; // move past $EVENTS tag
+            while(i< ar.length && !ar[i].equals("$ALIGN")) 
+            {
+                str.append(ar[i++]).append("\n");                
+            }            
+            res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            if(i < ar.length) // didn't reach the end of input, so there is align data
+            {
+                i++; // move past $ALIGN tag
+                str = new StringBuilder();
+                while(i< ar.length) 
+                {
+                    str.append(ar[i++]).append("\n");                
+                }            
+                res[3] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            }
         }
+        else // event3 v.1 format
+        {
+            res[0] = ar[0]; // name
+            if(!ar[1].startsWith(".id")) // text was found
+                res[1] = ar[1];
+            int i;            
+            for(i = res[1] == null ? 1 : 2; i < ar.length; i++)
+            {
+                if(ar[i].startsWith(".id")) // event line
+                    str.append(ar[i]).append("\n");
+                else
+                    break;
+            } // for
+            res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            if(i < ar.length) // didn't reach the end of input, so there is align data
+            {
+                str = new StringBuilder();
+                for(int j = i; j < ar.length; j++)
+                    str.append(ar[j]).append("\n");
+                res[3] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            }
+        }                
         return res;
-    }
+    }        
     @Override
     public void readExamples()
     {

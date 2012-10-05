@@ -14,12 +14,12 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.utils.ExtractRecordsStatisticsOptions.Direction;
 import induction.utils.HistMap.Counter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -80,7 +80,20 @@ public class ExtractRecordsStatistics
             LogInfo.logs("Extracting record trees...");
             if(sentenceNgrams == null) // we need to compute sentence ngrams to construct CFG rules that bias toward sentence constituents
                 countSentenceNgrams();
-            extractRecordTrees();
+            try
+            {
+                PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize"));
+                extractRecordTrees(out);
+                out.close();
+                out = IOUtils.openOut(Execution.getFile("recordTreebankRules" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize"));
+                writeRules(out);
+                out.close();
+            }
+            catch(IOException ioe)
+            {
+                LogInfo.error(ioe);
+            }
+            
         }
     }
     
@@ -151,6 +164,13 @@ public class ExtractRecordsStatistics
         }        
     }
     
+    private void writeRules(PrintWriter out)
+    {
+        for(String rule : rules.toArray(new String[0]))
+            out.println(rule);
+        out.close();      
+    }
+    
     private void countRepeatedRecords()
     {
         repeatedRecords = new HistMap<Integer>();
@@ -202,49 +222,32 @@ public class ExtractRecordsStatistics
         }
     }
     
-    private void extractRecordTrees()
+    private void extractRecordTrees(PrintWriter out)
     {
         rules = new TreeSet<String>();
-        try
+                              
+        for(ExampleRecords p : examples)
         {
-            PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank"));
-            
-            for(ExampleRecords p : examples)
+            // Create a flat structured tree in Penn Treebank-style. 
+            // The start symbol S emits sentences in a single rule.
+            // The intermediate symbol of each sentence is the aggregation of each
+            // children non-terminals.
+            StringBuilder str = new StringBuilder("(S "); // start symbol span
+            for(Sentence sentence : p.getSentences())
             {
-                // Create a flat structured tree in Penn Treebank-style. 
-                // The start symbol S emits sentences in a single rule.
-                // The intermediate symbol of each sentence is the aggregation of each
-                // children non-terminals.
-                StringBuilder str = new StringBuilder("(S "); // start symbol span
-                for(Sentence sentence : p.getSentences())
-                {
-                    str.append(sentence.toPennTreebankStyle());
-                }
-                str.append(")"); // close start symbol span
-                // Read the tree and binarize. We slightly tweak the naming of Xbar rules,
-                // by integrating children RHS in the name of the LHS symbol.
-                Tree<String> tree = leftBinarize(new PennTreeReader(new StringReader(str.toString())).next());
-                out.println(p.getName());
-                out.println(PennTreeRenderer.render(tree));
-//                System.out.println(PennTreeRenderer.render(tree));
-            } // for
-            out.close();
-            out = IOUtils.openOut(Execution.getFile("treebankRules"));
-            for(String rule : rules.toArray(new String[0]))
-                out.println(rule);
-            out.close();
-        }
-        catch(IOException ioe)
-        {
-            LogInfo.error(ioe);
-        }
-        
-//        System.out.println(rules);
-        
-    }
-      
+                str.append(sentence.toPennTreebankStyle());
+            }
+            str.append(")"); // close start symbol span
+            // Read the tree and binarize. We slightly tweak the naming of Xbar rules,
+            // by integrating children RHS in the name of the LHS symbol.
+            Tree<String> tree = binarize(new PennTreeReader(new StringReader(str.toString())).next());
+            out.println(p.getName());
+            out.println(PennTreeRenderer.render(tree));
+//            System.out.println(PennTreeRenderer.render(tree));
+        } // for
+    }      
     
-    public Tree<String> leftBinarize(Tree<String> tree) 
+    public Tree<String> binarize(Tree<String> tree) 
     {
         String rootLabel = tree.getLabel();
 
@@ -256,26 +259,41 @@ public class ExtractRecordsStatistics
         {
             return new Tree<String>(rootLabel,
                     tree.isIntermediateNode(),
-                    ListUtils.newList(leftBinarize(tree.getChildren().get(0))));
+                    ListUtils.newList(binarize(tree.getChildren().get(0))));
         }
 
         // Binarize all children
         List<Tree<String>> newChildren = new ArrayList();
         for (Tree<String> child : tree.getChildren())
         {
-            newChildren.add(leftBinarize(child));
+            newChildren.add(binarize(child));
         }
 
         // Build tree with intermediate nodes
-        Tree<String> newTree = newChildren.get(0);
-        for (int i = 1; i < newChildren.size(); i++)
+        if(opts.binarize == Direction.left)
         {
-            String intermediateLabel =
-                    i == newChildren.size() - 1 ? rootLabel : (newTree.getLabel() + "_" + newChildren.get(i).getLabel());
-            rules.add(String.format("%s -> %s %s", intermediateLabel, newTree.getLabel(), newChildren.get(i).getLabel()));
-            newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newTree, newChildren.get(i)));            
+            Tree<String> newTree = newChildren.get(0);
+            for (int i = 1; i < newChildren.size(); i++)
+            {
+                String intermediateLabel =
+                        i == newChildren.size() - 1 ? rootLabel : (newTree.getLabel() + "_" + newChildren.get(i).getLabel());
+                rules.add(String.format("%s -> %s %s", intermediateLabel, newTree.getLabel(), newChildren.get(i).getLabel()));
+                newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newTree, newChildren.get(i)));            
+            }
+            return newTree;
+        } // if
+        else
+        {
+            Tree<String> newTree = newChildren.get(newChildren.size()-1);
+            for(int i = newChildren.size()-2; i >= 0; i--) 
+            {
+              String intermediateLabel = i == 0 ? rootLabel : (newChildren.get(i).getLabel() + "_" + newTree.getLabel());
+              rules.add(String.format("%s -> %s %s", intermediateLabel, newChildren.get(i).getLabel(), newTree.getLabel()));
+              newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newChildren.get(i), newTree));
+            }
+            return newTree;
         }
-        return newTree;
+        
     }      
     
     public void testExecute()
@@ -310,7 +328,8 @@ public class ExtractRecordsStatistics
             LogInfo.logs("Extracting record trees...");
             if(sentenceNgrams == null) // we need to compute sentence ngrams to construct CFG rules that bias toward sentence constituents
                 countSentenceNgrams();
-            extractRecordTrees();
+            extractRecordTrees(new PrintWriter(System.out));
+            writeRules(new PrintWriter(System.out));
         }
     }
     

@@ -4,6 +4,7 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
+import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.LearnOptions;
@@ -297,14 +298,14 @@ public abstract class AModel
     protected void readFromSingleFile(ArrayList<String> inputLists)
     {
         for(String file : inputLists)
-        {
+        {            
             if(new File(file).exists())
             {
                 String key = null;
                 StringBuilder str = new StringBuilder();
                 for(String line : Utils.readLines(file))
-                {
-                    if(line.startsWith("Example_"))
+                {                    
+                    if(line.startsWith("Example_") || line.equals("$NAME"))
                     {
                         if(key != null) // only for the first example
                         {

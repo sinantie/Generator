@@ -33,8 +33,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.math.FunctionEvaluationException;
 import org.apache.commons.math.analysis.ComposableFunction;
-import org.apache.commons.math.exception.MathIllegalNumberException;
-import org.apache.commons.math.exception.util.LocalizedFormats;
 import org.apache.commons.math.linear.ArrayRealVector;
 import org.apache.commons.math.linear.OpenMapRealVector;
 import org.apache.commons.math.linear.RealVector;
