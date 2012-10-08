@@ -41,10 +41,10 @@ public class InductionPCFGWeatherTest
          String args = 
                    "-modelType event3pcfg "
                  + "-Options.stage1.numIters 15 "
-//                 + "-Options.stage1.hardUpdate "        // Viterbi EM
+                 + "-examplesInSingleFile "
                  + "-inputLists "
-                 + "test/testWeatherGovEvents "
-//                 + "gaborLists/genDevListPathsGabor "
+//                 + "test/testWeatherGovEvents "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
