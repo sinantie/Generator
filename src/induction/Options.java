@@ -5,7 +5,7 @@ import fig.basic.*;
 import induction.utils.linearregression.LinearRegressionOptions;
 
 public class Options {
-  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, event3pcfg, precompute, generate, discriminativeTrain, semParse, writeParams };
+  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, event3pcfg, precompute, generate, generatePcfg, discriminativeTrain, semParse, writeParams };
   public enum InitType { random, bait, supervised, uniformz, artificial, staged };
   public enum InputFormat { raw, tag, mrg, conll, seg, zmert };
   public enum AlignmentModel { m1, m2, hmm };
@@ -17,10 +17,13 @@ public class Options {
   @Option public ArrayList<String> inputLists = new ArrayList();
   @Option public ArrayList<String> testInputPaths = new ArrayList();
   @Option public ArrayList<String> testInputLists = new ArrayList();
+  @Option(gloss="all examples are in a single file (default=false)") public boolean examplesInSingleFile = false;
   @Option public String excludeLists;
   @Option public String inputFileExt;
   @Option public String inputFileExt2; // For word alignment, the extension of the other language
   @Option(gloss="Description file for initializing artificial parameters") public String artificialDescriptionPath;
+  @Option(gloss="File containing PCFG rules for record selection") public String treebankRules;
+  @Option(gloss="File containing parsed record trees for example input") public String treebankInput;
   @Option(gloss="Format of input") public InputFormat inputFormat = InputFormat.raw;
   @Option(gloss="Maximum number of examples") public int maxExamples = Integer.MAX_VALUE;
   @Option(gloss="Maximum number of test examples") public int testMaxExamples = Integer.MAX_VALUE;
@@ -172,8 +175,7 @@ public class Options {
   @Option public int trainStart = 0;
   @Option public int trainEnd = Integer.MAX_VALUE;
   @Option public int testStart = 0;
-  @Option public int testEnd = 0;
-  @Option(gloss="all examples are in a single file (default=false)") public boolean examplesInSingleFile = false;
+  @Option public int testEnd = 0; 
 //  @Option(gloss="JSON format, indicating origin of corpus (e.g. wunderground.com)") public JsonFormat jsonFormat;
   @Option(gloss="don't save parameter files (for tests only)") public boolean dontOutputParams = false;  
   @Option(gloss="Write output examples in their original order (thread-safe)") public boolean forceOutputOrder = false;

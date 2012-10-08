@@ -1,5 +1,6 @@
 package induction.problem.event3.generative.alignment;
 
+import edu.berkeley.nlp.ling.Tree;
 import fig.basic.StopWatchSet;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.SymFieldParams;
@@ -50,10 +51,13 @@ import java.util.HashMap;
  */
 public class InferStatePCFG extends Event3InferState
 {    
+    Tree<String> recordTree;
+    
     public InferStatePCFG(Event3Model model, Example ex, Params params, Params counts,
             InferSpec ispec)
     {
         super(model, ex, params, counts, ispec);
+        recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
     }
 
     @Override

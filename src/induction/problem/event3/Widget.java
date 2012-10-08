@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.berkeley.nlp.ling.Tree;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.AWidget;
@@ -20,7 +21,8 @@ public class Widget implements AWidget
     public String performance = ""; // HACK: store on the trueWidget how we did
     private double[] eventPosterior = null;
     protected Map<Integer, Integer> eventTypeIndices;
-
+    protected Tree<String> recordTree;
+    
     public Widget(int [][]events, int[][] fields, int[][] gens,
                   int [][] numMethods,
                   int[] startIndices,
@@ -34,6 +36,18 @@ public class Widget implements AWidget
         this.startIndices = startIndices;
         this.eventTypeAllowedOnTrack = eventTypeAllowedOnTrack;
         this.eventTypeIndices = eventTypeIndices;
+    }
+    
+    public Widget(int [][]events, int[][] fields, int[][] gens,
+                  int [][] numMethods,
+                  int[] startIndices,
+                  HashSet<Integer>[] eventTypeAllowedOnTrack, 
+                  Tree<String> recordTree,
+                  Map<Integer, Integer> eventTypeIndices)
+                // These are auxiliary information needed for evaluation)
+    {
+        this(events, fields, gens, numMethods, startIndices, eventTypeAllowedOnTrack, eventTypeIndices);
+        this.recordTree = recordTree;
     }
 
     public HashSet<Integer>[] getEventTypeAllowedOnTrack()
@@ -69,6 +83,11 @@ public class Widget implements AWidget
     public int[] getStartIndices()
     {
         return startIndices;
+    }
+
+    public Tree<String> getRecordTree()
+    {
+        return recordTree;
     }
     
     // Tried to see if can use posteriors (of one track), but they're too

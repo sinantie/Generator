@@ -1,5 +1,7 @@
 package induction.problem.event3;
 
+import edu.berkeley.nlp.ling.Tree;
+import edu.berkeley.nlp.ling.Trees.PennTreeReader;
 import induction.problem.event3.json.JsonWrapper;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.FullStatFig;
@@ -36,6 +38,7 @@ import induction.utils.linearregression.LinearRegressionOptions;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -691,6 +694,7 @@ public abstract class Event3Model extends WordModel
     protected void readExamples(String input, int maxExamples)
     {
         String eventInput = "", textInput = "", name = "", alignInput = "";
+        Tree<String> recordTree = null;
         boolean alignInputExists = false, textInputExists = false;
         if(opts.examplesInSingleFile)
         {
@@ -699,6 +703,12 @@ public abstract class Event3Model extends WordModel
             textInput = res[1];
             eventInput = res[2];
             alignInput = res[3];
+            if((opts.modelType == ModelType.event3pcfg || 
+                opts.modelType == ModelType.generatePcfg) &&
+                res[4] != null)
+            {                
+                recordTree = new PennTreeReader(new StringReader(res[4])).next();
+            }
             alignInputExists = alignInput != null;
             textInputExists = textInput != null;
         }
@@ -882,6 +892,7 @@ public abstract class Event3Model extends WordModel
                                            new Widget(trueEvents, null, null, null,
                                                       lineStartIndices,
                                                       eventTypeAllowedOnTrack,
+                                                      recordTree,
                                                       eventTypeIndices)));
                     } // else (normal alignment WITH gold-standard)
                 } // if(alignPathExists)
@@ -923,14 +934,14 @@ public abstract class Event3Model extends WordModel
 
     /**
      * Input String has the following format:
-     * Example_xxx (name) \n text (optional) \n events \n align (optional)
+     * Example_xxx (name) \n text (optional) \n events \n record_tree (optional) \n align (optional)
      * @param input
      * @return an array of Strings with name, text, events and align data in
      * each position
      */
     public static String[] extractExampleFromString(String input)
     {
-        String[] res = new String[4];
+        String[] res = new String[5];
         String ar[] = input.split("\n");
         StringBuilder str = new StringBuilder();
         if(ar[0].equals("$NAME")) // event3 v.2 format
@@ -945,11 +956,21 @@ public abstract class Event3Model extends WordModel
             res[1] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
             str = new StringBuilder();
             i++; // move past $EVENTS tag
-            while(i< ar.length && !ar[i].equals("$ALIGN")) 
+            while(i< ar.length && !(ar[i].equals("$ALIGN") || ar[i].equals("$RECORD_TREE"))) 
             {
                 str.append(ar[i++]).append("\n");                
             }            
             res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            if(ar[i].equals("$RECORD_TREE"))
+            {
+                i++; // move past $RECORD_TREE tag
+                str = new StringBuilder();
+                while(i< ar.length && !ar[i].equals("$ALIGN")) 
+                {
+                    str.append(ar[i++]).append("\n");                
+                }            
+                res[4] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            }
             if(i < ar.length) // didn't reach the end of input, so there is align data
             {
                 i++; // move past $ALIGN tag
