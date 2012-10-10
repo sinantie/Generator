@@ -1,6 +1,7 @@
 package induction.problem.event3.generative.alignment;
 
 import edu.berkeley.nlp.ling.Tree;
+import fig.basic.Indexer;
 import fig.basic.StopWatchSet;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.SymFieldParams;
@@ -32,6 +33,7 @@ import induction.problem.event3.nodes.EventNode;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.nodes.FieldsNode;
+import induction.problem.event3.nodes.NonTerminalNode;
 import induction.problem.event3.nodes.NoneEventNode;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
@@ -52,12 +54,14 @@ import java.util.HashMap;
 public class InferStatePCFG extends Event3InferState
 {    
     Tree<String> recordTree;
+    Indexer<String> rulesIndexer;
     
     public InferStatePCFG(Event3Model model, Example ex, Params params, Params counts,
             InferSpec ispec)
     {
         super(model, ex, params, counts, ispec);
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
+        rulesIndexer = model.getRulesIndexer();
     }
 
     @Override
@@ -142,8 +146,9 @@ public class InferStatePCFG extends Event3InferState
             } // for
         } // if
 
-//        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)inferState).none_t()),
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
+//        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
+//                           new Hypergraph.HyperedgeInfo<Widget>()
+        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, rulesIndexer.getIndex("S")),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
             public double getWeight()
@@ -1098,5 +1103,15 @@ public class InferStatePCFG extends Event3InferState
     protected void selectEnd(int j, EventsNode node, int i, int t0)
     {               
         hypergraph.addEdge(node, genTrack(i, j, t0, opts.allowNoneEvent));        
+    }
+    
+    protected NonTerminalNode genEdge(int start, int end, int lhs)
+    {
+        NonTerminalNode node = new NonTerminalNode(start, end, lhs);
+        if(hypergraph.addSumNode(node))
+        {
+            // TO-DO
+        }
+        return node;
     }
 }

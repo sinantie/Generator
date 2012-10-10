@@ -447,7 +447,7 @@ public class ExtractRecordsStatistics
                 str.append("(").append(tok).append(") ");
                 intermediateLabel.append(tok).append("_");
             }
-            if(tokens.size() > 1)
+//            if(tokens.size() > 1)
             {
                 str.insert(0, "(" + intermediateLabel.substring(0, intermediateLabel.length() - 1) + " ");
                 str.append(")");

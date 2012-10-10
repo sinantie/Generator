@@ -105,6 +105,9 @@ public abstract class Event3Model extends WordModel
     protected Map<Integer, Integer> depsCrossWordMap;
     protected GenerativeDMVModel depsModel;
     protected NgramModel secondaryNgramModel;
+    // map of pcfg rules read from input file, indexed on the lhs non-terminal
+    protected Map<Integer, List<PCFGRule>> pcfgRules;
+    protected Indexer<String> rulesIndexer = new Indexer<String>();
     
     public Event3Model(Options opts)
     {
@@ -118,6 +121,10 @@ public abstract class Event3Model extends WordModel
         return secondaryNgramModel;
     }
 
+    public Indexer<String> getRulesIndexer()
+    {
+        return rulesIndexer;
+    }
     
     ////////////////////////////////////////////////////////////
     // Generic routines
@@ -213,6 +220,15 @@ public abstract class Event3Model extends WordModel
         {
             out[i] = eventTypeToString(i);
         }        
+        return out;
+    }
+    public String[] pcfgRulesRhsStrArray(List<PCFGRule> list)
+    {
+        String[] out = new String[list.size()];
+        for(int i = 0; i < out.length; i++)
+        {
+            out[i] = list.get(i).getRhsToString();
+        }                    
         return out;
     }
     public EventType[] getEventTypes()
@@ -333,6 +349,11 @@ public abstract class Event3Model extends WordModel
         return depsModel;
     }
 
+    public Map<Integer, List<PCFGRule>> getPcfgRules()
+    {
+        return pcfgRules;
+    }
+    
     @Override
     public void logStats()
     {
@@ -703,9 +724,7 @@ public abstract class Event3Model extends WordModel
             textInput = res[1];
             eventInput = res[2];
             alignInput = res[3];
-            if((opts.modelType == ModelType.event3pcfg || 
-                opts.modelType == ModelType.generatePcfg) &&
-                res[4] != null)
+            if(res[4] != null)
             {                
                 recordTree = new PennTreeReader(new StringReader(res[4])).next();
             }
@@ -1063,6 +1082,23 @@ public abstract class Event3Model extends WordModel
 //            ex.computeTrackEvents();
         }
         LogInfo.end_track();
+        if(opts.treebankRules != null)
+        {
+            Utils.begin_track("Read treebank rules...");
+            pcfgRules = new HashMap<Integer, List<PCFGRule>>();
+            for(String line : Utils.readLines(opts.treebankRules))
+            {
+                PCFGRule rule = new PCFGRule(line, rulesIndexer);
+                List<PCFGRule> list = pcfgRules.get(rule.getLhs());
+                if(list == null)
+                {
+                    list = new ArrayList<PCFGRule>();
+                    pcfgRules.put(rule.getLhs(), list);
+                }
+                list.add(rule);
+            }
+            LogInfo.end_track();
+        }        
     }
     private HashSet<Integer> getSet(String str)
     {

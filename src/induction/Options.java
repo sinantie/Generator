@@ -22,8 +22,7 @@ public class Options {
   @Option public String inputFileExt;
   @Option public String inputFileExt2; // For word alignment, the extension of the other language
   @Option(gloss="Description file for initializing artificial parameters") public String artificialDescriptionPath;
-  @Option(gloss="File containing PCFG rules for record selection") public String treebankRules;
-  @Option(gloss="File containing parsed record trees for example input") public String treebankInput;
+  @Option(gloss="File containing PCFG rules for record selection") public String treebankRules;  
   @Option(gloss="Format of input") public InputFormat inputFormat = InputFormat.raw;
   @Option(gloss="Maximum number of examples") public int maxExamples = Integer.MAX_VALUE;
   @Option(gloss="Maximum number of test examples") public int testMaxExamples = Integer.MAX_VALUE;

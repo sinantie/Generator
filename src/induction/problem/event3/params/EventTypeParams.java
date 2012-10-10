@@ -6,7 +6,6 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
 import induction.problem.event3.EventType;
-import induction.problem.wordproblem.WordModel;
 
 /**
  *
