@@ -74,7 +74,7 @@ public class ExtractRecordsStatisticsTest
     {     
         String args = 
                    "-exportType recordType "
-                 +  "-examplesInSingleFile "
+//                 +  "-examplesInSingleFile "
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
                  + "-binarize right "
@@ -86,8 +86,8 @@ public class ExtractRecordsStatisticsTest
                  + "-delimitSentences "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovGenDevGabor.gz "
-//                 + "test/testWeatherGovEvents "
+//                 + "data/weatherGov/weatherGovGenDevGabor.gz "
+                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
                  + "weatherGovLM/recordStatistics "
