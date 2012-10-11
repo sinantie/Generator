@@ -4,11 +4,11 @@ package induction.problem.event3.nodes;
  *
  * @author konstas
  */
-public class NonTerminalNode  extends Node
+public class CFGNode  extends Node
 {
     int label;
     
-    public NonTerminalNode(int i, int j, int label)
+    public CFGNode(int i, int j, int label)
     {
         super(i, j);
         this.label = label;
@@ -22,9 +22,9 @@ public class NonTerminalNode  extends Node
     
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof NonTerminalNode))
+        if(!(obj instanceof CFGNode))
             return false;
-        NonTerminalNode node = (NonTerminalNode) obj;
+        CFGNode node = (CFGNode) obj;
         return i == node.i && j == node.j && label == node.label;
     }
 

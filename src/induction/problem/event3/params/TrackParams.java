@@ -4,7 +4,7 @@ import induction.problem.AParams;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
-import induction.problem.event3.PCFGRule;
+import induction.problem.event3.CFGRule;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public class TrackParams extends AParams
 {
     Vec[] eventTypeChoices, noneEventTypeBigramChoices;
     Vec noneEventTypeEmissions;
-    Map<Integer, Vec> pcfgRulesChoices;
+    Map<Integer, Vec> cfgRulesChoices; // map of rules indexed on the lhs nonterminal symbol
     private int T, W, c;
     public int none_t, boundary_t;
 
@@ -29,14 +29,14 @@ public class TrackParams extends AParams
         none_t = model.none_t();
         boundary_t = model.boundary_t();
         // treebank rules
-        if(model.getPcfgRules() != null)
+        if(model.getCfgRules() != null)
         {
-            pcfgRulesChoices = new HashMap();
-            for(Entry<Integer, List<PCFGRule>> rule : model.getPcfgRules().entrySet())
+            cfgRulesChoices = new HashMap();
+            for(Entry<Integer, HashMap<CFGRule, Integer>> rule : model.getCfgRules().entrySet())
             {
                 Vec v = VecFactory.zeros(vectorType, rule.getValue().size());
-                pcfgRulesChoices.put(rule.getKey(), v);
-                addVec("pcfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);                
+                cfgRulesChoices.put(rule.getKey(), v);
+                addVec("cfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);                
             } // for
         } // if
         // t_0, t -> choose event of type t given we were in type t_0        
@@ -52,7 +52,7 @@ public class TrackParams extends AParams
 
     public Map<Integer, Vec> getPcfgRulesChoices()
     {
-        return pcfgRulesChoices;
+        return cfgRulesChoices;
     }
     
     public Vec[] getEventTypeChoices()
@@ -87,13 +87,13 @@ public class TrackParams extends AParams
                 out.append(forEachCount(v, labels[i++]));
         }
         // treebank rules
-        if(pcfgRulesChoices != null)
+        if(cfgRulesChoices != null)
         {
-            for(Entry<Integer, Vec> rule : pcfgRulesChoices.entrySet())
+            for(Entry<Integer, Vec> rule : cfgRulesChoices.entrySet())
             {
                 String lhs = event3Model.getRulesIndexer().getObject(rule.getKey());
-                String[] lab = getLabels(rule.getValue().size(), "pcfgRulesChoices " + lhs, 
-                        event3Model.pcfgRulesRhsStrArray(event3Model.getPcfgRules().get(rule.getKey())));
+                String[] lab = getLabels(rule.getValue().size(), "cfgRulesChoices " + lhs, 
+                        event3Model.cfgRulesRhsStrArray(event3Model.getCfgRules().get(rule.getKey())));
                 if(paramsType == ParamsType.PROBS)
                     out.append(forEachProb(rule.getValue(), lab));
                 else
@@ -134,13 +134,13 @@ public class TrackParams extends AParams
                 out.append(forEachCountNonZero(v, labels[i++]));
         }
         // treebank rules
-        if(pcfgRulesChoices != null)
+        if(cfgRulesChoices != null)
         {
-            for(Entry<Integer, Vec> rule : pcfgRulesChoices.entrySet())
+            for(Entry<Integer, Vec> rule : cfgRulesChoices.entrySet())
             {
                 String lhs = event3Model.getRulesIndexer().getObject(rule.getKey());
-                String[] lab = getLabels(rule.getValue().size(), "pcfgRulesChoices " + lhs, 
-                        event3Model.pcfgRulesRhsStrArray(event3Model.getPcfgRules().get(rule.getKey())));
+                String[] lab = getLabels(rule.getValue().size(), "cfgRulesChoices " + lhs, 
+                        event3Model.cfgRulesRhsStrArray(event3Model.getCfgRules().get(rule.getKey())));
                 if(paramsType == ParamsType.PROBS)
                     out.append(forEachProbNonZero(rule.getValue(), lab));
                 else

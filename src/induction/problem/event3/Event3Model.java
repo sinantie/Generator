@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
@@ -106,7 +107,7 @@ public abstract class Event3Model extends WordModel
     protected GenerativeDMVModel depsModel;
     protected NgramModel secondaryNgramModel;
     // map of pcfg rules read from input file, indexed on the lhs non-terminal
-    protected Map<Integer, List<PCFGRule>> pcfgRules;
+    protected Map<Integer, HashMap<CFGRule, Integer>> cfgRules;
     protected Indexer<String> rulesIndexer = new Indexer<String>();
     
     public Event3Model(Options opts)
@@ -222,15 +223,26 @@ public abstract class Event3Model extends WordModel
         }        
         return out;
     }
-    public String[] pcfgRulesRhsStrArray(List<PCFGRule> list)
+    public String[] cfgRulesRhsStrArray(Map<CFGRule, Integer> map)
     {
-        String[] out = new String[list.size()];
-        for(int i = 0; i < out.length; i++)
+        String[] out = new String[map.size()];
+        for(Entry<CFGRule, Integer> e : map.entrySet())
         {
-            out[i] = list.get(i).getRhsToString();
-        }                    
+            out[e.getValue()] = e.getKey().getRhsToString();
+        }
         return out;
     }
+    
+    public int getCfgRuleIndex(CFGRule rule)
+    {        
+        return cfgRules.get(rule.getLhs()).get(rule);        
+//        List<CFGRule> list = cfgRules.get(rule.getLhs());
+//        for(int i = 0; i < list.size(); i++)
+//            if(list.get(i).equals(rule))
+//                return i;
+//        return -1;
+    }
+    
     public EventType[] getEventTypes()
     {
         return eventTypes;
@@ -245,6 +257,12 @@ public abstract class Event3Model extends WordModel
         }
         return out;
     }
+
+    public Indexer<String> getEventTypeNameIndexer()
+    {
+        return eventTypeNameIndexer;
+    }
+    
     // Stuff for tracks
     public String cstr(int c)
     {
@@ -349,9 +367,9 @@ public abstract class Event3Model extends WordModel
         return depsModel;
     }
 
-    public Map<Integer, List<PCFGRule>> getPcfgRules()
+    public Map<Integer, HashMap<CFGRule, Integer>> getCfgRules()
     {
-        return pcfgRules;
+        return cfgRules;
     }
     
     @Override
@@ -1085,17 +1103,17 @@ public abstract class Event3Model extends WordModel
         if(opts.treebankRules != null)
         {
             Utils.begin_track("Read treebank rules...");
-            pcfgRules = new HashMap<Integer, List<PCFGRule>>();
+            cfgRules = new HashMap<Integer, HashMap<CFGRule, Integer>>();
             for(String line : Utils.readLines(opts.treebankRules))
             {
-                PCFGRule rule = new PCFGRule(line, rulesIndexer);
-                List<PCFGRule> list = pcfgRules.get(rule.getLhs());
-                if(list == null)
+                CFGRule rule = new CFGRule(line, rulesIndexer);
+                HashMap<CFGRule, Integer> map = cfgRules.get(rule.getLhs());
+                if(map == null)
                 {
-                    list = new ArrayList<PCFGRule>();
-                    pcfgRules.put(rule.getLhs(), list);
+                    map = new HashMap<CFGRule, Integer>();
+                    cfgRules.put(rule.getLhs(), map);
                 }
-                list.add(rule);
+                map.put(rule, map.size());
             }
             LogInfo.end_track();
         }        

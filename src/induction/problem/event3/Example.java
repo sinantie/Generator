@@ -26,7 +26,7 @@ public class Example implements AExample<Widget>
     protected int[] eventTypeCounts = null;
     protected int[][] trackEvents = null;
     private final int C, N;
-    protected boolean[] isPunctuationArray;
+    protected boolean[] isPunctuationArray, isSentenceBoundaryArray;
 
     public Example(Event3Model model, String name, Map<Integer, Event> events, int[] text,
                    int[] labels, int[] startIndices, int N, Widget trueWidget)
@@ -45,6 +45,7 @@ public class Example implements AExample<Widget>
         if(text != null)
         {
             isPunctuationArray = new boolean[N];
+            isSentenceBoundaryArray = new boolean[N];
             for(int i = 0; i < isPunctuationArray.length; i++)
             {
                 s = model.wordToString(text[i]);
@@ -56,6 +57,8 @@ public class Example implements AExample<Widget>
                         s.equals(".") || s.equals(",") || s.equals("--") ||
                         s.equals("(") || s.equals(")") ||
                         (model.getOpts().andIsPunctuation && s.equals("and"));
+                
+                isSentenceBoundaryArray[i] = s.equals("./.") || s.equals(",/,") || s.equals("--/:") || s.equals(".") ||  s.equals("--");
 //                isPunctuationArray[i] = model.getOpts().posAtSurfaceLevel ?
 //                        // if words have pos tag attached to them
 //                        s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
@@ -534,6 +537,11 @@ public class Example implements AExample<Widget>
     public boolean[] getIsPunctuationArray()
     {
         return isPunctuationArray;
+    }
+
+    public boolean[] getIsSentenceBoundaryArray()
+    {
+        return isSentenceBoundaryArray;
     }
 
     @Override

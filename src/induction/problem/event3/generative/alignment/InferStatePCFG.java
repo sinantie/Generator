@@ -17,6 +17,7 @@ import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
+import induction.problem.event3.CFGRule;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Event;
@@ -33,7 +34,7 @@ import induction.problem.event3.nodes.EventNode;
 import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.FieldNode;
 import induction.problem.event3.nodes.FieldsNode;
-import induction.problem.event3.nodes.NonTerminalNode;
+import induction.problem.event3.nodes.CFGNode;
 import induction.problem.event3.nodes.NoneEventNode;
 import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
@@ -46,6 +47,9 @@ import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.FieldParams;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -54,14 +58,15 @@ import java.util.HashMap;
 public class InferStatePCFG extends Event3InferState
 {    
     Tree<String> recordTree;
-    Indexer<String> rulesIndexer;
+    Indexer<String> indexer;
+    LinkedList<Integer> sentenceBoundaries;    
     
     public InferStatePCFG(Event3Model model, Example ex, Params params, Params counts,
             InferSpec ispec)
     {
         super(model, ex, params, counts, ispec);
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
-        rulesIndexer = model.getRulesIndexer();
+        indexer = model.getRulesIndexer();
     }
 
     @Override
@@ -76,7 +81,13 @@ public class InferStatePCFG extends Event3InferState
             nums[w] = Constants.str2num(opts.posAtSurfaceLevel ? Utils.stripTag(word, opts.tagDelimiter)  : word);
         }
         labels = ex.getLabels();
-
+        // keep track of sentence boundaries
+        sentenceBoundaries = new LinkedList<Integer>();
+        for(int i = 0; i < ex.getIsSentenceBoundaryArray().length; i++)
+        {
+            if(ex.getIsSentenceBoundaryArray()[i])
+                sentenceBoundaries.add(i);
+        }        
         // Override bestWidget
         if (opts.fullPredRandomBaseline)
         {
@@ -148,7 +159,8 @@ public class InferStatePCFG extends Event3InferState
 
 //        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
 //                           new Hypergraph.HyperedgeInfo<Widget>()
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, rulesIndexer.getIndex("S")),
+//        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S")),
+        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree),
                            new Hypergraph.HyperedgeInfo<Widget>()
         {
             public double getWeight()
@@ -1105,12 +1117,165 @@ public class InferStatePCFG extends Event3InferState
         hypergraph.addEdge(node, genTrack(i, j, t0, opts.allowNoneEvent));        
     }
     
-    protected NonTerminalNode genEdge(int start, int end, int lhs)
+    protected Object genRecord(final int i, final int j, final int t0)
     {
-        NonTerminalNode node = new NonTerminalNode(start, end, lhs);
+        final TrackParams cparams = params.trackParams[0];
+        final TrackParams ccounts = counts != null ? counts.trackParams[0] : null;
+        TrackNode node = new TrackNode(i, j, t0, 0);
         if(hypergraph.addSumNode(node))
         {
-            // TO-DO
+            if(t0 == cparams.none_t)
+            {                
+              hypergraph.addEdge(node, genNoneEvent(i, j, 0),
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight() {                              
+                          return opts.useEventTypeDistrib ?
+                                  get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t) : 1.0;
+                      }
+                      public void setPosterior(double prob) {
+                          if(opts.useEventTypeDistrib)
+                            // always condition on none event
+                            update(ccounts.getEventTypeChoices()[cparams.none_t], cparams.none_t, prob);                
+                      }
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[0][k] = Parameters.none_e;
+                          }
+                          return widget;
+                      }
+               });                
+            } // if - none eventType
+            else
+            {
+                for(final Event e : ex.events.values()) // TO-DO
+                {
+                  final int eventId = e.getId();
+                  final int eventTypeIndex = e.getEventTypeIndex();
+                  hypergraph.addEdge(node, genEvent(i, j, 0, eventId),
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight()
+                      {
+                          return opts.useEventTypeDistrib ? 
+                                  get(cparams.getEventTypeChoices()[cparams.boundary_t], t0) *
+                                  (1.0d/(double)ex.getEventTypeCounts()[t0]) : 
+                                  1.0;
+                      }
+                      public void setPosterior(double prob) {
+                          if (opts.useEventTypeDistrib)
+                            update(ccounts.getEventTypeChoices()[cparams.boundary_t], t0, prob);                
+                      }
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[0][k] = eventId;                
+                          }
+                          return widget;
+                      }
+                  });                 
+                } // for
+            } // else
+        } // if
+        return node;
+    }
+    
+    /**
+     * Build binarized record content selection model, given the structure of the input
+     * in a Penn Treebank format (binarized trees with induced constituents on the sentence level). 
+     * <br/>
+     * The structure of the record dependencies is fixed on the <code>tree</code> input,
+     * and we don't learn the weights on each hyperedge, as we have already computed them offline.
+     * However, we enumerate all the spans of the children of frontier non-terminals that are contained within a sentence.
+     * 
+     * @param start the beginning of the span of the <code>tree</code>
+     * @param end the end of the span of the <code>tree</code>
+     * @param tree the input (sub)-tree in Penn Treebank format
+     * @return the head node of the hyperedge
+     */
+    protected CFGNode genEdge(int start, int end, Tree<String> tree)
+    {
+        final TrackParams cparams = params.trackParams[0];
+//        final TrackParams ccounts = counts != null ? counts.trackParams[0] : null;   
+        final int lhs = indexer.getIndex(tree.getLabel());
+        CFGNode node = new CFGNode(start, end, lhs);                
+        
+        if(hypergraph.addSumNode(node))
+        {
+            // check if we are in a record leaf, or a pre-terminal, i.e. a unary rule with an eventType label
+            // as its' lhs, that spans a sentence.
+            // In either case we treat them as equal, i.e., generate the record / field set
+            if (tree.isPreTerminal() || tree.isLeaf())
+            {
+                String label = tree.getLabel();
+                int eventTypeIndex = label.equals("none") ? cparams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
+                hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
+            }  // if
+            else // we are in a subtree with a non-terminal lhs and two rhs symbols
+            {
+                final List<Tree<String>> children = tree.getChildren();
+                // check whether there is at least another sentence boundary between
+                // start and end. If there is, define this a splitting point between
+                // children subtrees.
+                Integer nextBoundary = sentenceBoundaries.peek();
+                if(nextBoundary < end)
+                {   
+                    sentenceBoundaries.poll();
+                    // binary trees only
+                    hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)), 
+                                             genEdge(nextBoundary + 1, end, children.get(1)),
+                      new Hypergraph.HyperedgeInfo<Widget>() {
+                          int rhs1 = indexer.getIndex(children.get(0).getLabel());
+                          int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                          int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
+                          public double getWeight()
+                          {
+                              return get(cparams.getPcfgRulesChoices().get(lhs), indexOfRule);
+                          }
+                          public void setPosterior(double prob) {
+                               //update(ccounts.getPcfgRulesChoices().get(lhs), indexOfRule, prob);
+                          }
+                          public Widget choose(Widget widget) {                          
+                              return widget;
+                          }
+                      }); 
+                } // if
+                // children are records/leaf nodes in the same sentence. 
+                // Generate edges for every sub-span between start and end
+                else 
+                {
+                    for(int k = start + 1; k < end; k++)
+                    {
+                        // binary trees only
+                        hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
+                                                 genEdge(k + 1, end, children.get(1)),
+                          new Hypergraph.HyperedgeInfo<Widget>() {
+                              int rhs1 = indexer.getIndex(children.get(0).getLabel());
+                              int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                              int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
+                              public double getWeight()
+                              {
+                                  return get(cparams.getPcfgRulesChoices().get(lhs), indexOfRule);
+                              }
+                              public void setPosterior(double prob) {
+                                   //update(ccounts.getPcfgRulesChoices().get(lhs), indexOfRule, prob);
+                              }
+                              public Widget choose(Widget widget) {                          
+                                  return widget;
+                              }
+                          }); 
+                    } // for
+                } // else
+            } // else
+        } // if
+        return node;
+    }
+    
+    protected CFGNode genEdge(int start, int end, int lhs)
+    {
+        CFGNode node = new CFGNode(start, end, lhs);
+        if(hypergraph.addSumNode(node))
+        {
+            
         }
         return node;
     }
