@@ -1,6 +1,5 @@
 package induction.problem.event3;
 
-import induction.problem.event3.EventType;
 import induction.Utils;
 import java.util.List;
 

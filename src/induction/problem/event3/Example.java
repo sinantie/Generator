@@ -6,6 +6,7 @@ import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.event3.json.JsonResult;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class Example implements AExample<Widget>
     public Event3Model model;
     protected String name;
     public Map<Integer, Event> events;
+    public Map<Integer, List<Event>> eventsByEventType;
     protected int[] text, labels, startIndices;
     private Widget trueWidget;
     protected int[] eventTypeCounts = null;
@@ -70,6 +72,18 @@ public class Example implements AExample<Widget>
 //                        (model.getOpts().andIsPunctuation && s.equals("and"));
             }
         } 
+        eventsByEventType = new HashMap<Integer, List<Event>>();
+        for(Event e : events.values())
+        {
+            Integer eventType = e.getEventTypeIndex();
+            List<Event> list = eventsByEventType.get(eventType);
+            if(list == null)
+            {
+                list = new ArrayList<Event>();
+                eventsByEventType.put(eventType, list);
+            }
+            list.add(e);
+        }
     }
 
     @Override
