@@ -6,7 +6,6 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.CFGRule;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -17,8 +16,7 @@ import java.util.Map.Entry;
 public class TrackParams extends AParams
 {
     Vec[] eventTypeChoices, noneEventTypeBigramChoices;
-    Vec noneEventTypeEmissions;
-    Map<Integer, Vec> cfgRulesChoices; // map of rules indexed on the lhs nonterminal symbol
+    Vec noneEventTypeEmissions;    
     private int T, W, c;
     public int none_t, boundary_t;
 
@@ -27,18 +25,7 @@ public class TrackParams extends AParams
         super(model);
         this.T = model.getT(); this.W = model.W(); this.c = c;
         none_t = model.none_t();
-        boundary_t = model.boundary_t();
-        // treebank rules
-        if(model.getCfgRules() != null)
-        {
-            cfgRulesChoices = new HashMap();
-            for(Entry<Integer, HashMap<CFGRule, Integer>> rule : model.getCfgRules().entrySet())
-            {
-                Vec v = VecFactory.zeros(vectorType, rule.getValue().size());
-                cfgRulesChoices.put(rule.getKey(), v);
-                addVec("cfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);                
-            } // for
-        } // if
+        boundary_t = model.boundary_t();        
         // t_0, t -> choose event of type t given we were in type t_0        
         eventTypeChoices = VecFactory.zeros2(vectorType, T + 2, T + 2);        
         addVec(getLabels(T + 2, "eventTypeChoices["+c+"]", model.eventTypeStrArray()), eventTypeChoices);
@@ -50,11 +37,6 @@ public class TrackParams extends AParams
                           model.wordsToStringArray()), noneEventTypeBigramChoices);
     }
 
-    public Map<Integer, Vec> getPcfgRulesChoices()
-    {
-        return cfgRulesChoices;
-    }
-    
     public Vec[] getEventTypeChoices()
     {
         return eventTypeChoices;
@@ -85,21 +67,7 @@ public class TrackParams extends AParams
                 out.append(forEachProb(v, labels[i++]));
             else
                 out.append(forEachCount(v, labels[i++]));
-        }
-        // treebank rules
-        if(cfgRulesChoices != null)
-        {
-            for(Entry<Integer, Vec> rule : cfgRulesChoices.entrySet())
-            {
-                String lhs = event3Model.getRulesIndexer().getObject(rule.getKey());
-                String[] lab = getLabels(rule.getValue().size(), "cfgRulesChoices " + lhs, 
-                        event3Model.cfgRulesRhsStrArray(event3Model.getCfgRules().get(rule.getKey())));
-                if(paramsType == ParamsType.PROBS)
-                    out.append(forEachProb(rule.getValue(), lab));
-                else
-                    out.append(forEachCount(rule.getValue(), lab));                
-            } // for
-        } // if
+        }        
         if(paramsType == ParamsType.PROBS)
             out.append("\n").append(forEachProb(noneEventTypeEmissions,
                           getLabels(W, "noneEventTypeE [" + event3Model.cstr(c) + "] ", words)));
@@ -132,21 +100,7 @@ public class TrackParams extends AParams
                 out.append(forEachProbNonZero(v, labels[i++]));
             else
                 out.append(forEachCountNonZero(v, labels[i++]));
-        }
-        // treebank rules
-        if(cfgRulesChoices != null)
-        {
-            for(Entry<Integer, Vec> rule : cfgRulesChoices.entrySet())
-            {
-                String lhs = event3Model.getRulesIndexer().getObject(rule.getKey());
-                String[] lab = getLabels(rule.getValue().size(), "cfgRulesChoices " + lhs, 
-                        event3Model.cfgRulesRhsStrArray(event3Model.getCfgRules().get(rule.getKey())));
-                if(paramsType == ParamsType.PROBS)
-                    out.append(forEachProbNonZero(rule.getValue(), lab));
-                else
-                    out.append(forEachCountNonZero(rule.getValue(), lab));                
-            } // for
-        } // if
+        }        
         if(paramsType == ParamsType.PROBS)
             out.append("\n").append(forEachProbNonZero(noneEventTypeEmissions,
                           getLabels(W, "noneEventTypeE [" + event3Model.cstr(c) + "] ", words)));

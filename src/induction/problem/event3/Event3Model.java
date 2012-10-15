@@ -106,7 +106,8 @@ public abstract class Event3Model extends WordModel
     protected Map<Integer, Integer> depsCrossWordMap;
     protected GenerativeDMVModel depsModel;
     protected NgramModel secondaryNgramModel;
-    // map of pcfg rules read from input file, indexed on the lhs non-terminal
+    // map of pcfg rules read from input file, indexed on the lhs non-terminal. 
+    // The internal hashmap maps the cfg rule to the position in the associated parameter vector.
     protected Map<Integer, HashMap<CFGRule, Integer>> cfgRules;
     protected Indexer<String> rulesIndexer = new Indexer<String>();
     
@@ -1115,7 +1116,7 @@ public abstract class Event3Model extends WordModel
                 }
                 map.put(rule, map.size());
             }
-            LogInfo.end_track();
+            LogInfo.end_track();                        
         }        
     }
     private HashSet<Integer> getSet(String str)

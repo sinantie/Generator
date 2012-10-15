@@ -44,12 +44,12 @@ import induction.problem.event3.nodes.StringFieldValueNode;
 import induction.problem.event3.nodes.SymFieldValueNode;
 import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.nodes.WordNode;
+import induction.problem.event3.params.CFGParams;
 import induction.problem.event3.params.FieldParams;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -160,20 +160,8 @@ public class InferStatePCFG extends Event3InferState
 //        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
 //                           new Hypergraph.HyperedgeInfo<Widget>()
 //        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S")),
-        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree),
-                           new Hypergraph.HyperedgeInfo<Widget>()
-        {
-            public double getWeight()
-            {
-                return 1;
-            }
-            public void setPosterior(double prob)
-            { }
-            public Widget choose(Widget widget)
-            {
-                return widget;
-            }
-        });
+        if(opts.fixRecordSelection)
+            hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree));
     }
 
     @Override
@@ -1148,10 +1136,9 @@ public class InferStatePCFG extends Event3InferState
             } // if - none eventType
             else
             {
-                for(final Event e : ex.events.values()) // TO-DO
+                for(final Event e : ex.eventsByEventType.get(t0))
                 {
-                  final int eventId = e.getId();
-                  final int eventTypeIndex = e.getEventTypeIndex();
+                  final int eventId = e.getId();                  
                   hypergraph.addEdge(node, genEvent(i, j, 0, eventId),
                   new Hypergraph.HyperedgeInfo<Widget>() {
                       public double getWeight()
@@ -1194,7 +1181,7 @@ public class InferStatePCFG extends Event3InferState
      */
     protected CFGNode genEdge(int start, int end, Tree<String> tree)
     {
-        final TrackParams cparams = params.trackParams[0];
+        final CFGParams cfgParams = params.cfgParams;
 //        final TrackParams ccounts = counts != null ? counts.trackParams[0] : null;   
         final int lhs = indexer.getIndex(tree.getLabel());
         CFGNode node = new CFGNode(start, end, lhs);                
@@ -1207,7 +1194,7 @@ public class InferStatePCFG extends Event3InferState
             if (tree.isPreTerminal() || tree.isLeaf())
             {
                 String label = tree.getLabel();
-                int eventTypeIndex = label.equals("none") ? cparams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
+                int eventTypeIndex = label.equals("none") ? cfgParams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
             }  // if
             else // we are in a subtree with a non-terminal lhs and two rhs symbols
@@ -1229,10 +1216,10 @@ public class InferStatePCFG extends Event3InferState
                           int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
                           public double getWeight()
                           {
-                              return get(cparams.getPcfgRulesChoices().get(lhs), indexOfRule);
+                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                           }
                           public void setPosterior(double prob) {
-                               //update(ccounts.getPcfgRulesChoices().get(lhs), indexOfRule, prob);
+                               //update(ccounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
                           }
                           public Widget choose(Widget widget) {                          
                               return widget;
@@ -1254,10 +1241,10 @@ public class InferStatePCFG extends Event3InferState
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
                               public double getWeight()
                               {
-                                  return get(cparams.getPcfgRulesChoices().get(lhs), indexOfRule);
+                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                               }
                               public void setPosterior(double prob) {
-                                   //update(ccounts.getPcfgRulesChoices().get(lhs), indexOfRule, prob);
+                                   //update(ccounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
                               }
                               public Widget choose(Widget widget) {                          
                                   return widget;

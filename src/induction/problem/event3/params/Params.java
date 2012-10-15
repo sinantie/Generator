@@ -16,8 +16,9 @@ public class Params extends AParams
 {
     private int T, W, C;
     public Vec trackChoices, genericEmissions, genericLabelChoices;
-    public Vec[] eventTypeChoicesGivenWord;
+    public Vec[] eventTypeChoicesGivenWord;    
     public TrackParams[] trackParams;
+    public CFGParams cfgParams;
     public EventTypeParams[] eventTypeParams;
     private EventType[] eventTypes;    
     private Options opts;
@@ -65,6 +66,12 @@ public class Params extends AParams
         {
             trackParams[c] = new TrackParams(model, c, vectorType);
             addVec(trackParams[c].getVecs());
+        }
+        // treebank rules
+        if(model.getCfgRules() != null)
+        {
+            cfgParams = new CFGParams(model, vectorType);
+            addVec(cfgParams.getVecs());
         }
         // ideally for function words
         genericEmissions = VecFactory.zeros(vectorType, W);       
@@ -149,10 +156,11 @@ public class Params extends AParams
         else
             out.append(forEachCount(trackChoices,
                     getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
-        for(AParams params : trackParams)
-        {
+        for(AParams params : trackParams)        
             out.append(params.output(paramsType)).append("\n");
-        }
+        // treebank rules
+        if(cfgParams != null)
+            out.append(cfgParams.output(paramsType)).append("\n");
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProb(genericEmissions,
                    getLabels(W, "genericE ", words))).
@@ -196,9 +204,10 @@ public class Params extends AParams
             out.append(forEachCountNonZero(trackChoices,
                     getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
         for(AParams params : trackParams)
-        {
             out.append(params.outputNonZero(paramsType)).append("\n");
-        }
+        // treebank rules
+        if(cfgParams != null)
+            out.append(cfgParams.outputNonZero(paramsType)).append("\n");
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(genericEmissions,
                    getLabels(W, "genericE ", words))).

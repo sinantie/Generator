@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import edu.berkeley.nlp.ling.Tree;
 import fig.basic.Indexer;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class CFGRule
     
     
     /**
-     * Parse PCFG rule from String. We assume that the input is of the type
+     * Parse CFG rule from String. We assume that the input is of the type
      * lhs -> rhs_1 rhs_2 ... rhs_n
      * @param rule 
      */
@@ -32,12 +33,31 @@ public class CFGRule
         this.vocabulary = vocabulary;
         String[] ar = rule.split("->");        
         assert ar.length > 1; // make sure the rule has at least one right hand-side symbol
-        lhs = vocabulary.getIndex(ar[0]);
+        lhs = vocabulary.getIndex(ar[0].trim());
         ar = ar[1].trim().split(" ");
         rhs = new ArrayList<Integer>(ar.length);
         for(String r : ar)
         {           
             rhs.add(vocabulary.getIndex(r));
+        }        
+    }
+    
+    /**
+     * Parse CFG rule from input subtree. The lhs is the root of the subtree and 
+     * the rhs are the children symbols.
+     * @param subtree
+     * @param vocabulary 
+     */
+    public CFGRule(Tree<String> subtree, Indexer<String> vocabulary)
+    {
+        this.vocabulary = vocabulary;        
+        assert subtree.getChildren().size() > 0; // make sure the tree has at least one child
+        lhs = vocabulary.getIndex(subtree.getLabel());
+        List<Tree<String>> children = subtree.getChildren();
+        rhs = new ArrayList<Integer>(children.size());
+        for(Tree<String> ch : children)
+        {           
+            rhs.add(vocabulary.getIndex(ch.getLabel()));
         }        
     }
 

@@ -1,5 +1,6 @@
 package induction.problem.event3.generative;
 
+import edu.berkeley.nlp.ling.Tree;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
@@ -14,7 +15,6 @@ import induction.Options;
 import induction.Options.NgramWrapper;
 import induction.Utils;
 import induction.ngrams.KylmNgramWrapper;
-import induction.ngrams.RoarkNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AExample;
 import induction.problem.AInferState;
@@ -24,6 +24,7 @@ import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.event3.CFGRule;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
@@ -35,6 +36,7 @@ import induction.problem.event3.generative.alignment.InferState;
 import induction.problem.event3.generative.alignment.InferStatePCFG;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
+import induction.problem.event3.params.CFGParams;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -177,8 +180,42 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             ex.printStackTrace(LogInfo.stderr);
 //            ex.printStackTrace();
         }
-    }    
-    
+    }
+
+    @Override
+    protected void artificialInitParams()
+    {
+        params = newParams();
+        // initialise randomly all parameters
+        params.randomise(opts.initRandom, opts.initNoise);
+        params.optimise(opts.initSmoothing);
+        
+        // update the cfg rules with estimates from input parse trees        
+        CFGParams cfgParams = ((Params)params).cfgParams; 
+        cfgParams.setUniform(0); // reset the cfg rules vectors to 0
+        Map<Integer, Vec> cfgRulesChoices = cfgParams.getCfgRulesChoices();
+        for(AExample aex : examples)
+        {
+            Tree<String> tree = ((Example)aex).getTrueWidget().getRecordTree();
+            if(tree == null)
+            {
+                LogInfo.error("Input file does not contain parse trees!");
+                Execution.finish();
+            }
+            // add 1 count to each cfg rule in each subtree of the parse tree
+            for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
+            {
+                Tree<String> subtree = it.next();
+                if(!(subtree.isLeaf() || subtree.getChildren().size() == 1)) // count only the binary rules
+                {
+                    CFGRule rule = new CFGRule(subtree, rulesIndexer);
+                    cfgRulesChoices.get(rule.getLhs()).addCount(getCfgRuleIndex(rule), 1.0);
+                }
+            }            
+        }
+        cfgParams.optimise(opts.initSmoothing);
+    }
+        
     @Override
     protected void baitInitParams()
     { // Hard code things
