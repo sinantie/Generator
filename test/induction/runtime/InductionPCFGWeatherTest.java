@@ -46,6 +46,7 @@ public class InductionPCFGWeatherTest
 //                 + "test/testWeatherGovEvents "
                  + "data/weatherGov/weatherGovGenDevGaborRecordTreebank "
                  + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize "
+                 + "-fixRecordSelection "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
@@ -64,7 +65,8 @@ public class InductionPCFGWeatherTest
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
+//        model.init(InitType.random, opts.initRandom, "");
+        model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
         lopts = opts.stage1;
         name = "stage1";
     }
