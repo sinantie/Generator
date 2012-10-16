@@ -22,7 +22,7 @@ public class Induction implements Runnable
         ModelInterface model = null;
         switch(opts.modelType)
         {
-            case event3 : model = new GenerativeEvent3Model(opts); break;
+            case event3 : case event3pcfg : model = new GenerativeEvent3Model(opts); break;
             case dmv : model = new GenerativeDMVModel(opts); break;
             default : LogInfo.fail("Unknown model type: " + opts.modelType);
         }

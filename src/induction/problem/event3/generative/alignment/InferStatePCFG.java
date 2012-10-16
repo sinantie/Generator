@@ -1191,7 +1191,7 @@ public class InferStatePCFG extends Event3InferState
             // check if we are in a record leaf, or a pre-terminal, i.e. a unary rule with an eventType label
             // as its' lhs, that spans a sentence.
             // In either case we treat them as equal, i.e., generate the record / field set
-            if (tree.isPreTerminal() || tree.isLeaf())
+            if (tree.getChildren().size() == 1 || tree.isLeaf())
             {
                 String label = tree.getLabel();
                 int eventTypeIndex = label.equals("none") ? cfgParams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
@@ -1201,15 +1201,15 @@ public class InferStatePCFG extends Event3InferState
             {
                 final List<Tree<String>> children = tree.getChildren();
                 // check whether there is at least another sentence boundary between
-                // start and end. If there is, define this a splitting point between
+                // start and end. If there is, define this as a splitting point between
                 // children subtrees.
-                Integer nextBoundary = sentenceBoundaries.peek();
+                Integer nextBoundary = sentenceBoundaries.peek() + 1; // cross punctuation
                 if(nextBoundary < end)
                 {   
                     sentenceBoundaries.poll();
                     // binary trees only
                     hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)), 
-                                             genEdge(nextBoundary + 1, end, children.get(1)),
+                                             genEdge(nextBoundary, end, children.get(1)),
                       new Hypergraph.HyperedgeInfo<Widget>() {
                           int rhs1 = indexer.getIndex(children.get(0).getLabel());
                           int rhs2 = indexer.getIndex(children.get(1).getLabel());
@@ -1230,11 +1230,11 @@ public class InferStatePCFG extends Event3InferState
                 // Generate edges for every sub-span between start and end
                 else 
                 {
-                    for(int k = start + 1; k < end; k++)
+                    for(int k = start + 1; k < end ; k++)
                     {
                         // binary trees only
                         hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
-                                                 genEdge(k + 1, end, children.get(1)),
+                                                 genEdge(k, end, children.get(1)),
                           new Hypergraph.HyperedgeInfo<Widget>() {
                               int rhs1 = indexer.getIndex(children.get(0).getLabel());
                               int rhs2 = indexer.getIndex(children.get(1).getLabel());
