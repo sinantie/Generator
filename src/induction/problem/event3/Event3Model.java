@@ -237,11 +237,11 @@ public abstract class Event3Model extends WordModel
     public int getCfgRuleIndex(CFGRule rule)
     {        
         return cfgRules.get(rule.getLhs()).get(rule);        
-//        List<CFGRule> list = cfgRules.get(rule.getLhs());
-//        for(int i = 0; i < list.size(); i++)
-//            if(list.get(i).equals(rule))
-//                return i;
-//        return -1;
+    }
+    
+    public HashMap<CFGRule, Integer> getCfgCandidateRules(int lhs)
+    {
+        return cfgRules.get(lhs);
     }
     
     public EventType[] getEventTypes()

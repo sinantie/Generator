@@ -642,7 +642,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
         if(!opts.dontOutputParams)
         {
             saveParams(name);             
-            params.output(Execution.getFile(name+".params"), ParamsType.PROBS);
+            params.output(Execution.getFile(name+".params.gz"), ParamsType.PROBS);
         }
         LogInfo.end_track();
         LogInfo.end_track();

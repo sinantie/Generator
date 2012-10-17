@@ -159,9 +159,10 @@ public class InferStatePCFG extends Event3InferState
 
 //        hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
 //                           new Hypergraph.HyperedgeInfo<Widget>()
-//        hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S")),
         if(opts.fixRecordSelection)
             hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree));
+        else
+            hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S")));
     }
 
     @Override
@@ -1123,7 +1124,7 @@ public class InferStatePCFG extends Event3InferState
                       public void setPosterior(double prob) {
                           if(opts.useEventTypeDistrib)
                             // always condition on none event
-                            update(ccounts.getEventTypeChoices()[cparams.none_t], cparams.none_t, prob);                
+                            update(ccounts.getEventTypeChoices()[cparams.boundary_t], cparams.none_t, prob);                
                       }
                       public Widget choose(Widget widget) {
                           for(int k = i; k < j; k++)
@@ -1259,11 +1260,77 @@ public class InferStatePCFG extends Event3InferState
     
     protected CFGNode genEdge(int start, int end, int lhs)
     {
+        final CFGParams cfgParams = params.cfgParams;
+        final CFGParams cfgCounts = counts.cfgParams;
         CFGNode node = new CFGNode(start, end, lhs);
+        
         if(hypergraph.addSumNode(node))
         {
-            
-        }
+//            String label = indexer.getObject(lhs);
+//            int eventTypeIndex = label.equals("none") ? cfgParams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
+//            // check if we are in a record leaf, and generate the record / field set
+//            if (eventTypeIndex != -1)
+//            {                
+//                hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
+//            }  // if
+//            else // we are in a subtree with a non-terminal lhs and two rhs symbols
+//            {
+//                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
+//                final List<Tree<String>> children = tree.getChildren();
+//                // check whether there is at least another sentence boundary between
+//                // start and end. If there is, define this as a splitting point between
+//                // children subtrees.
+//                Integer nextBoundary = sentenceBoundaries.peek() + 1; // cross punctuation
+//                if(nextBoundary < end)
+//                {   
+//                    sentenceBoundaries.poll();
+//                    // binary trees only
+//                    hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)), 
+//                                             genEdge(nextBoundary, end, children.get(1)),
+//                      new Hypergraph.HyperedgeInfo<Widget>() {
+//                          int rhs1 = indexer.getIndex(children.get(0).getLabel());
+//                          int rhs2 = indexer.getIndex(children.get(1).getLabel());
+//                          int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
+//                          public double getWeight()
+//                          {
+//                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+//                          }
+//                          public void setPosterior(double prob) {
+//                               //update(ccounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+//                          }
+//                          public Widget choose(Widget widget) {                          
+//                              return widget;
+//                          }
+//                      }); 
+//                } // if
+//                // children are records/leaf nodes in the same sentence. 
+//                // Generate edges for every sub-span between start and end
+//                else 
+//                {
+//                    for(int k = start + 1; k < end ; k++)
+//                    {
+//                        // binary trees only
+//                        hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
+//                                                 genEdge(k, end, children.get(1)),
+//                          new Hypergraph.HyperedgeInfo<Widget>() {
+//                              int rhs1 = indexer.getIndex(children.get(0).getLabel());
+//                              int rhs2 = indexer.getIndex(children.get(1).getLabel());
+//                              int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
+//                              public double getWeight()
+//                              {
+//                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+//                              }
+//                              public void setPosterior(double prob) {
+//                                   //update(ccounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+//                              }
+//                              public Widget choose(Widget widget) {                          
+//                                  return widget;
+//                              }
+//                          }); 
+//                    } // for
+//                } // else
+//            } // else
+        } // if
         return node;
     }
 }

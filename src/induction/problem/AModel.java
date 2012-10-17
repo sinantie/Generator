@@ -59,6 +59,11 @@ public abstract class AModel
         maxExamples = opts.maxExamples;
     }
 
+    public AParams getParams()
+    {
+        return params;
+    }
+    
     protected abstract AParams newParams();
     protected abstract APerformance newPerformance();
 
@@ -590,6 +595,7 @@ public abstract class AModel
         AInferState inferState = null;
         while (iter < lopts.numIters)
         {
+            System.out.println("Iteration " + (iter+1));
             trainPerformance = newPerformance();
             AParams counts = newParams();
 //            Example ex = examples.get(0);

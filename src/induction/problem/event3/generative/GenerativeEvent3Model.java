@@ -225,7 +225,14 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     @Override
     protected Params newParams()
     {
-        return new Params(this, opts, VecFactory.Type.DENSE);
+        if(!opts.fixRecordSelection || params == null)
+            return new Params(this, opts, VecFactory.Type.DENSE);
+        else // in case we are using a treebank for record selection, copy rule probabilites from previous iteration
+        {
+            Params p = new Params(this, opts, VecFactory.Type.DENSE);
+            p.cfgParams = ((Params)params).cfgParams;
+            return p;
+        }
     }
 
     @Override
@@ -363,7 +370,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 lopts.numIters = iter;
         } // while (iter < lopts.numIters)
         saveParams(name);
-        params.output(Execution.getFile(name+".params"), ParamsType.PROBS);
+        params.output(Execution.getFile(name+".params.gz"), ParamsType.PROBS);
         LogInfo.end_track();
         LogInfo.end_track();
         Record.end();
