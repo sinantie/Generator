@@ -1,9 +1,11 @@
 package induction.runtime;
 
+import induction.problem.event3.params.Params;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import induction.problem.AParams.ParamsType;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,7 +42,7 @@ public class InductionPCFGWeatherTest
     {
          String args = 
                    "-modelType event3pcfg "
-                 + "-Options.stage1.numIters 15 "
+                 + "-Options.stage1.numIters 5 "
                  + "-examplesInSingleFile "
                  + "-inputLists "
 //                 + "test/testWeatherGovEvents "
@@ -67,6 +69,7 @@ public class InductionPCFGWeatherTest
         opts.outputIterFreq = opts.stage1.numIters;
 //        model.init(InitType.random, opts.initRandom, "");
         model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
+        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
         lopts = opts.stage1;
         name = "stage1";
     }
@@ -83,7 +86,8 @@ public class InductionPCFGWeatherTest
     {
         System.out.println("run");
         String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
-//        System.out.println(model.testInitLearn(name, lopts).trim());
-        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
+        System.out.println(model.testInitLearn(name, lopts).trim());
+//        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
+        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
     }
 }
