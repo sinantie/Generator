@@ -1752,11 +1752,12 @@ public class Hypergraph<Widget> {
         case sum:
           int n = nodeInfo.edges.size();
           // Compute scores
-          BigDouble[] scores = new BigDouble[n];
+          BigDouble[] scores = null;
           if(!viterbi)
           {
+            scores = new BigDouble[n];
             for(int i = 0; i < n; i++)
-            {
+            {                
                 Hyperedge edge = nodeInfo.edges.get(i);
                 scores[i] = BigDouble.mult3(edge.weight, edge.dest.get(0).insideScore,
                                            edge.dest.get(1).insideScore);
@@ -1774,7 +1775,7 @@ public class Hypergraph<Widget> {
               chosenIndex = BigDouble.normalizeAndSample(random, scores);
           }
           if(chosenIndex == -1)
-            throw Exceptions.bad("Unable to choose from: %s", Fmt.D(scores));
+            throw Exceptions.bad("Unable to choose best child node %s", nodeInfo);
           Hyperedge chosenEdge = nodeInfo.edges.get(chosenIndex);
           if(choose) widget = (Widget)chosenEdge.info.choose(widget);
           //if(choose) dbg("Choose "+widget);
