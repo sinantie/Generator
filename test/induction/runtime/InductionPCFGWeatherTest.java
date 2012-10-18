@@ -48,7 +48,7 @@ public class InductionPCFGWeatherTest
 //                 + "test/testWeatherGovEvents "
                  + "data/weatherGov/weatherGovGenDevGaborRecordTreebank "
                  + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize "
-                 + "-fixRecordSelection "
+//                 + "-fixRecordSelection "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
@@ -67,9 +67,9 @@ public class InductionPCFGWeatherTest
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-//        model.init(InitType.random, opts.initRandom, "");
-        model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
-        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+        model.init(InitType.random, opts.initRandom, "");
+//        model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
+//        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
         lopts = opts.stage1;
         name = "stage1";
     }
@@ -88,6 +88,6 @@ public class InductionPCFGWeatherTest
         String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
         System.out.println(model.testInitLearn(name, lopts).trim());
 //        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
-        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+//        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
     }
 }
