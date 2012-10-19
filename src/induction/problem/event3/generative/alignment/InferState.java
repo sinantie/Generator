@@ -1106,6 +1106,74 @@ public class InferState extends Event3InferState
         return node;
     }
 
+    /**
+     * Generate all records with the same event type t0 spanning words i to j (used in PCFG inference)
+     * @param i begin of span
+     * @param j end of span
+     * @param t0 the event type to expand records from
+     * @return a TrackNode with event type t0
+     */
+    protected Object genRecord(final int i, final int j, final int t0)
+    {
+        final TrackParams cparams = params.trackParams[0];
+        final TrackParams ccounts = counts != null ? counts.trackParams[0] : null;
+        TrackNode node = new TrackNode(i, j, t0, 0);
+        if(hypergraph.addSumNode(node))
+        {
+            if(t0 == cparams.none_t)
+            {                
+              hypergraph.addEdge(node, genNoneEvent(i, j, 0),
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight() {                              
+                          return opts.useEventTypeDistrib ?
+                                  get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t) : 1.0;
+                      }
+                      public void setPosterior(double prob) {
+                          if(opts.useEventTypeDistrib)
+                            // always condition on none event
+                            update(ccounts.getEventTypeChoices()[cparams.boundary_t], cparams.none_t, prob);                
+                      }
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[0][k] = Parameters.none_e;
+                          }
+                          return widget;
+                      }
+               });                
+            } // if - none eventType
+            else
+            {
+                for(final Event e : ex.eventsByEventType.get(t0))
+                {
+                  final int eventId = e.getId();                  
+                  hypergraph.addEdge(node, genEvent(i, j, 0, eventId),
+                  new Hypergraph.HyperedgeInfo<Widget>() {
+                      public double getWeight()
+                      {
+                          return opts.useEventTypeDistrib ? 
+                                  get(cparams.getEventTypeChoices()[cparams.boundary_t], t0) *
+                                  (1.0d/(double)ex.getEventTypeCounts()[t0]) : 
+                                  1.0;
+                      }
+                      public void setPosterior(double prob) {
+                          if (opts.useEventTypeDistrib)
+                            update(ccounts.getEventTypeChoices()[cparams.boundary_t], t0, prob);                
+                      }
+                      public Widget choose(Widget widget) {
+                          for(int k = i; k < j; k++)
+                          {
+                              widget.getEvents()[0][k] = eventId;                
+                          }
+                          return widget;
+                      }
+                  });                 
+                } // for
+            } // else
+        } // if
+        return node;
+    }
+    
     // pc says for each c whether the event type on track c can be none_t or not
     protected PCEventsNode genPCEvents(int i, int j, int t0, int pc)
     {

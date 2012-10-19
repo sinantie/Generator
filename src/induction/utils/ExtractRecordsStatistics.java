@@ -9,6 +9,7 @@ import fig.basic.ListUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.Options.InitType;
+import induction.TreeUtils;
 import induction.problem.AExample;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
@@ -237,10 +238,22 @@ public class ExtractRecordsStatistics
             {
                 str.append(sentence.toPennTreebankStyle());
             }
-            str.append(")"); // close start symbol span
+            str.append(")"); // close start symbol span            
+            Tree<String> tree;
             // Read the tree and binarize. We slightly tweak the naming of Xbar rules,
             // by integrating children RHS in the name of the LHS symbol.
-            Tree<String> tree = binarize(new PennTreeReader(new StringReader(str.toString())).next());
+            if(opts.modifiedBinarization)
+                tree = binarize(new PennTreeReader(new StringReader(str.toString())).next());            
+            else // use the standard binarization
+            {
+                Tree<String> origTree = new PennTreeReader(new StringReader(str.toString())).next();
+                tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(origTree, 0) : TreeUtils.rightBinarize(origTree, 0);                
+                for (Tree<String> subtree : tree.subTreeList())
+                {
+                    if(subtree.getChildren().size() > 1)
+                        rules.add(String.format("%s -> %s %s", subtree.getLabel(), subtree.getChildren().get(0).getLabel(), subtree.getChildren().get(1).getLabel()));
+                }
+            }            
             out.println(p.getName());
             out.println(PennTreeRenderer.render(tree));
 //            System.out.println(PennTreeRenderer.render(tree));

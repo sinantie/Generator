@@ -146,19 +146,22 @@ public class ExportExamplesToSingleFile
                              };
         // recordTreebankTrainRightBinarize, recordTreebankGenDevRightBinarize, recordTreebankGenEvalRightBinarize
         String treebankInputFile[] = {
-                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarize",
-                                      "data/weatherGov/treebanks/recordTreebankGenDevRightBinarize",
-                                      "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarize"
+                                      "data/weatherGov/treebanks/standardBinarization/recordTreebankTrainRightBinarize",
+                                      "data/weatherGov/treebanks/standardBinarization/recordTreebankGenDevRightBinarize",
+                                      "data/weatherGov/treebanks/standardBinarization/recordTreebankGenEvalRightBinarize"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebank.gz",
-                               "data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz",
-                               "data/weatherGov/weatherGovEvalGaborRecordTreebank.gz"
+                               "data/weatherGov/standardBinarization/weatherGovTrainGaborRecordTreebank.gz",
+                               "data/weatherGov/standardBinarization/weatherGovGenDevGaborRecordTreebank.gz",
+                               "data/weatherGov/standardBinarization/weatherGovEvalGaborRecordTreebank.gz"
                               };        
         boolean isDirectory = false;
         boolean inputPosTagged = false;
-        for(int i = 0; i < 3; i++)
+        for(int i = 0; i < 2; i++)
+        {
+            System.out.println("Creating " + outputFile[i]);
             new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], isDirectory, inputPosTagged).execute();
+        }
     }
 }

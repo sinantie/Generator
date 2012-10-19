@@ -3,18 +3,14 @@ package induction.problem.event3.generative.alignment;
 import edu.berkeley.nlp.ling.Tree;
 import fig.basic.Indexer;
 import induction.problem.event3.params.Params;
-import induction.problem.event3.params.Parameters;
-import induction.problem.event3.params.TrackParams;
 import induction.Hypergraph;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.event3.CFGRule;
-import induction.problem.event3.Event;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
 import induction.problem.event3.nodes.CFGNode;
-import induction.problem.event3.nodes.TrackNode;
 import induction.problem.event3.params.CFGParams;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -92,68 +88,7 @@ public class InferStatePCFG extends InferState
             hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree));
         else
             hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S"), sentenceBoundaries));
-    }      
-    
-    protected Object genRecord(final int i, final int j, final int t0)
-    {
-        final TrackParams cparams = params.trackParams[0];
-        final TrackParams ccounts = counts != null ? counts.trackParams[0] : null;
-        TrackNode node = new TrackNode(i, j, t0, 0);
-        if(hypergraph.addSumNode(node))
-        {
-            if(t0 == cparams.none_t)
-            {                
-              hypergraph.addEdge(node, genNoneEvent(i, j, 0),
-                  new Hypergraph.HyperedgeInfo<Widget>() {
-                      public double getWeight() {                              
-                          return opts.useEventTypeDistrib ?
-                                  get(cparams.getEventTypeChoices()[cparams.boundary_t], cparams.none_t) : 1.0;
-                      }
-                      public void setPosterior(double prob) {
-                          if(opts.useEventTypeDistrib)
-                            // always condition on none event
-                            update(ccounts.getEventTypeChoices()[cparams.boundary_t], cparams.none_t, prob);                
-                      }
-                      public Widget choose(Widget widget) {
-                          for(int k = i; k < j; k++)
-                          {
-                              widget.getEvents()[0][k] = Parameters.none_e;
-                          }
-                          return widget;
-                      }
-               });                
-            } // if - none eventType
-            else
-            {
-                for(final Event e : ex.eventsByEventType.get(t0))
-                {
-                  final int eventId = e.getId();                  
-                  hypergraph.addEdge(node, genEvent(i, j, 0, eventId),
-                  new Hypergraph.HyperedgeInfo<Widget>() {
-                      public double getWeight()
-                      {
-                          return opts.useEventTypeDistrib ? 
-                                  get(cparams.getEventTypeChoices()[cparams.boundary_t], t0) *
-                                  (1.0d/(double)ex.getEventTypeCounts()[t0]) : 
-                                  1.0;
-                      }
-                      public void setPosterior(double prob) {
-                          if (opts.useEventTypeDistrib)
-                            update(ccounts.getEventTypeChoices()[cparams.boundary_t], t0, prob);                
-                      }
-                      public Widget choose(Widget widget) {
-                          for(int k = i; k < j; k++)
-                          {
-                              widget.getEvents()[0][k] = eventId;                
-                          }
-                          return widget;
-                      }
-                  });                 
-                } // for
-            } // else
-        } // if
-        return node;
-    }
+    }              
     
     /**
      * Build binarized record content selection model, given the structure of the input
@@ -257,7 +192,7 @@ public class InferStatePCFG extends InferState
             if (eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)))
             {                
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
-            }  // if
+            } // if
             else // we are in a subtree with a non-terminal lhs and two rhs symbols
             {
                 final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);         

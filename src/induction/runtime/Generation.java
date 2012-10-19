@@ -23,9 +23,7 @@ public class Generation implements Runnable
         switch(opts.modelType)
         {
             case dmv : model = new GenerativeDMVModel(opts); break;
-            case generate:
-            case semParse:
-            default:
+            case generate: case generatePcfg : case semParse: default:
                 model = new GenerativeEvent3Model(opts); break;
         }
         model.init(InitType.staged, opts.initRandom, "");        
