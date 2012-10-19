@@ -2,9 +2,10 @@
 threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovTrainGaborRecordTreebank.gz
-output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarize
+input=data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz
+output=results/output/weatherGov/alignments/dev/pcfg/model_3_gabor_record_pcfg_treebank_stdBin_30iter
+#data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
+treebankRules=data/weatherGov/treebanks/standardBinarization/recordTreebankRulesGenDevRightBinarize
 memory=-Xmx2g
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
@@ -13,23 +14,24 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -examplesInSingleFile \
 -inputLists $input \
 -execDir $output \
--Options.stage1.numIters 15 \
+-Options.stage1.numIters 30 \
 -inputFileExt events \
 -numThreads $threads \
 -treebankRules $treebankRules \
--fixRecordSelection \
--initType artificial \
+-initType random \
 -indepFields 0,5 \
 -indepWords 0,5 \
 -newEventTypeFieldPerWord 0,5 \
 -newFieldPerWord 0,5 \
+-Options.stage1.smoothing 0.1 \
 -disallowConsecutiveRepeatFields \
 -noneFieldSmoothing 0 \
 -outputFullPred \
 -modelUnkWord \
 -outputExampleFreq 500 \
 -initNoise 1e-3 \
--initSmoothing 0.01
+-initSmoothing 0.01 \
+-fixRecordSelection
 
 # Record PCFG - Treebank Input
 #-treebankRules $treebankRules \
@@ -39,6 +41,8 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 #-indepWords 0,5 \
 #-newEventTypeFieldPerWord 0,5 \
 #-newFieldPerWord 0,5 \
+#-Options.stage1.smoothing 0.1 \
+
 
 # Record HMM alignment
 # --------------------
