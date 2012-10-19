@@ -63,7 +63,6 @@ public class GenerationWeatherTest
                     + "-maxPhraseLength 5 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
-                    + "-numAsSymbol "
 //                    + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                     + "-lengthPredictionFeatureType values "
                     + "-lengthPredictionStartIndex 4 "

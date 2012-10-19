@@ -79,7 +79,7 @@ public class ExtractRecordsStatisticsTest
                  + "-extractRecordTrees "
                  + "-binarize right "
                  + "-extractNoneEvent "
-                 + "-useEventTypeNames "
+//                 + "-useEventTypeNames "
 //                 + "-countSentenceNgrams "
 //                 + "-countDocumentNgrams "
                  + "-writePermutations "
