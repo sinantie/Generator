@@ -444,7 +444,8 @@ public class Utils
 
     public static String stripExtension(String name)
     {
-        return name.substring(0, name.lastIndexOf("."));
+        int index = name.lastIndexOf(".");
+        return index == -1 ? name : name.substring(0, index);
     }
     
     // Detect overflow, then set to cap (MAX_VALUE or MIN_VALUE)

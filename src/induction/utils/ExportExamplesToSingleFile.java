@@ -154,7 +154,7 @@ public class ExportExamplesToSingleFile
         String outputFile[] = {
                                "data/weatherGov/standardBinarization/weatherGovTrainGaborRecordTreebank.gz",
                                "data/weatherGov/standardBinarization/weatherGovGenDevGaborRecordTreebank.gz",
-                               "data/weatherGov/standardBinarization/weatherGovEvalGaborRecordTreebank.gz"
+                               "data/weatherGov/standardBinarization/weatherGovGenEvalGaborRecordTreebank.gz"
                               };        
         boolean isDirectory = false;
         boolean inputPosTagged = false;

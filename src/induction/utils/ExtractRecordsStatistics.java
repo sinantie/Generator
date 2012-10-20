@@ -251,7 +251,14 @@ public class ExtractRecordsStatistics
                 for (Tree<String> subtree : tree.subTreeList())
                 {
                     if(subtree.getChildren().size() > 1)
-                        rules.add(String.format("%s -> %s %s", subtree.getLabel(), subtree.getChildren().get(0).getLabel(), subtree.getChildren().get(1).getLabel()));
+                    {
+                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
+                        Tree<String> ch = subtree.getChildren().get(0);
+                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                        ch = subtree.getChildren().get(1);
+                        String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                        rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
+                    }
                 }
             }            
             out.println(p.getName());
