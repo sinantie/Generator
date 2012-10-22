@@ -26,5 +26,6 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Output a delimiter '|' between sentences") public boolean delimitSentences = false;
     @Option(gloss="Write record (type) assignments as an mrg tree") public boolean extractRecordTrees  = false;
     @Option(gloss="Left binarize or right binarize") public Direction binarize = Direction.left;
+    @Option(gloss="Markovization order") public int markovOrder = -1;
     @Option(gloss="Use modified binarization. Intermediate labels are generated from children labels.") public boolean modifiedBinarization = false;
 }

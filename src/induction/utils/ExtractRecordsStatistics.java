@@ -247,7 +247,7 @@ public class ExtractRecordsStatistics
             else // use the standard binarization
             {
                 Tree<String> origTree = new PennTreeReader(new StringReader(str.toString())).next();
-                tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(origTree, 0) : TreeUtils.rightBinarize(origTree, 0);                
+                tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(origTree, opts.markovOrder) : TreeUtils.rightBinarize(origTree, opts.markovOrder);
                 for (Tree<String> subtree : tree.subTreeList())
                 {
                     if(subtree.getChildren().size() > 1)
