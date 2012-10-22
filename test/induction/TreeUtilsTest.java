@@ -54,7 +54,7 @@ public class TreeUtilsTest
     public void testRightBinarize()
     {
         System.out.println("rightBinarize");
-        int order = -1;
+        int order = 1;
 //        PennTreeReader reader = new PennTreeReader(new StringReader("(S (5_0 (5 ) (0 ) ) (3_2_4 (3 ) (2 ) (4) ) )"));
         PennTreeReader reader = new PennTreeReader(new StringReader("(S (6_8 (6) (8) ) (5_0 (5 ) (0 ) ) (3_2_4 (3 ) (2 ) (4) ) )"));
 //        PennTreeReader reader = new PennTreeReader(new StringReader("(S (SENT1 (6 a) (8 b) (7 c) ) (SENT2 (5 d) (0 e) ) (SENT3 (3 f) (2 g) ) )"));
