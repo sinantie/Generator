@@ -3,11 +3,11 @@
 #genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #inputLists=gaborLists/genDevListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz, weatherGovGenEvalGaborRecordTreebank
-input=data/weatherGov/weatherGovTrainGaborRecordTreebank.gz
+input=data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj
 
-execDir=data/weatherGov/treebanks/standardBinarization
+execDir=data/weatherGov/treebanks
 java -Xmx1g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.utils.ExtractRecordsStatisticsExecutor \
@@ -25,7 +25,9 @@ dist/stanford-postagger-2010-05-26.jar \
 -delimitSentences \
 -extractRecordTrees \
 -binarize right \
--useEventTypeNames
+-useEventTypeNames \
+-markovOrder 2 \
+-modifiedBinarization
 
 #-modifiedBinarization
 #-useEventTypeNames
