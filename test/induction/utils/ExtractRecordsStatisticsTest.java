@@ -78,6 +78,7 @@ public class ExtractRecordsStatisticsTest
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
                  + "-binarize right "
+                 + "-modifiedBinarization "
                  + "-extractNoneEvent "
 //                 + "-useEventTypeNames "
 //                 + "-countSentenceNgrams "

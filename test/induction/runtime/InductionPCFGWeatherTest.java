@@ -47,7 +47,7 @@ public class InductionPCFGWeatherTest
                  + "-inputLists "
 //                 + "test/testWeatherGovEvents "
                  + "data/weatherGov/standardBinarization/weatherGovGenDevGaborRecordTreebank "
-                 + "-treebankRules data/weatherGov/treebanks/standardBinarization/recordTreebankRulesGenDevRightBinarize_test "
+                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize_unaryRules_test "
 //                 + "-fixRecordSelection "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
