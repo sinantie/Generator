@@ -277,9 +277,12 @@ public class ExtractRecordsStatistics
         }
         if (tree.getChildren().size() == 1)
         {
+            Tree<String> child = tree.getChildren().get(0);
+            if(!tree.isPreTerminal())
+                rules.add(String.format("%s -> %s", rootLabel, child.getLabel()));
             return new Tree<String>(rootLabel,
                     tree.isIntermediateNode(),
-                    ListUtils.newList(binarize(tree.getChildren().get(0))));
+                    ListUtils.newList(binarize(child)));
         }
 
         // Binarize all children
