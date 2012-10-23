@@ -3,7 +3,7 @@
 #genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #inputLists=gaborLists/genDevListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz, weatherGovGenEvalGaborRecordTreebank
-input=data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz
+input=data/weatherGov/weatherGovTrainGaborRecordTreebank.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj
 

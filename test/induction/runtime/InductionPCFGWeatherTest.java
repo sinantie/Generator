@@ -46,9 +46,9 @@ public class InductionPCFGWeatherTest
                  + "-examplesInSingleFile "
                  + "-inputLists "
 //                 + "test/testWeatherGovEvents "
-                 + "data/weatherGov/standardBinarization/weatherGovGenDevGaborRecordTreebank "
-                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize_unaryRules_test "
-//                 + "-fixRecordSelection "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
+                 + "-fixRecordSelection "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
@@ -67,8 +67,8 @@ public class InductionPCFGWeatherTest
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
-//        model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
+//        model.init(InitType.random, opts.initRandom, "");
+        model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
 //        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
         lopts = opts.stage1;
         name = "stage1";
