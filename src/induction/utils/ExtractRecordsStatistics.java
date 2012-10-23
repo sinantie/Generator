@@ -299,7 +299,7 @@ public class ExtractRecordsStatistics
             for (int i = 1; i < newChildren.size(); i++)
             {
                 String intermediateLabel =
-                        i == newChildren.size() - 1 ? rootLabel : (newTree.getLabel() + "_" + newChildren.get(i).getLabel());
+                        (i == newChildren.size() - 1 ? rootLabel : (newTree.getLabel() + "_" + newChildren.get(i).getLabel())).replaceAll("SENT-", "");
                 rules.add(String.format("%s -> %s %s", intermediateLabel, newTree.getLabel(), newChildren.get(i).getLabel()));
                 newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newTree, newChildren.get(i)));            
             }
@@ -310,7 +310,7 @@ public class ExtractRecordsStatistics
             Tree<String> newTree = newChildren.get(newChildren.size()-1);
             for(int i = newChildren.size()-2; i >= 0; i--) 
             {
-              String intermediateLabel = i == 0 ? rootLabel : (newChildren.get(i).getLabel() + "_" + newTree.getLabel());
+              String intermediateLabel = (i == 0 ? rootLabel : (newChildren.get(i).getLabel() + "_" + newTree.getLabel())).replaceAll("SENT-", "");              
               rules.add(String.format("%s -> %s %s", intermediateLabel, newChildren.get(i).getLabel(), newTree.getLabel()));
               newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newChildren.get(i), newTree));
             }
@@ -470,11 +470,11 @@ public class ExtractRecordsStatistics
                 str.append("(").append(tok).append(") ");
                 intermediateLabel.append(tok).append("_");
             }
-//            if(tokens.size() > 1)
-            {
-                str.insert(0, "(" + intermediateLabel.substring(0, intermediateLabel.length() - 1) + " ");
-                str.append(")");
-            }
+            if(tokens.size() == 1) // make lhs of unary rules unique
+                intermediateLabel.insert(0, "SENT-");
+            str.insert(0, "(" + intermediateLabel.substring(0, intermediateLabel.length() - 1) + " ");
+            str.append(")");
+
             
             return str.toString();
         }

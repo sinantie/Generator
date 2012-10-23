@@ -146,15 +146,15 @@ public class ExportExamplesToSingleFile
                              };
         // recordTreebankTrainRightBinarize, recordTreebankGenDevRightBinarize, recordTreebankGenEvalRightBinarize
         String treebankInputFile[] = {
-                                      "data/weatherGov/treebanks/standardBinarization/recordTreebankTrainRightBinarize",
-                                      "data/weatherGov/treebanks/standardBinarization/recordTreebankGenDevRightBinarize",
-                                      "data/weatherGov/treebanks/standardBinarization/recordTreebankGenEvalRightBinarize"
+                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRules",
+                                      "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
+                                      "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarize"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
-                               "data/weatherGov/standardBinarization/weatherGovTrainGaborRecordTreebank.gz",
-                               "data/weatherGov/standardBinarization/weatherGovGenDevGaborRecordTreebank.gz",
-                               "data/weatherGov/standardBinarization/weatherGovGenEvalGaborRecordTreebank.gz"
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz",
+                               "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
+                               "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
                               };        
         boolean isDirectory = false;
         boolean inputPosTagged = false;

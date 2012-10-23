@@ -14,13 +14,18 @@ public class CFGRule
     private List<Integer> rhs; // right hand-side symbol(s)
     private Indexer<String> vocabulary;
 
-    public CFGRule(int lhs, int rhs1, int rhs2)
+    public CFGRule(int lhs, int rhs)
     {
         this.lhs = lhs;
         this.rhs = new ArrayList<Integer>();
-        this.rhs.add(rhs1);
-        this.rhs.add(rhs2);
+        this.rhs.add(rhs);
     }
+    
+    public CFGRule(int lhs, int rhs1, int rhs2)
+    {
+        this(lhs, rhs1);
+        this.rhs.add(rhs2);
+    }        
     
     
     /**
