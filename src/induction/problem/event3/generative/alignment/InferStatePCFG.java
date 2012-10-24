@@ -111,8 +111,7 @@ public class InferStatePCFG extends InferState
         
         if(hypergraph.addSumNode(node))
         {
-            // check if we are in a record leaf, or a pre-terminal, i.e. a unary rule with an eventType label
-            // as its' lhs, that spans a sentence.
+            // check if we are in a record leaf, or a pre-terminal.
             // In either case we treat them as equal, i.e., generate the record / field set
 //            if (tree.getChildren().size() == 1 || tree.isLeaf())
             if (tree.isPreTerminal() || tree.isLeaf())
@@ -130,7 +129,7 @@ public class InferStatePCFG extends InferState
                 Integer nextBoundary = sentenceBoundaries.peek() + 1; // cross punctuation
                 if(nextBoundary < end)
                 {   
-                    sentenceBoundaries.poll();                    
+                    sentenceBoundaries.poll();                         
                     if(children.size() == 1) // unary trees
                     {
                         hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)),                                              
@@ -236,9 +235,9 @@ public class InferStatePCFG extends InferState
                 Integer nextBoundary = sentenceBoundaries.peek() + 1; // cross punctuation                
                 for(Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                 {
-                    final int rhs1 = candidateRule.getKey().getRhs1();
-                    final int rhs2 = candidateRule.getKey().getRhs2();
+                    final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
+                    final boolean isUnary = candidateRule.getKey().isUnary();
                     // check whether there is at least another sentence boundary between
                     // start and end. If there is, define this as a splitting point between
                     // children subtrees.
@@ -246,19 +245,38 @@ public class InferStatePCFG extends InferState
                     {
                         LinkedList<Integer> sentenceBoundariesCloned = new LinkedList<Integer>(sentenceBoundaries);
                         sentenceBoundariesCloned.poll();
-                        // binary trees only
-                        hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned), genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
-                          new Hypergraph.HyperedgeInfo<Widget>() {                              
-                              public double getWeight() {
-                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                              }
-                              public void setPosterior(double prob) {
-                                  update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
-                              }
-                              public Widget choose(Widget widget) {                          
-                                  return widget;
-                              }
-                          }); 
+                        if(isUnary)
+                        {
+                            hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned),                                                 
+                              new Hypergraph.HyperedgeInfo<Widget>() {                              
+                                  public double getWeight() {
+                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                  }
+                                  public void setPosterior(double prob) {
+                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                  }
+                                  public Widget choose(Widget widget) {                          
+                                      return widget;
+                                  }
+                              }); 
+                        }
+                        else // binary trees only
+                        {
+                            final int rhs2 = candidateRule.getKey().getRhs2();
+                            hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned), 
+                                                     genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
+                              new Hypergraph.HyperedgeInfo<Widget>() {                              
+                                  public double getWeight() {
+                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                  }
+                                  public void setPosterior(double prob) {
+                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                  }
+                                  public Widget choose(Widget widget) {                          
+                                      return widget;
+                                  }
+                              }); 
+                        }                        
                     } // if                    
                     else 
                     {
@@ -266,12 +284,13 @@ public class InferStatePCFG extends InferState
                         // then generate edges for every sub-span between start and end (i.e., generate records in the same sentence.
                         // If not, then the candidate rule spans more sentences than in the particular example,
                         // so we need to abort, i.e., stop expanding edges.                       
-                        if(eventTypeIndxer.contains(indexer.getObject(rhs1)) && eventTypeIndxer.contains(indexer.getObject(rhs2)))
+//                        if(eventTypeIndxer.contains(indexer.getObject(rhs1)) && eventTypeIndxer.contains(indexer.getObject(rhs2)))
+//                        {
+                        for(int k = start + 1; k < end ; k++)
                         {
-                            for(int k = start + 1; k < end ; k++)
+                            if(isUnary)
                             {
-                                // binary trees only
-                                hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), genEdge(k, end, rhs2, sentenceBoundaries),
+                                hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries),
                                   new Hypergraph.HyperedgeInfo<Widget>() {                                      
                                       public double getWeight() {
                                           return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
@@ -282,9 +301,27 @@ public class InferStatePCFG extends InferState
                                       public Widget choose(Widget widget) {                          
                                           return widget;
                                       }
-                                  }); 
-                            } // for
-                        } // if
+                                  });
+                            }
+                            else // binary trees only
+                            {
+                                final int rhs2 = candidateRule.getKey().getRhs2();
+                                hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), 
+                                                         genEdge(k, end, rhs2, sentenceBoundaries),
+                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                                      public double getWeight() {
+                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                      }
+                                      public void setPosterior(double prob) {
+                                          update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                      }
+                                      public Widget choose(Widget widget) {                          
+                                          return widget;
+                                      }
+                                  });
+                            }                            
+                        } // for
+//                        } // if
                     } // else
                 } // for
             } // else

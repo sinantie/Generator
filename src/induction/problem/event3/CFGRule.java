@@ -13,18 +13,20 @@ public class CFGRule
     private int lhs; // non-terminal left hand-side symbol
     private List<Integer> rhs; // right hand-side symbol(s)
     private Indexer<String> vocabulary;
-
+    private boolean unary;
+    
     public CFGRule(int lhs, int rhs)
     {
         this.lhs = lhs;
         this.rhs = new ArrayList<Integer>();
-        this.rhs.add(rhs);
+        this.rhs.add(rhs);        
     }
     
     public CFGRule(int lhs, int rhs1, int rhs2)
     {
         this(lhs, rhs1);
         this.rhs.add(rhs2);
+        this.unary = true;
     }        
     
     
@@ -45,6 +47,7 @@ public class CFGRule
         {           
             rhs.add(vocabulary.getIndex(r));
         }        
+        this.unary = rhs.size() == 1;
     }
     
     /**
@@ -64,6 +67,7 @@ public class CFGRule
         {           
             rhs.add(vocabulary.getIndex(ch.getLabel()));
         }        
+        this.unary = rhs.size() == 1;
     }
 
     public int getLhs()
@@ -85,6 +89,11 @@ public class CFGRule
     {
         assert rhs.size() > 1;
         return rhs.get(1);
+    }
+
+    public boolean isUnary()
+    {
+        return unary;
     }
     
     public String getRhsToString()
