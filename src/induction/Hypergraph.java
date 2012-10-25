@@ -1538,7 +1538,11 @@ public class Hypergraph<Widget> {
     startNodeInfo.outsideScore.setToOne();
     for(int i = 0; i < topologicalOrdering.size(); i++) {
       NodeInfo nodeInfo = topologicalOrdering.get(i);
-      if(nodeInfo.insideScore.isZero()) continue; // This happens for dead nodes
+      if(nodeInfo.insideScore.isZero()) 
+      {
+          continue; // This happens for dead nodes
+      }
+          
       //dbgs("outsideScore(%s) = %s", nodeInfo.node, nodeInfo.outsideScore);
       switch(nodeInfo.nodeType) {
         case sum:

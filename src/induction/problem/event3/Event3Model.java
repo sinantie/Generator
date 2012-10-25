@@ -1107,14 +1107,17 @@ public abstract class Event3Model extends WordModel
             cfgRules = new HashMap<Integer, HashMap<CFGRule, Integer>>();
             for(String line : Utils.readLines(opts.treebankRules))
             {
-                CFGRule rule = new CFGRule(line, rulesIndexer);
-                HashMap<CFGRule, Integer> map = cfgRules.get(rule.getLhs());
-                if(map == null)
+                if(!line.startsWith("#")) // comments
                 {
-                    map = new HashMap<CFGRule, Integer>();
-                    cfgRules.put(rule.getLhs(), map);
-                }
-                map.put(rule, map.size());
+                    CFGRule rule = new CFGRule(line, rulesIndexer);
+                    HashMap<CFGRule, Integer> map = cfgRules.get(rule.getLhs());
+                    if(map == null)
+                    {
+                        map = new HashMap<CFGRule, Integer>();
+                        cfgRules.put(rule.getLhs(), map);
+                    }
+                    map.put(rule, map.size());
+                }                
             }
             LogInfo.end_track();                        
         }        

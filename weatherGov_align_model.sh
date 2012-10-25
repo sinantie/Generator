@@ -2,11 +2,11 @@
 threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRulesFullLhs.gz
-output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_fullLhs_30iter
+input=data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz
+output=results/output/weatherGov/alignments/dev/pcfg/model_3_gabor_record_pcfg_grammar_unaryRules_30iter
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRulesFullLhs
-memory=-Xmx2g
+treebankRules=data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules
+memory=-Xmx1500m
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
 -create \
@@ -28,10 +28,9 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -noneFieldSmoothing 0 \
 -outputFullPred \
 -modelUnkWord \
--outputExampleFreq 5000 \
+-outputExampleFreq 500 \
 -initNoise 1e-3 \
--initSmoothing 0.01 \
--fixRecordSelection
+-initSmoothing 0.01
 
 # Record PCFG - Treebank Input
 #-treebankRules $treebankRules \

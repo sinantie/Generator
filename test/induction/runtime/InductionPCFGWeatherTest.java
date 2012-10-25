@@ -46,7 +46,7 @@ public class InductionPCFGWeatherTest
                  + "-examplesInSingleFile "
                  + "-inputLists "
 //                 + "test/testWeatherGovEvents "
-                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules "
                  + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules_test "
 //                 + "-fixRecordSelection "
                  + "-inputFileExt events "

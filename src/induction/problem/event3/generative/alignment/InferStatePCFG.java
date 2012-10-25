@@ -280,32 +280,33 @@ public class InferStatePCFG extends InferState
                     } // if                    
                     else 
                     {
-                        // check whether candidate rules have records/leaf nodes as their rhs. If yes, 
-                        // then generate edges for every sub-span between start and end (i.e., generate records in the same sentence.
-                        // If not, then the candidate rule spans more sentences than in the particular example,
-                        // so we need to abort, i.e., stop expanding edges.                       
+                        if(isUnary)
+                        {
+                            hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
+                              new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                                  public double getWeight() {
+                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                  }
+                                  public void setPosterior(double prob) {
+                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                  }
+                                  public Widget choose(Widget widget) {                          
+                                      return widget;
+                                  }
+                              });
+                        }                        
 //                        if(eventTypeIndxer.contains(indexer.getObject(rhs1)) && eventTypeIndxer.contains(indexer.getObject(rhs2)))
 //                        {
-                        for(int k = start + 1; k < end ; k++)
+                        else // binary trees only
                         {
-                            if(isUnary)
-                            {
-                                hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries),
-                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
-                                      public double getWeight() {
-                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                                      }
-                                      public void setPosterior(double prob) {
-                                          update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
-                                      }
-                                      public Widget choose(Widget widget) {                          
-                                          return widget;
-                                      }
-                                  });
-                            }
-                            else // binary trees only
-                            {
-                                final int rhs2 = candidateRule.getKey().getRhs2();
+                            final int rhs2 = candidateRule.getKey().getRhs2();
+                            // check whether candidate rules span more sentences than in the particular example,
+                            // so we need to abort, i.e., stop expanding edges. If not, 
+                            // then generate edges for every sub-span between start and end 
+                            // (i.e., generate records in the same sentence).
+                            if(!containsSentence(rhs1, rhs2))
+                            for(int k = start + 1; k < end ; k++)
+                            {                                                                                        
                                 hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), 
                                                          genEdge(k, end, rhs2, sentenceBoundaries),
                                   new Hypergraph.HyperedgeInfo<Widget>() {                                      
@@ -318,14 +319,30 @@ public class InferStatePCFG extends InferState
                                       public Widget choose(Widget widget) {                          
                                           return widget;
                                       }
-                                  });
-                            }                            
-                        } // for
-//                        } // if
+                                  });                                                   
+                            } // for
+                        } // else
                     } // else
                 } // for
             } // else
         } // if
         return node;
+    }
+    
+    /**
+     * Check if the rhs symbols span a potential subtree with a sentence inside.
+     * This is the case if:<br>
+     * - both symbols are compound, i.e. contain more than one records
+     * - either symbol has a record spanning a sentence, denoted by 'SENT'
+     * @param rhs1
+     * @param rhs2
+     * @return 
+     */
+    private boolean containsSentence(int rhs1, int rhs2)
+    {
+        String rhs1Symbol = indexer.getObject(rhs1);
+        String rhs2Symbol = indexer.getObject(rhs2);
+        return rhs1Symbol.contains("_") && rhs2Symbol.contains("_") ||
+               (rhs1Symbol.contains("SENT") || rhs2Symbol.contains("SENT"));
     }
 }
