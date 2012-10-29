@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import fig.basic.Indexer;
 import induction.problem.event3.params.EventTypeParams;
 import induction.problem.event3.params.SymFieldParams;
 import induction.problem.event3.params.StrFieldParams;
@@ -275,4 +276,21 @@ public abstract class Event3InferState
         if (opts.includeEventTypeGivenWord)
             update(counts.eventTypeChoicesGivenWord[w], t, prob);
     }  
+    
+    /**
+     * Check if the rhs symbols span a potential subtree with a sentence inside.
+     * This is the case if:<br>
+     * - both symbols are compound, i.e. contain more than one records
+     * - either symbol has a record spanning a sentence, denoted by 'SENT'
+     * @param rhs1
+     * @param rhs2
+     * @return 
+     */
+    protected boolean containsSentence(Indexer<String> indexer, int rhs1, int rhs2)
+    {
+        String rhs1Symbol = indexer.getObject(rhs1);
+        String rhs2Symbol = indexer.getObject(rhs2);
+        return rhs1Symbol.contains("_") && rhs2Symbol.contains("_") ||
+               (rhs1Symbol.contains("SENT") || rhs2Symbol.contains("SENT"));
+    }
 }

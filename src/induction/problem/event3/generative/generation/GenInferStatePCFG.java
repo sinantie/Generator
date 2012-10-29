@@ -28,7 +28,8 @@ public class GenInferStatePCFG extends GenInferState
     public GenInferStatePCFG(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
-        super(model, ex, params, counts, ispec, ngramModel);       
+        super(model, ex, params, counts, ispec, ngramModel);
+        indexer = model.getRulesIndexer();
     }        
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
@@ -111,7 +112,7 @@ public class GenInferStatePCFG extends GenInferState
         } // else
     }
 
-    private Object genEdge(int start, int end, int lhs)
+    private Object genEdge(int start, int end, final int lhs)
     {
         Indexer eventTypeIndxer = ((Event3Model)model).getEventTypeNameIndexer();
         final CFGParams cfgParams = params.cfgParams;
@@ -119,7 +120,7 @@ public class GenInferStatePCFG extends GenInferState
         
         if(hypergraph.addSumNode(node))
         {
-            String label = indexer.getObject(lhs);
+            String label = indexer.getObject(lhs);            
             int eventTypeIndex = label.equals("none") ? cfgParams.none_t : (eventTypeIndxer.contains(label) ? eventTypeIndxer.getIndex(label) : -1);
             // check if we are in a record leaf and the example contains events of this eventType (not always the case e.g., in ATIS), 
             // and generate the record / field set
@@ -132,10 +133,59 @@ public class GenInferStatePCFG extends GenInferState
                 final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
                 for(Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                 {
-                    for(int k = start+1; k < end(start, end)+1; k++)
+                    final int rhs1 = candidateRule.getKey().getRhs1();                    
+                    final int indexOfRule =  candidateRule.getValue();
+                    final boolean isUnary = candidateRule.getKey().isUnary();
+                    if(isUnary) // unary trees
                     {
-                        
+                        hypergraph.addEdge(node, genEdge(start, end, rhs1),
+                          new Hypergraph.HyperedgeInfo<Widget>() {                              
+                              public double getWeight() {
+                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                              }
+                              public void setPosterior(double prob) {}
+                              public Widget choose(Widget widget) {
+                                  return widget;
+                              }
+                          }); 
                     }
+                    else // binary trees only
+                    {
+                        final int rhs2 = candidateRule.getKey().getRhs2();
+                        if(containsSentence(indexer, rhs1, rhs2))
+                        {
+                            int nextBoundary = end(start, end) + 2; // break on and cross (hypothetical) punctuation
+                            for(int k = start+1; k < nextBoundary; k++)
+                            {
+                                hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
+                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                                      public double getWeight() {
+                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                      }
+                                      public void setPosterior(double prob) {}
+                                      public Widget choose(Widget widget) {
+                                          return widget;
+                                      }
+                                  });
+                            } // for
+                        } // if
+                        else //if(nextBoundary >= end)
+                        {
+                            for(int k = start + 1; k < end ; k++)
+                            {                                                                                        
+                                hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
+                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                                      public double getWeight() {
+                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                      }
+                                      public void setPosterior(double prob) {}
+                                      public Widget choose(Widget widget) {
+                                          return widget;
+                                      }
+                                  });
+                            } // for
+                        } // else
+                    } // else
                 } // for
             } // else
         } // if
