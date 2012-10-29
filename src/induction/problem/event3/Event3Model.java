@@ -109,6 +109,7 @@ public abstract class Event3Model extends WordModel
     // map of pcfg rules read from input file, indexed on the lhs non-terminal. 
     // The internal hashmap maps the cfg rule to the position in the associated parameter vector.
     protected Map<Integer, HashMap<CFGRule, Integer>> cfgRules;
+    protected Map<Integer, Tree<String>> grammarTrees;
     protected Indexer<String> rulesIndexer = new Indexer<String>();
     
     public Event3Model(Options opts)
@@ -1119,7 +1120,12 @@ public abstract class Event3Model extends WordModel
                     map.put(rule, map.size());
                 }                
             }
-            LogInfo.end_track();                        
+            LogInfo.end_track();
+//            if(opts.modelType == ModelType.event3pcfg && !opts.fixRecordSelection)
+//            {
+//                // produce all possible trees from the grammar, sorted by number of sentences they span
+////                grammarTrees = new Hash
+//            }
         }        
     }
     private HashSet<Integer> getSet(String str)

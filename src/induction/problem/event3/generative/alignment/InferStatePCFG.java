@@ -212,7 +212,7 @@ public class InferStatePCFG extends InferState
         return node;
     }
     
-    protected CFGNode genEdge(int start, int end, final int lhs, LinkedList<Integer> sentenceBoundaries)
+    protected Object genEdge(int start, int end, final int lhs, LinkedList<Integer> sentenceBoundaries)
     {
         Indexer eventTypeIndxer = ((Event3Model)model).getEventTypeNameIndexer();
         final CFGParams cfgParams = params.cfgParams;
@@ -222,94 +222,49 @@ public class InferStatePCFG extends InferState
         if(hypergraph.addSumNode(node))
         {
             String label = indexer.getObject(lhs);
+            Integer nextBoundary = sentenceBoundaries.peek() + 1; // cross punctuation
             int eventTypeIndex = label.equals("none") ? cfgParams.none_t : (eventTypeIndxer.contains(label) ? eventTypeIndxer.getIndex(label) : -1);
             // check if we are in a record leaf and the example contains events of this eventType (not always the case e.g., in ATIS), 
             // and generate the record / field set
-            if (eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)))
+            if ( eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)) )
             {                
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
             } // if
             else // we are in a subtree with a non-terminal lhs and two rhs symbols
             {
-                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);         
-                Integer nextBoundary = sentenceBoundaries.peek() + 1; // cross punctuation                
+                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);                         
                 for(Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                 {
                     final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
                     final boolean isUnary = candidateRule.getKey().isUnary();
-                    // check whether there is at least another sentence boundary between
-                    // start and end. If there is, define this as a splitting point between
-                    // children subtrees.
-                    if(nextBoundary < end)
+                    if(isUnary) // unary trees
                     {
-                        LinkedList<Integer> sentenceBoundariesCloned = new LinkedList<Integer>(sentenceBoundaries);
-                        sentenceBoundariesCloned.poll();
-                        if(isUnary)
-                        {
-                            hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned),                                                 
-                              new Hypergraph.HyperedgeInfo<Widget>() {                              
-                                  public double getWeight() {
-                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                                  }
-                                  public void setPosterior(double prob) {
-                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
-                                  }
-                                  public Widget choose(Widget widget) {                          
-                                      return widget;
-                                  }
-                              }); 
-                        }
-                        else // binary trees only
-                        {
-                            final int rhs2 = candidateRule.getKey().getRhs2();
-                            hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned), 
-                                                     genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
-                              new Hypergraph.HyperedgeInfo<Widget>() {                              
-                                  public double getWeight() {
-                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                                  }
-                                  public void setPosterior(double prob) {
-                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
-                                  }
-                                  public Widget choose(Widget widget) {                          
-                                      return widget;
-                                  }
-                              }); 
-                        }                        
-                    } // if                    
-                    else 
+                        hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
+                          new Hypergraph.HyperedgeInfo<Widget>() {                              
+                              public double getWeight() {
+                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                              }
+                              public void setPosterior(double prob) {
+                                  update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                              }
+                              public Widget choose(Widget widget) {                          
+                                  return widget;
+                              }
+                          }); 
+                    }
+                    else // binary trees only
                     {
-                        if(isUnary)
+                        final int rhs2 = candidateRule.getKey().getRhs2();                    
+                        if(containsSentence(rhs1, rhs2))
                         {
-                            hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
-                              new Hypergraph.HyperedgeInfo<Widget>() {                                      
-                                  public double getWeight() {
-                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                                  }
-                                  public void setPosterior(double prob) {
-                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
-                                  }
-                                  public Widget choose(Widget widget) {                          
-                                      return widget;
-                                  }
-                              });
-                        }                        
-//                        if(eventTypeIndxer.contains(indexer.getObject(rhs1)) && eventTypeIndxer.contains(indexer.getObject(rhs2)))
-//                        {
-                        else // binary trees only
-                        {
-                            final int rhs2 = candidateRule.getKey().getRhs2();
-                            // check whether candidate rules span more sentences than in the particular example,
-                            // so we need to abort, i.e., stop expanding edges. If not, 
-                            // then generate edges for every sub-span between start and end 
-                            // (i.e., generate records in the same sentence).
-                            if(!containsSentence(rhs1, rhs2))
-                            for(int k = start + 1; k < end ; k++)
-                            {                                                                                        
-                                hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), 
-                                                         genEdge(k, end, rhs2, sentenceBoundaries),
-                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                            if(sentenceBoundaries.size() > 1) // there are more sentences in the example
+                            {
+                                LinkedList<Integer> sentenceBoundariesCloned = new LinkedList<Integer>(sentenceBoundaries);
+                                sentenceBoundariesCloned.poll();                            
+                                hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned), 
+                                                         genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
+                                  new Hypergraph.HyperedgeInfo<Widget>() {                              
                                       public double getWeight() {
                                           return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                                       }
@@ -319,10 +274,121 @@ public class InferStatePCFG extends InferState
                                       public Widget choose(Widget widget) {                          
                                           return widget;
                                       }
-                                  });                                                   
-                            } // for
-                        } // else
-                    } // else
+                                  }); 
+                            }
+    //                        else
+    //                            return hypergraph.invalidNode;
+                        }
+                        else
+                        {
+    //                        if(sentenceBoundaries.size() > 1)
+    //                            return hypergraph.invalidNode;
+                            // last sentence, or many records spanning the same sentence; 
+                            // don't expand in case there are more sentences in the example
+                            if(sentenceBoundaries.size() == 1 || nextBoundary >= end)
+                            {
+                                for(int k = start + 1; k < end ; k++)
+                                {                                                                                        
+                                    hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), 
+                                                             genEdge(k, end, rhs2, sentenceBoundaries),
+                                      new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                                          public double getWeight() {
+                                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                          }
+                                          public void setPosterior(double prob) {
+                                              update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                          }
+                                          public Widget choose(Widget widget) {
+                                              return widget;
+                                          }
+                                      });
+                                } // for
+                            }
+                        }
+                    }
+                    // check whether there is at least another sentence boundary between
+                    // start and end. If there is, define this as a splitting point between
+                    // children subtrees.
+//                    if(nextBoundary < end)
+//                    {
+//                        LinkedList<Integer> sentenceBoundariesCloned = new LinkedList<Integer>(sentenceBoundaries);
+//                        sentenceBoundariesCloned.poll();
+//                        if(isUnary)
+//                        {
+//                            hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned),                                                 
+//                              new Hypergraph.HyperedgeInfo<Widget>() {                              
+//                                  public double getWeight() {
+//                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+//                                  }
+//                                  public void setPosterior(double prob) {
+//                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+//                                  }
+//                                  public Widget choose(Widget widget) {                          
+//                                      return widget;
+//                                  }
+//                              }); 
+//                        }
+//                        else // binary trees only
+//                        {                            
+//                            hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned), 
+//                                                     genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
+//                              new Hypergraph.HyperedgeInfo<Widget>() {                              
+//                                  public double getWeight() {
+//                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+//                                  }
+//                                  public void setPosterior(double prob) {
+//                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+//                                  }
+//                                  public Widget choose(Widget widget) {                          
+//                                      return widget;
+//                                  }
+//                              }); 
+//                        }                        
+//                    } // if                    
+//                    else 
+//                    {
+//                        if(isUnary)
+//                        {
+//                            hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
+//                              new Hypergraph.HyperedgeInfo<Widget>() {                                      
+//                                  public double getWeight() {
+//                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+//                                  }
+//                                  public void setPosterior(double prob) {
+//                                      update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+//                                  }
+//                                  public Widget choose(Widget widget) {                          
+//                                      return widget;
+//                                  }
+//                              });
+//                        }                        
+//                        else // binary trees only
+//                        {                            
+//                            // check whether candidate rules span more sentences than in the particular example,
+//                            // so we need to abort, i.e., stop expanding edges. If not, 
+//                            // then generate edges for every sub-span between start and end 
+//                            // (i.e., generate records in the same sentence).
+//                            if(!containsSentence(rhs1, rhs2))
+//                            {
+//                                for(int k = start + 1; k < end ; k++)
+//                                {                                                                                        
+//                                    hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), 
+//                                                             genEdge(k, end, rhs2, sentenceBoundaries),
+//                                      new Hypergraph.HyperedgeInfo<Widget>() {                                      
+//                                          public double getWeight() {
+//                                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+//                                          }
+//                                          public void setPosterior(double prob) {
+//                                              update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+//                                          }
+//                                          public Widget choose(Widget widget) {                          
+//                                              return widget;
+//                                          }
+//                                      });                                                   
+//                                } // for
+//                            } // if
+//                        } // else
+//                    } // else
                 } // for
             } // else
         } // if
