@@ -45,11 +45,11 @@ public class GenerationPCFGWeatherTest
                 + "-examplesInSingleFile "
                 + "-inputLists "
 //                 + "test/testWeatherGovEvents "
-                + "data/weatherGov/weatherGovGenDevGaborRecordTreebank "
-                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules_test "
+                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules "
+                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
                 + "-stagedParamsFile "
                 + "results/output/weatherGov/alignments/pcfg/"
-                + "model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.gz "
+                + "model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz "
 //                 + "-fixRecordSelection "
                 + "-inputFileExt events "
                 + "-disallowConsecutiveRepeatFields "
@@ -78,11 +78,10 @@ public class GenerationPCFGWeatherTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
+        model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();
         model.logStats();
-        opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
-//        model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
+        opts.outputIterFreq = opts.stage1.numIters;        
 //        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
         lopts = opts.stage1;
         name = "stage1";

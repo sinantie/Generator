@@ -1102,25 +1102,9 @@ public abstract class Event3Model extends WordModel
 //            ex.computeTrackEvents();
         }
         LogInfo.end_track();
-        if(opts.treebankRules != null)
+        if(opts.treebankRules != null && cfgRules == null) // if we haven't read the rules yet (staged init)
         {
-            Utils.begin_track("Read treebank rules...");
-            cfgRules = new HashMap<Integer, HashMap<CFGRule, Integer>>();
-            for(String line : Utils.readLines(opts.treebankRules))
-            {
-                if(!line.startsWith("#")) // comments
-                {
-                    CFGRule rule = new CFGRule(line, rulesIndexer);
-                    HashMap<CFGRule, Integer> map = cfgRules.get(rule.getLhs());
-                    if(map == null)
-                    {
-                        map = new HashMap<CFGRule, Integer>();
-                        cfgRules.put(rule.getLhs(), map);
-                    }
-                    map.put(rule, map.size());
-                }                
-            }
-            LogInfo.end_track();
+            readTreebankRules();
 //            if(opts.modelType == ModelType.event3pcfg && !opts.fixRecordSelection)
 //            {
 //                // produce all possible trees from the grammar, sorted by number of sentences they span
@@ -1128,6 +1112,28 @@ public abstract class Event3Model extends WordModel
 //            }
         }        
     }
+    
+    protected void readTreebankRules()
+    {
+        Utils.begin_track("Read treebank rules...");
+        cfgRules = new HashMap<Integer, HashMap<CFGRule, Integer>>();
+        for(String line : Utils.readLines(opts.treebankRules))
+        {
+            if(!line.startsWith("#")) // comments
+            {
+                CFGRule rule = new CFGRule(line, rulesIndexer);
+                HashMap<CFGRule, Integer> map = cfgRules.get(rule.getLhs());
+                if(map == null)
+                {
+                    map = new HashMap<CFGRule, Integer>();
+                    cfgRules.put(rule.getLhs(), map);
+                }
+                map.put(rule, map.size());
+            }                
+        }
+        LogInfo.end_track();
+    }
+    
     private HashSet<Integer> getSet(String str)
     {
         HashSet<Integer> set = new HashSet<Integer>();

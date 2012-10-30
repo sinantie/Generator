@@ -32,7 +32,7 @@ import java.util.TreeSet;
  */
 public class ExtractRecordsStatistics
 {
-    ExtractRecordsStatisticsOptions opts;    
+    ExtractRecordsStatisticsOptions opts;
     Event3Model model;
     List<ExampleRecords> examples;
     HistMap repeatedRecords;

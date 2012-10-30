@@ -108,7 +108,12 @@ public class GenInferStatePCFG extends GenInferState
             list.add(genEdge(0, ex.N(), indexer.getIndex("S")));
             if(!opts.useStopNode)
                 list.add(endSymbol);
-            this.hypergraph.addEdge(hypergraph.sumStartNode(), list);
+            this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
+                new Hypergraph.HyperedgeInfo<Widget>() {
+                    public double getWeight() {return 1;}
+                    public void setPosterior(double prob) {}
+                    public Widget choose(Widget widget) {return widget;}
+                });
         } // else
     }
 
@@ -127,7 +132,7 @@ public class GenInferStatePCFG extends GenInferState
             if (eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)))
             {                
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
-            }  // if
+            } // if
             else
             {
                 final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
@@ -151,46 +156,26 @@ public class GenInferStatePCFG extends GenInferState
                     }
                     else // binary trees only
                     {
-                        final int rhs2 = candidateRule.getKey().getRhs2();
-                        if(containsSentence(indexer, rhs1, rhs2))
+                        final int rhs2 = candidateRule.getKey().getRhs2();                        
+                        // break on and cross (hypothetical) punctuation
+                        int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start, end)+1  : end;                                                                                      
+                        for(int k = start+1; k < nextBoundary; k++)
                         {
-                            int nextBoundary = end(start, end) + 2; // break on and cross (hypothetical) punctuation
-                            for(int k = start+1; k < nextBoundary; k++)
-                            {
-                                hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
-                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
-                                      public double getWeight() {
-                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                                      }
-                                      public void setPosterior(double prob) {}
-                                      public Widget choose(Widget widget) {
-                                          return widget;
-                                      }
-                                  });
-                            } // for
-                        } // if
-                        else //if(nextBoundary >= end)
-                        {
-                            for(int k = start + 1; k < end ; k++)
-                            {                                                                                        
-                                hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
-                                  new Hypergraph.HyperedgeInfo<Widget>() {                                      
-                                      public double getWeight() {
-                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
-                                      }
-                                      public void setPosterior(double prob) {}
-                                      public Widget choose(Widget widget) {
-                                          return widget;
-                                      }
-                                  });
-                            } // for
-                        } // else
+                            hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
+                              new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                                  public double getWeight() {
+                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                  }
+                                  public void setPosterior(double prob) {}
+                                  public Widget choose(Widget widget) {
+                                      return widget;
+                                  }
+                              });
+                        } // for                        
                     } // else
                 } // for
             } // else
         } // if
         return node;
     }
-
-    
 }

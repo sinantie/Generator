@@ -1,8 +1,10 @@
 package induction.utils.postprocess;
 
-import induction.Utils;
+import induction.Options.InitType;
+import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -10,58 +12,34 @@ import java.io.IOException;
  */
 public class ComputeAverages
 {
-    private String inputPath;
-    private final boolean examplesInOneFile;
+    ComputeAveragesOptions opts;
+
     private Action action;
+    Event3Model model;
+    List<String[]> examples;
     
+    public ComputeAverages(ComputeAveragesOptions opts)
+    {
+        this.opts = opts;
+    }
+
     public ComputeAverages(String inputPath, boolean examplesInOneFile, Action action)
     {
-        this.inputPath = inputPath;
-        this.examplesInOneFile = examplesInOneFile;
         this.action = action;
     }
         
     public void execute()
     {
-        try 
+        model = new GenerativeEvent3Model(opts.modelOpts);
+        model.init(InitType.staged, opts.modelOpts.initRandom, "");
+        model.readExamples();
+        examples = new ArrayList<String[]>(model.getExamples().size());
+        for(String[] example : examples)
         {
-            String example[];
-            if(examplesInOneFile)
-            {
-                String key = null;
-                StringBuilder str = new StringBuilder();
-                for(String line : Utils.readLines(inputPath))
-                {
-                    if(line.startsWith("Example_"))
-                    {
-                        if(key != null) // only for the first example
-                        {
-                            example = GenerativeEvent3Model.extractExampleFromString(str.toString());                        
-                            action.act(example);
-                            str = new StringBuilder();
-                        }
-                        key = line;
-                    } // if
-                    str.append(line).append("\n");
-                }  // for
-                // don't forget last example
-                example = GenerativeEvent3Model.extractExampleFromString(str.toString());
-                action.act(example);
-            } // if
-            else
-            {
-                for(String line : Utils.readLines(inputPath)) // contains list of .events files
-                {
-    //                    System.out.println(line);
-                    String events = Utils.readFileAsString(line);
-                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
-                    String[] ex = {events, text};
-                    action.act(ex);
-                }
-            }
+            action.act(example);
             System.out.println(action.result());
         }
-        catch(IOException ioe) {}
+        
     }
     
     public static void main(String[] args)

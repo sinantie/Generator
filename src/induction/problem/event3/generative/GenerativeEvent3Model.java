@@ -106,7 +106,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 fields.put("none_f", i++);
                 fieldsMap.put(e.getEventTypeIndex(), fields);
             }
-
+            if(opts.treebankRules != null)
+                readTreebankRules();
 
 //                ois.readObject(); ois.readObject();
 //

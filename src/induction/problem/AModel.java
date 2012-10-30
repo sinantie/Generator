@@ -607,7 +607,7 @@ public abstract class AModel
                         lopts, iter, complexity);
                     inferState.updateCounts();
                     trainPerformance.add(ex, inferState.bestWidget);
-                    System.out.println(widgetToFullString(ex, inferState.bestWidget));
+//                    System.out.println(widgetToFullString(ex, inferState.bestWidget));
                 }
                 catch(Exception e)
                 {
