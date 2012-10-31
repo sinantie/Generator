@@ -1008,4 +1008,9 @@ public class Utils
             throw new Exception("Division by zero");
         return vec1.dotProduct(vec2) / (norm1 * norm2);
     }
+    
+    public static boolean isSentencePunctuation(String s)
+    {
+        return s.equals("./.") || s.equals("--/:") || s.equals(".") ||  s.equals("--");
+    }
 }

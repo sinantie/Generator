@@ -161,7 +161,9 @@ public class GenInferStatePCFG extends GenInferState
                         int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start, end)+1  : end;                                                                                      
                         for(int k = start+1; k < nextBoundary; k++)
                         {
-                            hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
+                            Object recurseNodeRhs1 = genEdge(start, k, rhs1);
+                            Object recurseNodeRhs2 = genEdge(k, end, rhs2);
+                            hypergraph.addEdge(node, recurseNodeRhs1, recurseNodeRhs2,
                               new Hypergraph.HyperedgeInfo<Widget>() {                                      
                                   public double getWeight() {
                                       return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);

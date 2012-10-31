@@ -1,8 +1,9 @@
 package induction.utils.postprocess;
 
-import induction.Options.InitType;
-import induction.problem.event3.Event3Model;
+import fig.basic.LogInfo;
+import induction.Utils;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,47 +12,81 @@ import java.util.List;
  * @author sinantie
  */
 public class ComputeAverages
-{
+{   
     ComputeAveragesOptions opts;
-
+    
     private Action action;
-    Event3Model model;
-    List<String[]> examples;
+    List<String[]> examples;    
     
     public ComputeAverages(ComputeAveragesOptions opts)
     {
-        this.opts = opts;
+        this.opts = opts;        
+        examples = new ArrayList<String[]>();
     }
-
-    public ComputeAverages(String inputPath, boolean examplesInOneFile, Action action)
-    {
-        this.action = action;
-    }
-        
+    
     public void execute()
     {
-        model = new GenerativeEvent3Model(opts.modelOpts);
-        model.init(InitType.staged, opts.modelOpts.initRandom, "");
-        model.readExamples();
-        examples = new ArrayList<String[]>(model.getExamples().size());
+        switch(opts.actionType)
+        {
+            case averageAlignmentsPerExample : action = new AverageAlignmentsPerExample(); break;
+            case averageFieldsWithNoValuePerRecord : action = new AverageFieldsWithNoValuePerRecord(opts.record, opts.totalNumberOfFields); break;
+            case averageWordsPerSentence : action = new AverageWordsPerSentence();
+        }
+        readExamples();                
+        // process examples
         for(String[] example : examples)
         {
             action.act(example);
-            System.out.println(action.result());
         }
-        
-    }
+        System.out.println(action.result());
+    }    
     
-    public static void main(String[] args)
+    public void readExamples()
     {
-        // average alignments per example
-//        final String inputPath = "data/atis/test/atis-test.txt";
-//        Action action = new AverageAlignmentsPerExample();
-        // average number of fields with no value in the 'flight' record
-        final String inputPath = "data/atis/train/atis5000.sents.full.prototype";
-        Action action = new AverageFieldsWithNoValuePerRecord("flight", 13);
-        ComputeAverages ca = new ComputeAverages(inputPath, true, action);
-        ca.execute();
+        try 
+        {
+            String example[];
+            if(opts.modelOpts.examplesInSingleFile)
+            {
+                String key = null;
+                StringBuilder str = new StringBuilder();
+                for(String line : Utils.readLines(opts.modelOpts.inputLists.get(0)))
+                {
+                    if(line.startsWith("Example_") || line.equals("$NAME"))
+                    {
+                        if(key != null) // only for the first example
+                        {
+                            example = GenerativeEvent3Model.extractExampleFromString(str.toString());                        
+                            action.act(example);
+                            str = new StringBuilder();
+                        }
+                        key = line;
+                    } // if
+                    str.append(line).append("\n");
+                }  // for
+                // don't forget last example
+                example = GenerativeEvent3Model.extractExampleFromString(str.toString());
+                examples.add(example);
+            } // if
+            else
+            {
+                for(String line : Utils.readLines(opts.modelOpts.inputPaths.get(0))) // contains list of .events files
+                {
+    //                    System.out.println(line);
+                    String events = Utils.readFileAsString(line);
+                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
+                    String[] ex = {events, text};
+                    examples.add(ex);
+                }
+            }            
+        }
+        catch(IOException ioe) {
+            LogInfo.error(ioe);
+        }
+    }
+    public void testExecute()
+    {
+        execute();
     }
     
     /**
@@ -128,6 +163,31 @@ public class ComputeAverages
             return new Double((double)totalEmpty / (double)totalExamples);
         }
         
+    }
+    
+    private static class AverageWordsPerSentence implements Action
+    {      
+        private int words, sentences;
+        
+        @Override
+        public Object act(Object in)
+        {
+            String[] example = (String[])in;
+            // 2nd entry is the text
+            for(String token : example[1].split("\\s"))
+            {
+                if(Utils.isSentencePunctuation(token))
+                    sentences++;
+                words++;
+            }
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return new Double((double)words / (double)sentences);
+        }
     }
     interface Action {
         public Object act(Object in);        

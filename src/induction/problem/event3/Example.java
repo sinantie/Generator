@@ -60,7 +60,7 @@ public class Example implements AExample<Widget>
                         s.equals("(") || s.equals(")") ||
                         (model.getOpts().andIsPunctuation && s.equals("and"));
                 
-                isSentenceBoundaryArray[i] = s.equals("./.") || s.equals(",/,") || s.equals("--/:") || s.equals(".") ||  s.equals("--");
+                isSentenceBoundaryArray[i] = Utils.isSentencePunctuation(s);
 //                isPunctuationArray[i] = model.getOpts().posAtSurfaceLevel ?
 //                        // if words have pos tag attached to them
 //                        s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
