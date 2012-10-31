@@ -33,37 +33,45 @@ public class ComputeAveragesTest
     public void testWeather()
     {     
         String args = 
-                   "-exportType recordType "
-                 +  "-examplesInSingleFile "
-//                 + "-countRepeatedRecords "
-                 + "-extractRecordTrees "
-                 + "-binarize right "
-                 + "-modifiedBinarization "
-                 + "-extractNoneEvent "
-//                 + "-useEventTypeNames "
-//                 + "-countSentenceNgrams "
-//                 + "-countDocumentNgrams "
-                 + "-writePermutations "
-                 + "-delimitSentences "
+                   "-examplesInSingleFile "
+                 + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
                  + "data/weatherGov/weatherGovGenDevGabor.gz "
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
-                 + "weatherGovLM/recordStatistics "
-                 + "-stagedParamsFile "
-                    + "results/output/weatherGov/alignments/"
-                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
-                 + "-inputFileExt events ";
-//                 + "-ngramWrapper kylm "
-//                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa ";
+                 + "statistics/weatherGov "
+                 + "-actionType averageWordsPerSentence";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
         ComputeAveragesOptions opts = new ComputeAveragesOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
         ComputeAverages ca = new ComputeAverages(opts);
         ca.testExecute();
-
+    }
+    
+    //@Test
+    public void testAtis()
+    {
+        String args = 
+                   "-examplesInSingleFile "
+                 + "-inputFileExt events "
+                 + "-modelType event3 "
+                 + "-inputLists "
+                 + "data/atis/train/atis5000.sents.full.prototype "
+//                 + "data/atis/test/atis-test.txt "
+                 + "-execDir "
+                 + "statistics/atis "
+                 + "-actionType averageFieldsWithNoValuePerRecord"
+//                 + "-actionType averageAlignmentsPerExample"
+                 + "-record flight "
+                 + "-totalNumberOfFields 13";
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged"; // IMPORTANT        
+        ComputeAveragesOptions opts = new ComputeAveragesOptions();
+        Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
+        ComputeAverages ca = new ComputeAverages(opts);
+        ca.testExecute();
     }
 }
