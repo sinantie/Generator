@@ -247,7 +247,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     {
         switch(opts.modelType)
         {
-            case generate : return new GenerationPerformance(this);
+            case generate : case generatePcfg : return new GenerationPerformance(this);
             case semParse : return new SemParsePerformance(this);
             default : return new AlignmentPerformance(this);
         }        

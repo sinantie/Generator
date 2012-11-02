@@ -48,7 +48,8 @@ public class DiscriminativeInduction implements Runnable
         {            
             model.learn("stage1", opts.stage1);
         }
-        else if(opts.modelType == Options.ModelType.generate)
+        else if(opts.modelType == Options.ModelType.generate ||
+                opts.modelType == Options.ModelType.generatePcfg)
         {
             model.generate("stage1", opts.stage1);
         }                

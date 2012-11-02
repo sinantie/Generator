@@ -502,7 +502,8 @@ public abstract class AModel
                 testPerformance.add(ex, inferState.bestWidget);
                 if(testPredOut != null)
                 {
-                    if(opts.modelType == Options.ModelType.generate)
+                    if(opts.modelType == Options.ModelType.generate ||
+                       opts.modelType == Options.ModelType.generatePcfg)
                         testPredOut.println(widgetToSGMLOutput(ex, inferState.bestWidget));
                     else
                         testPredOut.println(Utils.mkString(widgetToIntSeq(inferState.bestWidget), " "));

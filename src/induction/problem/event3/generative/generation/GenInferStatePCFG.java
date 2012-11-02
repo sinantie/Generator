@@ -15,6 +15,7 @@ import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.CFGParams;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -24,12 +25,14 @@ import java.util.Map.Entry;
 public class GenInferStatePCFG extends GenInferState
 {   
     Indexer<String> indexer;
+    Map<Integer, Integer> minWordsPerNonTerminal;
     
     public GenInferStatePCFG(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
     {
         super(model, ex, params, counts, ispec, ngramModel);
         indexer = model.getRulesIndexer();
+        minWordsPerNonTerminal = model.getMinWordsPerNonTerminal();
     }        
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
@@ -119,14 +122,14 @@ public class GenInferStatePCFG extends GenInferState
 
     private Object genEdge(int start, int end, final int lhs)
     {
-        Indexer eventTypeIndxer = ((Event3Model)model).getEventTypeNameIndexer();
+        Indexer eventTypeIndexer = ((Event3Model)model).getEventTypeNameIndexer();
         final CFGParams cfgParams = params.cfgParams;
         CFGNode node = new CFGNode(start, end, lhs);
         
         if(hypergraph.addSumNode(node))
         {
             String label = indexer.getObject(lhs);            
-            int eventTypeIndex = label.equals("none") ? cfgParams.none_t : (eventTypeIndxer.contains(label) ? eventTypeIndxer.getIndex(label) : -1);
+            int eventTypeIndex = label.equals("none") ? cfgParams.none_t : (eventTypeIndexer.contains(label) ? eventTypeIndexer.getIndex(label) : -1);
             // check if we are in a record leaf and the example contains events of this eventType (not always the case e.g., in ATIS), 
             // and generate the record / field set
             if (eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)))
@@ -155,15 +158,16 @@ public class GenInferStatePCFG extends GenInferState
                           }); 
                     }
                     else // binary trees only
-                    {
-                        final int rhs2 = candidateRule.getKey().getRhs2();                        
-                        // break on and cross (hypothetical) punctuation
-                        int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start, end)+1  : end;                                                                                      
-                        for(int k = start+1; k < nextBoundary; k++)
+                    {                                                
+                        final int rhs2 = candidateRule.getKey().getRhs2();
+                        // respect minimum word span of each rhs non terminal
+                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
+                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);                        
+                        // break and cross on (hypothetical) punctuation                            
+                        int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start+1, end) : end;
+                        for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)
                         {
-                            Object recurseNodeRhs1 = genEdge(start, k, rhs1);
-                            Object recurseNodeRhs2 = genEdge(k, end, rhs2);
-                            hypergraph.addEdge(node, recurseNodeRhs1, recurseNodeRhs2,
+                            hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
                               new Hypergraph.HyperedgeInfo<Widget>() {                                      
                                   public double getWeight() {
                                       return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);

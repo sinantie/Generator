@@ -109,7 +109,7 @@ public abstract class Event3Model extends WordModel
     // map of pcfg rules read from input file, indexed on the lhs non-terminal. 
     // The internal hashmap maps the cfg rule to the position in the associated parameter vector.
     protected Map<Integer, HashMap<CFGRule, Integer>> cfgRules;
-    protected Map<Integer, Tree<String>> grammarTrees;
+    protected Map<Integer, Integer> minWordsPerNonTerminal;
     protected Indexer<String> rulesIndexer = new Indexer<String>();
     
     public Event3Model(Options opts)
@@ -128,7 +128,12 @@ public abstract class Event3Model extends WordModel
     {
         return rulesIndexer;
     }
-    
+
+    public Map<Integer, Integer> getMinWordsPerNonTerminal()
+    {
+        return minWordsPerNonTerminal;
+    }
+        
     ////////////////////////////////////////////////////////////
     // Generic routines
     private int[] newIntArray(int n, int x)
@@ -416,7 +421,9 @@ public abstract class Event3Model extends WordModel
         }
         else
         {
-            if(opts.modelType == ModelType.generate || opts.modelType == ModelType.discriminativeTrain)
+            if(opts.modelType == ModelType.generate || 
+               opts.modelType == Options.ModelType.generatePcfg ||
+               opts.modelType == ModelType.discriminativeTrain)
             {
                 if(opts.inputFormat == InputFormat.zmert)
                     return ex.genWidgetToMertFullString((GenWidget)widget);
@@ -793,7 +800,9 @@ public abstract class Event3Model extends WordModel
             catch(Exception e) {System.out.println("Error in:"+name); e.printStackTrace(); System.exit(0);}
             wordIndexer.add("(boundary)");
             int textLength = opts.averageTextLength;
-            if(opts.modelType == Options.ModelType.generate && lengthPredictor != null)
+            if((opts.modelType == Options.ModelType.generate || 
+                opts.modelType == Options.ModelType.generatePcfg)
+               && lengthPredictor != null)
             {
                 try
                 {
@@ -897,7 +906,8 @@ public abstract class Event3Model extends WordModel
 //
 //                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
 //                    }                                        
-                    if(opts.modelType == Options.ModelType.generate)
+                    if(opts.modelType == Options.ModelType.generate ||
+                       opts.modelType == Options.ModelType.generatePcfg)
                     {                                            
                         examples.add(new Example(this, name, events,
                             null, null, null, textLength,
@@ -937,7 +947,8 @@ public abstract class Event3Model extends WordModel
                 } // if(alignPathExists)
                 else
                 {
-                    if(opts.modelType == Options.ModelType.generate) // for generation only
+                    if(opts.modelType == Options.ModelType.generate ||
+                       opts.modelType == Options.ModelType.generatePcfg) // for generation only
                     { 
                         examples.add(new Example(this, name, events,
                             null, null, null, textLength,
@@ -1132,8 +1143,48 @@ public abstract class Event3Model extends WordModel
             }                
         }
         LogInfo.end_track();
+        if(opts.modelType == ModelType.generatePcfg)
+        {
+            Utils.begin_track("Compute minimum number of span for rules...");
+            minWordsPerNonTerminal = new HashMap<Integer, Integer>();            
+            countMinWords(rulesIndexer.getIndex("S")); // we don't housekeep word spans for the start symbol 'S'
+            LogInfo.end_track();
+        }
     }
     
+    /**
+     * Recursively count the minimum number of words the lhs nonterminal spans, 
+     * by diving down to the leaf nodes. Each leaf node corresponds to a word.
+     * IMPORTANT: the grammar should not be recursive, or we will get caught in 
+     * an infinite loop. We do not make any checks.
+     * @param lhs
+     * @return 
+     */
+    private Integer countMinWords(int lhs)
+    {                
+        Integer maxCount = minWordsPerNonTerminal.get(lhs); // in case we've already computed it
+        if(maxCount == null)
+        {
+            maxCount = 0;
+            // treat leaf nodes-records
+            String label = rulesIndexer.getObject(lhs);
+            int eventType = label.equals("none") ? none_t() : (eventTypeNameIndexer.contains(label) ? eventTypeNameIndexer.getIndex(label) : -1);
+            if(eventType != -1)            
+            {
+                minWordsPerNonTerminal.put(lhs, 1);
+                return 1;
+            }                
+            for(CFGRule candidateRule : getCfgCandidateRules(lhs).keySet()) // find the maximum possible span by picking the 'lengthiest' rules
+            {
+                int count = countMinWords(candidateRule.getRhs1()) + (candidateRule.isUnary() ? 0 : countMinWords(candidateRule.getRhs2()));
+                if(count > maxCount)
+                    maxCount = count;
+            }
+            minWordsPerNonTerminal.put(lhs, maxCount);
+        }                
+        return maxCount;
+    }
+            
     private HashSet<Integer> getSet(String str)
     {
         HashSet<Integer> set = new HashSet<Integer>();

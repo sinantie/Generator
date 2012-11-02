@@ -333,7 +333,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
         switch(opts.modelType)
         {
             case discriminativeTrain: return new DiscriminativePerformance(this);
-            default: case generate : return new GenerationPerformance(this);
+            default: case generate : case generatePcfg : return new GenerationPerformance(this);
         }        
     }
 
@@ -913,7 +913,8 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
                 }
 //            else
 //                System.out.println(widgetToFullString(ex, inferState.bestWidget));
-            if(opts.modelType == Options.ModelType.generate)
+            if(opts.modelType == Options.ModelType.generate || 
+               opts.modelType == Options.ModelType.generatePcfg)
                 synchronized(testPerformance)
                 {
                     testPerformance.add(inferState.stats());
