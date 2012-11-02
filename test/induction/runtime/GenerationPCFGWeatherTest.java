@@ -47,6 +47,7 @@ public class GenerationPCFGWeatherTest
 //                 + "test/testWeatherGovEvents "
                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules "
                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules "
+//                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules_test "
                 + "-stagedParamsFile "
                 + "results/output/weatherGov/alignments/pcfg/"
                 + "model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz "

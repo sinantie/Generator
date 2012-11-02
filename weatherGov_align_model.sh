@@ -3,7 +3,7 @@ threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
 input=data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz
-output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_grammar_unaryRules_30iter
+output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
 treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
 memory=-Xmx3000m
