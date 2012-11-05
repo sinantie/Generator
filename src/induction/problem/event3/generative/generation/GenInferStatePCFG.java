@@ -1,5 +1,6 @@
 package induction.problem.event3.generative.generation;
 
+import edu.berkeley.nlp.ling.Tree;
 import fig.basic.Indexer;
 import induction.problem.event3.params.Params;
 import induction.Hypergraph;
@@ -7,6 +8,7 @@ import induction.ngrams.NgramModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.event3.CFGRule;
+import induction.problem.event3.Event;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
 import induction.problem.event3.Widget;
@@ -34,6 +36,21 @@ public class GenInferStatePCFG extends GenInferState
         indexer = model.getRulesIndexer();
         minWordsPerNonTerminal = model.getMinWordsPerNonTerminal();
     }        
+    
+    @Override
+    protected Widget newWidget()
+    {       
+        HashMap<Integer, Integer> eventTypeIndices =
+                            new HashMap<Integer, Integer>(ex.events.size());
+        for(Event e : ex.events.values())
+        {
+            eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
+        }
+        return new CfgGenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
+                               newMatrixOne(),
+                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices, 
+                                opts.outputPcfgTrees ? indexer.getIndex("S") : null);
+    }
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
     {        
@@ -139,7 +156,7 @@ public class GenInferStatePCFG extends GenInferState
             else
             {
                 final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
-                for(Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
+                for(final Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                 {
                     final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
@@ -147,12 +164,14 @@ public class GenInferStatePCFG extends GenInferState
                     if(isUnary) // unary trees
                     {
                         hypergraph.addEdge(node, genEdge(start, end, rhs1),
-                          new Hypergraph.HyperedgeInfo<Widget>() {                              
+                          new Hypergraph.HyperedgeInfo<CfgGenWidget>() {                              
                               public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                               }
                               public void setPosterior(double prob) {}
-                              public Widget choose(Widget widget) {
+                              public CfgGenWidget choose(CfgGenWidget widget) {
+                                  if(opts.outputPcfgTrees)
+                                      widget.addEdge(candidateRule.getKey());
                                   return widget;
                               }
                           }); 
@@ -168,12 +187,14 @@ public class GenInferStatePCFG extends GenInferState
                         for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)
                         {
                             hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
-                              new Hypergraph.HyperedgeInfo<Widget>() {                                      
+                              new Hypergraph.HyperedgeInfo<CfgGenWidget>() {                                      
                                   public double getWeight() {
                                       return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                                   }
                                   public void setPosterior(double prob) {}
-                                  public Widget choose(Widget widget) {
+                                  public CfgGenWidget choose(CfgGenWidget widget) {
+                                      if(opts.outputPcfgTrees)
+                                        widget.addEdge(candidateRule.getKey());
                                       return widget;
                                   }
                               });

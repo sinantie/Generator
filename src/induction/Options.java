@@ -140,7 +140,8 @@ public class Options {
   @Option(gloss="omit events that contain only 0's or '--'") public boolean omitEmptyEvents = false;
   @Option(gloss="use DMV model for integration") public boolean useDependencies = false;
   @Option(gloss="interpolation factor for DMV + LM integration") public double interpolationFactor = 1.0;
-
+  @Option(gloss="Output PCFG derivation trees (for debugging)") public boolean outputPcfgTrees = false;
+  
   //Dependencies
   @Option(gloss="Position of column of the word in the CONLL files (default=1)") public int connlWordPos = 1;
   @Option(gloss="Position of column of the tag in the CONLL files (default=3)") public int connlTagPos = 3;

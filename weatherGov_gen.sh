@@ -39,7 +39,8 @@ dist/stanford-postagger-2010-05-26.jar \
 -numAsSymbol \
 -allowNoneEvent \
 -binariseAtWordLevel \
--outputFullPred
+-outputFullPred \
+-outputPcfgTrees
 
 # Record PCFG - Grammar/Treebank Input
 #-modelType generatePcfg \

@@ -74,7 +74,12 @@ public class CFGRule
     {
         return lhs;
     }
-
+    
+    public String getLhsToString()
+    {
+        return vocabulary.getObject(lhs);
+    }
+    
     public List<Integer> getRhs()
     {
         return rhs;
@@ -102,6 +107,14 @@ public class CFGRule
         for(int r : rhs)
             str.append(" ").append(vocabulary.getObject(r));
         return str.toString().trim();
+    }
+    
+    public List<String> getRhsListToString()
+    {
+        List<String> list = new ArrayList<String>(rhs.size());
+        for(int r : rhs)
+            list.add(vocabulary.getObject(r));
+        return list;
     }
     
     @Override

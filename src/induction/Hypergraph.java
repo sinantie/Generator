@@ -262,7 +262,7 @@ public class Hypergraph<Widget> {
                 for(int i = 0; i < kBestMask.length; i++)
                 {
                     if( edge.dest.get(i).derivations.isEmpty())
-                        System.out.println(edge);
+                        System.out.println("Empty edge: " + edge);
                             
                     d = edge.dest.get(i).derivations.get(kBestMask[i]);
                     derArray.add(d);

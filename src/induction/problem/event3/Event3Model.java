@@ -32,6 +32,7 @@ import induction.problem.APerformance;
 import induction.problem.AWidget;
 import induction.problem.InductionUtils;
 import induction.problem.dmv.generative.GenerativeDMVModel;
+import induction.problem.event3.generative.generation.CfgGenWidget;
 import induction.problem.event3.json.JsonResult;
 import induction.problem.wordproblem.WordModel;
 import induction.utils.linearregression.LinearRegressionOptions;
@@ -437,6 +438,13 @@ public abstract class Event3Model extends WordModel
             return ex.widgetToNiceFullString((Widget)widget);
         }
     }   
+    
+    @Override
+    protected String widgetToCfgTreeString(AExample aex, AWidget widget)
+    {
+        Example ex = (Example)aex;        
+        return ex.genCfgWidgetToNiceFullString((CfgGenWidget)widget);        
+    }
     
     @Override
     protected String exampleToString(AExample aex)
@@ -1321,6 +1329,7 @@ public abstract class Event3Model extends WordModel
             inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
             testPerformance.add(ex, inferState.bestWidget);
             System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            System.out.println(widgetToCfgTreeString(ex, inferState.bestWidget));
             outList.add(widgetToSGMLOutput(ex, inferState.bestWidget));
         }
         return outList.get(0);

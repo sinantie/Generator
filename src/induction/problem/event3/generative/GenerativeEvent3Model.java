@@ -350,13 +350,13 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             if(trainFullPredOut != null)
             {
                 if(opts.forceOutputOrder)
-                    writeFullPredOut(trainFullPredOut);
+                    writeFullPredOut(trainFullPredOut, fullPredOutArray);
                 trainFullPredOut.close();
             }
             if(testFullPredOut != null) 
             {
                 if(opts.forceOutputOrder)
-                    writeFullPredOut(testFullPredOut);
+                    writeFullPredOut(testFullPredOut, fullPredOutArray);
                 testFullPredOut.close();
             }
 
@@ -405,6 +405,9 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                                 "<mteval>\n" +
                                 "<tstset setid=\"" + name + "\" srclang=\"English\" " +
                                 "trglang=\"English\" sysid=\"sample_system\">");
+            testPcfgTreesPredOut = (opts.outputPcfgTrees) ? 
+                    IOUtils.openOut(Execution.getFile(
+                    name+".test.full-pred-trees-gen")) : null;
         }
         catch(Exception ioe)
         {
@@ -427,7 +430,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         if(testFullPredOut != null) 
         {
             if(opts.forceOutputOrder)
-                writeFullPredOut(testFullPredOut);
+                writeFullPredOut(testFullPredOut, fullPredOutArray);
             testFullPredOut.close();
         }
         if(testPredOut != null)
@@ -435,6 +438,12 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             // write prediction file footer, conforming to SGML NIST standard
             testPredOut.println("</tstset>\n</mteval>");
             testPredOut.close();
+        }
+        if(testPcfgTreesPredOut != null) 
+        {
+            if(opts.forceOutputOrder)
+                writeFullPredOut(testPcfgTreesPredOut, pcfgTreesPredOutArray);
+            testPcfgTreesPredOut.close();
         }
         Execution.putOutput("currExample", examples.size());
 

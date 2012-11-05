@@ -613,13 +613,13 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             if(trainFullPredOut != null)
             {
                 if(opts.forceOutputOrder)
-                    writeFullPredOut(trainFullPredOut);
+                    writeFullPredOut(trainFullPredOut, fullPredOutArray);
                 trainFullPredOut.close();
             }
             if(testFullPredOut != null) 
             {
                 if(opts.forceOutputOrder)
-                    writeFullPredOut(testFullPredOut);
+                    writeFullPredOut(testFullPredOut, fullPredOutArray);
                 testFullPredOut.close();
             }
 

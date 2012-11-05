@@ -1,9 +1,11 @@
 package induction.problem.event3;
 
+import edu.berkeley.nlp.ling.Trees.PennTreeRenderer;
 import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.AExample;
+import induction.problem.event3.generative.generation.CfgGenWidget;
 import induction.problem.event3.json.JsonResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -134,6 +136,12 @@ public class Example implements AExample<Widget>
             out += trueWidget.performance + "\n";
         return out;
 //        return out + "\n\n" + widgetToNiceFullString(widget);
+    }
+    
+    String genCfgWidgetToNiceFullString(CfgGenWidget widget)
+    {
+        String out = name + "\n" + PennTreeRenderer.render(widget.getTree()) + "\n";        
+        return out;
     }
     
     String genWidgetToMertFullString(GenWidget widget)

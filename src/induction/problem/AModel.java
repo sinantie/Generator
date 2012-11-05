@@ -4,7 +4,6 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
-import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.LearnOptions;
@@ -43,11 +42,11 @@ public abstract class AModel
     protected AParams params;
     protected List<AExample> examples = new ArrayList<AExample>();
     protected int numExamples, maxExamples;
-    protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut;
+    protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut, testPcfgTreesPredOut;
     protected APerformance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
     protected LinearRegressionWekaWrapper lengthPredictor;
-    protected String[] fullPredOutArray;
+    protected String[] fullPredOutArray, pcfgTreesPredOutArray;
     
     int currExample;
 
@@ -114,6 +113,11 @@ public abstract class AModel
         return exampleToString(ex) + " " + Utils.mkString(widgetToIntSeq(widget), " ");
     }
 
+    protected String widgetToCfgTreeString(AExample ex, AWidget widget)
+    {
+        return "";
+    }
+    
     public List<AExample> getExamples()
     {
         return examples;
@@ -241,6 +245,10 @@ public abstract class AModel
         if(opts.outputFullPred && opts.forceOutputOrder)
         {
             fullPredOutArray = new String[examples.size()];
+        }
+        if(opts.outputPcfgTrees && opts.forceOutputOrder)
+        {
+            pcfgTreesPredOutArray = new String[examples.size()];
         }
 //        examples = (Example[]) new AExample[examplesList.size()];
 //        examplesList.toArray(examples);
@@ -515,15 +523,21 @@ public abstract class AModel
                     else
                         testFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
                 }
+                if(testPcfgTreesPredOut != null)
+                {
+                    if(opts.forceOutputOrder)
+                        pcfgTreesPredOutArray[i] = widgetToCfgTreeString(ex, inferState.bestWidget);
+                    else
+                        testPcfgTreesPredOut.println(widgetToCfgTreeString(ex, inferState.bestWidget));
+                }
             }
         }
     }
 
-    protected void writeFullPredOut(PrintWriter out)
+    protected void writeFullPredOut(PrintWriter out, String[] array)
     {
         int i = 0;
-        System.out.println("here");
-        for(String example : fullPredOutArray)
+        for(String example : array)
         {
             if(opts.inputFormat == InputFormat.zmert)
                 out.println(String.format("%d%s%s %s", i++, example, opts.kBest, opts.interpolationFactor));
