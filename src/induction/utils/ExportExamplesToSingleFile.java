@@ -148,7 +148,7 @@ public class ExportExamplesToSingleFile
         String treebankInputFile[] = {
                                       "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
-                                      "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarize"
+                                      "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
@@ -158,7 +158,7 @@ public class ExportExamplesToSingleFile
                               };        
         boolean isDirectory = false;
         boolean inputPosTagged = false;
-        for(int i = 0; i < 2; i++)
+        for(int i = 2; i < 3; i++)
         {
             System.out.println("Creating " + outputFile[i]);
             new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], isDirectory, inputPosTagged).execute();

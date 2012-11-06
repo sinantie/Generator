@@ -138,9 +138,9 @@ public class Example implements AExample<Widget>
 //        return out + "\n\n" + widgetToNiceFullString(widget);
     }
     
-    String genCfgWidgetToNiceFullString(CfgGenWidget widget)
+    String genCfgWidgetToNiceFullString(GenWidget widget)
     {
-        String out = name + "\n" + PennTreeRenderer.render(widget.getTree()) + "\n";        
+        String out = name + "\n" + PennTreeRenderer.render(widget.getRecordTree()) + "\n";        
         return out;
     }
     

@@ -443,7 +443,7 @@ public abstract class Event3Model extends WordModel
     protected String widgetToCfgTreeString(AExample aex, AWidget widget)
     {
         Example ex = (Example)aex;        
-        return ex.genCfgWidgetToNiceFullString((CfgGenWidget)widget);        
+        return ex.genCfgWidgetToNiceFullString((GenWidget)widget);        
     }
     
     @Override
@@ -914,8 +914,7 @@ public abstract class Event3Model extends WordModel
 //
 //                        events = (Event[]) eventsAsList.toArray(new Event[eventsAsList.size()]);
 //                    }                                        
-                    if(opts.modelType == Options.ModelType.generate ||
-                       opts.modelType == Options.ModelType.generatePcfg)
+                    if(opts.modelType == Options.ModelType.generate)
                     {                                            
                         examples.add(new Example(this, name, events,
                             null, null, null, textLength,
@@ -924,6 +923,12 @@ public abstract class Event3Model extends WordModel
 //                            null, null, null, events.size()*opts.maxPhraseLength,
                             new GenWidget(trueEvents, text)));
                     } // if (generation WITH gold-standard)
+                    else if(opts.modelType == Options.ModelType.generatePcfg)
+                    {                                            
+                        examples.add(new Example(this, name, events,
+                            opts.fixRecordSelection ? text : null, null, null, textLength,
+                            new GenWidget(trueEvents, text, opts.fixRecordSelection ? recordTree : null)));
+                    } // if (generation WITH gold-standard text and possibly fixed Record Selection)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
                         examples.add(new Example(this, name, events,
@@ -1328,8 +1333,9 @@ public abstract class Event3Model extends WordModel
         {
             inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
             testPerformance.add(ex, inferState.bestWidget);
-            System.out.println(widgetToFullString(ex, inferState.bestWidget));
-            System.out.println(widgetToCfgTreeString(ex, inferState.bestWidget));
+//            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            if(opts.outputPcfgTrees)
+                System.out.println(widgetToCfgTreeString(ex, inferState.bestWidget));
             outList.add(widgetToSGMLOutput(ex, inferState.bestWidget));
         }
         return outList.get(0);

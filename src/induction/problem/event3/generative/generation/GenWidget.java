@@ -1,11 +1,15 @@
 package induction.problem.event3.generative.generation;
 
+import edu.berkeley.nlp.ling.Tree;
+import induction.problem.event3.CFGRule;
 import induction.problem.event3.Widget;
 import induction.problem.event3.params.Parameters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +21,7 @@ public class GenWidget extends Widget
     protected int[] text, nums;
     protected double[] scores;
     protected Collection<Integer> trueEvents;
+    LinkedList<Tree<String>> queue;
     
     public GenWidget(int [][]events, int[][] fields, int[][] gens,
                      int [][] numMethods,
@@ -75,6 +80,44 @@ public class GenWidget extends Widget
          }
     }
 
+    public GenWidget(int [][]events, int[][] fields, int[][] gens,
+                     int [][] numMethods,
+                     int [] text,
+                     HashSet<Integer>[] eventTypeAllowedOnTrack,
+                     Map<Integer, Integer> eventTypeIndices, String startSymbol)
+    {
+        this(events, fields, gens, numMethods, text, eventTypeAllowedOnTrack, eventTypeIndices);        
+        if(startSymbol != null)
+        {            
+            recordTree = new Tree<String>(startSymbol, false);
+            queue = new LinkedList<Tree<String>>();            
+            queue.push(recordTree);
+        }
+    }
+    
+    public GenWidget(int[][] events, int[] text, Tree<String> recordTree)
+    {
+        this(events, text);
+        this.recordTree = recordTree;
+    }
+    
+    void addEdge(CFGRule rule)
+    {
+        Tree<String> first = queue.poll();
+        if(first.getLabel().equals(rule.getLhsToString()))
+        {
+            List<Tree<String>> newChildren = new ArrayList(2);
+            for(String rhs : rule.getRhsListToString())
+                newChildren.add(new Tree<String>(rhs, false));
+            first.setChildren(newChildren);
+            queue.addAll(0, newChildren);
+        }
+        else
+        {
+            addEdge(rule);
+        }        
+    }
+    
     public int[] getNums()
     {
         return nums;

@@ -43,14 +43,18 @@ public class GenerationWeatherTest
     @Before
     public void setUp() 
     {
-         String args = "-modelType generate -testInputLists test/testWeatherGovEvents "
+         String args = "-modelType generate "
+//                    + "-testInputLists test/testWeatherGovEvents "
+                    + "-examplesInSingleFile "
+                    + "-inputLists "
+                    + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_test "
                     + "-inputFileExt events "
                     + "-stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
                     + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
 //                    + "pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
-                    + "-kBest 65 "
+                    + "-kBest 15 "
 //                    + "-indepEventTypes 0,1 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
 //                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
@@ -67,9 +71,9 @@ public class GenerationWeatherTest
                     + "-lengthPredictionFeatureType values "
                     + "-lengthPredictionStartIndex 4 "
                     + "-numAsSymbol "
-                    + "-useDependencies "
-                    + "-interpolationFactor 0.3 "
-                    + "-posAtSurfaceLevel "                    
+//                    + "-useDependencies "
+                    + "-interpolationFactor 1 "
+//                    + "-posAtSurfaceLevel "                    
                     + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
                     + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz "
                     + "-excludedEventTypes windChill gust snowChance freezingRainChance sleetChance"; 

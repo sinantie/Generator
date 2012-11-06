@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
-#inputLists=gaborLists/genDevListPathsGabor
+input=gaborLists/genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz, weatherGovGenEvalGaborRecordTreebank
-input=data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz
+#input=data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj
 
@@ -14,7 +14,6 @@ dist/stanford-postagger-2010-05-26.jar \
 -exportType recordType \
 -create \
 -overwriteExecDir \
--examplesInSingleFile \
 -modelType event3 \
 -inputFileExt events \
 -outputExampleFreq 500 \
@@ -26,8 +25,10 @@ dist/stanford-postagger-2010-05-26.jar \
 -extractRecordTrees \
 -binarize right \
 -useEventTypeNames \
--markovOrder 2 \
+-markovOrder 0 \
 -modifiedBinarization
+
+#-examplesInSingleFile \
 
 #-modifiedBinarization
 #-useEventTypeNames
