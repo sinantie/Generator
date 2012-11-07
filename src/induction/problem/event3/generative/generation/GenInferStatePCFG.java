@@ -152,7 +152,7 @@ public class GenInferStatePCFG extends GenInferState
             {
                 try {
                     list.add(genEdge(0, N, recordTree));
-                } catch(Exception e){LogInfo.error("Error: " + ex.getName());}
+                } catch(Exception e){LogInfo.error("Error: " + e + " " + ex.getName());}
             }
             else
                 list.add(genEdge(0, ex.N(), indexer.getIndex("S")));

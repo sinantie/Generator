@@ -5,7 +5,6 @@ import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.params.Parameters;
 import induction.Utils;
 import induction.problem.AExample;
-import induction.problem.event3.generative.generation.CfgGenWidget;
 import induction.problem.event3.json.JsonResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +51,9 @@ public class Example implements AExample<Widget>
             isSentenceBoundaryArray = new boolean[N];
             for(int i = 0; i < isPunctuationArray.length; i++)
             {
-                s = model.wordToString(text[i]);
+                s = !model.getOpts().testInputPaths.isEmpty() || !model.getOpts().testInputLists.isEmpty() ?
+                        model.testSetWordToString(text[i]) : 
+                        model.wordToString(text[i]);
                 isPunctuationArray[i] = 
                         // if words have pos tag attached to them
                         s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
