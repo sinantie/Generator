@@ -215,6 +215,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 }
             }            
         }
+        System.out.println(cfgParams.outputNonZero(ParamsType.COUNTS));
+//        cfgParams.optimiseVar(opts.stage1.smoothing);
         cfgParams.optimise(opts.initSmoothing);
     }
         

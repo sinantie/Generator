@@ -24,7 +24,16 @@ public class LinearRegressionExecutor implements Runnable
             lrw.train(opts.outputFeaturesFile, opts.saveModel);
         }
         else if(opts.mode == Mode.test)
-            LogInfo.logs(lrw.predict(opts.inputFile));
+        {
+            try
+            {
+                LogInfo.logs(lrw.predict(opts.inputFile));        
+            }
+            catch(Exception e)
+            {
+                LogInfo.error(e);
+            }
+        }
     }
     
     public static void main(String[] args)

@@ -828,7 +828,7 @@ public abstract class Event3Model extends WordModel
                 }
                 catch(Exception e)
                 {
-                    Utils.log(e);
+                    LogInfo.error("Length Prediction error: " + name + "\n" + e);
                 }                
             }
             // Read text
@@ -1136,11 +1136,6 @@ public abstract class Event3Model extends WordModel
         if(opts.treebankRules != null && cfgRules == null) // if we haven't read the rules yet (staged init)
         {
             readTreebankRules();
-//            if(opts.modelType == ModelType.event3pcfg && !opts.fixRecordSelection)
-//            {
-//                // produce all possible trees from the grammar, sorted by number of sentences they span
-////                grammarTrees = new Hash
-//            }
         }        
     }
     
@@ -1340,7 +1335,8 @@ public abstract class Event3Model extends WordModel
         {
             inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
             testPerformance.add(ex, inferState.bestWidget);
-            System.out.println(widgetToFullString(ex, inferState.bestWidget));
+            if(opts.outputFullPred)
+                System.out.println(widgetToFullString(ex, inferState.bestWidget));
             if(opts.outputPcfgTrees)
                 System.out.println(widgetToCfgTreeString(ex, inferState.bestWidget));            
             outList.add(widgetToSGMLOutput(ex, inferState.bestWidget));

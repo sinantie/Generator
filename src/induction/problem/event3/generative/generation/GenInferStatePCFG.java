@@ -168,6 +168,16 @@ public class GenInferStatePCFG extends GenInferState
     }
 
     /**
+     * Check if the input gold tree contains rules that are not in the original training set
+     * @return 
+     */
+    private boolean checkGoldTree()
+    {
+        // TO-DO
+        return false;
+    }
+    
+    /**
      * Build binarized record content selection model, given the structure of the input
      * in a Penn Treebank format (binarized trees with induced constituents on the sentence level). 
      * <br/>

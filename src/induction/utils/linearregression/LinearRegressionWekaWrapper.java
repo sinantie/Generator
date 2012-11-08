@@ -115,19 +115,11 @@ public class LinearRegressionWekaWrapper
         }
     }
 
-    public double predict(String input)
-    {                        
-        try
-        {            
-            return model.classifyInstance(
-                    createFeatureVector(
-                        featureExtractor.extractFeatures(input).split(","), false));
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-        return -1.0;
+    public double predict(String input) throws Exception
+    {                                            
+        return model.classifyInstance(createFeatureVector(
+                    featureExtractor.extractFeatures(input).split(","), false));                
+//        return -1.0;
     }
 
     private Instance createFeatureVector(String[] extractedValues, boolean label)

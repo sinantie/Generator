@@ -138,7 +138,6 @@ public abstract class AParams implements Serializable
         Vec vIn, v;
         for(Entry<String, Vec> entry: vecsMap.entrySet())
         {
-            System.out.println(entry.getKey());
             vIn = entry.getValue();
             if(this.vecsMap.containsKey(entry.getKey()))
             {
