@@ -1013,4 +1013,9 @@ public class Utils
     {
         return s.equals("./.") || s.equals("--/:") || s.equals(".") ||  s.equals("--");
     }
+    
+    public static boolean countableRule(Tree<String> tree)
+    {
+        return !(tree.isLeaf() || tree.isPreTerminal());
+    }
 }

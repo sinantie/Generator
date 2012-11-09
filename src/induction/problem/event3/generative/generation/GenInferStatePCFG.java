@@ -5,6 +5,7 @@ import fig.basic.Indexer;
 import fig.basic.LogInfo;
 import induction.problem.event3.params.Params;
 import induction.Hypergraph;
+import induction.Utils;
 import induction.ngrams.NgramModel;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
@@ -19,6 +20,7 @@ import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.CFGParams;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -148,11 +150,15 @@ public class GenInferStatePCFG extends GenInferState
             {
                 list.add(startSymbol);
             }
-            if(opts.fixRecordSelection)
+            // use the gold standard tree to guide record selection. If the gold standard tree
+            // contains a rule not in the training set, then fall back to generating from the existing ruleset
+            if(opts.fixRecordSelection && checkGoldTree())
             {
-                try {
+                try 
+                {                    
                     list.add(genEdge(0, N, recordTree));
-                } catch(Exception e){LogInfo.error("Error: " + e + " " + ex.getName());}
+                } 
+                catch(Exception e){LogInfo.error("Error: " + e + " " + ex.getName());}
             }
             else
                 list.add(genEdge(0, ex.N(), indexer.getIndex("S")));
@@ -173,8 +179,17 @@ public class GenInferStatePCFG extends GenInferState
      */
     private boolean checkGoldTree()
     {
-        // TO-DO
-        return false;
+        for(Iterator<Tree> it = recordTree.iterator(); it.hasNext(); )
+        {
+            Tree<String> subtree = it.next();
+            if(Utils.countableRule(subtree)) // count only the binary rules
+            {
+                CFGRule rule = new CFGRule(subtree, indexer);
+                if(!((Event3Model)model).containsCfgRule(rule))
+                    return false;
+            }
+        }
+        return true;
     }
     
     /**

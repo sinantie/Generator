@@ -253,6 +253,11 @@ public abstract class Event3Model extends WordModel
         return cfgRules.get(rule.getLhs()).get(rule);        
     }
     
+    public boolean containsCfgRule(CFGRule rule)
+    {
+        return cfgRules.get(rule.getLhs()).containsKey(rule);
+    }
+    
     public HashMap<CFGRule, Integer> getCfgCandidateRules(int lhs)
     {
         return cfgRules.get(lhs);

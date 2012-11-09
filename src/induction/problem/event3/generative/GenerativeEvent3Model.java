@@ -208,22 +208,17 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
             {
                 Tree<String> subtree = it.next();
-                if(countableRule(subtree)) // count only the binary rules
+                if(Utils.countableRule(subtree)) // count only the binary rules
                 {
                     CFGRule rule = new CFGRule(subtree, rulesIndexer);
                     cfgRulesChoices.get(rule.getLhs()).addCount(getCfgRuleIndex(rule), 1.0);
                 }
-            }            
+            }
         }
         System.out.println(cfgParams.outputNonZero(ParamsType.COUNTS));
 //        cfgParams.optimiseVar(opts.stage1.smoothing);
         cfgParams.optimise(opts.initSmoothing);
-    }
-        
-    private boolean countableRule(Tree<String> tree)
-    {
-        return !(tree.isLeaf() || tree.isPreTerminal());
-    }
+    }            
     
     @Override
     protected void baitInitParams()
