@@ -31,18 +31,19 @@ public class ComputeAveragesTest
      */
     @Test
     public void testWeather()
-    {     
+    {        
         String args = 
                    "-examplesInSingleFile "
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovGenDevGabor.gz "
+                 + "data/weatherGov/weatherGovTrainGabor.gz "
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
                  + "statistics/weatherGov "
-                 + "-actionType averageWordsPerSentence";
+//                 + "-actionType averageWordsPerSentence";
+                 + "-actionType averageSentencesPerDocument";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
         ComputeAveragesOptions opts = new ComputeAveragesOptions();

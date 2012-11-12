@@ -24,6 +24,7 @@ public class Options {
   @Option(gloss="Description file for initializing artificial parameters") public String artificialDescriptionPath;
   @Option(gloss="File containing PCFG rules for record selection") public String treebankRules;  
   @Option(gloss="Fix record selection on input treebank parse trees") public boolean fixRecordSelection;
+  @Option(gloss="Fix number of sentences") public boolean fixNumSentences;
   @Option(gloss="Format of input") public InputFormat inputFormat = InputFormat.raw;
   @Option(gloss="Maximum number of examples") public int maxExamples = Integer.MAX_VALUE;
   @Option(gloss="Maximum number of test examples") public int testMaxExamples = Integer.MAX_VALUE;
@@ -38,6 +39,7 @@ public class Options {
   @Option(gloss="Model", required=true) public ModelType modelType;
   @Option(gloss="Number of hidden states") public int K = 5;
   @Option(gloss="Maximum phrase length") public int maxPhraseLength = 5;
+  @Option(gloss="Average number of sentences") public int averageNumSentences = 3;
   @Option public AlignmentModel alignmentModel = AlignmentModel.m1;
   @Option(gloss="Threshold for posterior decoding") public double posteriorThreshold = 0.5;
   @Option public double gmmVariance = 1;

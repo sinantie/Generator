@@ -43,7 +43,7 @@ public class GenInferStatePCFG extends GenInferState
         super(model, ex, params, counts, ispec, ngramModel);
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
         indexer = model.getRulesIndexer();
-        minWordsPerNonTerminal = model.getMinWordsPerNonTerminal();
+        minWordsPerNonTerminal = model.getMinWordsPerNonTerminal();        
     }        
     
     @Override
@@ -159,6 +159,10 @@ public class GenInferStatePCFG extends GenInferState
                     list.add(genEdge(0, N, recordTree));
                 } 
                 catch(Exception e){LogInfo.error("Error: " + e + " " + ex.getName());}
+            }
+            else if(opts.fixNumSentences)
+            {
+                list.add(genEdge(0, ex.N(), indexer.getIndex("S"), opts.averageNumSentences));
             }
             else
                 list.add(genEdge(0, ex.N(), indexer.getIndex("S")));
@@ -321,6 +325,75 @@ public class GenInferStatePCFG extends GenInferState
     }
     
     private Object genEdge(int start, int end, final int lhs)
+    {
+        Indexer eventTypeIndexer = ((Event3Model)model).getEventTypeNameIndexer();
+        final CFGParams cfgParams = params.cfgParams;
+        CFGNode node = new CFGNode(start, end, lhs);
+        
+        if(hypergraph.addSumNode(node))
+        {
+            String label = indexer.getObject(lhs);            
+            int eventTypeIndex = label.equals("none") ? cfgParams.none_t : (eventTypeIndexer.contains(label) ? eventTypeIndexer.getIndex(label) : -1);
+            // check if we are in a record leaf and the example contains events of this eventType (not always the case e.g., in ATIS), 
+            // and generate the record / field set
+            if (eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)))
+            {                
+                hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
+            } // if
+            else
+            {
+                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
+                for(final Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
+                {
+                    final int rhs1 = candidateRule.getKey().getRhs1();                    
+                    final int indexOfRule =  candidateRule.getValue();
+                    final boolean isUnary = candidateRule.getKey().isUnary();
+                    if(isUnary) // unary trees
+                    {
+                        hypergraph.addEdge(node, genEdge(start, end, rhs1),
+                          new Hypergraph.HyperedgeInfo<GenWidget>() {                              
+                              public double getWeight() {
+                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                              }
+                              public void setPosterior(double prob) {}
+                              public GenWidget choose(GenWidget widget) {
+                                  if(opts.outputPcfgTrees)
+                                      widget.addEdge(candidateRule.getKey());
+                                  return widget;
+                              }
+                          }); 
+                    }
+                    else // binary trees only
+                    {                                                
+                        final int rhs2 = candidateRule.getKey().getRhs2();
+                        // respect minimum word span of each rhs non terminal
+                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
+                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);                        
+                        // break and cross on (hypothetical) punctuation                            
+                        int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start+1, end) : end;
+                        for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)
+                        {
+                            hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
+                              new Hypergraph.HyperedgeInfo<GenWidget>() {                                      
+                                  public double getWeight() {
+                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                  }
+                                  public void setPosterior(double prob) {}
+                                  public GenWidget choose(GenWidget widget) {
+                                      if(opts.outputPcfgTrees)
+                                        widget.addEdge(candidateRule.getKey());
+                                      return widget;
+                                  }
+                              });
+                        } // for                        
+                    } // else
+                } // for
+            } // else
+        } // if
+        return node;
+    }
+    
+    private Object genEdge(int start, int end, final int lhs, int numSentences)
     {
         Indexer eventTypeIndexer = ((Event3Model)model).getEventTypeNameIndexer();
         final CFGParams cfgParams = params.cfgParams;
