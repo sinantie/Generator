@@ -127,10 +127,11 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
 //                        }
 //                    }
 //                }
-            //eventTypesBuffer = (ArrayList<EventType>) ois.readObject();
+            //eventTypesBuffer = (ArrayList<EventType>) ois.readObject();            
             params = newParams();
 //            params.setVecs((List<ProbVec>) ois.readObject());
             params.setVecs((Map<String, Vec>) ois.readObject());
+            System.out.println("BEFORE\n" +((Params)params).cfgParams.outputNonZero(ParamsType.PROBS));
 //            }
             ois.close();
             
@@ -215,7 +216,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 }
             }
         }
-        System.out.println(cfgParams.outputNonZero(ParamsType.COUNTS));
+//        System.out.println(cfgParams.outputNonZero(ParamsType.COUNTS));
 //        cfgParams.optimiseVar(opts.stage1.smoothing);
         cfgParams.optimise(opts.initSmoothing);
     }            
