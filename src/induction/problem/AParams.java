@@ -67,6 +67,15 @@ public abstract class AParams implements Serializable
             v.addCount(smoothing).normalise();
         }
     }
+    
+    public void optimiseExcluding(double smoothing, Map<String, Vec> vecs)
+    {
+        for(Entry<String, Vec> v: vecsMap.entrySet())
+        {
+            if(!vecs.containsKey(v.getKey()))
+                v.getValue().addCount(smoothing).normalise();
+        }
+    }
 
     public void optimiseVar(double smoothing)
     {

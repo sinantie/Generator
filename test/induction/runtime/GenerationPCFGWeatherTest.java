@@ -46,11 +46,14 @@ public class GenerationPCFGWeatherTest
                 + "-testInputLists "
 //                 + "test/testWeatherGovEvents "
                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
+//                + "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz "
                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules "
 //                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules_test "
                 + "-stagedParamsFile "
                 + "results/output/weatherGov/alignments/pcfg/"
                 + "model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz "
+//                + "results/output/weatherGov/alignments/dev/pcfg/"
+//                + "model_3_gabor_record_pcfg_treebank_unaryRules_5iter/stage1.params.obj.gz "
 //                 + "-fixNumSentences "
                  + "-averageNumSentences 3 "
 //                 + "-fixRecordSelection "
@@ -60,7 +63,7 @@ public class GenerationPCFGWeatherTest
                 + "-inputFileExt events "
                 + "-disallowConsecutiveRepeatFields "
                 + "-maxPhraseLength 10 "
-                + "-kBest 30 "
+                + "-kBest 15 "
                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                 + "-ngramWrapper srilm "
                 + "-allowConsecutiveEvents "
@@ -91,6 +94,9 @@ public class GenerationPCFGWeatherTest
 //        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
         lopts = opts.stage1;
         name = "stage1";
+//        model.restoreArtificialInitParams();
+//        model.saveParams(name, "stage2.params.obj.gz");
+//        System.exit(0);
     }
 
     @After

@@ -130,8 +130,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             //eventTypesBuffer = (ArrayList<EventType>) ois.readObject();            
             params = newParams();
 //            params.setVecs((List<ProbVec>) ois.readObject());
-            params.setVecs((Map<String, Vec>) ois.readObject());
-            System.out.println("BEFORE\n" +((Params)params).cfgParams.outputNonZero(ParamsType.PROBS));
+            params.setVecs((Map<String, Vec>) ois.readObject());                        
+//            System.out.println("BEFORE\n" +((Params)params).cfgParams.outputNonZero(ParamsType.PROBS));
 //            }
             ois.close();
             
@@ -150,30 +150,14 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         loadLanguageModel();
     }
 
-    @Override
-    protected void saveParams(String name)
+    public void saveParams(String name, String filename)
     {
         try
         {
-            ObjectOutputStream oos = IOUtils.openObjOut(Execution.getFile(name + ".params.obj.gz"));
+            ObjectOutputStream oos = IOUtils.openObjOut(filename);
             oos.writeObject(wordIndexer);
             oos.writeObject(labelIndexer);
             oos.writeObject(eventTypes); // NEW
-//            for(EventType e : eventTypes)
-//            {
-//                for(Field f : e.fields)
-//                {
-//                    if(f instanceof CatField)
-//                    {
-//                        oos.writeObject(((CatField)f).getIndexer());
-//                    }
-//                    else if(f instanceof StrField)
-//                    {
-//                        oos.writeObject(((StrField)f).getIndexer());
-//                    }
-//                }
-//            }
-//            oos.writeObject(eventTypesBuffer);
             oos.writeObject(params.getVecs());
             oos.close();
         }
@@ -181,10 +165,46 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         {
             Utils.log(ex.getMessage());
             ex.printStackTrace(LogInfo.stderr);
-//            ex.printStackTrace();
         }
     }
+    
+    @Override
+    protected void saveParams(String name)
+    {
+        saveParams(name, Execution.getFile(name + ".params.obj.gz"));
+    }
 
+    public void restoreArtificialInitParams()
+    {
+        // restore estimates from corpus and replace what is already in the params file
+        CFGParams cfgParams = ((Params)params).cfgParams; 
+        cfgParams.setUniform(0); // reset the cfg rules vectors to 0
+        Map<Integer, Vec> cfgRulesChoices = cfgParams.getCfgRulesChoices();
+        for(AExample aex : examples)
+        {
+            Tree<String> tree = ((Example)aex).getTrueWidget().getRecordTree();
+            if(tree == null)
+            {
+                LogInfo.error("Input file does not contain parse trees!");
+                Execution.finish();
+            }
+            // add 1 count to each cfg rule in each subtree of the parse tree
+            for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
+            {
+                Tree<String> subtree = it.next();
+                if(Utils.countableRule(subtree)) // count only the binary rules
+                {
+                    CFGRule rule = new CFGRule(subtree, rulesIndexer);
+                    cfgRulesChoices.get(rule.getLhs()).addCount(getCfgRuleIndex(rule), 1.0);
+                }
+            }
+        }
+        cfgParams.optimise(opts.initSmoothing);
+        for(Vec v : cfgParams.getVecs().values())
+            v.setProbSortedIndices();
+//        System.out.println("AFTER\n" +((Params)params).cfgParams.outputNonZero(ParamsType.PROBS));
+    }
+    
     @Override
     protected void artificialInitParams()
     {
@@ -235,7 +255,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         else // in case we are using a treebank for record selection, copy rule probabilites from previous iteration
         {
             Params p = new Params(this, opts, VecFactory.Type.DENSE);
-            p.cfgParams = ((Params)params).cfgParams;
+            p.cfgParams.setVecs(((Params)params).cfgParams.getVecs());
+//            p.cfgParams = ((Params)params).cfgParams;
             return p;
         }
     }

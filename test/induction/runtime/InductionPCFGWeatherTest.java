@@ -45,9 +45,9 @@ public class InductionPCFGWeatherTest
                  + "-Options.stage1.numIters 5 "
                  + "-examplesInSingleFile "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz "
-//                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_test "
-                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules "
+//                 + "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
                  + "-fixRecordSelection "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
@@ -86,7 +86,8 @@ public class InductionPCFGWeatherTest
     {
         System.out.println("run");
         String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
-        System.out.println(model.testInitLearn(name, lopts).trim());
+//        System.out.println(model.testInitLearn(name, lopts).trim());
+        model.learn(name, lopts);
 //        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
 //        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
     }
