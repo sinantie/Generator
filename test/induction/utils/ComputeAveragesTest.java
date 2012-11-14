@@ -42,8 +42,9 @@ public class ComputeAveragesTest
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
                  + "statistics/weatherGov "
+                 + "-actionType averageWordsPerDocument";
 //                 + "-actionType averageWordsPerSentence";
-                 + "-actionType averageSentencesPerDocument";
+//                 + "-actionType averageSentencesPerDocument";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
         ComputeAveragesOptions opts = new ComputeAveragesOptions();

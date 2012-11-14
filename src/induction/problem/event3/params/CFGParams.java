@@ -15,8 +15,10 @@ import java.util.Map.Entry;
  */
 public class CFGParams extends AParams
 {
-    Map<Integer, Vec> cfgRulesChoices; // map of rules indexed on the lhs nonterminal symbol      
+    Map<Integer, Vec> cfgRulesChoices; // map of rules indexed on the lhs nonterminal symbol
+    Vec[] wordsPerRootRule;
     public int none_t;
+    int binSize, maxDocLength, numOfBins;
     
     public CFGParams(Event3Model model, VecFactory.Type vectorType)
     {
@@ -28,7 +30,13 @@ public class CFGParams extends AParams
             Vec v = VecFactory.zeros(vectorType, rule.getValue().size());
             cfgRulesChoices.put(rule.getKey(), v);
             addVec("cfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);
-        } // for        
+        } // for  
+        binSize = model.getOpts().docLengthBinSize;
+        numOfBins = model.getOpts().maxDocLength/binSize;
+        Map<CFGRule, Integer> rootRules = model.getCfgCandidateRules(model.getRulesIndexer().getIndex("S"));
+        int numOfRootRules = rootRules.size();
+        wordsPerRootRule = VecFactory.zeros2(vectorType, numOfRootRules, numOfBins);
+        addVec(getLabels(numOfRootRules, "wordsPerRootRule ", model.cfgRulesRhsStrArray(rootRules)), wordsPerRootRule);                
     }
 
     public Map<Integer, Vec> getCfgRulesChoices()
@@ -36,6 +44,16 @@ public class CFGParams extends AParams
         return cfgRulesChoices;
     }
 
+    public Vec[] getWordsPerRootRule()
+    {
+        return wordsPerRootRule;
+    }
+
+    public int getNumOfBins()
+    {
+        return numOfBins;
+    }
+    
     @Override
     public String output(ParamsType paramsType)
     {
@@ -51,6 +69,21 @@ public class CFGParams extends AParams
             else            
                 out.append(forEachCount(rule.getValue(), lab));            
         } // for
+        Map<CFGRule, Integer> rootRules = event3Model.getCfgCandidateRules(event3Model.getRulesIndexer().getIndex("S"));        
+        int numOfRootRules = rootRules.size();
+        String []binLabels = new String[numOfBins];
+        for(int i = 0; i < numOfBins; i++)
+            binLabels[i] = String.format("%s-%s",i*binSize, i*binSize + binSize);        
+        String[][] labels = getLabels(numOfRootRules, numOfBins, "wordsPerRootRule ", 
+                event3Model.cfgRulesRhsStrArray(rootRules), binLabels);
+        int i = 0;
+        for(Vec v: wordsPerRootRule)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProb(v, labels[i++]));
+            else
+                out.append(forEachCount(v, labels[i++]));
+        }
         return out.toString();
     }
 
@@ -70,6 +103,21 @@ public class CFGParams extends AParams
             else            
                 out.append(forEachCountNonZero(rule.getValue(), lab));            
         } // for
+        Map<CFGRule, Integer> rootRules = event3Model.getCfgCandidateRules(event3Model.getRulesIndexer().getIndex("S"));        
+        int numOfRootRules = rootRules.size();
+        String []binLabels = new String[numOfBins];
+        for(int i = 0; i < numOfBins; i++)
+            binLabels[i] = String.format("%s-%s",i*binSize, i*binSize + binSize);        
+        String[][] labels = getLabels(numOfRootRules, numOfBins, "wordsPerRootRule ", 
+                event3Model.cfgRulesRhsStrArray(rootRules), binLabels);
+        int i = 0;
+        for(Vec v: wordsPerRootRule)
+        {
+            if(paramsType == ParamsType.PROBS)
+                out.append(forEachProbNonZero(v, labels[i++]));
+            else
+                out.append(forEachCountNonZero(v, labels[i++]));
+        }
         return out.toString();
     }
 }

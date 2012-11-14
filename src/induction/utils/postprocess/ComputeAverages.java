@@ -31,6 +31,7 @@ public class ComputeAverages
             case averageAlignmentsPerExample : action = new AverageAlignmentsPerExample(); break;
             case averageFieldsWithNoValuePerRecord : action = new AverageFieldsWithNoValuePerRecord(opts.record, opts.totalNumberOfFields); break;
             case averageWordsPerSentence : action = new AverageWordsPerSentence(); break;
+            case averageWordsPerDocument : action = new AverageWordsPerDocument(); break;
             case averageSentencesPerDocument : action = new AverageSentencesPerDocument(); break;
         }
         readExamples();                
@@ -188,6 +189,30 @@ public class ComputeAverages
         public Object result()
         {
             return new Double((double)words / (double)sentences);
+        }
+    }
+    
+    private static class AverageWordsPerDocument implements Action
+    {      
+        private int words, docs;
+        
+        @Override
+        public Object act(Object in)
+        {
+            int w;
+            String[] example = (String[])in;
+            // 2nd entry is the text
+            w = example[1].split("\\s").length;
+            words += w;
+//            System.out.println(w);
+            docs++;
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return new Double((double)words / (double)docs);
         }
     }
     

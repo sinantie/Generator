@@ -11,7 +11,8 @@ import induction.Options;
 public class ComputeAveragesOptions
 { 
     public enum ActionType {averageAlignmentsPerExample, averageFieldsWithNoValuePerRecord,
-                            averageWordsPerSentence, averageSentencesPerDocument};
+                            averageWordsPerSentence, averageWordsPerDocument, 
+                            averageSentencesPerDocument};
     
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();    
     @Option(required=true) public ActionType actionType;

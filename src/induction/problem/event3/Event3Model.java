@@ -263,6 +263,16 @@ public abstract class Event3Model extends WordModel
         return cfgRules.get(lhs);
     }
     
+    public boolean isRootRule(CFGRule rule)
+    {
+        return rulesIndexer.getObject(rule.getLhs()).equals("S");
+    }
+    
+    public boolean isRootRule(int lhs)
+    {
+        return rulesIndexer.getObject(lhs).equals("S");
+    }
+    
     public EventType[] getEventTypes()
     {
         return eventTypes;

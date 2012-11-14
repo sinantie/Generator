@@ -20,11 +20,13 @@ import static org.junit.Assert.*;
  */
 public class InductionPCFGWeatherTest
 {
+
     LearnOptions lopts;
     String name;
     GenerativeEvent3Model model;
 
-    public InductionPCFGWeatherTest() {
+    public InductionPCFGWeatherTest()
+    {
     }
 
     @BeforeClass
@@ -38,31 +40,34 @@ public class InductionPCFGWeatherTest
     }
 
     @Before
-    public void setUp() 
+    public void setUp()
     {
-         String args = 
-                   "-modelType event3pcfg "
-                 + "-Options.stage1.numIters 5 "
-                 + "-examplesInSingleFile "
-                 + "-inputLists "
-//                 + "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz "
-                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
-                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
-                 + "-fixRecordSelection "
-                 + "-inputFileExt events "
-                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
-                 + "-disallowConsecutiveRepeatFields "
-//                 + "-indepWords 0,-1 "
-                 + "-dontCrossPunctuation "
-                 + "-Options.stage1.smoothing 0.5 "
-                 + "-allowNoneEvent "
-//                 + "-maxExamples 5 "
-                 + "-conditionNoneEvent ";
+        String args =
+                "-modelType event3pcfg "
+                + "-Options.stage1.numIters 5 "
+                + "-examplesInSingleFile "
+                + "-inputLists "
+                //                 + "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz "
+                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
+                + "-fixRecordSelection "
+                + "-inputFileExt events "
+                + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
+                + "-disallowConsecutiveRepeatFields "
+                //                 + "-indepWords 0,-1 "
+                + "-dontCrossPunctuation "
+                + "-Options.stage1.smoothing 0.5 "
+                + "-allowNoneEvent "
+                //                 + "-maxExamples 5 "
+                + "-conditionNoneEvent ";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
-        Execution.init(args.split(" "), new Object[] {opts}); // parse input params
+        Execution.init(args.split(" "), new Object[]
+                {
+                    opts
+                }); // parse input params
         model = new GenerativeEvent3Model(opts);
         model.readExamples();
         model.logStats();
@@ -75,7 +80,8 @@ public class InductionPCFGWeatherTest
     }
 
     @After
-    public void tearDown() throws Throwable {
+    public void tearDown() throws Throwable
+    {
     }
 
     /**
@@ -86,9 +92,9 @@ public class InductionPCFGWeatherTest
     {
         System.out.println("run");
         String targetOutput = "3 35 3 3 3 3 3 35 3 3 3 3 3 3 3 35 3 3 2 3 2 3 3 3 35 3 3 3 4 3 3 35 3 3 3 4 3 3";
-//        System.out.println(model.testInitLearn(name, lopts).trim());
-        model.learn(name, lopts);
+        System.out.println(model.testInitLearn(name, lopts).trim());
+//        model.learn(name, lopts);
 //        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
-//        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
     }
 }

@@ -26,13 +26,15 @@ public class InferStatePCFG extends InferState
     Tree<String> recordTree;
     Indexer<String> indexer;
     LinkedList<Integer> sentenceBoundaries;    
+    int docLengthBin;
     
     public InferStatePCFG(Event3Model model, Example ex, Params params, Params counts,
             InferSpec ispec)
     {
         super(model, ex, params, counts, ispec);
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
-        indexer = model.getRulesIndexer();
+        indexer = model.getRulesIndexer();       
+        docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
     }
 
     @Override
@@ -107,7 +109,8 @@ public class InferStatePCFG extends InferState
     {
         final CFGParams cfgParams = params.cfgParams;
         final int lhs = indexer.getIndex(tree.getLabel());
-        CFGNode node = new CFGNode(start, end, lhs);                
+        final boolean isRootRule = ((Event3Model)model).isRootRule(lhs);
+        CFGNode node = new CFGNode(start, end, lhs);
         
         if(hypergraph.addSumNode(node))
         {
@@ -136,11 +139,13 @@ public class InferStatePCFG extends InferState
                           new Hypergraph.HyperedgeInfo<Widget>() {
                               int rhs = indexer.getIndex(children.get(0).getLabel());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
-                              public double getWeight()
-                              {
+                              public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                               }
-                              public void setPosterior(double prob) { }
+                              public void setPosterior(double prob) { 
+                                  if(isRootRule)
+                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                              }
                               public Widget choose(Widget widget) {                          
                                   return widget;
                               }
@@ -154,11 +159,13 @@ public class InferStatePCFG extends InferState
                               int rhs1 = indexer.getIndex(children.get(0).getLabel());
                               int rhs2 = indexer.getIndex(children.get(1).getLabel());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
-                              public double getWeight()
-                              {
+                              public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                               }
-                              public void setPosterior(double prob) { }
+                              public void setPosterior(double prob) { 
+                                  if(isRootRule)
+                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                              }
                               public Widget choose(Widget widget) {                          
                                   return widget;
                               }
@@ -175,11 +182,13 @@ public class InferStatePCFG extends InferState
                           new Hypergraph.HyperedgeInfo<Widget>() {
                               int rhs = indexer.getIndex(children.get(0).getLabel());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
-                              public double getWeight()
-                              {
+                              public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                               }
-                              public void setPosterior(double prob) { }
+                              public void setPosterior(double prob) { 
+                                  if(isRootRule)
+                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                              }
                               public Widget choose(Widget widget) {                          
                                   return widget;
                               }
@@ -195,11 +204,13 @@ public class InferStatePCFG extends InferState
                                   int rhs1 = indexer.getIndex(children.get(0).getLabel());
                                   int rhs2 = indexer.getIndex(children.get(1).getLabel());
                                   int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
-                                  public double getWeight()
-                                  {
+                                  public double getWeight() {
                                       return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
                                   }
-                                  public void setPosterior(double prob) { }
+                                  public void setPosterior(double prob) { 
+                                      if(isRootRule)
+                                          update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                  }
                                   public Widget choose(Widget widget) {                          
                                       return widget;
                                   }
@@ -238,15 +249,19 @@ public class InferStatePCFG extends InferState
                     final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
                     final boolean isUnary = candidateRule.getKey().isUnary();
+                    final boolean isRootRule = ((Event3Model)model).isRootRule(candidateRule.getKey());
                     if(isUnary) // unary trees
                     {
                         hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
                           new Hypergraph.HyperedgeInfo<Widget>() {                              
-                              public double getWeight() {
-                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                              public double getWeight() {                                  
+                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
+                                         (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
                               }
                               public void setPosterior(double prob) {
                                   update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                  if(isRootRule)
+                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                               }
                               public Widget choose(Widget widget) {                          
                                   return widget;
@@ -266,10 +281,13 @@ public class InferStatePCFG extends InferState
                                                          genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
                                   new Hypergraph.HyperedgeInfo<Widget>() {                              
                                       public double getWeight() {
-                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
+                                         (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
                                       }
                                       public void setPosterior(double prob) {
                                           update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                          if(isRootRule)
+                                              update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                                       }
                                       public Widget choose(Widget widget) {                          
                                           return widget;
@@ -293,10 +311,13 @@ public class InferStatePCFG extends InferState
                                                              genEdge(k, end, rhs2, sentenceBoundaries),
                                       new Hypergraph.HyperedgeInfo<Widget>() {                                      
                                           public double getWeight() {
-                                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
+                                             (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
                                           }
                                           public void setPosterior(double prob) {
                                               update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
+                                              if(isRootRule)
+                                                  update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                                           }
                                           public Widget choose(Widget widget) {
                                               return widget;
@@ -310,5 +331,5 @@ public class InferStatePCFG extends InferState
             } // else
         } // if
         return node;
-    }        
+    }  
 }

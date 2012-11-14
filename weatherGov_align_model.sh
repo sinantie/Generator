@@ -2,14 +2,15 @@
 threads=1
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz
-output=results/output/weatherGov/alignments/dev/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_5iter
+input=data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz
+output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter_CORRECT
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
 treebankRules=data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules
 memory=-Xmx1000m
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
 -create \
+-overwriteExecDir \
 -modeltype event3pcfg \
 -examplesInSingleFile \
 -inputLists $input \
