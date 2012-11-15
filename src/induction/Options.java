@@ -145,6 +145,7 @@ public class Options {
   @Option(gloss="Output PCFG derivation trees (for debugging)") public boolean outputPcfgTrees = false;
   @Option(gloss="Document length bins") public int docLengthBinSize = 5;
   @Option(gloss="Maximum document length") public int maxDocLength = 90;
+  @Option(gloss="Use words per root rule node parameter") public boolean wordsPerRootRule = false;
   
   //Dependencies
   @Option(gloss="Position of column of the word in the CONLL files (default=1)") public int connlWordPos = 1;

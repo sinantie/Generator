@@ -51,14 +51,15 @@ public class InductionPCFGWeatherTest
                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
                 + "-fixRecordSelection "
+                + "-wordsPerRootRule "
                 + "-inputFileExt events "
                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                 + "-disallowConsecutiveRepeatFields "
-                //                 + "-indepWords 0,-1 "
+//                 + "-indepWords 0,-1 "
                 + "-dontCrossPunctuation "
-                + "-Options.stage1.smoothing 0.5 "
+                + "-Options.stage1.smoothing 0.1 "
                 + "-allowNoneEvent "
-                //                 + "-maxExamples 5 "
+//                 + "-maxExamples 5 "
                 + "-conditionNoneEvent ";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT

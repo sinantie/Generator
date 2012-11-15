@@ -73,7 +73,7 @@ public abstract class AParams implements Serializable
         for(Entry<String, Vec> v: vecsMap.entrySet())
         {
             if(!vecs.containsKey(v.getKey()))
-                v.getValue().addCount(smoothing).normalise();
+                v.getValue().addCount(smoothing).normalise();            
         }
     }
 

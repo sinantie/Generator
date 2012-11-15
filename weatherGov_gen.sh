@@ -11,10 +11,10 @@ kBest=15
 interpolationFactor=1
 #execDir=results/output/weatherGov/generation/dependencies/model_3_${kBest}-best_0.01_NO_STOP_inter${interpolationFactor}_condLM_hypRecomb_lmLEX_NO_STOP
 #execDir=results/output/weatherGov/generation/dev/model_3_${kBest}-best_0.01_NO_STOP
-execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_0.01_treebank_unaryRules_fixRecordSelection
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
+execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_0.01_treebank_unaryRules_1_3rd_rules
+treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules_1_3rd_linear
 
-java -Xmx6g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
+java -Xmx4g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/lib/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -numThreads $numThreads \
@@ -25,7 +25,7 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -treebankRules $treebankRules \
 -maxPhraseLength 10  \
 -reorderType ignore \
--fixRecordSelection \
+-outputPcfgTrees \
 -inputFileExt events \
 -disallowConsecutiveRepeatFields \
 -ngramWrapper srilm \
@@ -37,6 +37,7 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile} \
 -dmvModelParamsFile ${dmvModelParamsFile} \
 -ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa \
+-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model \
 -lengthPredictionFeatureType values \
 -lengthPredictionStartIndex 4 \
 -lengthCompensation 0 \
@@ -52,7 +53,8 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 #-maxPhraseLength 10  \
 #-reorderType ignore \
 #-outputPcfgTrees \
-#-fixRecordSelection
+#-fixRecordSelection 
+#-wordsPerRootRule
 
 
 # Record HMM

@@ -33,8 +33,7 @@ public class InferStatePCFG extends InferState
     {
         super(model, ex, params, counts, ispec);
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
-        indexer = model.getRulesIndexer();       
-        docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
+        indexer = model.getRulesIndexer();               
     }
 
     @Override
@@ -48,6 +47,7 @@ public class InferStatePCFG extends InferState
             if(ex.getIsSentenceBoundaryArray()[i])
                 sentenceBoundaries.add(i);
         }                
+        docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
     }
        
     @Override
@@ -108,8 +108,9 @@ public class InferStatePCFG extends InferState
     protected CFGNode genEdge(int start, int end, Tree<String> tree)
     {
         final CFGParams cfgParams = params.cfgParams;
+        final CFGParams cfgCounts = counts.cfgParams;
         final int lhs = indexer.getIndex(tree.getLabel());
-        final boolean isRootRule = ((Event3Model)model).isRootRule(lhs);
+        final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(lhs) : false;
         CFGNode node = new CFGNode(start, end, lhs);
         
         if(hypergraph.addSumNode(node))
@@ -144,7 +145,7 @@ public class InferStatePCFG extends InferState
                               }
                               public void setPosterior(double prob) { 
                                   if(isRootRule)
-                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                      update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                               }
                               public Widget choose(Widget widget) {                          
                                   return widget;
@@ -164,7 +165,7 @@ public class InferStatePCFG extends InferState
                               }
                               public void setPosterior(double prob) { 
                                   if(isRootRule)
-                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                      update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                               }
                               public Widget choose(Widget widget) {                          
                                   return widget;
@@ -187,7 +188,7 @@ public class InferStatePCFG extends InferState
                               }
                               public void setPosterior(double prob) { 
                                   if(isRootRule)
-                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                      update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                               }
                               public Widget choose(Widget widget) {                          
                                   return widget;
@@ -209,7 +210,7 @@ public class InferStatePCFG extends InferState
                                   }
                                   public void setPosterior(double prob) { 
                                       if(isRootRule)
-                                          update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                          update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                                   }
                                   public Widget choose(Widget widget) {                          
                                       return widget;
@@ -249,7 +250,7 @@ public class InferStatePCFG extends InferState
                     final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
                     final boolean isUnary = candidateRule.getKey().isUnary();
-                    final boolean isRootRule = ((Event3Model)model).isRootRule(candidateRule.getKey());
+                    final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(candidateRule.getKey()) : false;
                     if(isUnary) // unary trees
                     {
                         hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
@@ -261,7 +262,7 @@ public class InferStatePCFG extends InferState
                               public void setPosterior(double prob) {
                                   update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
                                   if(isRootRule)
-                                      update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                      update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                               }
                               public Widget choose(Widget widget) {                          
                                   return widget;
@@ -287,7 +288,7 @@ public class InferStatePCFG extends InferState
                                       public void setPosterior(double prob) {
                                           update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
                                           if(isRootRule)
-                                              update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                              update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                                       }
                                       public Widget choose(Widget widget) {                          
                                           return widget;
@@ -317,7 +318,7 @@ public class InferStatePCFG extends InferState
                                           public void setPosterior(double prob) {
                                               update(cfgCounts.getCfgRulesChoices().get(lhs), indexOfRule, prob);
                                               if(isRootRule)
-                                                  update(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                                                  update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
                                           }
                                           public Widget choose(Widget widget) {
                                               return widget;

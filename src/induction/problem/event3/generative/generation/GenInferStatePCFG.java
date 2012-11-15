@@ -36,6 +36,7 @@ public class GenInferStatePCFG extends GenInferState
     Indexer<String> indexer;
     LinkedList<Integer> sentenceBoundaries;
     Map<Integer, Integer> minWordsPerNonTerminal;
+    int docLengthBin;
     
     public GenInferStatePCFG(Event3Model model, Example ex, Params params,
             Params counts, InferSpec ispec, NgramModel ngramModel)
@@ -60,6 +61,7 @@ public class GenInferStatePCFG extends GenInferState
                     sentenceBoundaries.add(i);
             }                
         }
+        docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
     }
     
     @Override
@@ -348,12 +350,14 @@ public class GenInferStatePCFG extends GenInferState
                     final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
                     final boolean isUnary = candidateRule.getKey().isUnary();
+                    final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(candidateRule.getKey()): false;
                     if(isUnary) // unary trees
                     {
                         hypergraph.addEdge(node, genEdge(start, end, rhs1),
                           new Hypergraph.HyperedgeInfo<GenWidget>() {                              
                               public double getWeight() {
-                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
+                                         (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
                               }
                               public void setPosterior(double prob) {}
                               public GenWidget choose(GenWidget widget) {
@@ -376,7 +380,8 @@ public class GenInferStatePCFG extends GenInferState
                             hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
                               new Hypergraph.HyperedgeInfo<GenWidget>() {                                      
                                   public double getWeight() {
-                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                                      return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
+                                         (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
                                   }
                                   public void setPosterior(double prob) {}
                                   public GenWidget choose(GenWidget widget) {

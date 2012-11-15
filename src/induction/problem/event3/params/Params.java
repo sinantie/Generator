@@ -144,7 +144,7 @@ public class Params extends AParams
         } // for t
         if(opts.fixRecordSelection) // don't smooth pcfg probabilities as they are artificially initialised
         {
-            super.optimiseExcluding(smoothing, cfgParams.getVecs());
+            super.optimiseExcluding(smoothing, cfgParams.getCfgRulesChoicesMap());
         }
         else
             super.optimise(smoothing);

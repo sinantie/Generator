@@ -16,6 +16,8 @@ import java.util.Map.Entry;
 public class CFGParams extends AParams
 {
     Map<Integer, Vec> cfgRulesChoices; // map of rules indexed on the lhs nonterminal symbol
+    // map of rules indexed on their name; used for excluding from optimization (fixRecordSelection)
+    Map<String, Vec> cfgRulesChoicesMap = new HashMap<String, Vec>(); 
     Vec[] wordsPerRootRule;
     public int none_t;
     int binSize, maxDocLength, numOfBins;
@@ -29,8 +31,10 @@ public class CFGParams extends AParams
         {
             Vec v = VecFactory.zeros(vectorType, rule.getValue().size());
             cfgRulesChoices.put(rule.getKey(), v);
-            addVec("cfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);
+//            addVec("cfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);
+            cfgRulesChoicesMap.put("cfgRulesChoices " + model.getRulesIndexer().getObject(rule.getKey()), v);
         } // for  
+        addVec(cfgRulesChoicesMap);
         binSize = model.getOpts().docLengthBinSize;
         numOfBins = model.getOpts().maxDocLength/binSize;
         Map<CFGRule, Integer> rootRules = model.getCfgCandidateRules(model.getRulesIndexer().getIndex("S"));
@@ -42,6 +46,11 @@ public class CFGParams extends AParams
     public Map<Integer, Vec> getCfgRulesChoices()
     {
         return cfgRulesChoices;
+    }
+
+    public Map<String, Vec> getCfgRulesChoicesMap()
+    {
+        return cfgRulesChoicesMap;
     }
 
     public Vec[] getWordsPerRootRule()

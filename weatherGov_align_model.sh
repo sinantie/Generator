@@ -3,7 +3,7 @@ threads=1
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
 input=data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz
-output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter_CORRECT
+output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
 treebankRules=data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules
 memory=-Xmx1000m
@@ -32,7 +32,8 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -initNoise 1e-3 \
 -initSmoothing 0.01 \
 -initType artificial \
--fixRecordSelection
+-fixRecordSelection \
+-wordsPerRootRule
 
 # Record PCFG - Treebank Input
 #-treebankRules $treebankRules \
@@ -43,6 +44,7 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 #-newEventTypeFieldPerWord 0,5 \
 #-newFieldPerWord 0,5 \
 #-Options.stage1.smoothing 0.1 \
+#-wordsPerRootRule
 
 
 # Record HMM alignment
