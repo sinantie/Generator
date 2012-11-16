@@ -715,9 +715,12 @@ public class Hypergraph<Widget> {
   public double getEntropy() { return entropy; }
 
   // Add nodes: return whether added something
-  public boolean addSumNode(Object node) { return addNode(node, NodeType.sum); }
+  public boolean addSumNode(Object node) { return addNode(node, NodeType.sum); }  
   public boolean addProdNode(Object node) { return addNode(node, NodeType.prod); }
-
+  public boolean removeNode(Object node) {
+    return nodes.remove(node) == null ? false : true;
+  }
+  
   public Object sumStartNode() { getNodeInfoOrFail(startNode).nodeType = NodeType.sum; return startNode; }
   public Object prodStartNode() { getNodeInfoOrFail(startNode).nodeType = NodeType.prod; return startNode; }
 

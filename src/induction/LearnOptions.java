@@ -16,7 +16,8 @@ public class LearnOptions {
   @Option(gloss="Final temperature") public double finalTemperature = 1;
   @Option(gloss="Add smoothing when compute MAP") public double smoothing = 0;
   @Option(gloss="Use variational updates") public boolean useVarUpdates = false;
-
+  @Option(gloss="CFG root rule weight threshold") public double cfgThreshold = 0;
+  
   @Option public Options.AlignmentModel alignmentModel = Options.AlignmentModel.m1;
 
   @Option public boolean miniBatches = false;
