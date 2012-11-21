@@ -1,9 +1,6 @@
 package induction.utils.postprocess;
 
-import fig.basic.LogInfo;
 import induction.Utils;
-import induction.problem.event3.generative.GenerativeEvent3Model;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +31,7 @@ public class ComputeAverages
             case averageWordsPerDocument : action = new AverageWordsPerDocument(); break;
             case averageSentencesPerDocument : action = new AverageSentencesPerDocument(); break;
         }
-        readExamples();                
+        examples = Utils.readEvent3Examples(opts.modelOpts.inputPaths, opts.modelOpts.inputLists, opts.modelOpts.examplesInSingleFile);
         // process examples
         for(String[] example : examples)
         {
@@ -43,49 +40,49 @@ public class ComputeAverages
         System.out.println(action.result());
     }    
     
-    public void readExamples()
-    {
-        try 
-        {
-            String example[];
-            if(opts.modelOpts.examplesInSingleFile)
-            {
-                String key = null;
-                StringBuilder str = new StringBuilder();
-                for(String line : Utils.readLines(opts.modelOpts.inputLists.get(0)))
-                {
-                    if(line.startsWith("Example_") || line.equals("$NAME"))
-                    {
-                        if(key != null) // only for the first example
-                        {
-                            example = GenerativeEvent3Model.extractExampleFromString(str.toString());                        
-                            action.act(example);
-                            str = new StringBuilder();
-                        }
-                        key = line;
-                    } // if
-                    str.append(line).append("\n");
-                }  // for
-                // don't forget last example
-                example = GenerativeEvent3Model.extractExampleFromString(str.toString());
-                examples.add(example);
-            } // if
-            else
-            {
-                for(String line : Utils.readLines(opts.modelOpts.inputPaths.get(0))) // contains list of .events files
-                {
-    //                    System.out.println(line);
-                    String events = Utils.readFileAsString(line);
-                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
-                    String[] ex = {events, text};
-                    examples.add(ex);
-                }
-            }            
-        }
-        catch(IOException ioe) {
-            LogInfo.error(ioe);
-        }
-    }
+//    public void readExamples()
+//    {
+//        try 
+//        {
+//            String example[];
+//            if(opts.modelOpts.examplesInSingleFile)
+//            {
+//                String key = null;
+//                StringBuilder str = new StringBuilder();
+//                for(String line : Utils.readLines(opts.modelOpts.inputLists.get(0)))
+//                {
+//                    if(line.startsWith("Example_") || line.equals("$NAME"))
+//                    {
+//                        if(key != null) // only for the first example
+//                        {
+//                            example = Utils.extractExampleFromString(str.toString());                        
+//                            action.act(example);
+//                            str = new StringBuilder();
+//                        }
+//                        key = line;
+//                    } // if
+//                    str.append(line).append("\n");
+//                }  // for
+//                // don't forget last example
+//                example = Utils.extractExampleFromString(str.toString());
+//                examples.add(example);
+//            } // if
+//            else
+//            {
+//                for(String line : Utils.readLines(opts.modelOpts.inputPaths.get(0))) // contains list of .events files
+//                {
+//    //                    System.out.println(line);
+//                    String events = Utils.readFileAsString(line);
+//                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
+//                    String[] ex = {events, text};
+//                    examples.add(ex);
+//                }
+//            }            
+//        }
+//        catch(IOException ioe) {
+//            LogInfo.error(ioe);
+//        }
+//    }
     public void testExecute()
     {
         execute();

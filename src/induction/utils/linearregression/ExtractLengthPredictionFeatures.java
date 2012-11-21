@@ -3,7 +3,6 @@ package induction.utils.linearregression;
 import fig.basic.IOUtils;
 import induction.Utils;
 import induction.problem.event3.CatField;
-import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
@@ -119,39 +118,11 @@ public class ExtractLengthPredictionFeatures
         {            
             FileWriter fos = new FileWriter(outputFilename);
             fos.append(header);
-            String example[];
-            if(examplesInOneFile)
+            List<String[]> examples = Utils.readEvent3Examples(inputFilename, examplesInOneFile);
+            for(String[] example : examples)
             {
-                String key = null;
-                StringBuilder str = new StringBuilder();
-                for(String line : Utils.readLines(inputFilename))
-                {
-                    if(line.startsWith("Example_"))
-                    {
-                        if(key != null) // only for the first example
-                        {
-                            example = GenerativeEvent3Model.extractExampleFromString(str.toString());
-                            fos.append(extractFeatures(example[1], example[2]) + "\n");
-                            str = new StringBuilder();
-                        }
-                        key = line;
-                    } // if
-                    str.append(line).append("\n");
-                }  // for
-                // don't forget last example
-                example = GenerativeEvent3Model.extractExampleFromString(str.toString());
                 fos.append(extractFeatures(example[1], example[2]));
-            }
-            else
-            {
-                for(String line : Utils.readLines(inputFilename)) // contains list of .events files
-                {
-//                    System.out.println(line);
-                    String events = Utils.readFileAsString(line);
-                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
-                    fos.append(extractFeatures(text, events) + "\n");
-                }
-            }                       
+            }                  
             fos.close();
         }
         catch(IOException ioe) {}

@@ -37,7 +37,7 @@ public class ComputeAveragesTest
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovTrainGabor.gz "
+                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "

@@ -1018,4 +1018,133 @@ public class Utils
     {
         return !(tree.isLeaf() || tree.isPreTerminal());
     }
+    
+    /**
+     * Input String has the following format:
+     * Example_xxx (name) \n text (optional) \n events \n record_tree (optional) \n align (optional)
+     * @param input
+     * @return an array of Strings with name, text, events and align data in
+     * each position
+     */
+    public static String[] extractExampleFromString(String input)
+    {
+        String[] res = new String[5];
+        String ar[] = input.split("\n");
+        StringBuilder str = new StringBuilder();
+        if(ar[0].equals("$NAME")) // event3 v.2 format
+        {
+            res[0] = ar[1]; // name
+            // parse text
+            int i = 3; // 2nd line is the $TEXT tag
+            while(i< ar.length && !ar[i].equals("$EVENTS")) 
+            {
+                str.append(ar[i++]).append("\n");                
+            }            
+            res[1] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            str = new StringBuilder();
+            i++; // move past $EVENTS tag
+            while(i< ar.length && !(ar[i].equals("$ALIGN") || ar[i].equals("$RECORD_TREE"))) 
+            {
+                str.append(ar[i++]).append("\n");                
+            }            
+            res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            if(ar[i].equals("$RECORD_TREE"))
+            {
+                i++; // move past $RECORD_TREE tag
+                str = new StringBuilder();
+                while(i< ar.length && !ar[i].equals("$ALIGN")) 
+                {
+                    str.append(ar[i++]).append("\n");                
+                }            
+                res[4] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            }
+            if(i < ar.length) // didn't reach the end of input, so there is align data
+            {
+                i++; // move past $ALIGN tag
+                str = new StringBuilder();
+                while(i< ar.length) 
+                {
+                    str.append(ar[i++]).append("\n");                
+                }            
+                res[3] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            }
+        }
+        else // event3 v.1 format
+        {
+            res[0] = ar[0]; // name
+            if(!ar[1].startsWith(".id")) // text was found
+                res[1] = ar[1];
+            int i;            
+            for(i = res[1] == null ? 1 : 2; i < ar.length; i++)
+            {
+                if(ar[i].startsWith(".id")) // event line
+                    str.append(ar[i]).append("\n");
+                else
+                    break;
+            } // for
+            res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            if(i < ar.length) // didn't reach the end of input, so there is align data
+            {
+                str = new StringBuilder();
+                for(int j = i; j < ar.length; j++)
+                    str.append(ar[j]).append("\n");
+                res[3] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            }
+        }                
+        return res;
+    }
+    
+    public static List<String[]> readEvent3Examples(String inputPath, boolean examplesInSingleFile)
+    {
+        List<String> list = new ArrayList<String>();
+        list.add(inputPath);
+        return readEvent3Examples(list, list, examplesInSingleFile);
+    }
+    
+    public static List<String[]> readEvent3Examples(List<String> inputPaths, 
+            List<String> inputLists, boolean examplesInSingleFile)
+    {
+        List<String[]> examples = new ArrayList<String[]>();
+        try 
+        {
+            String example[];
+            if(examplesInSingleFile)
+            {
+                String key = null;
+                StringBuilder str = new StringBuilder();
+                for(String line : Utils.readLines(inputLists.get(0)))
+                {
+                    if(line.startsWith("Example_") || line.equals("$NAME"))
+                    {
+                        if(key != null) // only for the first example
+                        {
+                            example = extractExampleFromString(str.toString());
+                            examples.add(example);
+                            str = new StringBuilder();
+                        }
+                        key = line;
+                    } // if
+                    str.append(line).append("\n");
+                }  // for
+                // don't forget last example
+                example = extractExampleFromString(str.toString());
+                examples.add(example);
+            } // if
+            else
+            {
+                for(String line : Utils.readLines(inputPaths.get(0))) // contains list of .events files
+                {
+    //                    System.out.println(line);
+                    String events = Utils.readFileAsString(line);
+                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
+                    String[] ex = {events, text};
+                    examples.add(ex);
+                }
+            }            
+        }
+        catch(IOException ioe) {
+            LogInfo.error(ioe);
+        }
+        return examples;
+    }
 }

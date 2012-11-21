@@ -43,7 +43,7 @@ public class ExportExamplesToFiles
 
     private void writeFiles(String input, int id)
     {
-        String[] parts = GenerativeEvent3Model.extractExampleFromString(input);
+        String[] parts = Utils.extractExampleFromString(input);
         Utils.write(String.format("%s%s.%s", outputPath, id, "text"), parts[1]);
         Utils.write(String.format("%s%s.%s", outputPath, id, "events"), parts[2]);
 //        Utils.write(String.format("%s%s.%s", outputPath, id, "align"), parts[3]);

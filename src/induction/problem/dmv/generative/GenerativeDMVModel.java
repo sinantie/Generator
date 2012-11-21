@@ -223,7 +223,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             {
                 String[] res;
                 if(opts.examplesInSingleFile)
-                    res = Event3Model.extractExampleFromString(input); // res[0] = name, res[1] = text
+                    res = Utils.extractExampleFromString(input); // res[0] = name, res[1] = text
                 else
                 {
                     res = readExample(input.replaceAll("\\."+ opts.inputFileExt, 

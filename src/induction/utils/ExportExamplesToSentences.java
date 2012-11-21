@@ -159,7 +159,7 @@ public class ExportExamplesToSentences
     {
         try
         {
-            writeToFile(processExample(Event3Model.extractExampleFromString(input)[1]));
+            writeToFile(processExample(Utils.extractExampleFromString(input)[1]));
         }
         catch(IOException ioe)
         {

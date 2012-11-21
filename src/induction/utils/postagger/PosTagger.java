@@ -248,7 +248,7 @@ public class PosTagger
     {
         if(typeOfInput == TypeOfInput.events)
         {
-            String[] out = Event3Model.extractExampleFromString(input);
+            String[] out = Utils.extractExampleFromString(input);
             if(replaceNumbers)
                 out[1] = Utils.replaceNumbers(out[1]);
             return out;

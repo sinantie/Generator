@@ -198,7 +198,7 @@ public class ExportScenarios
         } // if
         else // examples in single file
         {
-            String[] res = GenerativeEvent3Model.extractExampleFromString(fetchExampleFromGold(basename, lines));
+            String[] res = Utils.extractExampleFromString(fetchExampleFromGold(basename, lines));
             textInput = res[1].split("\n");
             eventInput = res[2].split("\n");
             alignInput = res[3].split("\n");

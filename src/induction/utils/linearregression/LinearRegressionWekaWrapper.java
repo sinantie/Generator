@@ -115,6 +115,21 @@ public class LinearRegressionWekaWrapper
         }
     }
 
+    public void predict(String inputFile, boolean exampleInSingleFile)
+    {
+        for(String[] example : Utils.readEvent3Examples(inputFile, exampleInSingleFile))
+        {
+            try
+            {
+                LogInfo.logs((int)(predict(example[2])));
+            }
+            catch(Exception e)
+            {
+                LogInfo.error(e);
+            }
+        }
+    }
+    
     public double predict(String input) throws Exception
     {                                            
         return model.classifyInstance(createFeatureVector(

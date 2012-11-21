@@ -1,7 +1,11 @@
 package induction.utils.linearregression;
 
+import induction.Utils;
+import java.io.IOException;
 import induction.utils.linearregression.LinearRegressionOptions.FeatureType;
 import induction.utils.linearregression.LinearRegressionOptions.Mode;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -58,28 +62,28 @@ public class LinearRegressionWekaWrapperTest {
 //        assertEquals((int)lengthPredictor.predict(events), 13);
 //    }
     
-    @Test
-    public void testTrainWinHelpWrapper()
-    {
-        boolean serialise = false;
-        modelFilename = "data/branavan/data/branavan/winHelpHLA/lengthPrediction.counts.linear-reg.model";
-        paramsFilename = "results/output/winHelp/alignments/model_3_no_null_pos_auto/all/stage1.params.obj.gz";
-        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-                                                      2, FeatureType.counts, Mode.train);
-        lengthPredictor.train("data/branavan/data/branavan/winHelpHLA/winHelpRL.sents.all.counts.features.csv", serialise);
-        // original text: click start , point to settings , and then click control panel (12 words)
-        String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button " 
-                        +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button "
-                        +".id:2	.type:action	@envCmd:left click 	@objName:Control Panel	@objType:Button ";
-        try
-        {
-            assertEquals((int)lengthPredictor.predict(events), 12);
-        }
-        catch(Exception e)
-        {
-            System.out.println("Error " + e.getMessage());
-        }
-    }
+//    @Test
+//    public void testTrainWinHelpWrapper()
+//    {
+//        boolean serialise = false;
+//        modelFilename = "data/branavan/data/branavan/winHelpHLA/lengthPrediction.counts.linear-reg.model";
+//        paramsFilename = "results/output/winHelp/alignments/model_3_no_null_pos_auto/all/stage1.params.obj.gz";
+//        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
+//                                                      2, FeatureType.counts, Mode.train);
+//        lengthPredictor.train("data/branavan/data/branavan/winHelpHLA/winHelpRL.sents.all.counts.features.csv", serialise);
+//        // original text: click start , point to settings , and then click control panel (12 words)
+//        String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button " 
+//                        +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button "
+//                        +".id:2	.type:action	@envCmd:left click 	@objName:Control Panel	@objType:Button ";
+//        try
+//        {
+//            assertEquals((int)lengthPredictor.predict(events), 12);
+//        }
+//        catch(Exception e)
+//        {
+//            System.out.println("Error " + e.getMessage());
+//        }
+//    }
 
 //    @Test
 //    public void testTrainWeatherGovWrapper()
@@ -121,22 +125,31 @@ public class LinearRegressionWekaWrapperTest {
 //        assertEquals((int)lengthPredictor.predict(events), 13);
 //    }
 //
-//    @Test
-//    public void testPredictWeatherGovWrapper()
-//    {
-//        modelFilename = "gaborLists/lengthPrediction.values.linear-reg.model";
-//        paramsFilename = "results/output/weatherGov/alignments/"
-//                    + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj";
-//        // original text: Mostly cloudy , with a low around 39 . Southwest wind between 9 and 14 mph . (17 words)
-//        String events = "";
-//        try
-//        {
-//            events = Utils.readFileAsString(
-//                "data/weather-data-full/data/virginia/falls_church/2009-02-07-0.events");
-//        }
-//        catch(IOException ioe){}
-//        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
-//                                                      4, FeatureType.values, LinearRegressionWekaWrapper.Mode.test);
-//        assertEquals((int)lengthPredictor.predict(events), 18);
-//    }
+    @Test
+    public void testPredictWeatherGovWrapper()
+    {
+        modelFilename = "gaborLists/lengthPrediction.values.linear-reg.model";
+        paramsFilename = "results/output/weatherGov/alignments/"
+                    + "model_3_gabor_no_cond_null_bigrams/0.exec/stage1.params.obj";
+        // original text: Mostly cloudy , with a low around 39 . Southwest wind between 9 and 14 mph . (17 words)
+        String events = "";
+        try
+        {
+            events = Utils.readFileAsString(
+                "data/weather-data-full/data/virginia/falls_church/2009-02-07-0.events");
+        }
+        catch(IOException ioe){}
+        LinearRegressionWekaWrapper lengthPredictor = new LinearRegressionWekaWrapper(paramsFilename, modelFilename,
+                                                      4, FeatureType.values, Mode.test);
+        try
+        {
+            int pred = (int)lengthPredictor.predict(events);
+            System.out.println(pred);
+            assertEquals(pred, 18);
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
 }

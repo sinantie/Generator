@@ -74,7 +74,7 @@ public class GenerationPCFGWeatherTest
                 + "-allowNoneEvent "
                 + "-binariseAtWordLevel "
                 + "-ngramSize 3 "
-                + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
+//                + "-lengthPredictionModelFile gaborLists/lengthPrediction.values.linear-reg.model "
                 + "-lengthPredictionFeatureType values "
                 + "-lengthPredictionStartIndex 4 "
                 + "-numAsSymbol ";

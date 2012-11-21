@@ -2,6 +2,7 @@ package induction.utils.linearregression;
 
 import fig.basic.LogInfo;
 import fig.exec.Execution;
+import induction.problem.event3.Event3Model;
 import induction.utils.linearregression.LinearRegressionOptions.Mode;
 
 
@@ -13,7 +14,8 @@ import induction.utils.linearregression.LinearRegressionOptions.Mode;
 public class LinearRegressionExecutor implements Runnable
 {
     LinearRegressionOptions opts = new LinearRegressionOptions();
-
+    Event3Model model;
+    
     @Override
     public void run()
     {
@@ -24,15 +26,9 @@ public class LinearRegressionExecutor implements Runnable
             lrw.train(opts.outputFeaturesFile, opts.saveModel);
         }
         else if(opts.mode == Mode.test)
-        {
-            try
-            {
-                LogInfo.logs(lrw.predict(opts.inputFile));        
-            }
-            catch(Exception e)
-            {
-                LogInfo.error(e);
-            }
+        {            
+           LogInfo.logs("Testing linear regression model...");
+           lrw.predict(opts.inputFile, opts.examplesInSingleFile);
         }
     }
     

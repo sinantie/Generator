@@ -995,6 +995,13 @@ public class Hypergraph<Widget> {
             chooser.widget = widget;
             chooser.choose = true;
             chooser.recurseKBest((Derivation)startNodeInfo.derivations.get(0), !discriminative);
+//            for(Derivation d : startNodeInfo.derivations)
+//            {
+//                StringBuilder str = new StringBuilder();
+//                for(String s : d.getSubGeneration().split(" "))
+//                    str.append(vocabulary.getObject(Integer.valueOf(s))).append(" ");
+//                System.out.println(str.toString()+"\n");
+//            }
             return new HyperpathResult(chooser.widget, chooser.logWeight);
         }
     }
