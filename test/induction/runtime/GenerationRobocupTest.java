@@ -56,6 +56,7 @@ public class GenerationRobocupTest
                      + "-reorderType eventType "
                      + "-maxPhraseLength 5 "
                      + "-ngramSize 2 "
+                     + "-lengthPredictionMode gold "
                      + "-useGoldStandardOnly "
                      + "-binariseAtWordLevel "
                      + "-allowConsecutiveEvents";

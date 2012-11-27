@@ -66,7 +66,7 @@ public class GenerationPCFGWeatherTest
                 + "-inputFileExt events "
                 + "-disallowConsecutiveRepeatFields "
                 + "-maxPhraseLength 10 "
-                + "-kBest 45 "
+                + "-kBest 15 "
                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
                 + "-ngramWrapper srilm "
                 + "-allowConsecutiveEvents "

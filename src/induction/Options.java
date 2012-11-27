@@ -12,6 +12,7 @@ public class Options {
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
   public enum JsonFormat {wunderground,lowjet};
+  public enum LengthPrediction {gold, average, linearRegression};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();
@@ -165,6 +166,7 @@ public class Options {
   @Option(gloss="The maximum number of words per field we see in the training corpus (set arbitrarily)") public int maxNumOfWordsPerField = 15;
   
   // length prediction
+  @Option(gloss="length prediction mode") public LengthPrediction lengthPredictionMode = LengthPrediction.gold;
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
   @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
   @Option(gloss="Feature type for length prediction vector (default=value)") public LinearRegressionOptions.FeatureType

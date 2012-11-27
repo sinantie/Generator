@@ -16,6 +16,7 @@ import induction.Options;
 import induction.Options.InitType;
 import induction.Options.InputFormat;
 import induction.Options.JsonFormat;
+import induction.Options.LengthPrediction;
 import induction.Options.ModelType;
 import induction.Options.NgramWrapper;
 import util.Stemmer;
@@ -827,24 +828,23 @@ public abstract class Event3Model extends WordModel
                                             Utils.readLines(eventInput),
                                         excludedEventTypes, excludedFields);
             }
-            catch(Exception e) {System.out.println("Error in:"+name); e.printStackTrace(); System.exit(0);}
-            wordIndexer.add("(boundary)");
-            int textLength = opts.averageTextLength;
-            if((opts.modelType == Options.ModelType.generate || 
-                opts.modelType == Options.ModelType.generatePcfg)
-               && lengthPredictor != null)
+            catch(Exception e) 
             {
-                try
-                {
-                    textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
-                            (int) lengthPredictor.predict(
-                            opts.examplesInSingleFile ? eventInput :
-                            Utils.readFileAsString(eventInput));
-                }
-                catch(Exception e)
-                {
-                    LogInfo.error("Length Prediction error: " + name + "\n" + e);
-                }                
+                LogInfo.error(e);
+                Execution.finish();                
+            }
+            wordIndexer.add("(boundary)");            
+            int textLength;
+//            if((opts.modelType == Options.ModelType.generate || 
+//                opts.modelType == Options.ModelType.generatePcfg)
+//               && lengthPredictor != null)
+            if(opts.lengthPredictionMode == LengthPrediction.linearRegression && lengthPredictor != null)
+            {
+                textLength = predictLength(eventInput, name);
+            }
+            else
+            {
+                textLength = opts.averageTextLength;
             }
             // Read text
             if(textInputExists)
@@ -892,8 +892,9 @@ public abstract class Event3Model extends WordModel
                                 getTestSetWordIndex(word) : getWordIndex(word);
                     }
                 }
-                // set text length
-                if(lengthPredictor == null)
+                // set text length                
+//                if(lengthPredictor == null)
+                if(opts.lengthPredictionMode == LengthPrediction.gold)
                     textLength = text.length; // use gold value                
                 // Read alignments
                 if (alignInputExists)
@@ -1190,8 +1191,24 @@ public abstract class Event3Model extends WordModel
                     opts.lengthPredictionStartIndex,
                     opts.lengthPredictionFeatureType, LinearRegressionOptions.Mode.test);
             LogInfo.end_track();
+        }        
+    }
+    
+    protected int predictLength(String eventInput, String name)
+    {
+        int textLength = opts.averageTextLength;
+        try
+        {
+            textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
+                    (int) lengthPredictor.predict(
+                    opts.examplesInSingleFile ? eventInput :
+                    Utils.readFileAsString(eventInput));
         }
-        
+        catch(Exception e)
+        {
+            LogInfo.error("Length Prediction error: " + name + "\n" + e);
+        }
+        return textLength;
     }
     
     protected void loadPosTagger()

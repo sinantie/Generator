@@ -55,6 +55,7 @@ public class GenerationWinHelpTest
                     + "-maxPhraseLength 5 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
+                    + "-lengthPredictionMode linearRegression "
                     + "-lengthPredictionModelFile data/branavan/winHelpHLA/folds/winHelpFold1Train.lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType counts "
                     + "-lengthPredictionStartIndex 2 "

@@ -58,6 +58,7 @@ public class GenerationAtisTest
                     + "-maxPhraseLength 5 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
+                    + "-lengthPredictionMode linearRegression "
                     + "-lengthPredictionModelFile data/atis/train/lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType counts "
                     + "-lengthPredictionStartIndex 2 "
