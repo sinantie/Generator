@@ -12,7 +12,7 @@ public class Options {
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
   public enum JsonFormat {wunderground,lowjet};
-  public enum LengthPrediction {gold, average, linearRegression};
+  public enum LengthPrediction {gold, average, linearRegression, file};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();

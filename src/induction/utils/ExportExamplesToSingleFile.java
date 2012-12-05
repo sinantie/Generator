@@ -146,19 +146,19 @@ public class ExportExamplesToSingleFile
                              };
         // recordTreebankTrainRightBinarize, recordTreebankGenDevRightBinarize, recordTreebankGenEvalRightBinarize
         String treebankInputFile[] = {
-                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRules",
+                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRulesAlignments",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz",
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRulesAlignments.gz",
                                "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
                                "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
                               };        
         boolean isDirectory = false;
         boolean inputPosTagged = false;
-        for(int i = 2; i < 3; i++)
+        for(int i = 0; i < 1; i++)
         {
             System.out.println("Creating " + outputFile[i]);
             new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], isDirectory, inputPosTagged).execute();

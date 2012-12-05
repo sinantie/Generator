@@ -12,7 +12,6 @@ import induction.ngrams.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.InputFormat;
-import induction.Options.ModelType;
 import induction.Utils;
 import induction.utils.linearregression.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
@@ -24,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -47,6 +47,7 @@ public abstract class AModel
     protected APerformance trainPerformance, testPerformance;
     protected NgramModel ngramModel;
     protected LinearRegressionWekaWrapper lengthPredictor;
+    protected Queue<Integer> lengthList;
     protected String[] fullPredOutArray, pcfgTreesPredOutArray;
     
     int currExample;

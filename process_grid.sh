@@ -8,10 +8,10 @@
 #weights=513#365#214#311
 
 #WeatherGov
-input=results/output/weatherGov/generation/
+input=results/output/weatherGov/generation/dev/pcfg/
 #formattedString=model_3_\$param1\$-best_0.01_STOP_inter\$param2\$_condLM_hypRecomb_lmLEX_POS_predLength
-formattedString=model_3_15-best_0.01_NO_STOP_inter1_\$param1\$
-output=results/output/weatherGov/generation/learning_curve.grid.results
+formattedString=model_3_\$param1\$-best_0.01_treebank_unaryRules_\$param2\$_wordsPerRootRule_predLength
+output=results/output/weatherGov/generation/dev/pcfg/dev_treebank_unaryRules_0.04_wordsPerRootRule_predLength.grid.results
 crossValidate=false
 #COMMENT weights parameter
 

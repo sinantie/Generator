@@ -10,6 +10,7 @@ import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.Options.InitType;
 import induction.TreeUtils;
+import induction.Utils;
 import induction.problem.AExample;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
@@ -52,7 +53,10 @@ public class ExtractRecordsStatistics
         model.init(InitType.staged, opts.modelOpts.initRandom, "");
         model.readExamples();
         examples = new ArrayList<ExampleRecords>(model.getExamples().size());
-        parseExamples();
+        if(opts.predInput == null)
+            parseGoldExamples();
+        else
+            parsePredExamples();
         if(opts.writePermutations)
         {
             LogInfo.logs("Writing permutations...");
@@ -98,8 +102,8 @@ public class ExtractRecordsStatistics
         }
     }
     
-    public void parseExamples()
-    {       
+    public void parseGoldExamples()
+    {
         for(AExample ex: model.getExamples())
         {
             ExampleRecords er = new ExampleRecords(ex.getName());
@@ -109,7 +113,7 @@ public class ExtractRecordsStatistics
             Widget w = e.getTrueWidget();
             List<Integer> eventTypes = new ArrayList<Integer>();
             for(int i = 1; i < startIndices.length; i++)
-            {                
+            {
                 for(int[] events : w.getEvents())
                 {
                     int eventId = events[startIndices[i-1]];
@@ -141,6 +145,49 @@ public class ExtractRecordsStatistics
             } // for
             examples.add(er);
         } // for
+    }
+    
+    private void parsePredExamples()
+    {
+        String[] preds = Utils.readLines(opts.predInput);
+        int iter = 0;
+        for(AExample ex: model.getExamples())
+        {
+            ExampleRecords er = new ExampleRecords(ex.getName());
+            Example e = (Example)ex;
+            int[] text = e.getText();            
+            List<Integer> eventTypes = new ArrayList<Integer>();
+            String[] events = preds[iter++].split(" ");
+            for(int i = 0; i < events.length; i++)
+            {
+                int eventId = Integer.valueOf(events[i]);
+                if(eventId != -1)
+                {                        
+                    Object element = null;
+                    switch(opts.exportType)
+                    {
+                        case record : element = eventId; break;
+                        default: case recordType : element = opts.useEventTypeNames ? 
+                                e.events.get(eventId).getEventTypeName() : e.events.get(eventId).getEventTypeIndex(); break;
+                    }
+                    int indexOfElement = indexer.getIndex(element);
+                    // we don't allow repetitions of record tokens in the same sentence
+                    if(eventTypes.isEmpty() || !eventTypes.contains(indexOfElement))
+                        eventTypes.add(indexOfElement);
+                } // if                    
+                else if(opts.extractNoneEvent)
+                    eventTypes.add(indexer.getIndex(opts.useEventTypeNames ? "none" : -1));
+                // default input is each clause (splitted at punctuation) goes to a seperate line
+                if(!eventTypes.isEmpty() &&
+                        (opts.splitClauses && Utils.isPunctuation(model.wordToString(text[i]))) ||
+                        (Utils.isSentencePunctuation(model.wordToString(text[i]))))
+                {                    
+                    er.addSentence(new ArrayList(eventTypes));
+                    eventTypes.clear();
+                } // if
+            } // for
+            examples.add(er);
+        }
     }
     
     private boolean endOfSentence(String token)
@@ -325,7 +372,10 @@ public class ExtractRecordsStatistics
         model.init(InitType.staged, opts.modelOpts.initRandom, "");
         model.readExamples();
         examples = new ArrayList<ExampleRecords>(model.getExamples().size());
-        parseExamples();
+        if(opts.predInput == null)
+            parseGoldExamples();
+        else
+            parsePredExamples();
         if(opts.writePermutations)
             for(ExampleRecords p : examples)
             {
@@ -415,6 +465,8 @@ public class ExtractRecordsStatistics
         public String toString()
         {
             StringBuilder str = new StringBuilder();
+            if(opts.exportEvent3)
+                str.append(String.format("$NAME\n%s\n$TEXT\n", name));
             for(Sentence sentence : sentences)
             {                
                 str.append(sentence).append(" ");
@@ -485,7 +537,7 @@ public class ExtractRecordsStatistics
             StringBuilder str = new StringBuilder();
             for(Integer r : tokens)
                 str.append(indexer.getObject(r)).append(" ");
-            return str.toString();
+            return str.toString().trim();
         }
 
         @Override

@@ -122,6 +122,7 @@ public class LinearRegressionWekaWrapper
             try
             {
                 LogInfo.logs((int)(predict(example[2])));
+//                LogInfo.logs(Math.round(predict(example[2])));
             }
             catch(Exception e)
             {

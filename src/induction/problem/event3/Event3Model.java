@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -257,6 +258,15 @@ public abstract class Event3Model extends WordModel
     public boolean containsCfgRule(CFGRule rule)
     {
         return cfgRules.get(rule.getLhs()).containsKey(rule);
+    }
+    
+    public int getRootRuleIndex(Tree<String> tree)
+    {
+        int lhs = rulesIndexer.getIndex(tree.getLabel());
+        int rhs1 = rulesIndexer.getIndex(tree.getChildren().get(0).getLabel());
+        int rhs2 = rulesIndexer.getIndex(tree.getChildren().get(1).getLabel());
+        CFGRule rule = new CFGRule(lhs, rhs1, rhs2);
+        return containsCfgRule(rule) ? getCfgRuleIndex(rule) : -1;        
     }
     
     public HashMap<CFGRule, Integer> getCfgCandidateRules(int lhs)
@@ -784,7 +794,8 @@ public abstract class Event3Model extends WordModel
             alignInput = res[3];
             if(res[4] != null)
             {                
-                recordTree = new PennTreeReader(new StringReader(res[4])).next();
+                recordTree = new PennTreeReader(new StringReader(res[4])).next();                                
+//                System.out.println(getRootRuleIndex(recordTree));
             }
             alignInputExists = alignInput != null;
             textInputExists = textInput != null;
@@ -841,6 +852,10 @@ public abstract class Event3Model extends WordModel
             if(opts.lengthPredictionMode == LengthPrediction.linearRegression && lengthPredictor != null)
             {
                 textLength = predictLength(eventInput, name);
+            }
+            else if(opts.lengthPredictionMode == LengthPrediction.file)
+            {
+                textLength = lengthList.poll();
             }
             else
             {
@@ -1027,8 +1042,12 @@ public abstract class Event3Model extends WordModel
         }
         try
         {
-        super.readExamples();
-        }catch(Exception e){e.printStackTrace();}
+            super.readExamples();
+        }
+        catch(Exception e)
+        {
+            LogInfo.error(e);
+        }
         postSetupReadExamples(examples);
     }
     
@@ -1182,15 +1201,28 @@ public abstract class Event3Model extends WordModel
     {
         if(opts.lengthPredictionModelFile != null)
         {
-            Utils.begin_track("Loading Length Prediction Model...");
-            lengthPredictor = new LinearRegressionWekaWrapper(
-                    opts.generativeModelParamsFile == null ?
-                            opts.stagedParamsFile : 
-                            opts.generativeModelParamsFile,
-                    opts.lengthPredictionModelFile,
-                    opts.lengthPredictionStartIndex,
-                    opts.lengthPredictionFeatureType, LinearRegressionOptions.Mode.test);
-            LogInfo.end_track();
+            if(opts.lengthPredictionMode == LengthPrediction.linearRegression)
+            {
+                Utils.begin_track("Loading Length Prediction Model...");
+                lengthPredictor = new LinearRegressionWekaWrapper(
+                        opts.generativeModelParamsFile == null ?
+                                opts.stagedParamsFile : 
+                                opts.generativeModelParamsFile,
+                        opts.lengthPredictionModelFile,
+                        opts.lengthPredictionStartIndex,
+                        opts.lengthPredictionFeatureType, LinearRegressionOptions.Mode.test);
+                LogInfo.end_track();
+            }
+            else if(opts.lengthPredictionMode == LengthPrediction.file)
+            {
+                Utils.begin_track("Loading Length Predictions from File...");
+                lengthList = new LinkedList<Integer>();
+                for(String s : Utils.readLines(opts.lengthPredictionModelFile))
+                {
+                    lengthList.add(Integer.valueOf(s));
+                }
+                LogInfo.end_track();
+            }            
         }        
     }
     

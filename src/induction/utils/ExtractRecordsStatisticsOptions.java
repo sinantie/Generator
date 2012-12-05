@@ -28,4 +28,6 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Left binarize or right binarize") public Direction binarize = Direction.left;
     @Option(gloss="Markovization order") public int markovOrder = -1;
     @Option(gloss="Use modified binarization. Intermediate labels are generated from children labels.") public boolean modifiedBinarization = false;
+    @Option(gloss="Export in event3 v.2 format.") public boolean exportEvent3 = false;
+    @Option(gloss="Predicted input file") public String predInput;
 }

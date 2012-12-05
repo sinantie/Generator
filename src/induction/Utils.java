@@ -1014,6 +1014,14 @@ public class Utils
         return s.equals("./.") || s.equals("--/:") || s.equals(".") ||  s.equals("--");
     }
     
+    public static boolean isPunctuation(String s)
+    {
+        return s.equals("./.") || s.equals(",/,") || s.equals("--/:") ||
+               s.equals("-LRB-/-LRB-") || s.equals("-RRB-/-RRB-") ||               
+               s.equals(".") || s.equals(",") || s.equals("--") ||
+               s.equals("(") || s.equals(")");
+    }
+    
     public static boolean countableRule(Tree<String> tree)
     {
         return !(tree.isLeaf() || tree.isPreTerminal());
@@ -1046,9 +1054,10 @@ public class Utils
             while(i< ar.length && !(ar[i].equals("$ALIGN") || ar[i].equals("$RECORD_TREE"))) 
             {
                 str.append(ar[i++]).append("\n");                
-            }            
-            res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
-            if(ar[i].equals("$RECORD_TREE"))
+            }
+            if(ar.length > 4) // if the example contains events input
+                res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            if(i< ar.length && ar[i].equals("$RECORD_TREE"))
             {
                 i++; // move past $RECORD_TREE tag
                 str = new StringBuilder();
