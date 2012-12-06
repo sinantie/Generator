@@ -72,7 +72,7 @@ public class ExportExamplesToSingleFile
      * @param treebankInputFile
      * @param map 
      */
-    private void readTreebankFile(String treebankInputFile, Map<String, String> map)
+    public static void readTreebankFile(String treebankInputFile, Map<String, String> map)
     {                
         String lines[] = Utils.readLines(treebankInputFile);        
         StringBuilder str = new StringBuilder();

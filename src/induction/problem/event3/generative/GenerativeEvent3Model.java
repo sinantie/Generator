@@ -169,7 +169,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     }
     
     @Override
-    protected void saveParams(String name)
+    public void saveParams(String name)
     {
         saveParams(name, Execution.getFile(name + ".params.obj.gz"));
     }

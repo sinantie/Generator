@@ -353,8 +353,8 @@ public class GenInferStatePCFG extends GenInferState
                     final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(candidateRule.getKey()): false;
                     if(isRootRule && get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) < opts.stage1.cfgThreshold)
                         continue;
-                    else if(isRootRule)
-                        System.out.println(candidateRule + " " + get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin));
+//                    else if(isRootRule)
+//                        System.out.println(candidateRule + " " + get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin));
                     if(isUnary) // unary trees
                     {
                         hypergraph.addEdge(node, genEdge(start, end, rhs1),

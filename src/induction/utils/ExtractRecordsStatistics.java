@@ -85,6 +85,8 @@ public class ExtractRecordsStatistics
             LogInfo.logs("Extracting record trees...");
             if(sentenceNgrams == null) // we need to compute sentence ngrams to construct CFG rules that bias toward sentence constituents
                 countSentenceNgrams();
+            if(documentNgrams == null) // we also need to count document ngrams to perform pruning of infrequent rules
+                countDocumentNgrams();
             try
             {
                 PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize"));
@@ -158,9 +160,12 @@ public class ExtractRecordsStatistics
             int[] text = e.getText();            
             List<Integer> eventTypes = new ArrayList<Integer>();
             String[] events = preds[iter++].split(" ");
+            int[] eventIds = new int[events.length];
             for(int i = 0; i < events.length; i++)
+                eventIds[i] = Integer.valueOf(events[i]);
+            for(int i = 0; i < eventIds.length; i++)
             {
-                int eventId = Integer.valueOf(events[i]);
+                int eventId = eventIds[i];
                 if(eventId != -1)
                 {                        
                     Object element = null;
@@ -172,7 +177,9 @@ public class ExtractRecordsStatistics
                     }
                     int indexOfElement = indexer.getIndex(element);
                     // we don't allow repetitions of record tokens in the same sentence
-                    if(eventTypes.isEmpty() || !eventTypes.contains(indexOfElement))
+                    if((opts.removeRecordsWithOneWord && !recordWithOneWord(eventIds, eventId, i-1, i+1) &&
+                        (eventTypes.isEmpty() || !eventTypes.contains(indexOfElement))) ||
+                       eventTypes.isEmpty() || !eventTypes.contains(indexOfElement))                    
                         eventTypes.add(indexOfElement);
                 } // if                    
                 else if(opts.extractNoneEvent)
@@ -188,6 +195,21 @@ public class ExtractRecordsStatistics
             } // for
             examples.add(er);
         }
+    }
+    
+    private boolean recordWithOneWord(int[] records, int current, int from, int to)
+    {
+        if(records.length == 1)
+            return true;
+        if(from < 0)
+            return current != records[to];
+        else 
+        {
+            if(to >= records.length)
+                return current != records[from];
+            else
+                return !(current == records[from] || current == records[to]);
+        }        
     }
     
     private boolean endOfSentence(String token)
@@ -273,45 +295,52 @@ public class ExtractRecordsStatistics
     private void extractRecordTrees(PrintWriter out)
     {
         rules = new TreeSet<String>();
-                              
+        int countRemoved = 0;
         for(ExampleRecords p : examples)
         {
-            // Create a flat structured tree in Penn Treebank-style. 
-            // The start symbol S emits sentences in a single rule.
-            // The intermediate symbol of each sentence is the aggregation of each
-            // children non-terminals.
-            StringBuilder str = new StringBuilder("(S "); // start symbol span
-            for(Sentence sentence : p.getSentences())
+            // exclude examples with frequency less than the threshold (useful when extracting rules from alignment input)
+            if(documentNgrams.getFrequency(p.toString()) > opts.ruleCountThreshold)
             {
-                str.append(sentence.toPennTreebankStyle());
-            }
-            str.append(")"); // close start symbol span            
-            Tree<String> tree;
-            // Read the tree and binarize. We slightly tweak the naming of Xbar rules,
-            // by integrating children RHS in the name of the LHS symbol.
-            if(opts.modifiedBinarization)
-                tree = binarize(new PennTreeReader(new StringReader(str.toString())).next());            
-            else // use the standard binarization
-            {
-                Tree<String> origTree = new PennTreeReader(new StringReader(str.toString())).next();
-                tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(origTree, opts.markovOrder) : TreeUtils.rightBinarize(origTree, opts.markovOrder);
-                for (Tree<String> subtree : tree.subTreeList())
+                // Create a flat structured tree in Penn Treebank-style. 
+                // The start symbol S emits sentences in a single rule.
+                // The intermediate symbol of each sentence is the aggregation of each
+                // children non-terminals.
+                StringBuilder str = new StringBuilder("(S "); // start symbol span
+                for(Sentence sentence : p.getSentences())
                 {
-                    if(subtree.getChildren().size() > 1)
-                    {
-                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
-                        Tree<String> ch = subtree.getChildren().get(0);
-                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
-                        ch = subtree.getChildren().get(1);
-                        String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
-                        rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
-                    }
+                    str.append(sentence.toPennTreebankStyle());
                 }
-            }            
-            out.println(p.getName());
-            out.println(PennTreeRenderer.render(tree));
-//            System.out.println(PennTreeRenderer.render(tree));
+                str.append(")"); // close start symbol span            
+                Tree<String> tree;
+                // Read the tree and binarize. We slightly tweak the naming of Xbar rules,
+                // by integrating children RHS in the name of the LHS symbol.
+                if(opts.modifiedBinarization)
+                    tree = binarize(new PennTreeReader(new StringReader(str.toString())).next());            
+                else // use the standard binarization
+                {
+                    Tree<String> origTree = new PennTreeReader(new StringReader(str.toString())).next();
+                    tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(origTree, opts.markovOrder) : TreeUtils.rightBinarize(origTree, opts.markovOrder);
+                    for (Tree<String> subtree : tree.subTreeList())
+                    {
+                        if(subtree.getChildren().size() > 1)
+                        {
+                            String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
+                            Tree<String> ch = subtree.getChildren().get(0);
+                            String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                            ch = subtree.getChildren().get(1);
+                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                            rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
+                        } // if
+                    } // for
+                } // else
+                out.println(p.getName());
+                out.println(PennTreeRenderer.render(tree));
+    //            System.out.println(PennTreeRenderer.render(tree));
+            } // if
+            else
+                countRemoved++;
         } // for
+        LogInfo.logs("Removed " + countRemoved + " examples");
     }      
     
     public Tree<String> binarize(Tree<String> tree) 
@@ -401,6 +430,8 @@ public class ExtractRecordsStatistics
             LogInfo.logs("Extracting record trees...");
             if(sentenceNgrams == null) // we need to compute sentence ngrams to construct CFG rules that bias toward sentence constituents
                 countSentenceNgrams();
+            if(documentNgrams == null) // we also need to count document ngrams to perform pruning of infrequent rules
+                countDocumentNgrams();
             extractRecordTrees(new PrintWriter(System.out));
             writeRules(new PrintWriter(System.out));
         }
@@ -461,12 +492,9 @@ public class ExtractRecordsStatistics
             return sentences.get(i).toString();
         }
         
-        @Override
-        public String toString()
+        public String documentToString()
         {
-            StringBuilder str = new StringBuilder();
-            if(opts.exportEvent3)
-                str.append(String.format("$NAME\n%s\n$TEXT\n", name));
+            StringBuilder str = new StringBuilder();            
             for(Sentence sentence : sentences)
             {                
                 str.append(sentence).append(" ");
@@ -474,6 +502,12 @@ public class ExtractRecordsStatistics
                     str.append("| ");
             }
             return str.toString().trim();
+        }
+        
+        @Override
+        public String toString()
+        {
+            return opts.exportEvent3 ? String.format("$NAME\n%s\n$TEXT\n%s", name, documentToString()) : documentToString();            
         }        
     }
     

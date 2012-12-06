@@ -9,7 +9,7 @@ input=data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz
 stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj
 predInput=results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.train.pred.14.sorted
 
-execDir=data/weatherGov/treebanks
+execDir=statistics/weatherGov/recordStatistics/aligned
 java -Xmx1g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.utils.ExtractRecordsStatisticsExecutor \
@@ -27,14 +27,14 @@ dist/stanford-postagger-2010-05-26.jar \
 -binarize right \
 -markovOrder 0 \
 -modifiedBinarization \
--writePermutations \
--useEventTypeNames \
--exportEvent3 \
+-delimitSentences \
+--useEventTypeNames \
 -extractRecordTrees \
--predInput ${predInput}
+-predInput ${predInput} \
+-ruleCountThreshold 5
 
 #-examplesInSingleFile \
-
+#-exportEvent3 \
 #-modifiedBinarization
 #-useEventTypeNames
 #-extractRecordTrees
