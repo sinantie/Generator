@@ -11,6 +11,7 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -inputLists ${input} \
 -examplesInSingleFile \
 -execDir ${output} \
+-overwriteExecDir \
 -Options.stage1.numIters ${numIters} \
 -inputFileExt events \
 -numThreads ${numThreads} \
@@ -26,10 +27,9 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -newFieldPerWord 0,5 \
 -indepWords 0,5 \
 -useStopNode \
--allowNoneEvent \
--outputFullPred \
--posAtSurfaceLevel \
--inputPosTagged
+-outputFullPred
+#-posAtSurfaceLevel \
+#-inputPosTagged
 
 #-allowConsecutiveEvents \
 #-allowNoneEvent \

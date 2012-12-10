@@ -28,7 +28,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -markovOrder 0 \
 -modifiedBinarization \
 -delimitSentences \
---useEventTypeNames \
+-useEventTypeNames \
 -extractRecordTrees \
 -predInput ${predInput} \
 -ruleCountThreshold 5
