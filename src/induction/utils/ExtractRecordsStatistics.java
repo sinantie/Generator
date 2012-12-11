@@ -89,10 +89,10 @@ public class ExtractRecordsStatistics
                 countDocumentNgrams();
             try
             {
-                PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize"));
+                PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize") + opts.suffix);
                 extractRecordTrees(out);
                 out.close();
-                out = IOUtils.openOut(Execution.getFile("recordTreebankRules" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize"));
+                out = IOUtils.openOut(Execution.getFile("recordTreebankRules" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize") + opts.suffix);
                 writeRules(out);
                 out.close();
             }

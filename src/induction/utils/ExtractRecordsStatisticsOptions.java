@@ -32,4 +32,6 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Predicted input file") public String predInput;
     @Option(gloss="Remove records with one words") public boolean removeRecordsWithOneWord  = false;
     @Option(gloss="Rule count threshold") public int ruleCountThreshold  = Integer.MIN_VALUE;
+    @Option(gloss="Prefix of output filenames") public String prefix = "";
+    @Option(gloss="Suffix of output filenames") public String suffix = "";
 }
