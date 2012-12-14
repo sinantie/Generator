@@ -47,8 +47,9 @@ public class InductionWeatherTest
                    "-modelType event3 "
                  + "-Options.stage1.numIters 15 "
 //                 + "-Options.stage1.hardUpdate "        // Viterbi EM
+                 + "-examplesInSingleFile "
                  + "-inputLists "
-                 + "test/testWeatherGovEvents "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
 //                 + "gaborLists/genDevListPathsGabor "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
@@ -56,6 +57,7 @@ public class InductionWeatherTest
 //                 + "-indepWords 0,-1 "
                  + "-dontCrossPunctuation "
                  + "-Options.stage1.smoothing 0.1 "
+                 + "-excludedEventTypes sleetChance windChill "
                  + "-allowNoneEvent "
 //                 + "-maxExamples 5 "
                  + "-conditionNoneEvent ";

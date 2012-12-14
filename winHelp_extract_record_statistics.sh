@@ -6,7 +6,7 @@ execDir=$3
 suffix=$4
 #predInput=
 
-java -Xmx1g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
+java -Xmx500m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.utils.ExtractRecordsStatisticsExecutor \
 -exportType recordType \
@@ -22,11 +22,9 @@ dist/stanford-postagger-2010-05-26.jar \
 -extractNoneEvent \
 -binarize right \
 -markovOrder 0 \
--modifiedBinarization \
 -delimitSentences \
 -useEventTypeNames \
 -extractRecordTrees \
--prefix ${prefix} \
 -suffix ${suffix}
 
 #-predInput ${predInput} \

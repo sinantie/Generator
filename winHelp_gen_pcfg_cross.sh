@@ -12,6 +12,7 @@ output=results/output/winHelp/generation/generative/no_pos/no_null/model_3_docs_
 #modelPath=results/output/winHelp/alignments/model_3_no_null_pos_auto
 #modelPath=results/output/winHelp/alignments/model_3_docs_staged_no_null_cleaned_objType_externalTreebank
 modelPath=results/output/winHelp/alignments/model_3_docs_staged_no_null_cleaned_objType
+treebankRules=data/branavan/winHelpHLA/folds/treebanks
 suffix=CleanedObjTypeFold
 ngramModelPath=winHelpLM/docs.cleaned
 dmvPath=results/output/winHelp/dmv/train/winHelp_uniformZ_initNoise_POS_auto_100
@@ -33,7 +34,8 @@ do
 	${kBest} \
 	${interpolationFactor} \
 	${lengthPredictionModelFolder}/winHelpFold${f}Train.lengthPrediction.${lengthPredictionFeatureType}.linear-reg.model \
-	${lengthPredictionFeatureType}
+	${lengthPredictionFeatureType} \
+	${treebankRules}/recordTreebankRulesRightBinarize${suffix}${f}
 done
 
 

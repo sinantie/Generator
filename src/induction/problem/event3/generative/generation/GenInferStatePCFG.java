@@ -20,11 +20,13 @@ import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.CFGParams;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -36,6 +38,8 @@ public class GenInferStatePCFG extends GenInferState
     Indexer<String> indexer;
     LinkedList<Integer> sentenceBoundaries;
     Map<Integer, Integer> minWordsPerNonTerminal;
+    Map<Integer, HashMap<CFGRule, Integer>> cfgRules;
+    protected Set<CFGRule> excludedCfgRules;
     int docLengthBin;
     
     public GenInferStatePCFG(Event3Model model, Example ex, Params params,
@@ -45,6 +49,8 @@ public class GenInferStatePCFG extends GenInferState
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
         indexer = model.getRulesIndexer();
         minWordsPerNonTerminal = model.getMinWordsPerNonTerminal();        
+        excludedCfgRules = new HashSet<CFGRule>();
+        cfgRules = cloneCfgRules(model.getCfgRules());
     }        
     
     @Override
@@ -59,9 +65,10 @@ public class GenInferStatePCFG extends GenInferState
             {
                 if(ex.getIsSentenceBoundaryArray()[i])
                     sentenceBoundaries.add(i);
-            }                
+            }
         }
         docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
+        excludeCfgRule(indexer.getIndex("S"));
     }
     
     @Override
@@ -196,6 +203,53 @@ public class GenInferStatePCFG extends GenInferState
             }
         }
         return true;
+    }
+    
+    
+//    private Set<CFGRule> excludeCfgRules(Map<Integer, HashMap<CFGRule, Integer>> cfgRules, Map<Integer, List<Event>> eventsByEventType)
+    private boolean excludeCfgRule(int lhs)
+    {
+        boolean excluded = false;
+        Event3Model m = ((Event3Model)model);
+        String label = indexer.getObject(lhs);
+        int eventTypeIndex = label.equals("none") ? m.none_t() : (m.getEventTypeNameIndexer().contains(label) ? m.getEventTypeNameIndexer().getIndex(label) : -1);
+        if (eventTypeIndex != -1)
+        {
+            if((opts.allowNoneEvent && eventTypeIndex == m.none_t()) || ex.eventsByEventType.containsKey(eventTypeIndex))
+                return false;
+            else 
+                return true;
+        }
+        if(cfgRules.get(lhs).isEmpty()) // already removed
+            return true;
+//        for(CFGRule candidateRule : m.getCfgCandidateRules(lhs).keySet())
+        for(Iterator<CFGRule> it =  cfgRules.get(lhs).keySet().iterator(); it.hasNext();)
+        {
+            CFGRule candidateRule = it.next();
+//            if(!excludedCfgRules.contains(candidateRule)) // we already removed this rule
+            {
+                final int rhs1 = candidateRule.getRhs1();
+                final boolean isUnary = candidateRule.isUnary();                    
+                if(excludeCfgRule(rhs1))
+                {
+                    excludedCfgRules.add(candidateRule);
+                    it.remove();
+                    excluded = true;
+                    continue;
+                }                        
+                if(!isUnary)
+                {
+                    final int rhs2 = candidateRule.getRhs2();
+                    if(excludeCfgRule(rhs2))
+                    {
+                        excludedCfgRules.add(candidateRule);
+                        it.remove();
+                        excluded = true;
+                    }
+                }
+            } // if
+        } // for
+        return excluded;
     }
     
     /**
@@ -341,12 +395,15 @@ public class GenInferStatePCFG extends GenInferState
             if (eventTypeIndex != -1 && (eventTypeIndex == cfgParams.none_t || ex.eventsByEventType.containsKey(eventTypeIndex)))
             {                
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
-            } // if
+            } // if            
             else
             {
-                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
+//                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);                                    
+                final HashMap<CFGRule, Integer> candidateRules = cfgRules.get(lhs);
                 for(final Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                 {
+//                    if(excludedCfgRules.contains(candidateRule.getKey()))
+//                        continue;
                     final int rhs1 = candidateRule.getKey().getRhs1();                    
                     final int indexOfRule =  candidateRule.getValue();
                     final boolean isUnary = candidateRule.getKey().isUnary();
@@ -469,5 +526,15 @@ public class GenInferStatePCFG extends GenInferState
             } // else
         } // if
         return node;
+    }
+
+    private Map<Integer, HashMap<CFGRule, Integer>> cloneCfgRules(Map<Integer, HashMap<CFGRule, Integer>> cfgRules)
+    {
+        Map<Integer, HashMap<CFGRule, Integer>> clone = new HashMap<Integer, HashMap<CFGRule, Integer>>();
+        for(Entry<Integer, HashMap<CFGRule, Integer>> e : cfgRules.entrySet())
+        {
+            clone.put(e.getKey(), new HashMap<CFGRule, Integer>(e.getValue()));            
+        }
+        return clone;
     }
 }

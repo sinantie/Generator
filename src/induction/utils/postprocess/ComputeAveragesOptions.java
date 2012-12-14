@@ -12,7 +12,7 @@ public class ComputeAveragesOptions
 { 
     public enum ActionType {averageAlignmentsPerExample, averageFieldsWithNoValuePerRecord,
                             averageWordsPerSentence, averageWordsPerDocument, 
-                            averageSentencesPerDocument};
+                            averageSentencesPerDocument, maxDocLength};
     
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();    
     @Option(required=true) public ActionType actionType;

@@ -8,11 +8,11 @@
 #weights=513#365#214#311
 
 #WeatherGov
-input=results/output/weatherGov/generation/dev/pcfg/
+#input=results/output/weatherGov/generation/dev/pcfg/
 #formattedString=model_3_\$param1\$-best_0.01_STOP_inter\$param2\$_condLM_hypRecomb_lmLEX_POS_predLength
-formattedString=model_3_\$param1\$-best_0.01_treebank_unaryRules_\$param2\$_wordsPerRootRule_predLength
-output=results/output/weatherGov/generation/dev/pcfg/dev_treebank_unaryRules_0.04_wordsPerRootRule_predLength.grid.results
-crossValidate=false
+#formattedString=model_3_\$param1\$-best_0.01_treebank_unaryRules_\$param2\$_wordsPerRootRule_predLength
+#output=results/output/weatherGov/generation/dev/pcfg/dev_treebank_unaryRules_0.04_wordsPerRootRule_predLength.grid.results
+#crossValidate=false
 #COMMENT weights parameter
 
 #Atis
@@ -23,15 +23,15 @@ crossValidate=false
 #COMMENT weights parameter
 
 #WinHelp
-#input=results/output/winHelp/generation/generative/pos/no_null
-#formattedString=model_3_no_null_pos_auto_\$param1\$-best_inter\$param2\$_goldLength
-#output=${input}/grid_no_null.results
-#crossValidate=true
+input=results/output/winHelp/generation/generative/no_pos/no_null
+formattedString=model_3_docs_\$param1\$-best_inter\$param2\$
+output=${input}/grid_docs.results
+crossValidate=true
 #weights=509#505#506#515#508#510#505#484#500#471
 
 java -cp dist/Generator.jar induction.utils.postprocess.ProcessGridSearchFiles \
 ${input} \
 ${formattedString} \
 ${output} \
-${crossValidate}
-#${weights}
+${crossValidate} \
+${weights}

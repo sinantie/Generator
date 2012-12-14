@@ -396,7 +396,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
                 lopts.numIters = iter;
         } // while (iter < lopts.numIters)
         saveParams(name);
-        params.output(Execution.getFile(name+".params.gz"), ParamsType.PROBS);
+        if(!opts.dontOutputParams)
+            params.outputNonZero(Execution.getFile(name+".params.gz"), ParamsType.PROBS);
         LogInfo.end_track();
         LogInfo.end_track();
         Record.end();

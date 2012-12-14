@@ -1,10 +1,12 @@
 #!/bin/bash
 
-input=data/weatherGov/weatherGovTrainGabor.gz
-stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor_cond_null_correct/2.exec/stage1.params.obj
-externalTreebankFile=data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRulesFilteredAlignments
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRulesFilteredAlignments                 
-execDir=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_unaryRules_wordsPerRootRule_externalTreebank
+input=$1
+stagedParamsFile=$2
+externalTreebankFile=$3
+treebankRules=$4
+execDir=$5
+maxDocLength=$6
+docLengthBinSize=$7
 
 java -Xmx2g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
@@ -17,6 +19,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -execDir ${execDir} \
 -stagedParamsFile ${stagedParamsFile} \
 -externalTreebankFile ${externalTreebankFile} \
--treebankRules ${treebankRules}
-
-#-dontOutputParams
+-treebankRules ${treebankRules} \
+-dontOutputParams \
+-maxDocLength ${maxDocLength} \
+-docLengthBinSize ${docLengthBinSize}

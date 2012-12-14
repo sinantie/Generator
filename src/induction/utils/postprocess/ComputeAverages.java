@@ -30,6 +30,7 @@ public class ComputeAverages
             case averageWordsPerSentence : action = new AverageWordsPerSentence(); break;
             case averageWordsPerDocument : action = new AverageWordsPerDocument(); break;
             case averageSentencesPerDocument : action = new AverageSentencesPerDocument(); break;
+            case maxDocLength : action = new MaxDocumentLength(); break;
         }
         examples = Utils.readEvent3Examples(opts.modelOpts.inputPaths, opts.modelOpts.inputLists, opts.modelOpts.examplesInSingleFile);
         // process examples
@@ -210,6 +211,30 @@ public class ComputeAverages
         public Object result()
         {
             return new Double((double)words / (double)docs);
+        }
+    }
+    
+    private static class MaxDocumentLength implements Action
+    {      
+        private int max = -1;
+        
+        @Override
+        public Object act(Object in)
+        {
+            int w;
+            String[] example = (String[])in;
+            // 2nd entry is the text
+            w = example[1].split("\\s").length;
+            System.out.println(w);
+            if(w > max)
+                max = w;
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return max;
         }
     }
     

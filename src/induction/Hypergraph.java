@@ -737,14 +737,14 @@ public class Hypergraph<Widget> {
   // children.  We just need to construct as we go.  Later if we've discovered
   // it doesn't have children, then prune it from the hypergraph.
   // DON'T USE THIS: if we return a compactified version, we're going to keep on creating the same node over and over again
-  /*public Object compactify(Object node) {
+  public Object compactify(Object node) {
     // If this node has no children, then remove it and use invalidNode
     if(numEdges(node) == 0) {
       nodes.remove(node);
       return invalidNode;
     }
     return node;
-  }*/
+  }
 
   // Add edges
   public void addEdge(Object source) { addEdge(source, endNode, endNode, nullHyperedgeInfo);}

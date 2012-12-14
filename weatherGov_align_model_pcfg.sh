@@ -2,39 +2,38 @@
 threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz
-output=results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill
+output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_unaryRules_wordsPerRootRule_30iter
+#data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
+#treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
+treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRulesAlignments
 memory=-Xmx4000m
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
 -create \
 -overwriteExecDir \
--modeltype event3 \
+-modeltype event3pcfg \
 -examplesInSingleFile \
 -inputLists $input \
 -execDir $output \
+-Options.stage1.numIters 30 \
 -inputFileExt events \
 -numThreads $threads \
--indepEventTypes 0,10 \
+-treebankRules $treebankRules \
 -indepFields 0,5 \
 -indepWords 0,5 \
 -newEventTypeFieldPerWord 0,5 \
 -newFieldPerWord 0,5 \
--dontCrossPunctuation \
 -Options.stage1.smoothing 0.1 \
 -disallowConsecutiveRepeatFields \
 -noneFieldSmoothing 0 \
 -outputFullPred \
 -modelUnkWord \
 -outputExampleFreq 1000 \
--initType random \
 -initNoise 1e-3 \
 -initSmoothing 0.01 \
--Options.stage1.numIters 15 \
--conditionNoneEvent \
--allowNoneEvent \
--forceOutputOrder \
--excludedEventTypes sleetChance windChill
+-initType artificial \
+-fixRecordSelection \
+-wordsPerRootRule
 
 # Record PCFG - Treebank Input
 #-treebankRules $treebankRules \

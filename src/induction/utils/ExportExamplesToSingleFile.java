@@ -14,7 +14,7 @@ import java.util.Map;
  * folders contain at least two files, containing the events, text and optionally alignment.
  * 
  * Write examples following the event3 ver.2 format, which contains headers 
- * denoting the start of text, events, alignments.
+ * denoting the start of text, events, alignments and (optionally) record trees.
  * @author konstas
  */
 public class ExportExamplesToSingleFile

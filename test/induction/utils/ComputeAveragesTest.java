@@ -29,7 +29,7 @@ public class ComputeAveragesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-    @Test
+    //@Test
     public void testWeather()
     {        
         String args = 
@@ -44,6 +44,32 @@ public class ComputeAveragesTest
                  + "statistics/weatherGov "
                  + "-actionType averageWordsPerDocument";
 //                 + "-actionType averageWordsPerSentence";
+//                 + "-actionType averageSentencesPerDocument";
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged"; // IMPORTANT        
+        ComputeAveragesOptions opts = new ComputeAveragesOptions();
+        Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
+        ComputeAverages ca = new ComputeAverages(opts);
+        ca.testExecute();
+    }
+    
+    /**
+     * Test of main method, of class ExtractRecordsStatistics.
+     */
+    @Test
+    public void testWinHelp()
+    {        
+        String args = 
+                   "-examplesInSingleFile "
+                 + "-inputFileExt events "
+                 + "-modelType event3 "
+                 + "-inputLists "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
+                 + "-execDir "
+                 + "statistics/winHelp "
+//                 + "-actionType averageWordsPerDocument "; // 52.07
+//                 + "-actionType averageWordsPerSentence"; // 11.97
+                 + "-actionType maxDocLength"; // 153
 //                 + "-actionType averageSentencesPerDocument";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
