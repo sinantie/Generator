@@ -48,10 +48,15 @@ public class ExtractRecordsStatistics
     }                
     
     public void execute()
-    {
+    {        
         model = new GenerativeEvent3Model(opts.modelOpts);
-        model.init(InitType.staged, opts.modelOpts.initRandom, "");
-        model.readExamples();
+        switch(model.getOpts().initType)
+        {
+            case random : model.readExamples();
+                          model.init(InitType.random, opts.modelOpts.initRandom, ""); break;
+            case staged : default :model.init(InitType.staged, opts.modelOpts.initRandom, "");
+                          model.readExamples(); break;
+        }        
         examples = new ArrayList<ExampleRecords>(model.getExamples().size());
         if(opts.predInput == null)
             parseGoldExamples();
@@ -398,7 +403,13 @@ public class ExtractRecordsStatistics
     public void testExecute()
     {
         model = new GenerativeEvent3Model(opts.modelOpts);
-        model.init(InitType.staged, opts.modelOpts.initRandom, "");
+        switch(model.getOpts().initType)
+        {
+            case random : model.readExamples();
+                          model.init(InitType.random, opts.modelOpts.initRandom, ""); break;
+            case staged : default :model.init(InitType.staged, opts.modelOpts.initRandom, "");
+                          model.readExamples(); break;
+        }
         model.readExamples();
         examples = new ArrayList<ExampleRecords>(model.getExamples().size());
         if(opts.predInput == null)

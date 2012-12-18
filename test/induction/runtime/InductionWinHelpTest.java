@@ -44,7 +44,8 @@ public class InductionWinHelpTest
                  + "-inputLists "
 //                 + "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged "
 //                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
-                 + "data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Train "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+//                 + "data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Train "
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_cleaned_objType/all/stage1.params.obj.gz "                 
                  + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_staged_no_null_cleaned_objType/fold3/stage1.params.obj.gz "
                  + "-examplesInSingleFile "
@@ -73,6 +74,7 @@ public class InductionWinHelpTest
         model.init(InitType.random, opts.initRandom, "");
         lopts = opts.stage1;
         name = "stage1";
+        model.saveParams(name, "data/branavan/winHelpHLA/stage1.init.params.obj.gz");
     }
 
     @After

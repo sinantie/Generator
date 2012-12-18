@@ -37,6 +37,7 @@ public class ReorderAlignmentPredictions
             if(!prefix.isEmpty())            
                 key = Utils.stripExtension(key.substring(key.indexOf(prefix)));
             refMap.put(key, i++);
+            System.out.println(i);
         }
         i = 0;
         // match ids
@@ -59,9 +60,9 @@ public class ReorderAlignmentPredictions
     public static void main(String[] args)
     {
         String prefix = "data/weather-data-full/data/";
-        String goldFile = "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRulesFullLhs.gz";
-        String predFile = "results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.train.pred.14";
-        String refFile = "results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.train.full-pred.14";        
+        String goldFile = "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz";
+        String predFile = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14";
+        String refFile = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.full-pred.14";        
         boolean examplesInSingleFile = true;
         ReorderAlignmentPredictions rep = new ReorderAlignmentPredictions(goldFile, predFile, refFile, examplesInSingleFile, prefix);
         rep.execute();

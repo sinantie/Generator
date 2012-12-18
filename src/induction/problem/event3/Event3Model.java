@@ -489,7 +489,7 @@ public abstract class Event3Model extends WordModel
     }
 
     private Token[] readTokens(String line, HashSet<String> excludedEventTypes,
-                               HashSet<String> excludedFields)
+                               HashSet<String> excludedFields, HashSet<Integer> excludedEventsIndices)
     {
         ArrayList<Token> tokens = new ArrayList();
         char tchar; String fieldName, value; Token tokenId = null;
@@ -519,7 +519,10 @@ public abstract class Event3Model extends WordModel
                     }
                 } // if
                 else
+                {
+                    excludedEventsIndices.add(Integer.valueOf(tokenId.value));
                     return null;
+                }
             } // if (fieldName.equals("type"))
             else if (tchar != '.' &&  // Ignore hidden fields
                      eventTypeIndex != -1) // Consider only fields that come after type
@@ -550,7 +553,7 @@ public abstract class Event3Model extends WordModel
     }
 
     public Map<Integer, Event> readEvents(String[] eventLines, HashSet<String> excludedEventTypes,
-                               HashSet<String> excludedFields)
+                               HashSet<String> excludedFields, HashSet<Integer> excludedEventsIndices)
     {
         final HashSet<Integer> seenEventTypes = new HashSet<Integer>();
 //        ArrayList<Event> events = new ArrayList<Event>(eventLines.length);
@@ -562,7 +565,7 @@ public abstract class Event3Model extends WordModel
         {           
             // parse tokens
             final Token[] tokens = readTokens(line, excludedEventTypes,
-                                              excludedFields);
+                                              excludedFields, excludedEventsIndices);
             if(tokens == null) // excludedEventType
                 continue;
             values = new ArrayList<Integer>(tokens.length);
@@ -660,7 +663,8 @@ public abstract class Event3Model extends WordModel
      */
     public Collection<MRToken> readMrTokens(String[] eventLines, Map<Integer, Event> events,
                                HashSet<String> excludedEventTypes,
-                               HashSet<String> excludedFields)
+                               HashSet<String> excludedFields,
+                               HashSet<Integer> excludedEventsIndices)
     {
         ArrayList<MRToken> mrList = new ArrayList<MRToken>(eventLines.length);
         ArrayList<Integer> goldEvents = new ArrayList<Integer>(eventLines.length);
@@ -669,7 +673,7 @@ public abstract class Event3Model extends WordModel
         {
             // parse tokens
             final Token[] tokens = readTokens(line, excludedEventTypes,
-                                              excludedFields);
+                                              excludedFields, excludedEventsIndices);
             if(tokens == null) // excludedEventType
                 continue;
             // eventTypeIndex is already defined from readTokens(...). It's
@@ -712,7 +716,7 @@ public abstract class Event3Model extends WordModel
     }
 
     private int[][] readTrueEvents(String[] alignLines, int N, Map<Integer, Event> events,
-                                   ArrayList<Integer> lineToStartText)
+                                   ArrayList<Integer> lineToStartText, HashSet<Integer> excludedEventsIndices)
     {
         int maxTracks = 0, eventId = 0, lineIndex = 0;
         // contains events aligned to each word of a sentence
@@ -735,7 +739,7 @@ public abstract class Event3Model extends WordModel
                 eventId = Integer.parseInt(lineEvents[i]);
                 // -1 means that this line corresponds to an event
                 // that's not in the candidate set, so we automatically get it wrong
-                if(eventId == -1)
+                if(eventId == -1 || excludedEventsIndices.contains(eventId))
                 {
                     eventId = Parameters.unreachable_e;
                 }
@@ -824,20 +828,23 @@ public abstract class Event3Model extends WordModel
             textInputExists = new File(textInput).exists();
         }
 //        System.out.println(textPath);
+//        System.out.println(name);
         if (!opts.useOnlyLabeledExamples || alignInputExists)
         {
             final HashSet<String> excludedFields = new HashSet<String>();
             excludedFields.addAll(Arrays.asList(opts.excludedFields));
             final HashSet<String> excludedEventTypes = new HashSet<String>();
             excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
-
+            // create a set of event ids that have been excluded from the model by the user
+            HashSet<Integer> excludedEventsIndices = new HashSet<Integer>();            
             //Read events
             Map<Integer, Event> events  = null;
-            try{
+            try
+            {
                 events = readEvents(opts.examplesInSingleFile ?
                                             eventInput.split("\n") :
                                             Utils.readLines(eventInput),
-                                        excludedEventTypes, excludedFields);
+                                        excludedEventTypes, excludedFields, excludedEventsIndices);
             }
             catch(Exception e) 
             {
@@ -924,13 +931,18 @@ public abstract class Event3Model extends WordModel
 
                     if(opts.modelType != ModelType.semParse)
                     {
-                        try{
-                        trueEvents = readTrueEvents(opts.examplesInSingleFile ?
+                        try
+                        {                            
+                            trueEvents = readTrueEvents(opts.examplesInSingleFile ?
                                             alignInput.split("\n") :
                                             Utils.readLines(alignInput),
-                                            text.length, events, lineToStartText);
+                                            text.length, events, lineToStartText, excludedEventsIndices);
                         }
-                        catch(Exception e) {System.out.println("Error in:"+name); e.printStackTrace(); System.exit(0);}
+                        catch(Exception e) 
+                        {
+                            LogInfo.error(e); 
+                            Execution.finish();
+                        }
 
                     }
                     else
@@ -938,7 +950,7 @@ public abstract class Event3Model extends WordModel
                         trueMrTokens = readMrTokens(opts.examplesInSingleFile ?
                                             alignInput.split("\n") :
                                             Utils.readLines(alignInput), events,
-                                        excludedEventTypes, excludedFields);
+                                        excludedEventTypes, excludedFields, excludedEventsIndices);
                     }
                     // lightweight map with id's of events and eventy type indices
                     HashMap<Integer, Integer> eventTypeIndices =
@@ -1358,6 +1370,8 @@ public abstract class Event3Model extends WordModel
         excludedFields.addAll(Arrays.asList(opts.excludedFields));
         final HashSet<String> excludedEventTypes = new HashSet<String>();
         excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
+        // create a set of event ids that have been excluded from the model by the user
+        HashSet<Integer> excludedEventsIndices = new HashSet<Integer>();
         List<AExample> examplesList = new ArrayList<AExample>(wrapper.getNumberOfOutputs());
         for(int i = 0; i < wrapper.getNumberOfOutputs(); i++)
         {
@@ -1367,13 +1381,12 @@ public abstract class Event3Model extends WordModel
             try
             {
                 eventInput = wrapper.getEventsString()[i];
-                events = readEvents(eventInput.split("\n"), excludedEventTypes, excludedFields);
+                events = readEvents(eventInput.split("\n"), excludedEventTypes, excludedFields, excludedEventsIndices);
             }
             catch(Exception e) 
             {
                 Utils.log("Error in reading events!");                 
-                LogInfo.error(e);
-                e.printStackTrace();
+                LogInfo.error(e);                
                 return encodeToJson(new JsonResult[] {JsonWrapper.ERROR_EVENTS});
             }
             // set text length

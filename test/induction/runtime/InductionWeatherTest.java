@@ -49,7 +49,8 @@ public class InductionWeatherTest
 //                 + "-Options.stage1.hardUpdate "        // Viterbi EM
                  + "-examplesInSingleFile "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+//                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
 //                 + "gaborLists/genDevListPathsGabor "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "

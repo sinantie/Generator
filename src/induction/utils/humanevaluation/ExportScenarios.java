@@ -206,7 +206,7 @@ public class ExportScenarios
         // read all the events from the .events file
         Scenario scn = new Scenario(basename,
                                     model.readEvents(eventInput,
-                                    new HashSet(), new HashSet()), tagDelimiter);
+                                    new HashSet(), new HashSet(), new HashSet()), tagDelimiter);
         // read the goldText-standard human events
         for(String eventLine : alignInput)
         {

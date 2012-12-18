@@ -6,12 +6,14 @@
 #!/bin/bash
 
 exec=winHelp_extract_record_statistics.sh
-inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all
-#inputPath=data/branavan/winHelpHLA/folds/docs.cleaned
+#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all
+#inputPath=data/branavan/winHelpHLA/folds/docs.cleaned.norm
+inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
 execDir=data/branavan/winHelpHLA/
 #execDir=data/branavan/winHelpHLA/folds/treebanks
-stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_cleaned_objType_norm
-suffix=CleanedObjTypeNormMarkov0
+#stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_cleaned_objType_norm
+stagedParamsFile=data/branavan/winHelpHLA
+suffix=NewAnnotationIds
 
 folds=10
 
@@ -23,4 +25,5 @@ mkdir -p $execDir
 #done
 
 #All
-./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix}
+#./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix}
+./${exec} ${inputPath} ${stagedParamsFile} ${execDir} ${suffix}

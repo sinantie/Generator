@@ -75,13 +75,14 @@ public class ExtractRecordsStatisticsTest
         String args = 
                    "-exportType recordType "
                  +  "-examplesInSingleFile "
+                 +  "-initType staged "
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
                  + "-ruleCountThreshold 5 "
                  + "-binarize right "
                  + "-modifiedBinarization "
                  + "-extractNoneEvent "
-//                 + "-useEventTypeNames "
+                 + "-useEventTypeNames "
 //                 + "-countSentenceNgrams "
 //                 + "-countDocumentNgrams "
 //                 + "-writePermutations "
@@ -95,9 +96,10 @@ public class ExtractRecordsStatisticsTest
                  + "weatherGovLM/recordStatistics "
                  + "-stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
-                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+                    + "model_3_gabor_no_sleet_windChill_15iter/stage1.params.obj.gz "
                  + "-predInput "
-                 + "results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.train.pred.14.sorted "
+                 + "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted "
+                 + "-excludedEventTypes sleetChance windChill "
                  + "-inputFileExt events ";
 //                 + "-ngramWrapper kylm "
 //                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa ";
@@ -107,6 +109,42 @@ public class ExtractRecordsStatisticsTest
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
         ExtractRecordsStatistics ers = new ExtractRecordsStatistics(opts);
         ers.testExecute();
-
+    }
+    
+//    @Test
+    public void testWinHelp()
+    {     
+        String args = 
+                   "-exportType recordType "
+                 +  "-examplesInSingleFile "
+//                 + "-countRepeatedRecords "
+                 + "-extractRecordTrees "
+//                 + "-ruleCountThreshold 5 "
+                 + "-binarize right "
+                 + "-modifiedBinarization "
+                 + "-extractNoneEvent "
+//                 + "-useEventTypeNames "
+//                 + "-countSentenceNgrams "
+//                 + "-countDocumentNgrams "
+//                 + "-writePermutations "
+                 + "-delimitSentences "
+                 + "-modelType event3 "
+                 + "-inputLists "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+                 + "-execDir data/branava/winHelpHLA "
+                 + "-initType random "
+                 + "-stagedParamsFile data/branavan/winHelpHLA/stage1.init.params.obj.gz "
+//                 + "-predInput "
+//                 + "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill/stage1.train.pred.14 "
+//                 + "-excludedEventTypes sleetChance windChill "
+                 + "-inputFileExt events ";
+//                 + "-ngramWrapper kylm "
+//                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa ";
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged"; // IMPORTANT        
+        ExtractRecordsStatisticsOptions opts = new ExtractRecordsStatisticsOptions();
+        Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
+        ExtractRecordsStatistics ers = new ExtractRecordsStatistics(opts);
+        ers.testExecute();
     }
 }

@@ -225,7 +225,13 @@ public class ComputeAverages
             String[] example = (String[])in;
             // 2nd entry is the text
             w = example[1].split("\\s").length;
-            System.out.println(w);
+//            System.out.println(w);
+            
+            String lines[] = example[1].split("\n");
+            int no = 11;
+            if(lines.length > no)
+                System.out.println(lines[no]);
+            
             if(w > max)
                 max = w;
             return null;

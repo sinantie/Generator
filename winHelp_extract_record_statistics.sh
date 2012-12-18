@@ -23,9 +23,9 @@ dist/stanford-postagger-2010-05-26.jar \
 -binarize right \
 -markovOrder 0 \
 -delimitSentences \
--useEventTypeNames \
 -extractRecordTrees \
--suffix ${suffix}
+-suffix ${suffix} \
+-initType random
 
 #-predInput ${predInput} \
 #-ruleCountThreshold 5

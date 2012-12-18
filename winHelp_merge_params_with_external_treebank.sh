@@ -1,12 +1,12 @@
 #!/bin/bash
 
 exec=merge_params_with_external_treebank.sh
-input=data/branavan/winHelpHLA/folds/docs.cleaned
-stagedParamsFile=results/output/winHelp/alignments/model_3_docs_staged_no_null_cleaned_objType
+input=data/branavan/winHelpHLA/folds/docs.cleaned.norm
+stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_cleaned_objType_norm
 externalTreebankFile=data/branavan/winHelpHLA/folds/treebanks
 treebankRules=data/branavan/winHelpHLA/folds/treebanks
-suffix=CleanedObjTypeMarkov0Fold
-execDir=results/output/winHelp/alignments/model_3_docs_staged_no_null_cleaned_objType_markov0_externalTreebank
+suffix=CleanedObjTypeNormMarkov0Fold
+execDir=results/output/winHelp/alignments/model_3_docs_no_null_cleaned_objType_norm_markov0_externalTreebank
 maxDocLength=150
 docLengthBinSize=10
 folds=10
