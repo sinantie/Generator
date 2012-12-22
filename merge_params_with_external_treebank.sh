@@ -22,4 +22,5 @@ dist/stanford-postagger-2010-05-26.jar \
 -treebankRules ${treebankRules} \
 -dontOutputParams \
 -maxDocLength ${maxDocLength} \
--docLengthBinSize ${docLengthBinSize}
+-docLengthBinSize ${docLengthBinSize} \
+-excludedEventTypes sleetChance windChill

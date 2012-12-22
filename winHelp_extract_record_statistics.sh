@@ -25,7 +25,8 @@ dist/stanford-postagger-2010-05-26.jar \
 -delimitSentences \
 -extractRecordTrees \
 -suffix ${suffix} \
--initType random
+-initType random \
+-modifiedBinarization
 
 #-predInput ${predInput} \
 #-ruleCountThreshold 5
