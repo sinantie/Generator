@@ -39,17 +39,19 @@ public class GenerationWinHelpTest
     public void setUp() 
     {
          String args = "-modelType generate "
-                    + "-testInputLists data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Eval "
+//                    + "-testInputLists data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Eval "
+                    + "-testInputLists data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
 //                    + "-testInputLists test/winHelpFold1EvalTest "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-stagedParamsFile "
                     + "results/output/winHelp/alignments/"
 //                    + "model_3_no_null_pos_auto/fold1/stage1.params.obj.gz "
-                    + "model_3_docs_staged_no_null_cleaned_objType/fold3/stage1.params.obj.gz "
+                    + "model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
                     + "-kBest 15 "
-                    + "-ngramModelFile winHelpLM/docs.cleaned/srilm-abs-winHelpRL-docs-fold3-3-gram.model.arpa "
+//                    + "-ngramModelFile winHelpLM/srilm-abs-winHelpRL-docs-fold3-3-gram.model.arpa "
+                    + "-ngramModelFile winHelpLM/srilm-abs-winHelpRL-docs-newAnnotation-3-gram.model.arpa "
                     + "-ngramWrapper srilm "
                     + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
@@ -62,13 +64,13 @@ public class GenerationWinHelpTest
                     + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
 //                    + "-useDependencies "
-                    + "-interpolationFactor 0.1 "
+                    + "-interpolationFactor 1 "
 //                    + "-posAtSurfaceLevel "
                     + "-tagDelimiter _ "
                     + "-useStopNode "
                     + "-dmvModelParamsFile results/output/winHelp/dmv/train/"
-                    + "winHelp_uniformZ_initNoise_POS_auto_100/fold1/stage1.dmv.params.obj.gz "
-                    + "-forceOutputOrder";
+                    + "winHelp_uniformZ_initNoise_POS_auto_100/fold1/stage1.dmv.params.obj.gz ";
+//                    + "-forceOutputOrder";
          
         /*initialisation procedure from Generation class*/
         Options opts = new Options();

@@ -2,8 +2,6 @@ package induction.utils.postprocess;
 
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import fig.exec.Execution;
-import induction.utils.postprocess.ComputeAverages;
-import induction.utils.postprocess.ComputeAveragesOptions;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,12 +9,12 @@ import org.junit.Test;
  *
  * @author konstas
  */
-public class ComputeAveragesTest
+public class ProcessExamplesTest
 {
     
     GenerativeEvent3Model model;
     
-    public ComputeAveragesTest()
+    public ProcessExamplesTest()
     {
     }
     
@@ -47,9 +45,9 @@ public class ComputeAveragesTest
 //                 + "-actionType averageSentencesPerDocument";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
-        ComputeAveragesOptions opts = new ComputeAveragesOptions();
+        ProcessExamplesOptions opts = new ProcessExamplesOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
-        ComputeAverages ca = new ComputeAverages(opts);
+        ProcessExamples ca = new ProcessExamples(opts);
         ca.testExecute();
     }
     
@@ -64,18 +62,20 @@ public class ComputeAveragesTest
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
                  + "-execDir "
                  + "statistics/winHelp "
 //                 + "-actionType averageWordsPerDocument "; // 52.07
 //                 + "-actionType averageWordsPerSentence"; // 11.97
-                 + "-actionType maxDocLength"; // 153
+//                 + "-actionType maxDocLength"; // 153
+//                 + "-actionType splitDocToSentences";
+                 + "-actionType exportExamplesAsSentences";
 //                 + "-actionType averageSentencesPerDocument";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
-        ComputeAveragesOptions opts = new ComputeAveragesOptions();
+        ProcessExamplesOptions opts = new ProcessExamplesOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
-        ComputeAverages ca = new ComputeAverages(opts);
+        ProcessExamples ca = new ProcessExamples(opts);
         ca.testExecute();
     }
     
@@ -97,9 +97,9 @@ public class ComputeAveragesTest
                  + "-totalNumberOfFields 13";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
-        ComputeAveragesOptions opts = new ComputeAveragesOptions();
+        ProcessExamplesOptions opts = new ProcessExamplesOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
-        ComputeAverages ca = new ComputeAverages(opts);
+        ProcessExamples ca = new ProcessExamples(opts);
         ca.testExecute();
     }
 }

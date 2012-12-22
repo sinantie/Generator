@@ -55,7 +55,7 @@ public class InductionWeatherTest
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
-//                 + "-indepWords 0,-1 "
+                 + "-indepWords 0,5 "
                  + "-dontCrossPunctuation "
                  + "-Options.stage1.smoothing 0.1 "
                  + "-excludedEventTypes sleetChance windChill "

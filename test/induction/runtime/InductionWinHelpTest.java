@@ -32,22 +32,23 @@ public class InductionWinHelpTest
 
     @AfterClass
     public static void tearDownClass() throws Exception
-    {
+    {        
     }
 
     @Before
     public void setUp() 
     {
          String args = "-modelType event3 "
-                 + "-Options.stage1.numIters 2 "
+                 + "-Options.stage1.numIters 15 "
                  + "-examplesInSingleFile "
                  + "-inputLists "
 //                 + "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged "
 //                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation "
 //                 + "data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Train "
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_cleaned_objType/all/stage1.params.obj.gz "                 
-                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_staged_no_null_cleaned_objType/fold3/stage1.params.obj.gz "
+//                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation/all/stage1.params.obj.gz "
+                 + "-stagedParamsFile data/branavan/winHelpHLA/stage1.test.params.obj.gz "
                  + "-examplesInSingleFile "
                  + "-indepEventTypes 0,10 "
                  + "-indepFields 0,5 "
@@ -59,7 +60,7 @@ public class InductionWinHelpTest
                  + "-dontCrossPunctuation "
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged "                // IMPORTANT!
-                 + "-Options.stage1.smoothing 0.01 ";
+                 + "-Options.stage1.smoothing 0.001 ";
 //                 + "-modelUnkWord "
 //                 + "-Options.stage1.useVarUpdates";
 //                + "-excludedEventTypes airline airport booking_class city entity fare_basis_code location transport";
@@ -67,14 +68,14 @@ public class InductionWinHelpTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
-//        model.init(InitType.staged, opts.initRandom, "");
+        model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();        
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
+//        model.init(InitType.random, opts.initRandom, "");
         lopts = opts.stage1;
         name = "stage1";
-        model.saveParams(name, "data/branavan/winHelpHLA/stage1.init.params.obj.gz");
+//        model.saveParams(name, "data/branavan/winHelpHLA/stage1.test.params.obj.gz");
     }
 
     @After
@@ -88,7 +89,7 @@ public class InductionWinHelpTest
     public void testRun()
     {
         System.out.println("run");
-        String targetOutput = "8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8";
+        String targetOutput = "0 0 0 0 0 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3";
         assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
     }
 }
