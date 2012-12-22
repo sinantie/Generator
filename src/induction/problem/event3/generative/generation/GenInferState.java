@@ -13,14 +13,20 @@ import induction.BigDouble;
 import induction.DepHead;
 import induction.Hypergraph;
 import induction.Hypergraph.HyperpathResult;
+import induction.Utils;
 import induction.ngrams.NgramModel;
 import induction.problem.AModel;
 import induction.problem.InferSpec;
 import induction.problem.Pair;
 import induction.problem.dmv.params.DMVParams;
+import induction.problem.event3.CatField;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
+import induction.problem.event3.Field;
+import induction.problem.event3.NumField;
+import induction.problem.event3.StrField;
+import induction.problem.event3.SymField;
 import induction.problem.event3.Widget;
 import induction.problem.event3.nodes.CatFieldValueNode;
 import induction.problem.event3.nodes.EventsNode;
@@ -30,6 +36,7 @@ import induction.problem.event3.nodes.NoneEventWordsNode;
 import induction.problem.event3.nodes.NumFieldValueNode;
 import induction.problem.event3.nodes.SelectNoEventsNode;
 import induction.problem.event3.nodes.StopNode;
+import induction.problem.event3.nodes.StringFieldValueNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
 import java.util.ArrayList;
@@ -523,9 +530,57 @@ public class GenInferState extends InferState
         return node;
     }
 
+    protected Object genStrFieldValue(final int i, int c, int event, int field, final int posInFieldValue)
+    {
+        if(posInFieldValue == -1)
+            return hypergraph.invalidNode;
+        final ArrayList<Integer> valueWords = new ArrayList<Integer>();
+        ((StrField)getField(event, field)).getWordLabel(getValue(event, field)).getWordsLabels(valueWords, null);
+        StringFieldValueNode node = new StringFieldValueNode(i, c, event, field);
+//            final StrFieldParams fparams = getStrFieldParams(event, field);
+        if (hypergraph.addSumNode(node))
+        {                            
+            hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                public double getWeight() {
+                    return 1.0;
+                }
+                public void setPosterior(double prob) { }
+               
+                @Override
+                public Pair getWeightAtRank(int rank)
+                {
+                    return new Pair(1.0, valueWords.get(posInFieldValue));
+                }
+
+                @Override
+                public GenWidget chooseWord(GenWidget widget, int word)
+                {
+                    widget.getText()[i] = word;
+                    return widget;
+                }
+
+                @Override
+                public GenWidget choose(GenWidget widget)
+                {return widget;}
+            });            
+        }
+        return node;
+
+    }
+
+    protected Object genFieldValue(int i, int c, int event, int field, int posInFieldValue)
+    {
+        Field tempField = getField(event, field);
+        if(tempField instanceof NumField) return genNumFieldValue(i, c, event, field);
+        else if(tempField instanceof CatField) return genCatFieldValueNode(i, c, event, field);
+        else if(tempField instanceof SymField) return genSymFieldValue(i, c, event, field);
+        else if(tempField instanceof StrField) return genStrFieldValue(i, c, event, field, posInFieldValue);
+        else return Utils.impossible();
+    }
+    
     // Generate word at position i with event e and field f
-    @Override
-    protected WordNode genWord(final int i, final int c, int event, final int field)
+//    @Override
+    protected WordNode genWord(final int i, final int c, int event, final int field, final int posInFieldValue)
     {
         WordNode node = new WordNode(i, c, event, field);
         final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
@@ -579,8 +634,8 @@ public class GenInferState extends InferState
             } // if
             else
             {
-                // G_FIELD_VALUE: generate based on field value
-                hypergraph.addEdge(node, genFieldValue(i, c, event, field),
+                // G_FIELD_VALUE: generate based on field value                
+                hypergraph.addEdge(node, genFieldValue(i, c, event, field, posInFieldValue),
                         new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
                     return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_VALUE);
@@ -641,8 +696,8 @@ public class GenInferState extends InferState
     }     
 
     // Generate field f of event e from begin to end
-    @Override
-    protected Object genField(final int begin, final int end, int c, int event, final int field)
+//    @Override
+    protected Object genField(final int begin, final int end, int c, int event, final int field, final int posInFieldValue)
     {
 //        final int eventTypeIndex = ex.events.get(event).getEventTypeIndex();
 //        final int none_f = params.eventTypeParams[eventTypeIndex].none_f;
@@ -658,7 +713,7 @@ public class GenInferState extends InferState
             {
                 for(int i = begin; i < end; i++) // Generate each word in this range independently
                 {
-                    hypergraph.addEdge(node, genWord(i, c, event, field));
+                    hypergraph.addEdge(node, genWord(i, c, event, field, posInFieldValue));
                 }
             }
         }
@@ -672,8 +727,8 @@ public class GenInferState extends InferState
             {
 //                if(indepWords())
                     hypergraph.addEdge(node,
-                                       genWord(begin, c, event, field),
-                                       genField(begin + 1, end, c, event, field),
+                                       genWord(begin, c, event, field, posInFieldValue),
+                                       genField(begin + 1, end, c, event, field, posInFieldValue+1),
                                        new Hypergraph.HyperedgeInfo<Widget>() {
                         public double getWeight() {
                             return 1.0;
@@ -720,7 +775,7 @@ public class GenInferState extends InferState
                 ArrayList<WordNode> list = new ArrayList(end - begin);
                 for(int i = begin; i < end; i++) // Generate each word in this range independently
                 {
-                    list.add(genWord(i, c, event, field));
+                    list.add(genWord(i, c, event, field, posInFieldValue));
                 }
                 hypergraph.addEdge(node, list, new Hypergraph.HyperedgeInfo<Widget>()
                 {
@@ -872,7 +927,10 @@ public class GenInferState extends InferState
                 }
                 else
                 {
-                    hypergraph.addEdge(node, genField(i, j, c, event, f),
+                    int posInFieldValue = getField(event, f) instanceof StrField && 
+                            ((StrField)getField(event, f)).valueNumOfWords(getValue(event, f)) == j-i ? 0 : -1;
+                    
+                    hypergraph.addEdge(node, genField(i, j, c, event, f, posInFieldValue),
                                        genFields(j, end, c, event, remember_f, new_efs),
                                        new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                         public double getWeight() {

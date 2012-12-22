@@ -157,6 +157,11 @@ public abstract class Event3Model extends WordModel
         return wordIndexer.getIndex(processWord(str));
     }
 
+    public static int getWordIndex(Indexer<String> wordIndexer, String str)
+    {
+        return wordIndexer.getIndex(processWord(str));
+    }
+    
     public int getTestSetWordIndex(String str)
     {
         return testSetWordIndexer.getIndex(processWord(str));

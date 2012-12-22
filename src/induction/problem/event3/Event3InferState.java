@@ -68,6 +68,10 @@ public abstract class Event3InferState
     }
 
     // FUTURE: speed up these lookups
+    protected Field getField(int event, int field)
+    {
+        return ex.events.get(event).getFields()[field];
+    }
     protected int getValue(int event, int field)
     {
         return ex.events.get(event).getValues().get(field);

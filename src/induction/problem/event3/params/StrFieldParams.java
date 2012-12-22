@@ -14,7 +14,7 @@ public class StrFieldParams extends FieldParams
     static final long serialVersionUID = 7621297923689181992L;
     private int LB;
     public Vec[] labelChoices;
-    private GenerativeEvent3Model model;
+//    private GenerativeEvent3Model model;
 //    private String prefix;
 
     public StrFieldParams(Event3Model model, VecFactory.Type vectorType, int LB, String prefix)

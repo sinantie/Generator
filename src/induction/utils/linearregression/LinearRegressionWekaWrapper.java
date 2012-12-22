@@ -2,6 +2,7 @@ package induction.utils.linearregression;
 
 import fig.basic.LogInfo;
 import induction.Utils;
+import induction.problem.event3.Event3Example;
 import induction.utils.linearregression.ExtractLengthPredictionFeatures.Feature;
 import induction.utils.linearregression.LinearRegressionOptions.FeatureType;
 import induction.utils.linearregression.LinearRegressionOptions.Mode;
@@ -117,11 +118,11 @@ public class LinearRegressionWekaWrapper
 
     public void predict(String inputFile, boolean exampleInSingleFile)
     {
-        for(String[] example : Utils.readEvent3Examples(inputFile, exampleInSingleFile))
+        for(Event3Example example : Utils.readEvent3Examples(inputFile, exampleInSingleFile))
         {
             try
             {
-                LogInfo.logs((int)(predict(example[2])));
+                LogInfo.logs((int)(predict(example.getEvents())));
 //                LogInfo.logs(Math.round(predict(example[2])));
             }
             catch(Exception e)

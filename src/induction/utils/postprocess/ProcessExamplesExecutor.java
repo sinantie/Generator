@@ -6,21 +6,21 @@ import fig.exec.Execution;
  *
  * @author sinantie
  */
-public class ComputeAveragesExecutor implements Runnable
+public class ProcessExamplesExecutor implements Runnable
 {
 
-    ComputeAveragesOptions opts = new ComputeAveragesOptions();
+    ProcessExamplesOptions opts = new ProcessExamplesOptions();
 
     @Override
     public void run()
     {
-        ComputeAverages ca = new ComputeAverages(opts);
+        ProcessExamples ca = new ProcessExamples(opts);
         ca.execute();
     }
 
     public static void main(String[] args)
     {
-        ComputeAveragesExecutor x = new ComputeAveragesExecutor();
+        ProcessExamplesExecutor x = new ProcessExamplesExecutor();
         Execution.run(args, x, x.opts);
     }
 }

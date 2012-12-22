@@ -8,7 +8,7 @@ import induction.problem.VecFactory;
 import java.io.Serializable;
 
 /**
- * Category (@) - we have to learn the possibly ambiguous correspondance
+ * Category (@) - we have to learn the possibly ambiguous correspondence
  * between category values and words
  * Example: windDir in the weather domain
  * indexer = possible values (e.g., N, W, ...)

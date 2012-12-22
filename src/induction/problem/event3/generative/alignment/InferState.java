@@ -15,6 +15,7 @@ import induction.Utils;
 import induction.problem.AModel;
 import induction.problem.AParams;
 import induction.problem.InferSpec;
+import induction.problem.event3.WordLabel;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Event;
@@ -399,10 +400,12 @@ public class InferState extends Event3InferState
         Field tempField = ex.events.get(event).getFields()[field];
         if (tempField instanceof StrField) // nonsense!!
         {
-            StrField.ArrayPair ap = ((StrField)tempField).indexer.
-                    getObject(getValue(event, field));
-            valueWords = ap.getWords();
-            valueLabels = ap.getLabels();
+            WordLabel wl = ((StrField)tempField).indexer.getObject(getValue(event, field));
+//            valueWords = wl.getWords();
+//            valueLabels = wl.getLabels();
+            valueWords = new ArrayList<Integer>();
+            valueLabels = new ArrayList<Integer>();
+            wl.getWordsLabels(valueWords, valueLabels);
         }
         else
         {
@@ -423,14 +426,15 @@ public class InferState extends Event3InferState
                 // Note: previous versions of this code just generated the first
                 // word instead of all of them.
                 // That was mathematically wrong, but overfit slightly less
-                for(int v_i = 0; i < Utils.same(valueWords.size(), valueLabels.size()); v_i++)
+                for(int v_i = 0; v_i < Utils.same(valueWords.size(), valueLabels.size()); v_i++)
                 {
                     if(valueWords.get(v_i) == words[i]) // Match
                     {
                         final int valueLabel = valueLabels.get(v_i);
                         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
                             public double getWeight() {
-                                return 1.0/valueWords.size() * // Pick uniformly at random
+                                return 1.0 *
+//                                return 1.0/valueWords.size() * // Pick uniformly at random
                                 ( (genLabels() || prevGenLabels()) ?
                                   get(fparams.labelChoices[valueLabel], label) / // Remove default generation
                                   get(params.genericLabelChoices, label)
@@ -564,32 +568,32 @@ public class InferState extends Event3InferState
                             if(field == none_f)
                             {
                                 return get(((EventTypeParams)aparams).noneFieldBigramChoices[
-                                        begin > 0 ? words[begin] - 1 :
+                                        begin > 0 ? words[begin-1] :
                                         ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin]);
                             }
                             else
                             {
                                 return get(((FieldParams)aparams).wordBigramChoices[
-                                        begin > 0 ? words[begin] - 1 :
+                                        begin > 0 ? words[begin-1] :
                                         ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin]);
                             }
 
                         }
                     }
-                    public void setPosterior(double prob) {
+                    public void setPosterior(double prob) {                        
                         if(field == none_f)
                         {
                             update(((EventTypeParams)acounts).noneFieldBigramChoices[
-                                        begin > 0 ? words[begin] - 1 :
+                                        begin > 0 ? words[begin-1] :
                                         ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin], prob);
                         }
                         else
                         {
                             update(((FieldParams)acounts).wordBigramChoices[
-                                        begin > 0 ? words[begin] - 1 :
+                                        begin > 0 ? words[begin-1] :
                                         ((Event3Model)model).getWordIndex("(boundary)")
                                         ], words[begin], prob);
                         }

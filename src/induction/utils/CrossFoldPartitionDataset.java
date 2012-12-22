@@ -1,9 +1,8 @@
 package induction.utils;
 
-import fig.basic.IOUtils;
+import fig.exec.Execution;
 import induction.Utils;
-import java.io.IOException;
-import java.io.PrintWriter;
+import induction.problem.event3.Event3Example;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,34 +14,43 @@ import java.util.List;
  */
 public class CrossFoldPartitionDataset
 {
-    private String source, destPath, prefixName;
-    private int folds;
-
-    private CrossFoldPartitionDataset(String source, String destPath, String prefixName, int folds)
+    private String source;
+    CrossFoldPartitionDatasetOptions opts;
+    
+    public CrossFoldPartitionDataset(CrossFoldPartitionDatasetOptions opts)
     {
-        this.source = source;
-        this.destPath = destPath;
-        this.prefixName = prefixName;
-        this.folds = folds;
+        this.opts = opts;
+        this.source = opts.modelOpts.inputLists.get(0);
     }
    
     public void execute()
     {
-        List<String> list = new ArrayList<String>();
-        list.addAll(Arrays.asList(Utils.readLines(source)));
+        List list = new ArrayList();
+        switch(opts.inputType)
+        {
+            case raw : list.addAll(Arrays.asList(rawInput())); break;
+            case event3 : list.addAll(event3Input());
+        }
+        
         Collections.shuffle(list); // reshuffle list
         // partition
-        Utils.writePartitions(Utils.partitionList(list, folds), folds, destPath, prefixName);        
+        Utils.writePartitions(Utils.partitionList(list, opts.folds), opts.folds, Execution.execDir, opts.prefix);        
     }
     
-
-    public static void main(String[] args)
+    private String[] rawInput()
     {
-        String source = "robocupLists/robocupAllPathsTrain";
-        String destPath = "robocupLists/randomFolds";
-        String prefixName = "robocup";
-        int folds = 4;
-        CrossFoldPartitionDataset cfp = new CrossFoldPartitionDataset(source, destPath, prefixName, folds);
-        cfp.execute();
+        return Utils.readLines(source);
     }
+    
+    private List<Event3Example> event3Input()
+    {
+        return Utils.readEvent3Examples(source, opts.modelOpts.examplesInSingleFile);
+    }
+
+    void testExecute()
+    {
+        execute();
+    }
+    
+    
 }

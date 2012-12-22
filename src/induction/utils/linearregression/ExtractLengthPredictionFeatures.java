@@ -1,8 +1,10 @@
 package induction.utils.linearregression;
 
 import fig.basic.IOUtils;
+import fig.basic.LogInfo;
 import induction.Utils;
 import induction.problem.event3.CatField;
+import induction.problem.event3.Event3Example;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Field;
 import induction.problem.event3.NumField;
@@ -103,8 +105,9 @@ public class ExtractLengthPredictionFeatures
         }
         catch(Exception ioe)
         {
-            Utils.log("Error loading "+ paramsFilename);
-            ioe.printStackTrace();
+            LogInfo.error(ioe);
+//            Utils.log("Error loading "+ paramsFilename);
+//            ioe.printStackTrace();
         }
         finally
         {
@@ -118,10 +121,9 @@ public class ExtractLengthPredictionFeatures
         {            
             FileWriter fos = new FileWriter(outputFilename);
             fos.append(header);
-            List<String[]> examples = Utils.readEvent3Examples(inputFilename, examplesInOneFile);
-            for(String[] example : examples)
+            for(Event3Example example : Utils.readEvent3Examples(inputFilename, examplesInOneFile))
             {
-                fos.append(extractFeatures(example[1], example[2]));
+                fos.append(extractFeatures(example.getText(), example.getEvents()));
             }                  
             fos.close();
         }

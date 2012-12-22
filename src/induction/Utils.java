@@ -10,6 +10,7 @@ import fig.basic.LogInfo;
 import fig.exec.Execution;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Constants.TypeAdd;
+import induction.problem.event3.Event3Example;
 import induction.utils.StringWithEmbeddedInt;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -1103,20 +1104,20 @@ public class Utils
         return res;
     }
     
-    public static List<String[]> readEvent3Examples(String inputPath, boolean examplesInSingleFile)
+    public static List<Event3Example> readEvent3Examples(String inputPath, boolean examplesInSingleFile)
     {
         List<String> list = new ArrayList<String>();
         list.add(inputPath);
         return readEvent3Examples(list, list, examplesInSingleFile);
     }
     
-    public static List<String[]> readEvent3Examples(List<String> inputPaths, 
+    public static List<Event3Example> readEvent3Examples(List<String> inputPaths, 
             List<String> inputLists, boolean examplesInSingleFile)
     {
-        List<String[]> examples = new ArrayList<String[]>();
+        List<Event3Example> examples = new ArrayList<Event3Example>();
         try 
         {
-            String example[];
+            Event3Example example;
             if(examplesInSingleFile)
             {
                 String key = null;
@@ -1127,7 +1128,7 @@ public class Utils
                     {
                         if(key != null) // only for the first example
                         {
-                            example = extractExampleFromString(str.toString());
+                            example = new Event3Example(extractExampleFromString(str.toString()));
                             examples.add(example);
                             str = new StringBuilder();
                         }
@@ -1136,7 +1137,7 @@ public class Utils
                     str.append(line).append("\n");
                 }  // for
                 // don't forget last example
-                example = extractExampleFromString(str.toString());
+                example = new Event3Example(extractExampleFromString(str.toString()));
                 examples.add(example);
             } // if
             else
@@ -1145,10 +1146,16 @@ public class Utils
                 {
     //                    System.out.println(line);
                     String events = Utils.readFileAsString(line);
-                    String text = Utils.readFileAsString(Utils.stripExtension(line)+".text");
-                    String[] ex = {events, text};
-                    examples.add(ex);
-                }
+                    String key = Utils.stripExtension(line);
+                    String text = Utils.readFileAsString(key+".text");
+                    String align = null;
+                    if(new File(key+".align").exists())
+                    {
+                        align = Utils.readFileAsString(key+".align");
+                        String[] ex = {events, text, align};
+                        examples.add(new Event3Example(ex));
+                    }                                            
+                } // for
             }            
         }
         catch(IOException ioe) {

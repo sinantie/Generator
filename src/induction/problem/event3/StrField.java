@@ -7,7 +7,6 @@ import induction.problem.VecFactory;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.StrFieldParams;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -21,24 +20,23 @@ public class StrField extends Field implements Serializable
 {
     static final long serialVersionUID = -4500849348695568802L;
 
-//    int LB;
-    public Indexer<ArrayPair> indexer = new Indexer<ArrayPair>();
-    Event3Model model; 
+    public Indexer<WordLabel> indexer = new Indexer<WordLabel>();
+    private Indexer<String> wordIndexer;
+    
     public StrField() {}
     public StrField(Event3Model model, String fieldName)
     {
-        this.model = model;
+        this.wordIndexer = model.getWordIndexer();
         name = fieldName;
-//        this.LB = LB;
         maxLength = Integer.MAX_VALUE;
     }
 
-    public Indexer<ArrayPair> getIndexer()
+    public Indexer<WordLabel> getIndexer()
     {
         return indexer;
     }
 
-    public void setIndexer(Indexer<ArrayPair> indexer)
+    public void setIndexer(Indexer<WordLabel> indexer)
     {
         this.indexer = indexer;
     }
@@ -46,31 +44,28 @@ public class StrField extends Field implements Serializable
     @Override
     public String valueToString(int v)
     {
-        ArrayPair ap = indexer.getObject(v);
-        String[] out = new String[ap.same()];
-        for(int i = 0; i < out.length; i++)
-        {
-            out[i] = (ap.labels.get(i) == GenerativeEvent3Model.getNone_lb()) ? "" :
-                     "/"+ GenerativeEvent3Model.labelToString(ap.labels.get(i));
-        }
-        return Utils.mkString(out, " ");
+        return indexer.getObject(v).toString();
     }
 
+    public int valueNumOfWords(int v)
+    {
+        return indexer.getObject(v).toString().split(" ").length;
+    }
+    
+    public WordLabel getWordLabel(int v)
+    {
+        return indexer.getObject(v);
+    }
+    
     @Override
     public int parseValue(int role, String str)
     {
         String[] tokens = str.split(" ");
-        ArrayList<Integer> words = new ArrayList<Integer>();
-        ArrayList<Integer> labels = new ArrayList<Integer>();
-        for(int i = 0; i < tokens.length; i++)
-        {
-            if (role == -1 || role == GenerativeEvent3Model.getWordRole(tokens[i]))
-            {
-                words.add(model.getWordIndex(tokens[i]));
-                labels.add(GenerativeEvent3Model.getLabelIndex(Arrays.asList(tokens), i));
-            }
-        }
-        return indexer.getIndex( new ArrayPair(words, labels));
+        WordLabel wl = new WordLabel(wordIndexer);
+        for(int i = 0; i < tokens.length; i++)       
+            if (role == -1 || role == GenerativeEvent3Model.getWordRole(tokens[i]))            
+                wl.addWordLabel(Event3Model.getWordIndex(wordIndexer, tokens[i]), GenerativeEvent3Model.getLabelIndex(Arrays.asList(tokens), i));
+        return indexer.getIndex(wl);
     }
 
     @Override
@@ -89,32 +84,5 @@ public class StrField extends Field implements Serializable
     public String toString()
     {
         return Utils.fmts("$%s(%s)", name, getV());
-    }
-
-
-    public class ArrayPair implements Serializable
-    {
-        ArrayList<Integer> words, labels;
-
-        private ArrayPair(ArrayList<Integer> words, ArrayList<Integer> labels)
-        {
-            this.words = words;
-            this.labels = labels;
-        }
-
-        public ArrayList<Integer> getWords()
-        {
-            return words;
-        }
-
-        public ArrayList<Integer> getLabels()
-        {
-            return labels;
-        }
-
-        int same()
-        {
-            return Utils.same(words.size(), labels.size());
-        }
     }
 }
