@@ -7,23 +7,23 @@
 
 exec=winHelp_extract_record_statistics.sh
 #inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all
-#inputPath=data/branavan/winHelpHLA/folds/docs.cleaned.norm
-inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
-execDir=data/branavan/winHelpHLA/
-#execDir=data/branavan/winHelpHLA/folds/treebanks
-#stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_cleaned_objType_norm
-stagedParamsFile=data/branavan/winHelpHLA
-suffix=NewAnnotationIds
+inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
+#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
+#execDir=data/branavan/winHelpHLA/
+execDir=data/branavan/winHelpHLA/folds/treebanks
+stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
+#stagedParamsFile=data/branavan/winHelpHLA
+suffix=NewAnnotationMarkov0
 
 folds=10
 
 mkdir -p $execDir
 
-#for (( f=1; f<=folds; f++ ))
-#do
-#	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f}
-#done
+for (( f=1; f<=folds; f++ ))
+do
+	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f}
+done
 
 #All
 #./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix}
-./${exec} ${inputPath} ${stagedParamsFile} ${execDir} ${suffix}
+#./${exec} ${inputPath} ${stagedParamsFile} ${execDir} ${suffix}

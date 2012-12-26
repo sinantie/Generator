@@ -45,6 +45,9 @@ public class ProcessExamples
             case maxDocLength:
                 action = new MaxDocumentLength();
                 break;
+            case maxValueLength:
+                action = new MaxValueLength();
+                break;
             case splitDocToSentences:
                 action = new SplitDocToSentences();
                 break;
@@ -221,6 +224,43 @@ public class ProcessExamples
         public Object result()
         {
             return max;
+        }
+    }
+    
+    private static class MaxValueLength implements Action<Event3Example>
+    {
+
+        private int max = -1, avg = 0, count = 0;
+
+        @Override
+        public Object act(Event3Example example)
+        {
+            int v = -1;
+            String events = example.getEvents();
+            for(String event : events.split("\n"))
+            {
+                if(event.contains("$"))
+                {
+                    for(String token : event.split("\t"))
+                    {
+                        if(token.startsWith("$"))
+                        {
+                            v = token.split(":")[1].split(" ").length;
+                            if (v > max)                         
+                                max = v;
+                            avg += v;
+                            count++;
+                        }                        
+                    }
+                }
+            }            
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return String.format("Max=%s, Avg=%.3f", max, (double)avg/(double)count);
         }
     }
 

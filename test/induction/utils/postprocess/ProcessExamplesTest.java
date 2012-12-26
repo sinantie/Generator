@@ -68,8 +68,9 @@ public class ProcessExamplesTest
 //                 + "-actionType averageWordsPerDocument "; // 52.07
 //                 + "-actionType averageWordsPerSentence"; // 11.97
 //                 + "-actionType maxDocLength"; // 153
+                 + "-actionType maxValueLength"; // 153
 //                 + "-actionType splitDocToSentences";
-                 + "-actionType exportExamplesAsSentences";
+//                 + "-actionType exportExamplesAsSentences";
 //                 + "-actionType averageSentencesPerDocument";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        

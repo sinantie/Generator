@@ -19,7 +19,7 @@ public class Event3Example
     
     public Event3Example(String name, String text, String events, String alignments)
     {
-        records = new String[] {name, text, events, alignments};        
+        records = new String[] {name, text, events, alignments,  null};        
     }
     
     public Map<String, String> getEventsMap()
@@ -55,7 +55,7 @@ public class Event3Example
     {        
         return String.format(".id:%s\t%s", id, tokens);
     }
-    
+        
     public String getName()
     {
         return records.length > 0 ? records[0] : "";
@@ -78,7 +78,7 @@ public class Event3Example
     
     public boolean hasAlignments()
     {
-        return records.length > 3;
+        return records[3] != null;
     }
     
     public String getTree()
@@ -88,7 +88,7 @@ public class Event3Example
 
     public boolean hasTree()
     {
-        return records.length > 4;
+        return records[4] != null;
     }
     
     public int getNumberOfRecords()
@@ -100,10 +100,10 @@ public class Event3Example
     public String toString()
     {
         if(hasTree())
-            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s$RECORD_TREE\n%s\n$ALIGN\n%s\n", 
+            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s$RECORD_TREE\n%s\n$ALIGN\n%s", 
                 getName(), getText(), getEvents(), getTree(), getAlignments());
         if(hasAlignments())
-            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s$ALIGN\n%s\n", 
+            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s\n$ALIGN\n%s", 
                 getName(), getText(), getEvents(), getAlignments());
         return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s", 
             getName(), getText(), getEvents());

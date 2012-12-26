@@ -23,17 +23,17 @@ dist/stanford-postagger-2010-05-26.jar \
 -binarize right \
 -markovOrder 0 \
 -delimitSentences \
+-useEventTypeNames \
 -extractRecordTrees \
 -suffix ${suffix} \
--initType random \
--modifiedBinarization
+-initType staged
 
 #-predInput ${predInput} \
 #-ruleCountThreshold 5
 #-examplesInSingleFile \
 #-exportEvent3 \
 #-modifiedBinarization
-#-useEventTypeNames
+#-useEventTypeNames\
 #-extractRecordTrees
 #-countRepeatedRecords
 #-countSentenceNgrams

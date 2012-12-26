@@ -12,7 +12,7 @@ public class ProcessExamplesOptions
 { 
     public enum ActionType {averageAlignmentsPerExample, averageFieldsWithNoValuePerRecord,
                             averageWordsPerSentence, averageWordsPerDocument, 
-                            averageSentencesPerDocument, maxDocLength, splitDocToSentences,
+                            averageSentencesPerDocument, maxDocLength, maxValueLength, splitDocToSentences,
                             exportExamplesAsSentences};
     
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();    

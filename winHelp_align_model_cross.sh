@@ -8,8 +8,8 @@ exec=winHelp_align_model.sh
 #outputPath=results/output/winHelp/alignments/model_3_sents_staged_no_null_cleaned_objType
 
 #inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all
-#inputPath=data/branavan/winHelpHLA/folds/sents.cleaned.norm
-inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation
+inputPath=data/branavan/winHelpHLA/folds/sents.newAnnotation
+#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation
 outputPath=results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation
 
 initType=random
@@ -21,10 +21,10 @@ folds=10
 mkdir -p $outputPath
 
 #Folds
-#for (( f=1; f<=folds; f++ ))
-#do
-#	./${exec} ${inputPath}/winHelpFold${f}Train ${outputPath}/fold${f} ${numIters} ${numThreads}
-#done
+for (( f=1; f<=folds; f++ ))
+do
+	./${exec} ${inputPath}/winHelpFold${f}Train ${outputPath}/fold${f} ${numIters} ${numThreads}
+done
 
 #All
-./${exec} ${inputPath} ${outputPath}/all ${numIters} ${numThreads}
+#./${exec} ${inputPath} ${outputPath}/all ${numIters} ${numThreads}
