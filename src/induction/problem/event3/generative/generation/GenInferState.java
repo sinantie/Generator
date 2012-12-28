@@ -131,20 +131,7 @@ public class GenInferState extends InferState
         
         if(opts.fullPredRandomBaseline)
         {
-            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()),
-                           new Hypergraph.HyperedgeInfo<Widget>()   
-            {
-                public double getWeight()
-                {
-                    return 1;
-                }
-                public void setPosterior(double prob)
-                { }
-                public Widget choose(Widget widget)
-                {
-                    return widget;
-                }
-            });
+            this.hypergraph.addEdge(hypergraph.prodStartNode(), genEvents(0, ((Event3Model)model).boundary_t()));
         } // if
         else
         {
@@ -549,6 +536,8 @@ public class GenInferState extends InferState
                 @Override
                 public Pair getWeightAtRank(int rank)
                 {
+                    if(rank > 0)
+                        return null;
                     return new Pair(1.0, valueWords.get(posInFieldValue));
                 }
 
@@ -723,16 +712,8 @@ public class GenInferState extends InferState
             {
                 hypergraph.addEdge(node,
                                    genWord(begin, c, event, field, posInFieldValue),
-                                   genField(begin + 1, end, c, event, field, incrPosInFieldValue ? posInFieldValue + 1 : posInFieldValue),
-                                   new Hypergraph.HyperedgeInfo<Widget>() {
-                    public double getWeight() {
-                        return 1.0;
-                    }
-                    public void setPosterior(double prob) { }
-                    public Widget choose(Widget widget) {
-                        return widget;
-                    }
-                });
+                                   genField(begin + 1, end, c, event, field, 
+                                   incrPosInFieldValue ? posInFieldValue + 1 : posInFieldValue));
             }
         }
         else
@@ -746,16 +727,7 @@ public class GenInferState extends InferState
                     list.add(genWord(i, c, event, field, posInFieldValue + iIter)); 
                     iIter = incrPosInFieldValue ? iIter + 1 : 0;
                 }
-                hypergraph.addEdge(node, list, new Hypergraph.HyperedgeInfo<Widget>()
-                {
-                    public double getWeight() {
-                        return 1.0;
-                    }
-                    public void setPosterior(double prob) { }
-                    public Widget choose(Widget widget) {
-                        return widget;
-                    }
-                });
+                hypergraph.addEdge(node, list);
             }
         }
         return node;
@@ -862,10 +834,6 @@ public class GenInferState extends InferState
                         }
                         public void setPosterior(double prob) { }
                         public GenWidget choose(GenWidget widget) {
-//                            System.out.println(String.format("event=%s, i=%d, j=%d, f0=%s, f=%s",
-//                                  ex.events[event].toString(), i, j,
-//                                  inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(f0),
-//                                  inferState.getEventTypes()[ex.events[event].getEventTypeIndex()].fieldToString(fIter)));
                             for(int k = i; k < j; k++)
                             {
                                 widget.getFields()[c][k] = fIter;

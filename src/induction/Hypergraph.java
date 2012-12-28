@@ -777,6 +777,9 @@ public class Hypergraph<Widget> {
     }
 
   }
+  public void addEdge(Object source, ArrayList dest) {
+    addEdge(source, dest, nullHyperedgeInfo);  
+  }          
   public void addEdge(Object source, ArrayList dest, AHyperedgeInfo<Widget> info) {
     assert source != invalidNode;
     if(debug)

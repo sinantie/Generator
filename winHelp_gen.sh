@@ -31,18 +31,14 @@ java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -outputExampleFreq 100  \
 -lengthPredictionMode gold \
 -ngramSize 3 \
--binariseAtWordLevel \
 -useStopNode \
--forceOutputOrder \
 -modelType generate \
--maxPhraseLength 5  \
+-maxPhraseLength 18  \
 -reorderType eventType \
--wordsPerRootRule \
--maxDocLength 150 \
--docLengthBinSize 10 \
 -allowConsecutiveEvents
 #-allowNoneEvent
 
+#-binariseAtWordLevel \
 #-lengthPredictionModelFile ${lengthPredictionFile} \
 #-lengthPredictionFeatureType ${lengthPredictionFeatureType} \
 #-lengthPredictionStartIndex 2 \

@@ -177,12 +177,7 @@ public class GenInferStatePCFG extends GenInferState
                 list.add(genEdge(0, ex.N(), indexer.getIndex("S")));
             if(!opts.useStopNode)
                 list.add(endSymbol);
-            this.hypergraph.addEdge(hypergraph.sumStartNode(), list,
-                new Hypergraph.HyperedgeInfo<Widget>() {
-                    public double getWeight() {return 1;}
-                    public void setPosterior(double prob) {}
-                    public Widget choose(Widget widget) {return widget;}
-                });
+            this.hypergraph.addEdge(hypergraph.sumStartNode(), list);
         } // else
     }
 
