@@ -393,7 +393,7 @@ public class GenInferStatePCFG extends GenInferState
             } // if            
             else
             {
-//                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);                                    
+//                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
                 final HashMap<CFGRule, Integer> candidateRules = cfgRules.get(lhs);
                 for(final Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                 {

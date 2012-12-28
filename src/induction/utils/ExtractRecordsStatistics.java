@@ -327,14 +327,19 @@ public class ExtractRecordsStatistics
                     tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(origTree, opts.markovOrder) : TreeUtils.rightBinarize(origTree, opts.markovOrder);
                     for (Tree<String> subtree : tree.subTreeList())
                     {
-                        if(subtree.getChildren().size() > 1)
+                        if(!subtree.getChildren().isEmpty())
                         {
                             String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
                             Tree<String> ch = subtree.getChildren().get(0);
-                            String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
-                            ch = subtree.getChildren().get(1);
-                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
-                            rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
+                            String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                            if(subtree.getChildren().size() > 1)
+                            {
+                                ch = subtree.getChildren().get(1);
+                                String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                                rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
+                            }
+                            else if(!subtree.isPreTerminal()) // unary rules
+                                rules.add(String.format("%s -> %s", lhs, rhs1));
                         } // if
                     } // for
                 } // else

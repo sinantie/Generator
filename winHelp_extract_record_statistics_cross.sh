@@ -6,17 +6,13 @@
 #!/bin/bash
 
 exec=winHelp_extract_record_statistics.sh
-#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all
-inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
-#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
-#execDir=data/branavan/winHelpHLA/
-execDir=data/branavan/winHelpHLA/folds/treebanks
 stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
-#stagedParamsFile=data/branavan/winHelpHLA
 suffix=NewAnnotationMarkov0
 
+#Folds
+inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
+execDir=data/branavan/winHelpHLA/folds/treebanks
 folds=10
-
 mkdir -p $execDir
 
 for (( f=1; f<=folds; f++ ))
@@ -25,5 +21,9 @@ do
 done
 
 #All
+#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
+#execDir=data/branavan/winHelpHLA/
+
 #./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix}
+
 #./${exec} ${inputPath} ${stagedParamsFile} ${execDir} ${suffix}

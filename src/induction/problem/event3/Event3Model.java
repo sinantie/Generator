@@ -256,8 +256,16 @@ public abstract class Event3Model extends WordModel
     }
     
     public int getCfgRuleIndex(CFGRule rule)
-    {        
-        return cfgRules.get(rule.getLhs()).get(rule);        
+    {   
+        int t = -1;
+        try {
+            t = cfgRules.get(rule.getLhs()).get(rule);
+        }
+        catch(NullPointerException ne) {
+            System.out.println(rule);
+        }
+//        return cfgRules.get(rule.getLhs()).get(rule);
+        return t;
     }
     
     public boolean containsCfgRule(CFGRule rule)

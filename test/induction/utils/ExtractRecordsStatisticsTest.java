@@ -69,7 +69,7 @@ public class ExtractRecordsStatisticsTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-    @Test
+//    @Test
     public void testWeather()
     {     
         String args = 
@@ -111,7 +111,7 @@ public class ExtractRecordsStatisticsTest
         ers.testExecute();
     }
     
-//    @Test
+    @Test
     public void testWinHelp()
     {     
         String args = 
@@ -121,16 +121,17 @@ public class ExtractRecordsStatisticsTest
                  + "-extractRecordTrees "
 //                 + "-ruleCountThreshold 5 "
                  + "-binarize right "
-                 + "-modifiedBinarization "
+//                 + "-modifiedBinarization "
+                 + "-markovOrder 0 "
                  + "-extractNoneEvent "
-//                 + "-useEventTypeNames "
+                 + "-useEventTypeNames "
 //                 + "-countSentenceNgrams "
 //                 + "-countDocumentNgrams "
 //                 + "-writePermutations "
                  + "-delimitSentences "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation "
                  + "-execDir data/branava/winHelpHLA "
                  + "-initType random "
                  + "-stagedParamsFile data/branavan/winHelpHLA/stage1.init.params.obj.gz "

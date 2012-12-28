@@ -85,7 +85,8 @@ public class MergeParamsWithExternalTreebank
             for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
             {
                 Tree<String> subtree = it.next();
-                if(Utils.countableRule(subtree)) // count only the binary rules
+//                if(Utils.countableRule(subtree)) // count only the binary rules
+                if(subtree.getChildren().size() > 1) // count only the binary rules
                 {
                     CFGRule rule = new CFGRule(subtree, model.getRulesIndexer());
                     cfgRulesChoices.get(rule.getLhs()).addCount(model.getCfgRuleIndex(rule), 1.0);
