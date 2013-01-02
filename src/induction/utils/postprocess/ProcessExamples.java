@@ -1,11 +1,20 @@
 package induction.utils.postprocess;
 
+import induction.Options.InitType;
 import induction.Utils;
 import induction.problem.event3.Event3Example;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.utils.humanevaluation.ExportScenarios;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -53,6 +62,11 @@ public class ProcessExamples
                 break;
             case exportExamplesAsSentences:
                 action = new ExportExamplesAsSentences(opts.lmOrder, opts.splitSentences);
+                break;
+            case computePermMetrics:
+                Event3Model model = new GenerativeEvent3Model(opts.modelOpts);
+                model.init(InitType.staged, opts.modelOpts.initRandom, "");            
+                action = new ComputePermMetrics(opts.fullPredOutput, opts.predFileType, model.eventTypeStrArray());
                 break;
         }
         examples = Utils.readEvent3Examples(opts.modelOpts.inputPaths, opts.modelOpts.inputLists, opts.modelOpts.examplesInSingleFile);
@@ -386,6 +400,75 @@ public class ProcessExamples
                 out.append(e);
             }
             return out.toString();
+        }
+    }
+
+    private static class ComputePermMetrics implements Action<Event3Example>
+    {
+
+        private Map<String, Collection<Integer>> predRecordsMap;
+        int total;
+        float wer;
+        
+        public ComputePermMetrics(String predPath, ProcessExamplesOptions.PredFileType predFileType, String[] eventTypeNamesAr)
+        {
+            Set<String> eventTypeNames = new HashSet<String>();
+            Collections.addAll(eventTypeNames, eventTypeNamesAr);
+            predRecordsMap = new HashMap<String, Collection<Integer>>();
+            if(predFileType == ProcessExamplesOptions.PredFileType.alignment)
+                readRecordsFromAlignInput(Utils.readLines(predPath), eventTypeNames);
+            else
+                readRecordsFromGenInput(Utils.readLines(predPath), eventTypeNames);
+        }
+
+        private void readRecordsFromGenInput(String[] lines, Set<String> eventTypeNames)
+        {
+            for(int i = 0; i < lines.length; i++)
+            {
+                String name = lines[i]; // first line is the name
+                i += 3; // skip three lines (name, text and an empty line)
+                Collection<Integer> records = ExportScenarios.processEventsLine(lines[i], eventTypeNames, null, false, false);
+                i += 2; // skip two lines (scores, and an empty line)
+                predRecordsMap.put(name, records);
+            }
+        }
+        
+        private void readRecordsFromAlignInput(String[] lines, Set<String> eventTypeNames)
+        {
+            for(String line : lines) // each line contains a seperate example
+            {
+                // each piece of information is split with tabs. We need to identify the portion that contains the prediction
+                String[] chunks = line.split("\t");
+                // first chunk contains the name ending in ':'
+                String name = chunks[0].substring(0, chunks[0].lastIndexOf(":"));                 
+                // find the end of the prediction. Default is the size of the array, in case the line does not contain the gold alignment.
+                int endPos = chunks.length;
+                for(int i = 2; i < chunks.length; i++)
+                    if(chunks[i].equals("- True:"))
+                        endPos = i;
+                String pred = Arrays.toString(Arrays.copyOfRange(chunks, 2, endPos));
+                Collection<Integer> records = ExportScenarios.processEventsLine(pred, eventTypeNames, null, false, false);
+                predRecordsMap.put(name, records);
+            }
+        }
+        
+        @Override
+        public Object act(Event3Example example)
+        {
+            if(predRecordsMap.containsKey(example.getName()))
+            {
+                Integer[] gold = Event3Example.getFlatAlignments(example.getAlignments()).toArray(new Integer[0]);
+                Integer[] pred = predRecordsMap.get(example.getName()).toArray(new Integer[0]);
+                wer += Utils.computeWER(pred, gold);
+                total++;
+            }            
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return wer / (float) total;
         }
     }
 

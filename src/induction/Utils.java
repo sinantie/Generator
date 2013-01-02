@@ -592,35 +592,24 @@ public class Utils
      * @return word error rate for current hypothesis against transcription
      */
     public static float computeWER(String lineTrans, String trueTrans)
-    {
-        int ld = 0;
+    {        
+        return computeWER(lineTrans.toUpperCase().split("\\p{Space}"), trueTrans.toUpperCase().split("\\p{Space}"));
+    }
 
-        StringTokenizer transTok = new StringTokenizer(lineTrans.toUpperCase());
-        String[] transArray = new String[transTok.countTokens()];
-        for(int i = 0; i < transArray.length; i++)
-        {
-            transArray[i] = transTok.nextToken();
-        }
-
-        StringTokenizer trueTok = new StringTokenizer(trueTrans.toUpperCase());
-        String[] trueArray = new String[trueTok.countTokens()];
-        for(int i = 0; i < trueArray.length; i++)
-        {
-            trueArray[i] = trueTok.nextToken();
-        }
+    public static float computeWER(Object[] transArray, Object[] trueArray)
+    {        
+        int ld = 0;                
         if(transArray.length == 0)
         {
-            transArray = new String[1];
-            transArray[0] = " ";
-        }
+            transArray = new Object[1];
+        }       
         // compute levenshtein distance
         ld = getLevenshteinDistance(trueArray, transArray);
 
         return (float) ld / (float) trueArray.length;
     }
-
-
-    public static int getLevenshteinDistance (String[] s, String[] t) {
+    
+    public static int getLevenshteinDistance (Object[] s, Object[] t) {
         if (s == null || t == null) {
             throw new IllegalArgumentException("Strings must not be null");
         }
@@ -659,7 +648,7 @@ public class Utils
         int i; // iterates through s
         int j; // iterates through t
 
-        String t_j; // jth character of t
+        Object t_j; // jth character of t
 
         int cost; // cost
 

@@ -142,7 +142,8 @@ public class ExportScenarios
         }
         catch(IOException ioe)
         {
-            ioe.printStackTrace();
+            System.err.println(ioe.getMessage());
+//            ioe.printStackTrace();
         }
     }
     
@@ -277,7 +278,7 @@ public class ExportScenarios
                 // after two lines we have the generated events
                 scn.getEventIndices(type).addAll(processEventsLine(lines[i + 3],
                                               scn.getEventTypeNames(),
-                                              scn, false));                                
+                                              scn, false, true));                                
                 return true;
             }
         }
@@ -293,10 +294,10 @@ public class ExportScenarios
      * match the event's name to the id captured earlier in the Scenario
      * @return a set of events id
      */
-    private Collection<Integer> processEventsLine(String line, Set<String> eventTypeNames,
-            Scenario scn, boolean ignoreTrueId)
+    public static Collection<Integer> processEventsLine(String line, Set<String> eventTypeNames,
+            Scenario scn, boolean ignoreTrueId, boolean orderRecords)
     {
-        Set<Integer> ids = new TreeSet();
+        Collection<Integer> ids = orderRecords ? new TreeSet() : new ArrayList();
         // we are interested only in the eventId to cross match with the
         // events array already captured. Event instances are of the type
         // eventType(eventId), so we split on the eventId parentheses
@@ -334,7 +335,7 @@ public class ExportScenarios
             return false;
         scn.setText(GABOR, ge.getPredText());
         scn.getEventIndices(GABOR).addAll(processEventsLine(ge.getPredEvents(),
-            scn.getEventTypeNames(), scn, nullifyOrder));
+            scn.getEventTypeNames(), scn, nullifyOrder, true));
         return true;
     }
 

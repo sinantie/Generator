@@ -1,7 +1,10 @@
 package induction.problem.event3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,6 +52,22 @@ public class Event3Example
         for(int i = 0; i < tokens.length; i++)
             ar[i + 1] = tokens[i];
         return packEvents(ar);
+    }
+    
+    public static Collection<Integer> getFlatAlignments(String alignments)
+    {
+        List<Integer> recordsList = new ArrayList<Integer>();        
+        for(String line : alignments.split("\n"))
+        {
+            String[] tokens = line.split(" ");
+            for(int i = 1; i < tokens.length; i++) // ignore first character which is the line number
+            {
+                Integer r = Integer.valueOf(tokens[i]);
+                if(recordsList.isEmpty() || !recordsList.contains(r))
+                    recordsList.add(r);
+            }
+        }
+        return recordsList;
     }
     
     public static String packEvents(int id, String tokens)

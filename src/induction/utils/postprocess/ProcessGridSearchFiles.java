@@ -134,14 +134,14 @@ public class ProcessGridSearchFiles
     
     public static void main(String[] args)
     {
-        String path = "results/output/weatherGov/generation/dependencies/final/";
-        String formattedString = "model_3_$param1$-best_0.01_NO_STOP_inter$param2$_hypRecomb_lmLEX_allowNone_POS_NO_STOP";
-        String outputFile = "results/output/weatherGov/generation/dependencies/final/grid.POS.results";
+        String path = "results/output/winHelp/generation/generative/no_pos/no_null/";
+        String formattedString = "model_3_docs_newAnnotation_$param1$-best_iter$param2$_max12_gold";
+        String outputFile = "results/output/winHelp/generation/generative/no_pos/no_null/grid_docs_newAnnotation.results";
 //        String path = "results/output/robocup/generation/dependencies/NO_POS/";        
 //        String formattedString = "model_3_$param1$-best_inter$param2$_new4";
 //        String outputFile = "results/output/robocup/generation/dependencies/NO_POS/grid.results";        
         double[] weights = null;// = {513.0, 365.0, 214.0, 311.0};
-        boolean crossValidate = false;
+        boolean crossValidate = true;
         
         if(args.length == 3)
         {

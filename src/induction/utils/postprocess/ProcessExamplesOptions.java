@@ -13,7 +13,8 @@ public class ProcessExamplesOptions
     public enum ActionType {averageAlignmentsPerExample, averageFieldsWithNoValuePerRecord,
                             averageWordsPerSentence, averageWordsPerDocument, 
                             averageSentencesPerDocument, maxDocLength, maxValueLength, splitDocToSentences,
-                            exportExamplesAsSentences};
+                            exportExamplesAsSentences, computePermMetrics};
+    public enum PredFileType {alignment, generation}
     
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();    
     @Option(required=true) public ActionType actionType;
@@ -21,5 +22,7 @@ public class ProcessExamplesOptions
     @Option(gloss="Total number of fields per record") public int totalNumberOfFields;
     @Option(gloss="Split sentences") public boolean splitSentences;
     @Option(gloss="The number of <s> to put in front of a sentence") public int lmOrder = 3;
+    @Option(gloss="The generation predicted output file that contains alignments") public String fullPredOutput;
+    @Option(gloss="The input type of the predicted output file (for computing permutation metrics only)") public PredFileType predFileType;
     
 }

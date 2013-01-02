@@ -42,7 +42,8 @@ public class Parameters
                           METEOR_METRIC = 4,
                           TER_METRIC = 5,
                           BLEU_METRIC_MODIFIED = 6,
-                          
+                          WER_METRIC = 12,
+          
                           EVENT_PRECISION_METRIC = 3,
                           EVENT_RECALL_METRIC = 4,
                           EVENT_F_MEASURE_METRIC = 5,
