@@ -65,10 +65,18 @@ public class ProcessExamplesTest
                  + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
                  + "-execDir "
                  + "statistics/winHelp "
+                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
+                 + "-predFileType generation " // 0.42509076
+                 + "-fullPredOutput "
+                 + "results/output/winHelp/generation/generative/no_pos/no_null/model_3_docs_newAnnotation_80-best_iter1_max12_gold/stage1.test.all.full-pred-gen "
+//                 + "-predFileType alignment " // 0.23474468
+//                 + "-fullPredOutput "
+//                 + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.full-pred.1 "
 //                 + "-actionType averageWordsPerDocument "; // 52.07
 //                 + "-actionType averageWordsPerSentence"; // 11.97
 //                 + "-actionType maxDocLength"; // 153
-                 + "-actionType maxValueLength"; // 18
+//                 + "-actionType maxValueLength"; // 18
+                 + "-actionType computePermMetrics";
 //                 + "-actionType splitDocToSentences";
 //                 + "-actionType exportExamplesAsSentences";
 //                 + "-actionType averageSentencesPerDocument";
