@@ -1,5 +1,7 @@
 package induction.runtime;
 
+import fig.basic.StopWatch;
+import fig.basic.StopWatchSet;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
@@ -51,7 +53,7 @@ public class GenerationPCFGWinHelpTest
                     + "-kBest 80 "
 //                    + "-ngramModelFile winHelpLM/docs.newAnnotation/srilm-abs-winHelpRL-docs-fold2-3-gram.model.arpa "
                     + "-ngramModelFile winHelpLM/kylm-abs-winHelpRL-docs-newAnnotation-3-gram.model.arpa "
-                    + "-ngramWrapper srilm "
+                    + "-ngramWrapper kylm "
 //                    + "-allowConsecutiveEvents "
                     + "-reorderType ignore "
 //                    + "-treebankRules data/branavan/winHelpHLA/folds/treebanks/recordTreebankRulesRightBinarizeNewAnnotationFold2 "
@@ -109,6 +111,7 @@ public class GenerationPCFGWinHelpTest
                 + "and_CC then_RB click_VB control_NN panel_NN</seg></p></doc>";
         String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");        
         System.out.println(in);
+        System.out.println(StopWatchSet.getStats());
 //        assertEquals(in, targetOutput);
     }
 }
