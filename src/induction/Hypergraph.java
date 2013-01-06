@@ -21,6 +21,7 @@ import induction.problem.event3.nodes.EventsNode;
 import induction.problem.event3.nodes.FieldsNode;
 import java.util.PriorityQueue;
 import static fig.basic.LogInfo.*;
+import org.apache.commons.collections15.map.LRUMap;
 
 /**
  * Provides a module for doing inference over discrete structures
@@ -567,25 +568,30 @@ public class Hypergraph<Widget> {
         
         private double getLMProb(List<Integer> ngram)
         {
+            String[] posNgramStr = secondaryNgramModel != null ? new String[ngram.size()] : null;
+            Double prob = cache.get(ngram); // check if it is in the cache first
+            if(prob == null)
+            {
 //            if(modelType == ModelType.semParse)
 //                return 1.0; // we currently don't support LM for semantic parsing
-            String[] ngramStr = new String[ngram.size()];
-            String[] posNgramStr = secondaryNgramModel != null ? new String[ngram.size()] : null;
-            String temp = "";
-            for(int i = 0; i < ngram.size(); i++)
-            {
-                String token = vocabulary.getObject(ngram.get(i));
-                temp = Utils.stripTag(token, tagDelimiter);
-                // ngram inferState needs to convert numbers to symbol <num>
-                // syntax parser can process numbers
-                ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel, tagDelimiter) : temp;
-                if(secondaryNgramModel != null)
-                    posNgramStr[i] = Utils.stripWord(token, false, tagDelimiter);
+                String[] ngramStr = new String[ngram.size()];
+                
+                String temp = "";
+                for(int i = 0; i < ngram.size(); i++)
+                {
+                    String token = vocabulary.getObject(ngram.get(i));
+                    temp = Utils.stripTag(token, tagDelimiter);
+                    // ngram inferState needs to convert numbers to symbol <num>
+                    // syntax parser can process numbers
+                    ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel, tagDelimiter) : temp;
+                    if(secondaryNgramModel != null)
+                        posNgramStr[i] = Utils.stripWord(token, false, tagDelimiter);
+                }
+                prob = ngramModel.getProb(ngramStr);
+                cache.put(ngram, prob); // update cache
             }
-
-            return secondaryNgramModel == null ? ngramModel.getProb(ngramStr) : 
-                    ngramModel.getProb(ngramStr) * interpolationFactor *
-                    secondaryNgramModel.getProb(posNgramStr) * (1-interpolationFactor);
+            return secondaryNgramModel == null ? prob : 
+                    prob * interpolationFactor * secondaryNgramModel.getProb(posNgramStr) * (1-interpolationFactor);
         }
 
         @Override
@@ -638,7 +644,8 @@ public class Hypergraph<Widget> {
   private final NodeInfo startNodeInfo = getNodeInfoOrFail(startNode);
   private final NodeInfo endNodeInfo = getNodeInfoOrFail(endNode);
   private Hyperedge terminalEdge = new Hyperedge(endNodeInfo, endNodeInfo, nullHyperedgeInfo);
-
+  private Map<List<Integer>, Double> cache;
+  
   public  void setup(AInferState inferState, boolean debug, ModelType modelType, boolean allowEmptyNodes,
                                         int K, NgramModel ngramModel, 
                                         NgramModel secondaryNgramModel,
@@ -676,6 +683,7 @@ public class Hypergraph<Widget> {
         this.graph = graph;
         if(graph != null)
             graph.addVertex(startNode);
+        cache = Collections.synchronizedMap(new LRUMap<List<Integer>, Double>(1000));
   }
 
     public void setNumbersAsSymbol(boolean numbersAsSymbol)

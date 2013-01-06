@@ -347,10 +347,10 @@ public class GenInferStatePCFG extends GenInferState
                         // respect minimum word span of each rhs non terminal
                         int rhs1 = indexer.getIndex(children.get(0).getLabel());
                         int rhs2 = indexer.getIndex(children.get(1).getLabel());
-                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
-                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);
-                        for(int k = start+minWordsRhs1; k <= end - minWordsRhs2; k++)
-//                        for(int k = start + 1; k < end ; k++)
+//                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
+//                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);
+//                        for(int k = start+minWordsRhs1; k <= end - minWordsRhs2; k++)
+                        for(int k = start + 1; k < end ; k++)
                         {                                                
                             hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
                                                      genEdge(k, end, children.get(1)),

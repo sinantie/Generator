@@ -31,6 +31,7 @@ public class KylmNgramWrapper extends NgramModel
         try
         {
             lm = nr.read(modelFile);
+            lm.setClosed(false);
         }
         catch(IOException e)
         {
