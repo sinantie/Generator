@@ -23,8 +23,8 @@
 #COMMENT weights parameter
 
 #WinHelp
-input=results/output/winHelp/generation/generative/no_pos/no_null
-formattedString=model_3_docs_\$param1\$-best_inter\$param2\$
+input=results/output/winHelp/generation/generative/no_pos/no_null/
+formattedString=model_3_docs_newAnnotation_\$param1\$-best_iter\$param2\$_gold
 output=${input}/grid_docs.results
 crossValidate=true
 #weights=509#505#506#515#508#510#505#484#500#471

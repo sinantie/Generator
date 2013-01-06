@@ -7,23 +7,23 @@
 
 exec=winHelp_extract_record_statistics.sh
 stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
-suffix=NewAnnotationMarkov0
+suffix=NewAnnotationMarkov1
 
 #Folds
-inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
-execDir=data/branavan/winHelpHLA/folds/treebanks
-folds=10
-mkdir -p $execDir
+#inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
+#execDir=data/branavan/winHelpHLA/folds/treebanks
+#folds=10
+#mkdir -p $execDir
 
-for (( f=1; f<=folds; f++ ))
-do
-	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f}
-done
+#for (( f=1; f<=folds; f++ ))
+#do
+#	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f}
+#done
 
 #All
-#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
-#execDir=data/branavan/winHelpHLA/
+inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
+execDir=data/branavan/winHelpHLA/
 
-#./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix}
+./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix}
 
 #./${exec} ${inputPath} ${stagedParamsFile} ${execDir} ${suffix}

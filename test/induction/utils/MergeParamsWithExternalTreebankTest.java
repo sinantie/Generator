@@ -54,15 +54,16 @@ public class MergeParamsWithExternalTreebankTest
                  + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
                  + "-execDir "
 //                 + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation_markov0_externalTreebank/fold1 "
-                 + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation_markov0_externalTreebank/all "
+                 + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation_markov1_externalTreebank/all "
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/fold1/stage1.params.obj.gz "
                  + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
 //                 + "-externalTreebankFile data/branavan/winHelpHLA/folds/treebanks/recordTreebankRightBinarizeNewAnnotationMarkov0Fold1 "
-                 + "-externalTreebankFile data/branavan/winHelpHLA/recordTreebankRightBinarizeNewAnnotationMarkov0 "
+                 + "-externalTreebankFile data/branavan/winHelpHLA/recordTreebankRightBinarizeNewAnnotationMarkov1 "
 //                 + "-treebankRules data/branavan/winHelpHLA/folds/treebanks/recordTreebankRulesRightBinarizeNewAnnotationMarkov0Fold1 "
-                 + "-treebankRules data/branavan/winHelpHLA/recordTreebankRulesRightBinarizeNewAnnotationMarkov0 "
-                 + "-maxDocLength 150 "
-                 + "-docLengthBinSize 10 "
+                 + "-treebankRules data/branavan/winHelpHLA/recordTreebankRulesRightBinarizeNewAnnotationMarkov1 "
+                 + "-maxDocLength 100 "
+                 + "-docLengthBinSize 15 "
+                 + "-initSmoothing 0.0001 "
                  + "-inputFileExt events ";
         MergeParamsWithExternalTreebankOptions opts = new MergeParamsWithExternalTreebankOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        

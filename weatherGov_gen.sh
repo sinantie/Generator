@@ -6,14 +6,14 @@ numThreads=1
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/model_3_15_NO_STOP_NEW/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz
-stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_no_windChill_sleet_externalTreebank/stage1.extTreebank.params.obj.gz
+stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_noNone_markov1_externalTreebank/stage1.extTreebank.params.obj.gz
 dmvModelParamsFile=results/output/weatherGov/dmv/train/weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz
-kBest=2
+kBest=60
 interpolationFactor=1
 #execDir=results/output/weatherGov/generation/dependencies/model_3_${kBest}-best_0.01_NO_STOP_inter${interpolationFactor}_condLM_hypRecomb_lmLEX_NO_STOP
 #execDir=results/output/weatherGov/generation/dev/model_3_${kBest}-best_0.01_NO_STOP
-execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_0.01_treebank_unaryRules_alignments_no_windChill_sleet_wordsPerRootRule_0.04_svrPredLength
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeNoSleetWindChillFilteredAligments
+execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_0.01_treebank_unaryRules_no_null_markov1_wordsPerRootRule_0.04_svrPredLength
+treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeNoNoneMarkov1
 
 java -Xmx2g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/lib/stanford-postagger-2010-05-26.jar \
@@ -46,10 +46,11 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -lengthPredictionStartIndex 4 \
 -lengthCompensation 0 \
 -numAsSymbol \
--allowNoneEvent \
 -binariseAtWordLevel \
--outputFullPred \
--excludedEventTypes sleetChance windChill
+-outputFullPred
+
+#-allowNoneEvent \
+#-excludedEventTypes sleetChance windChill
 
 # Record PCFG - Grammar/Treebank Input
 #-modelType generatePcfg \

@@ -1146,9 +1146,9 @@ public abstract class Event3Model extends WordModel
         LogInfo.end_track();
         if(opts.modelType == ModelType.generatePcfg)
         {
-            Utils.begin_track("Compute minimum number of span for rules...");
+//            Utils.begin_track("Compute minimum number of span for rules...");
             minWordsPerNonTerminal = new HashMap<Integer, Integer>();            
-            countMinWords(rulesIndexer.getIndex("S")); // we don't housekeep word spans for the start symbol 'S'
+//            countMinWords(rulesIndexer.getIndex("S")); // we don't housekeep word spans for the start symbol 'S'
             LogInfo.end_track();
         }
     }

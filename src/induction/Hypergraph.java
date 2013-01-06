@@ -1029,6 +1029,7 @@ public class Hypergraph<Widget> {
         for(int i = topologicalOrdering.size()-1; i >= 0; i--)
         {
             v = topologicalOrdering.get(i);
+            
             if(v != endNodeInfo)
             {                
                 kBest(v, IGNORE_REORDERING, Reorder.ignore); // don't mind about order                
@@ -1137,13 +1138,28 @@ public class Hypergraph<Widget> {
         List<Derivation> buf = new ArrayList<Derivation>();
         Derivation item;
         int[] mask;
+        boolean emptyEdge = false;
         for(int i = 0; i < v.edges.size(); i++) // for each incoming edge
         {
             Hyperedge edge = v.edges.get(i);
             // check whether the path has been blocked
             // (semParse: in case NumFieldValueNode is not spanning integers, block the whole hyperpath)
-            if(edge.dest.get(0).derivations != null && edge.dest.get(0).derivations.isEmpty())
+//            if(edge.dest.get(0).derivations != null && edge.dest.get(0).derivations.isEmpty())
+//                continue;
+            for(NodeInfo child : edge.dest)
+            {                
+//                if(edge.dest.get(j).derivations != null &&  edge.dest.get(j).derivations.isEmpty())
+//                if(child.edges.isEmpty())
+                if(child.derivations != null && child.derivations.isEmpty())
+                {                    
+                    emptyEdge = true; break;
+                }
+            }
+            if(emptyEdge)
+            {
+                emptyEdge = false;
                 continue;
+            }
             // mask is set to 0s, i.e. get the 1-best derivation of
             // the antedecendants of v
             if(edge.dest.size() == 1 || edge.dest.get(1) == endNodeInfo)

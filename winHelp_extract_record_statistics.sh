@@ -21,12 +21,12 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile}/stage1.params.obj.gz \
 -extractNoneEvent \
 -binarize right \
--markovOrder 0 \
+-markovOrder 1 \
 -delimitSentences \
--useEventTypeNames \
 -extractRecordTrees \
 -suffix ${suffix} \
--initType staged
+-initType staged \
+-useEventTypeNames
 
 #-predInput ${predInput} \
 #-ruleCountThreshold 5

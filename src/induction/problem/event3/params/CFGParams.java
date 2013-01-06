@@ -36,7 +36,7 @@ public class CFGParams extends AParams
         } // for  
         addVec(cfgRulesChoicesMap);
         binSize = model.getOpts().docLengthBinSize;
-        numOfBins = model.getOpts().maxDocLength/binSize;
+        numOfBins = (int)Math.ceil((double)model.getOpts().maxDocLength/(double)binSize);
         Map<CFGRule, Integer> rootRules = model.getCfgCandidateRules(model.getRulesIndexer().getIndex("S"));
         int numOfRootRules = rootRules.size();
         wordsPerRootRule = VecFactory.zeros2(vectorType, numOfRootRules, numOfBins);

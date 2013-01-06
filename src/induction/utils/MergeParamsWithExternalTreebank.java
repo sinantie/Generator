@@ -77,7 +77,8 @@ public class MergeParamsWithExternalTreebank
             // add 1 count to the corresponding document length bin of the root rule
             Example ex = examplesMap.get(treebankEntry.getKey());
             int N = ex.N();
-            int docLengthBin = N > opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;            
+//            int docLengthBin = N >= opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;   
+            int docLengthBin = N >= opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;   
             int indexOfRule = model.getCfgRuleIndex(new CFGRule(tree, model.getRulesIndexer()));
             cfgParams.getWordsPerRootRule()[indexOfRule].addCount(docLengthBin, 1.0);
             

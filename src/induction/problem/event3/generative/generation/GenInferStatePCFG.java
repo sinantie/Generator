@@ -68,7 +68,7 @@ public class GenInferStatePCFG extends GenInferState
             }
         }
         docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
-        excludeCfgRule(indexer.getIndex("S"));
+//        excludeCfgRule(indexer.getIndex("S"));
     }
     
     @Override
@@ -395,60 +395,64 @@ public class GenInferStatePCFG extends GenInferState
             {
 //                final HashMap<CFGRule, Integer> candidateRules = ((Event3Model)model).getCfgCandidateRules(lhs);
                 final HashMap<CFGRule, Integer> candidateRules = cfgRules.get(lhs);
-                for(final Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
+                if(candidateRules != null)
                 {
-//                    if(excludedCfgRules.contains(candidateRule.getKey()))
-//                        continue;
-                    final int rhs1 = candidateRule.getKey().getRhs1();                    
-                    final int indexOfRule =  candidateRule.getValue();
-                    final boolean isUnary = candidateRule.getKey().isUnary();
-                    final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(candidateRule.getKey()): false;
-                    if(isRootRule && get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) < opts.stage1.cfgThreshold)
-                        continue;
-//                    else if(isRootRule)
-//                        System.out.println(candidateRule + " " + get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin));
-                    if(isUnary) // unary trees
+                    for(final Entry<CFGRule, Integer> candidateRule : candidateRules.entrySet()) // try to expand every rule with the same lhs
                     {
-                        hypergraph.addEdge(node, genEdge(start, end, rhs1),
-                          new Hypergraph.HyperedgeInfo<GenWidget>() {                              
-                              public double getWeight() {
-                                  return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
-                                         (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
-                              }
-                              public void setPosterior(double prob) {}
-                              public GenWidget choose(GenWidget widget) {
-                                  if(opts.outputPcfgTrees)
-                                      widget.addEdge(candidateRule.getKey());
-                                  return widget;
-                              }
-                          }); 
-                    }
-                    else // binary trees only
-                    {                                                
-                        final int rhs2 = candidateRule.getKey().getRhs2();
-                        // respect minimum word span of each rhs non terminal
-                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
-                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);                        
-                        // break and cross on (hypothetical) punctuation                            
-                        int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start+1, end) : end;
-                        for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)
+    //                    if(excludedCfgRules.contains(candidateRule.getKey()))
+    //                        continue;
+                        final int rhs1 = candidateRule.getKey().getRhs1();                    
+                        final int indexOfRule =  candidateRule.getValue();
+                        final boolean isUnary = candidateRule.getKey().isUnary();
+                        final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(candidateRule.getKey()): false;
+                        if(isRootRule && get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) < opts.stage1.cfgThreshold)
+                            continue;
+    //                    else if(isRootRule)
+    //                        System.out.println(candidateRule + " " + get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin));
+                        if(isUnary) // unary trees
                         {
-                            hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
-                              new Hypergraph.HyperedgeInfo<GenWidget>() {                                      
+                            hypergraph.addEdge(node, genEdge(start, end, rhs1),
+                              new Hypergraph.HyperedgeInfo<GenWidget>() {                              
                                   public double getWeight() {
                                       return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
-                                         (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
+                                             (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
                                   }
                                   public void setPosterior(double prob) {}
                                   public GenWidget choose(GenWidget widget) {
                                       if(opts.outputPcfgTrees)
-                                        widget.addEdge(candidateRule.getKey());
+                                          widget.addEdge(candidateRule.getKey());
                                       return widget;
                                   }
-                              });
-                        } // for                        
-                    } // else
-                } // for
+                              }); 
+                        }
+                        else // binary trees only
+                        {                                                
+                            final int rhs2 = candidateRule.getKey().getRhs2();
+                            // respect minimum word span of each rhs non terminal
+    //                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
+    //                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);                        
+                            // break and cross on (hypothetical) punctuation                            
+                            int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start+1, end) : end;
+    //                        for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)
+                            for(int k = start + 1; k < end ; k++)
+                            {
+                                hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
+                                  new Hypergraph.HyperedgeInfo<GenWidget>() {                                      
+                                      public double getWeight() {
+                                          return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
+                                             (isRootRule ? get(cfgParams.getWordsPerRootRule()[indexOfRule], docLengthBin) : 1.0);
+                                      }
+                                      public void setPosterior(double prob) {}
+                                      public GenWidget choose(GenWidget widget) {
+                                          if(opts.outputPcfgTrees)
+                                            widget.addEdge(candidateRule.getKey());
+                                          return widget;
+                                      }
+                                  });
+                            } // for                        
+                        } // else
+                    } // for
+                } // if
             } // else
         } // if
         return node;
