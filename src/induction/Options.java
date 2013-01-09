@@ -147,6 +147,7 @@ public class Options {
   @Option(gloss="Document length bins") public int docLengthBinSize = 5;
   @Option(gloss="Maximum document length") public int maxDocLength = 90;
   @Option(gloss="Use words per root rule node parameter") public boolean wordsPerRootRule = false;
+  @Option(gloss="Maximum number of fields per event") public int maxNumOfFields = Integer.MAX_VALUE;
   
   //Dependencies
   @Option(gloss="Position of column of the word in the CONLL files (default=1)") public int connlWordPos = 1;

@@ -619,7 +619,7 @@ public class InferState extends Event3InferState
  
     // Generate segmentation of i...end into fields; previous field is f0
     protected Object genFields(final int i, final int end, int c, final int event,
-            final int f0, int efs)
+            final int f0, int efs, int curPos)
     {
         final EventTypeParams eventTypeParams = params.eventTypeParams[
                 ex.events.get(event).getEventTypeIndex()];
@@ -673,19 +673,19 @@ public class InferState extends Event3InferState
                 if(oneFieldPerEvent())
                 {
                     selectJ(end, i, end, c, event, f0, efs, eventTypeParams,
-                            eventTypeCounts, node);
+                            eventTypeCounts, node, curPos);
                 }
                 else if(newFieldPerWord())
                 {
                     selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams,
-                            eventTypeCounts, node);
+                            eventTypeCounts, node, curPos);
                 }
                 else
                 {
                     for(int k = i+1; k < end+1; k++)
                     {
                         selectJ(k, i, end, c, event, f0, efs, eventTypeParams,
-                                eventTypeCounts, node);
+                                eventTypeCounts, node, curPos);
                     }
                 }
             } // if
@@ -697,7 +697,7 @@ public class InferState extends Event3InferState
     protected void selectJ(final int j, final int i, int end, final int c, final int event,
                          final int f0, int efs,
                          final EventTypeParams eventTypeParams,
-                         final EventTypeParams eventTypeCounts, FieldsNode node)
+                         final EventTypeParams eventTypeCounts, FieldsNode node, int curPos)
     {
         // Choose a new field to talk about (including none field, but not boundary)
         for(int f = 0; f < ex.events.get(event).getF() + 1; f++)
@@ -714,7 +714,7 @@ public class InferState extends Event3InferState
                 int new_efs = (f == eventTypeParams.none_f) ? efs :
                     eventTypeParams.efs_addAbsent(efs, f); // Now, allow f to be absent as we've already taken care of it
                 hypergraph.addEdge(node, genField(i, j, c, event, f),
-                                   genFields(j, end, c, event, remember_f, new_efs),
+                                   genFields(j, end, c, event, remember_f, new_efs, curPos),
                                    new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                         if (prevIndepFields()) // f0 == boundary_f under indepFields, so use that
@@ -869,7 +869,7 @@ public class InferState extends Event3InferState
             {
                 // We have to choose event e and not the others
                 hypergraph.addEdge(node,
-                        genFields(i, j, c, event, eventTypeParams.boundary_f, efs), selectNoEvents(i, c),
+                        genFields(i, j, c, event, eventTypeParams.boundary_f, efs, -1), selectNoEvents(i, c),
                         new Hypergraph.HyperedgeInfo<Widget>() {
                     public double getWeight() {
                             return get(eventTypeParams.filters, Parameters.B_TRUE) /
@@ -888,7 +888,7 @@ public class InferState extends Event3InferState
         } // if
         else
         {
-            return genFields(i, j, c, event, eventTypeParams.boundary_f, efs);
+            return genFields(i, j, c, event, eventTypeParams.boundary_f, efs, -1);
         }
     }
 
@@ -1270,7 +1270,7 @@ public class InferState extends Event3InferState
         {
             for(int pc = 0; pc < ((Event3Model)model).getPC(); pc++) // Choose track bitmask pc
             {
-                final int pcIter = pc;
+            final int pcIter = pc;
                 hypergraph.addEdge(node, genPCEvents(i, j, t0, pc),
                     new Hypergraph.HyperedgeInfo<Widget>() {
                         public double getWeight() {

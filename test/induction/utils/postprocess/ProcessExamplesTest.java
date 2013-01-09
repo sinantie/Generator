@@ -27,7 +27,7 @@ public class ProcessExamplesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-    @Test
+//    @Test
     public void testWeather()
     {        
         String args = 
@@ -35,19 +35,19 @@ public class ProcessExamplesTest
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovTrainGabor.gz "
-//                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
+//                 + "data/weatherGov/weatherGovTrainGabor.gz "
+                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
                  + "statistics/weatherGov "
                  + "-stagedParamsFile results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.params.obj "
-//                 + "-predFileType generation " // 0.42509076
-//                 + "-fullPredOutput "
-//                 + "/home/sinantie/EDI/Generator/results/output/weatherGov/generation/pcfg/model_3_15-best_0.01_treebank_unaryRules_fixRecordSelection/stage1.test.full-pred-gen "
-                 + "-predFileType alignment " // 0.42520976
+                 + "-predFileType generation " // 0.42509076
                  + "-fullPredOutput "
-                 + "/home/sinantie/EDI/Generator/results/output/weatherGov/alignments/model_3_gabor_bigrams_again/stage1.train.full-pred.14 "
+                 + "/home/sinantie/EDI/Generator/results/output/weatherGov/generation/pcfg/model_3_60-best_0.01_treebank_unaryRules_no_null_markov1_wordsPerRootRule_0.04_svrPredLength/stage1.test.full-pred-gen "
+//                 + "-predFileType alignment " // 0.42520976
+//                 + "-fullPredOutput "
+//                 + "/home/sinantie/EDI/Generator/results/output/weatherGov/alignments/model_3_gabor_bigrams_again/stage1.train.full-pred.14 "
                  + "-actionType computePermMetrics";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
@@ -60,7 +60,7 @@ public class ProcessExamplesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-//    @Test
+    @Test
     public void testWinHelp()
     {        
         String args = 
@@ -72,12 +72,12 @@ public class ProcessExamplesTest
                  + "-execDir "
                  + "statistics/winHelp "
                  + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
-                 + "-predFileType generation " // 0.42509076
-                 + "-fullPredOutput "
-                 + "results/output/winHelp/generation/generative/no_pos/no_null/model_3_docs_newAnnotation_150-best_iter1_max18_gold/stage1.test.all.full-pred-gen "
-//                 + "-predFileType alignment " // 0.23474468
+//                 + "-predFileType generation " // 0.42509076
 //                 + "-fullPredOutput "
-//                 + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.full-pred.1 "
+//                 + "results/output/winHelp/generation/generative/no_pos/no_null/model_3_docs_newAnnotation_150-best_iter1_max18_gold/stage1.test.all.full-pred-gen "
+                 + "-predFileType alignment " // 0.23474468
+                 + "-fullPredOutput "
+                 + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.full-pred.1 "
 //                 + "-actionType averageWordsPerDocument "; // 52.07
 //                 + "-actionType averageWordsPerSentence"; // 11.97
 //                 + "-actionType maxDocLength"; // 153

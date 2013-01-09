@@ -18,8 +18,11 @@ public class CrossFoldPartitionDatasetTest
     public void setUp()
     {
     }
-   
-   @Test
+    
+   /**
+     * Partition the text of each example into raw sentences prefixed with <s> <s> and suffixed with </s>
+     */
+//   @Test
     public void testWinHelpSentences()
     {     
         String args = 
@@ -29,7 +32,7 @@ public class CrossFoldPartitionDatasetTest
                  + "-inputLists "
                  + "winHelpLM/winHelpRL-docs-newAnnotation-3-gram.sentences "
                  + "-execDir "
-                 + "data/branavan/winHelpHLA/folds/winHelpLM/new.annotation "
+                 + "data/branavan/winHelpHLA/folds/winHelpLM/docs.newAnnotation "
                  + "-prefix winHelp "
                  + "-folds 10 ";                 
         CrossFoldPartitionDatasetOptions opts = new CrossFoldPartitionDatasetOptions();
@@ -38,7 +41,10 @@ public class CrossFoldPartitionDatasetTest
         c.testExecute();
     }
    
-//   @Test
+    /**
+     * Partition event3 examples into whole documents
+     */
+   @Test
     public void testWinHelpDocs()
     {     
         String args = 
@@ -57,6 +63,9 @@ public class CrossFoldPartitionDatasetTest
         c.testExecute();
     }
    
+   /**
+    * Partition event3 examples and for each example split into separate sentences.
+    */
 //    @Test
     public void testWinHelpSents()
     {     
@@ -65,10 +74,11 @@ public class CrossFoldPartitionDatasetTest
                  + "-inputType event3 "
                  + "-examplesInSingleFile "
                  + "-inputLists "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
                  + "-execDir "
                  + "data/branavan/winHelpHLA/folds/sents.newAnnotation "
-                 + "-prefix winHelp "
+                 + "-splitDocToSentences "
+                 + "-prefix winHelp "                 
                  + "-folds 10 ";                 
         CrossFoldPartitionDatasetOptions opts = new CrossFoldPartitionDatasetOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        

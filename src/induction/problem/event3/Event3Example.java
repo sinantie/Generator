@@ -122,7 +122,7 @@ public class Event3Example
             return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s$RECORD_TREE\n%s\n$ALIGN\n%s", 
                 getName(), getText(), getEvents(), getTree(), getAlignments());
         if(hasAlignments())
-            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s\n$ALIGN\n%s", 
+            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s\n$ALIGN\n%s\n", 
                 getName(), getText(), getEvents(), getAlignments());
         return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s", 
             getName(), getText(), getEvents());

@@ -1,25 +1,22 @@
 #!/bin/bash
 
 exec=winHelp_align_model_staged.sh
-#inputPath=data/branavan/winHelpHLA/folds
-#inputPath=data/branavan/winHelpHLA/winHelpRL.sents.all.tagged
-
-#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
-inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
 outputPath=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
 stagedParamsFile=results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation
-
 numIters=2
 numThreads=2
-folds=10
 
 mkdir -p $outputPath
 
-#Folds
+# FOLDS
+inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
+folds=10
+
 for (( f=1; f<=folds; f++ ))
 do
 	./${exec} ${inputPath}/winHelpFold${f}Train ${outputPath}/fold${f} ${numIters} ${numThreads} ${stagedParamsFile}/fold${f}
 done
 
-#All
+# ALL
+#inputPath=data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation
 #./${exec} ${inputPath} ${outputPath}/all ${numIters} ${numThreads} ${stagedParamsFile}/all

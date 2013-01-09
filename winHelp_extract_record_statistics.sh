@@ -21,7 +21,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile}/stage1.params.obj.gz \
 -extractNoneEvent \
 -binarize right \
--markovOrder 1 \
+-markovOrder 0 \
 -delimitSentences \
 -extractRecordTrees \
 -suffix ${suffix} \

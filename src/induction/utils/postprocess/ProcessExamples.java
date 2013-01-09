@@ -351,7 +351,7 @@ public class ProcessExamples
         }
     }
 
-    private static class SplitDocToSentences implements Action<Event3Example>
+    public static class SplitDocToSentences implements Action<Event3Example>
     {
 
         private List<Event3Example> list = new ArrayList<Event3Example>();
@@ -359,6 +359,7 @@ public class ProcessExamples
         @Override
         public Object act(Event3Example example)
         {
+            List<Event3Example> doc = new ArrayList<Event3Example>();
             String[] textLines = example.getText().split("\n");
             int i = 0;
             Map<String, String> eventsMap = example.getEventsMap();
@@ -368,9 +369,10 @@ public class ProcessExamples
                 String[] alignIds = alignLine.split(" ");
                 String events = extractEvents(eventsMap, Arrays.copyOfRange(alignIds, 1, alignIds.length));
                 String alignments = alignLine(alignIds.length - 1);
-                list.add(new Event3Example(name, text, events, alignments));
+                doc.add(new Event3Example(name, text, events, alignments));
             }
-            return null;
+            list.addAll(doc);
+            return doc;
         }
 
         private String extractEvents(Map<String, String> events, String[] ids)

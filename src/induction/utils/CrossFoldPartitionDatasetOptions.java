@@ -18,4 +18,5 @@ public class CrossFoldPartitionDatasetOptions
     @Option(gloss="Prefix string to append to resulting fold files") public String prefix;
     @Option(gloss="Number of folds") public int folds;
     @Option(gloss="Shuffle input list before splitting to folds") public boolean shuffle = false;
+    @Option(gloss="Split input document to sentences (event3 only)") public boolean splitDocToSentences = false;
 }

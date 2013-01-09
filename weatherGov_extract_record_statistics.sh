@@ -10,7 +10,7 @@ stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor_cond_null_bi
 #stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.params.obj.gz
 predInput=results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.train.pred.14.sorted
 #predInput=results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted
-suffix=NoNoneAlignmentsMarkov1
+suffix=NoNoneMarkov0
 
 execDir=data/weatherGov/treebanks
 java -Xmx1g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
@@ -29,7 +29,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile} \
 -suffix ${suffix} \
 -binarize right \
--markovOrder 1 \
+-markovOrder 0 \
 -delimitSentences \
 -extractRecordTrees \
 -ruleCountThreshold 5 \

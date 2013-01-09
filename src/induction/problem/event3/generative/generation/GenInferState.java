@@ -735,26 +735,30 @@ public class GenInferState extends InferState
 
      // Generate segmentation of i...end into fields; previous field is f0
     @Override
-    protected Object genFields(final int i, final int end, int c, final int event, final int f0, int efs)
+    protected Object genFields(final int i, final int end, int c, final int event, final int f0, int efs, int curPos)
     {
         final EventTypeParams eventTypeParams = params.eventTypeParams[
                 ex.events.get(event).getEventTypeIndex()];
         FieldsNode node = new FieldsNode(i, end, c, event, f0, efs);
+        // restrict the number of chained fields by blocking the number of nested recursive calls to genFields(...).
+        // Doesn't always generate the best results
+        if(opts.maxNumOfFields < Integer.MAX_VALUE) 
+            curPos++;
         if(hypergraph.addSumNode(node))
-        {
+        {            
             if(oneFieldPerEvent())
             {
-                selectJ(end, i, end, c, event, f0, efs, eventTypeParams, null, node);
+                selectJ(end, i, end, c, event, f0, efs, eventTypeParams, null, node, curPos);
             }
             else if(newFieldPerWord())
             {
-                selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams, null, node);
+                selectJ(i+1, i, end, c, event, f0, efs, eventTypeParams, null, node, curPos);
             }
             else
             {
                 for(int k = i+1; k < end+1; k++)
                 {
-                    selectJ(k, i, end, c, event, f0, efs, eventTypeParams, null, node);
+                    selectJ(k, i, end, c, event, f0, efs, eventTypeParams, null, node, curPos);
                 }
             }
         } // if
@@ -766,17 +770,17 @@ public class GenInferState extends InferState
     protected void selectJ(final int j, final int i, int end, final int c, final int event,
                          final int f0, int efs,
                          final EventTypeParams eventTypeParams,
-                         final EventTypeParams eventTypeCounts, FieldsNode node)
+                         final EventTypeParams eventTypeCounts, FieldsNode node, int curPos)
     {
         // Choose a new field to talk about (including none field, but not boundary)
         for(int f = 0; f < ex.events.get(event).getF() + 1; f++)
         {
             final int fIter = f;
-            if(f == eventTypeParams.none_f || // If not none, then...
+            if((f == eventTypeParams.none_f || // If not none, then...
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
-               (!opts.limitFieldLength ||
-               j-i <= ex.events.get(event).getFields()[f].getMaxLength())))
+               (!opts.limitFieldLength || j-i <= ex.events.get(event).getFields()[f].getMaxLength()))) && 
+               curPos < opts.maxNumOfFields)
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :
@@ -824,7 +828,7 @@ public class GenInferState extends InferState
                             ((StrField)getField(event, f)).valueNumOfWords(getValue(event, f)) == j-i ? 0 : -1);
                     
                     hypergraph.addEdge(node, genField(i, j, c, event, f, posInFieldValue),
-                                       genFields(j, end, c, event, remember_f, new_efs),
+                                       genFields(j, end, c, event, remember_f, new_efs, curPos),
                                        new Hypergraph.HyperedgeInfoLM<GenWidget>() {
                         public double getWeight() {
                             if (prevIndepFields()) // f0 == boundary_f under indepFields, so use that

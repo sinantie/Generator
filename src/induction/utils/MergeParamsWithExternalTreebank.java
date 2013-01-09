@@ -86,15 +86,15 @@ public class MergeParamsWithExternalTreebank
             for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
             {
                 Tree<String> subtree = it.next();
-//                if(Utils.countableRule(subtree)) // count only the binary rules
-                if(subtree.getChildren().size() > 1) // count only the binary rules
+                if(Utils.countableRule(subtree)) // count only the binary or preterminal rules
+//                if(subtree.getChildren().size() > 1) // count only the binary rules
                 {
                     CFGRule rule = new CFGRule(subtree, model.getRulesIndexer());
                     cfgRulesChoices.get(rule.getLhs()).addCount(model.getCfgRuleIndex(rule), 1.0);
                 }
-                else // leaf or preterminal rule
+                else if(subtree.getChildren().size() > 0)// leaf node
                 {                    
-                    String label = tree.getLabel();
+                    String label = subtree.getLabel();
                     int t0 = label.equals("none") ? cfgParams.none_t : model.getEventTypeNameIndexer().getIndex(label);
                     if(t0 == cfgParams.none_t)
                         cparams.getEventTypeChoices()[cparams.boundary_t].addCount(cparams.none_t, 1.0);
@@ -103,9 +103,12 @@ public class MergeParamsWithExternalTreebank
                 }
             }
         }
+        // normalise cfg choices and eventType multinomial distributions
         cfgParams.optimise(opts.modelOpts.initSmoothing);
         for(Vec v : cfgParams.getVecs().values())
             v.setProbSortedIndices();
+        cparams.getEventTypeChoices()[cparams.boundary_t].normalise().addCount(opts.modelOpts.initSmoothing).normalise();
+        cparams.getEventTypeChoices()[cparams.boundary_t].setProbSortedIndices();
     }
     
     void testExecute()

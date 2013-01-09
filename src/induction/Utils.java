@@ -912,7 +912,7 @@ public class Utils
             PrintWriter out = IOUtils.openOut(filename);
             for(List list : lists)
             {
-                IOUtils.printLines(out, list);
+                IOUtils.printLinesNoNewLine(out, list);
             }
             out.close();
         }
