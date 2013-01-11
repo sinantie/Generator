@@ -24,7 +24,7 @@ public class SemParseWidget extends GenWidget
                      HashSet<Integer>[] eventTypeAllowedOnTrack,
                      Map<Integer, Integer> eventTypeIndices)
     {
-        super(events, fields, gens, numMethods, values,
+        super(events, fields, gens, numMethods, values, null, 
               eventTypeAllowedOnTrack, eventTypeIndices);
         scores = new double[Parameters.NUMBER_OF_METRICS_SEM_PAR];
     }

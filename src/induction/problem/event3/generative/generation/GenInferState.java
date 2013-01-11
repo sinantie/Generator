@@ -106,8 +106,8 @@ public class GenInferState extends InferState
             eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
         }
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
-                               newMatrixOne(),
-                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
+                             newMatrixOne(), newMatrixOne(),
+                             ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
     }
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)

@@ -26,10 +26,11 @@ public class GenWidget extends Widget
     public GenWidget(int [][]events, int[][] fields, int[][] gens,
                      int [][] numMethods,
                      int [] text,
+                     int[] startIndices,
                      HashSet<Integer>[] eventTypeAllowedOnTrack,
                      Map<Integer, Integer> eventTypeIndices)
     {
-        super(events, fields, gens, numMethods, null,
+        super(events, fields, gens, numMethods, startIndices,
               eventTypeAllowedOnTrack, eventTypeIndices);
         if(text != null)
         {
@@ -46,17 +47,18 @@ public class GenWidget extends Widget
      */
     public GenWidget(int[] text)
     {
-         this(null, null, null, null, text, null, null);
+         this(null, null, null, null, text, null, null, null);
     }
 
     /**
      * Constructor for gold-standard widget.
      * @param events the true events, for calculating Precision, Recall and F-1
      * @param text the gold-standard text, for calculating generation-oriented metrics
+     * @param startIndices the array holding the starting indices of each line in the text, for computing record WER
      */
-    public GenWidget(int[][] events, int[] text)
+    public GenWidget(int[][] events, int[] text, int[] startIndices)
     {
-         this(events, null, null, null, text, null, null);
+         this(events, null, null, null, text, startIndices, null, null);
          trueEvents = new ArrayList<Integer>();
          int prev = -5, cur;
          // consider 1st track first seperately
@@ -83,10 +85,11 @@ public class GenWidget extends Widget
     public GenWidget(int [][]events, int[][] fields, int[][] gens,
                      int [][] numMethods,
                      int [] text,
+                     int[] startIndices,
                      HashSet<Integer>[] eventTypeAllowedOnTrack,
                      Map<Integer, Integer> eventTypeIndices, String startSymbol)
     {
-        this(events, fields, gens, numMethods, text, eventTypeAllowedOnTrack, eventTypeIndices);        
+        this(events, fields, gens, numMethods, text, startIndices, eventTypeAllowedOnTrack, eventTypeIndices);        
         if(startSymbol != null)
         {            
             recordTree = new Tree<String>(startSymbol, false);
@@ -95,9 +98,9 @@ public class GenWidget extends Widget
         }
     }
     
-    public GenWidget(int[][] events, int[] text, Tree<String> recordTree)
+    public GenWidget(int[][] events, int[] text, int[] startIndices, Tree<String> recordTree)
     {
-        this(events, text);
+        this(events, text, startIndices);
         this.recordTree = recordTree;
     }
     

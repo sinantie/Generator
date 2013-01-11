@@ -3,14 +3,17 @@ package induction.problem.event3.generative.alignment;
 import induction.problem.AExample;
 import induction.problem.event3.params.Parameters;
 import fig.basic.EvalResult;
+import fig.basic.Fmt;
 import induction.Utils;
 import induction.problem.APerformance;
 import induction.problem.Pair;
 import induction.problem.event3.Constants;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Widget;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -26,7 +29,8 @@ public class AlignmentPerformance extends APerformance<Widget>
     protected  int[][] counts;    // Confusion matrix on event types
     // For each event type, number of correct (some of counts(t)(t) could be wrong)
     protected int[] correctCounts;
-    double totalWer = 0; // record permutations word error rate
+    protected float totalWer = 0; // record permutations word error rate
+    protected int totalCounts = 0;
     
     public AlignmentPerformance(Event3Model model)
     {
@@ -123,7 +127,11 @@ public class AlignmentPerformance extends APerformance<Widget>
                     }
                 }
             } // for
-            trueWidget.performance = subResult.toString();
+            
+            // compute record WER            
+            float wer = computeWer(trueWidget, predWidget);            
+           
+            trueWidget.performance = subResult.toString() + getWerResult(wer, 1);
         }
     }
 
@@ -141,7 +149,55 @@ public class AlignmentPerformance extends APerformance<Widget>
             }
         }
         return hit;
-    }            
+    }
+    
+    protected Integer[] computeGoldSequence(int[] startIndices, Widget widget)
+    {                
+        List<Integer> list = new ArrayList<Integer>();
+        for(int l = 0; l < startIndices.length-1; l++)
+        {
+            for(Integer e: widget.foreachEvent(startIndices[l]))
+            {
+                if(Parameters.isRealEvent(e))
+                {
+                    list.add(e);
+                }
+            } // for
+        } // for
+        return list.toArray(new Integer[0]);
+    }
+    
+    protected Integer[] computePredSequence(Widget widget)
+    {
+        List<Integer> list = new ArrayList<Integer>();
+        int prev = -5;
+        for(Integer cur : widget.getEvents()[0])
+        {            
+            if(Parameters.isRealEvent(cur))
+            {                
+                if(prev != cur)
+                    list.add(cur);
+                prev = cur;
+            }
+        }
+        return list.toArray(new Integer[0]);
+    }
+    
+    protected String getWerResult(float wer, int count)
+    {
+        return String.format(" WER = %s", Fmt.D(count > 1 ? wer : wer / (float)count));
+    }
+    
+    protected float computeWer(Widget trueWidget, Widget predWidget)
+    {
+        Integer[] trueSeq = computeGoldSequence(trueWidget.getStartIndices(), trueWidget);
+        Integer[] predSeq = computePredSequence(predWidget);
+        float wer = Utils.computeWER(predSeq, trueSeq);
+        totalWer += wer;
+        totalCounts++;
+        return wer;
+    }
+    
     protected void addResult(EvalResult subResult, boolean trueProbability,
                            boolean predictedProbability)
     {
@@ -198,7 +254,8 @@ public class AlignmentPerformance extends APerformance<Widget>
             table[T() + 1][pt + 1] = Utils.fmt(counts[T()][pt]);
         }
         table[T() + 1][T() + 1] = "";
-        return "\n" + result.toString() + "\n" +
+        return "\n" + result.toString() + "\n" + 
+                getWerResult(totalWer, totalCounts) + "\n" +
                 Utils.formatTable(table, Constants.Justify.RIGHT);
     }
 

@@ -991,13 +991,13 @@ public abstract class Event3Model extends WordModel
 //                            null, null, null, text.length,
 //                            null, null, null, opts.averageTextLength,
 //                            null, null, null, events.size()*opts.maxPhraseLength,
-                            new GenWidget(trueEvents, text)));
+                            new GenWidget(trueEvents, text, lineStartIndices)));
                     } // if (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.generatePcfg)
                     {                                            
                         examples.add(new Example(this, name, events,
                             opts.fixRecordSelection ? text : null, null, null, textLength,
-                            new GenWidget(trueEvents, text, opts.fixRecordSelection ? recordTree : null)));
+                            new GenWidget(trueEvents, text, lineStartIndices, opts.fixRecordSelection ? recordTree : null)));
                     } // if (generation WITH gold-standard text and possibly fixed Record Selection)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
@@ -1014,7 +1014,7 @@ public abstract class Event3Model extends WordModel
 //                                                      lineStartIndices,
 //                                                      eventTypeAllowedOnTrack,
 //                                                      eventTypeIndices)));
-                                           new GenWidget(trueEvents, text)));
+                                           new GenWidget(trueEvents, text, lineStartIndices)));
                     }
                     else
                     {

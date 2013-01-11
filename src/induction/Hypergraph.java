@@ -1075,7 +1075,7 @@ public class Hypergraph<Widget> {
             chooser = new HyperpathChooser();
             chooser.widget = (Widget)new GenWidget(newMatrix(1, N), newMatrix(1, N),
                                            newMatrix(1, N), newMatrix(1, N),
-                                           newMatrixOne(N), ((GenWidget)widget).getEventTypeAllowedOnTrack(),
+                                           newMatrixOne(N), newMatrixOne(N), ((GenWidget)widget).getEventTypeAllowedOnTrack(),
                                            ((GenWidget)widget).getEventTypeIndices());
             chooser.choose = true;
             this.k = k;

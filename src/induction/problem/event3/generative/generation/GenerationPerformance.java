@@ -8,6 +8,7 @@ import edu.cmu.meteor.Meteor;
 import edu.cmu.meteor.scorer.MeteorScorer;
 import edu.cmu.meteor.scorer.MeteorStats;
 import fig.basic.EvalResult;
+import fig.basic.Fmt;
 import fig.basic.Indexer;
 import induction.MyList;
 import induction.Utils;
@@ -74,7 +75,7 @@ public class GenerationPerformance extends AlignmentPerformance
             double precision = subResult.precision();
             double recall = subResult.recall();
             double f1 = subResult.f1();
-            
+            double wer = computeWer(trueWidget, predWidget);
             ((GenWidget)predWidget).scores[Parameters.BLEU_METRIC] = bleuScore;
             ((GenWidget)predWidget).scores[Parameters.BLEU_METRIC_MODIFIED] = bleuModifiedScore;
             ((GenWidget)predWidget).scores[Parameters.METEOR_METRIC] = meteorWidgetStats.score;
@@ -82,13 +83,15 @@ public class GenerationPerformance extends AlignmentPerformance
             ((GenWidget)predWidget).scores[Parameters.PRECISION_METRIC] = precision;
             ((GenWidget)predWidget).scores[Parameters.RECALL_METRIC] = recall;
             ((GenWidget)predWidget).scores[Parameters.F_MEASURE_METRIC] = f1;
+            ((GenWidget)predWidget).scores[Parameters.WER_METRIC] = wer;
             trueWidget.performance = "BLEU score : " + bleuScore +
                                      "\tBLEU modified score : " + bleuModifiedScore +
                                      "\tMETEOR score : " + meteorWidgetStats.score +
                                      "\tTER score : " + terScore +
                                      "\tPrecision : " + precision +
                                      "\tRecall: " + recall +
-                                     "\tF-measure : " + f1;
+                                     "\tF-measure : " + f1 +
+                                     "\tWER : " + wer;
 
         }
     }
@@ -135,7 +138,7 @@ public class GenerationPerformance extends AlignmentPerformance
         }
         return subResult;
     }
-
+    
     public static String widgetToString(Indexer<String> wordIndexer, GenWidget widget, String tagDelimiter)
     {
         return widgetToString(wordIndexer, widget, false, tagDelimiter);
@@ -176,21 +179,22 @@ public class GenerationPerformance extends AlignmentPerformance
         out += "\nfMean:\t\t\t" + meteorAggStats.fMean;
         out += "\nFragmentation penalty:\t" + meteorAggStats.fragPenalty;
         out += "\n";
-        out += "\nFinal score:\t\t" + meteorAggStats.score;
+        out += "\nFinal score:\t\t" + Fmt.D(meteorAggStats.score);
 
         out += "\n\nTER scores";
         out += "\n---------";
-        out += "\nTotal TER: " + (TERTotalEdits / TERTotalWords) + " (" +
+        out += "\nTotal TER: " + Fmt.D(TERTotalEdits / TERTotalWords) + " (" +
 			   TERTotalEdits + "/" + TERTotalWords + ")";
 	out += "\n\nNumber of calls to beam search: " + TERcalc.numBeamCalls();
 	out += "\nNumber of segments scored: " + TERcalc.numSegsScored();
 	out += "\nNumber of shifts tried: " + TERcalc.numShiftsTried();
 
-        out += "\n\nPrecision - Recall - F-measure";
+        out += "\n\nPrecision - Recall - F-measure - Record WER";
         out += "\n------------------------------";
-        out += "\nTotal Precision: " + result.precision();
-        out += "\nTotal Recall: " + result.recall();
-        out += "\nTotal F-measure: " + result.f1();
+        out += "\nTotal Precision: " + Fmt.D(result.precision());
+        out += "\nTotal Recall: " + Fmt.D(result.recall());
+        out += "\nTotal F-measure: " + Fmt.D(result.f1());
+        out += "\nTotal Record WER: " + Fmt.D(totalWer / (float) totalCounts);
         return out;
     }
 

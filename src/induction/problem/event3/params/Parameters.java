@@ -32,7 +32,7 @@ public class Parameters
                           S = 2;
   public static final String[] noiseToString = {"continue", "stop"};
 
-  public static final int NUMBER_OF_METRICS_GEN = 7,
+  public static final int NUMBER_OF_METRICS_GEN = 8,
                           NUMBER_OF_METRICS_SEM_PAR = 12,
                           
                           PRECISION_METRIC = 0,
@@ -42,7 +42,7 @@ public class Parameters
                           METEOR_METRIC = 4,
                           TER_METRIC = 5,
                           BLEU_METRIC_MODIFIED = 6,
-                          WER_METRIC = 12,
+                          WER_METRIC = 7,
           
                           EVENT_PRECISION_METRIC = 3,
                           EVENT_RECALL_METRIC = 4,

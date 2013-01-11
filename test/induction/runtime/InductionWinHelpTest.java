@@ -44,7 +44,7 @@ public class InductionWinHelpTest
                  + "-inputLists "
 //                 + "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged "
 //                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
 //                 + "data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Train "
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_cleaned_objType/all/stage1.params.obj.gz "                 
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation/all/stage1.params.obj.gz "

@@ -82,8 +82,8 @@ public class GenInferStatePCFG extends GenInferState
             eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
         }
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
-                               newMatrixOne(),
-                               ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices, 
+                             newMatrixOne(), newMatrixOne(),
+                             ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices, 
                                 opts.outputPcfgTrees ? "S" : null);
     }
     
