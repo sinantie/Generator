@@ -32,7 +32,9 @@ cp $origDir/$treebanksDir/* $destDir/$treebanksDir
 
 # copy kylm only LM files
 mkdir -p $destDir/$lmDir
+mkdir -p $destDir/winHelpLM
 cp $origDir/$lmDir/kylm* $destDir/$lmDir
+cp $origDir/$lmDir/kylm* $destDir/winHelpLM
 
 # copy models
 mkdir -p $destDir/$modelsDir
