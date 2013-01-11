@@ -7,7 +7,7 @@
 
 exec=winHelp_extract_record_statistics.sh
 stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
-suffix=NewAnnotationMarkov0
+suffix=NewAnnotation
 
 #FOLDS
 inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
