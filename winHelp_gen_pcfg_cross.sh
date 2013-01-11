@@ -12,7 +12,6 @@ ngramModelPath=winHelpLM/docs.newAnnotation
 dmvPath=results/output/winHelp/dmv/train/winHelp_uniformZ_initNoise_POS_auto_100
 lengthPredictionModelFolder=data/branavan/winHelpHLA/folds
 lengthPredictionFeatureType=counts
-numThreads=1
 folds=10
 
 #rm -fr $output

@@ -12,9 +12,9 @@ lengthPredictionFeatureType=$9
 shift 1
 treebankRules=$9
 
-java -Xmx6500m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
+java -Xmx20000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
--numThreads 1 \
+-numThreads 2 \
 -outputFullPred \
 -create \
 -overwriteExecDir \
