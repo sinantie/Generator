@@ -68,7 +68,8 @@ public class GenInferStatePCFG extends GenInferState
             }
         }
         docLengthBin = N > opts.maxDocLength ? params.cfgParams.getNumOfBins() - 1 : N / opts.docLengthBinSize;
-//        excludeCfgRule(indexer.getIndex("S"));
+        if(opts.nonRecursiveGrammar)
+            excludeCfgRule(indexer.getIndex("S"));
     }
     
     @Override
@@ -201,7 +202,6 @@ public class GenInferStatePCFG extends GenInferState
     }
     
     
-//    private Set<CFGRule> excludeCfgRules(Map<Integer, HashMap<CFGRule, Integer>> cfgRules, Map<Integer, List<Event>> eventsByEventType)
     private boolean excludeCfgRule(int lhs)
     {
         boolean excluded = false;
@@ -344,13 +344,24 @@ public class GenInferStatePCFG extends GenInferState
                     }
                     else // binary trees only
                     {
-                        // respect minimum word span of each rhs non terminal
-                        int rhs1 = indexer.getIndex(children.get(0).getLabel());
-                        int rhs2 = indexer.getIndex(children.get(1).getLabel());
-//                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
-//                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);
+                        int kStart, kEnd;
+                        // respect minimum word span of each rhs non terminal if the grammar is non-recursive
+                        if(opts.nonRecursiveGrammar)
+                        {
+                            int rhs1 = indexer.getIndex(children.get(0).getLabel());
+                            int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                            int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
+                            int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);
+                            kStart = start+minWordsRhs1;
+                            kEnd = end - minWordsRhs2 + 1;
 //                        for(int k = start+minWordsRhs1; k <= end - minWordsRhs2; k++)
-                        for(int k = start + 1; k < end ; k++)
+                        }
+                        else
+                        {
+                            kStart = start + 1;
+                            kEnd = end;
+                        }
+                        for(int k = kStart; k < kEnd; k++)
                         {                                                
                             hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
                                                      genEdge(k, end, children.get(1)),
@@ -428,13 +439,24 @@ public class GenInferStatePCFG extends GenInferState
                         else // binary trees only
                         {                                                
                             final int rhs2 = candidateRule.getKey().getRhs2();
-                            // respect minimum word span of each rhs non terminal
-    //                        int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
-    //                        int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);                        
-                            // break and cross on (hypothetical) punctuation                            
-                            int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start+1, end) : end;
-    //                        for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)
-                            for(int k = start + 1; k < end ; k++)
+                            int kStart, kEnd;
+                            // respect minimum word span of each rhs non terminal if the grammar is non-recursive
+                            if(opts.nonRecursiveGrammar)
+                            {
+                                int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);
+                                int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);
+                                // break and cross on (hypothetical) punctuation
+                                int nextBoundary = containsSentence(indexer, rhs1, rhs2) ? end(start+1, end) : end;
+                                kStart = start+minWordsRhs1;
+                                kEnd = nextBoundary - minWordsRhs2 + 1;
+      //                        for(int k = start+minWordsRhs1; k <= nextBoundary - minWordsRhs2; k++)d
+                            }
+                            else
+                            {
+                                kStart = start + 1;
+                                kEnd = end;
+                            }
+                            for(int k = kStart; k < kEnd ; k++)
                             {
                                 hypergraph.addEdge(node, genEdge(start, k, rhs1), genEdge(k, end, rhs2),
                                   new Hypergraph.HyperedgeInfo<GenWidget>() {                                      

@@ -26,7 +26,8 @@ public class AlignmentPerformance extends APerformance<Widget>
     protected  int[][] counts;    // Confusion matrix on event types
     // For each event type, number of correct (some of counts(t)(t) could be wrong)
     protected int[] correctCounts;
-
+    double totalWer = 0; // record permutations word error rate
+    
     public AlignmentPerformance(Event3Model model)
     {
         this.model = model;
@@ -140,7 +141,7 @@ public class AlignmentPerformance extends APerformance<Widget>
             }
         }
         return hit;
-    }
+    }            
     protected void addResult(EvalResult subResult, boolean trueProbability,
                            boolean predictedProbability)
     {

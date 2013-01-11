@@ -744,6 +744,8 @@ public class GenInferState extends InferState
         // Doesn't always generate the best results
         if(opts.maxNumOfFields < Integer.MAX_VALUE) 
             curPos++;
+//        if(curPos >= opts.maxNumOfFields)
+//            return hypergraph.invalidNode;
         if(hypergraph.addSumNode(node))
         {            
             if(oneFieldPerEvent())
@@ -780,7 +782,7 @@ public class GenInferState extends InferState
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength || j-i <= ex.events.get(event).getFields()[f].getMaxLength()))) && 
-               curPos < opts.maxNumOfFields)
+               curPos < opts.maxNumOfFields-1)
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :

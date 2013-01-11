@@ -65,7 +65,7 @@ public class GenerationPCFGWinHelpTest
                     + "-maxPhraseLength 12 "
                     + "-maxDocLength 100 "
                     + "-docLengthBinSize 15 "
-                    + "-maxNumOfFields 2 "
+//                    + "-maxNumOfFields 6 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
                     + "-lengthPredictionMode gold "

@@ -35,7 +35,7 @@ public class GenerationPerformance extends AlignmentPerformance
     MeteorStats meteorAggStats;
     TERMetric terScorer;
     double TERTotalEdits = 0.0, TERTotalWords = 0.0;
-
+    
     public GenerationPerformance(Event3Model model)
     {
         super(model);
@@ -230,68 +230,4 @@ public class GenerationPerformance extends AlignmentPerformance
     {
         Utils.write(path, output());
     }
-
-    //    private String modifyPredStr(String predStr, String trueStr,
-//                                 GenWidget predWidget, GenWidget trueWidget)
-//    {
-//        String[] predAr = predStr.split(" ");
-//        String[] trueAr = trueStr.split(" ");
-//        String tokenPr, tokenTr;
-//        ArrayList<Integer> identifiedIndices = new ArrayList<Integer>();
-//        int event, startIndex = -1, endIndex = -1;
-//        boolean changesMade = false;
-//        // parse each token of the predicted string and match any numbers
-//        for(int i = 0; i < predAr.length; i++)
-//        {
-//            tokenPr = predAr[i];
-//            // grab the event and identify the corresponding window of tokens
-//            // in the true string
-//            if(tokenPr.matches("\\p{Digit}+"))
-//            {
-//                event = predWidget.events[0][i]; // we are always on track 0
-//                for(int c = 0; c < trueWidget.events.length; c++)
-//                {
-//                    startIndex = endIndex = -1;
-//                    for(int k = 0; k < trueWidget.events[0].length; k++)
-//                    {
-//                        // indentify start and end index in the true string
-//                        if(trueWidget.events[c][k] == event)
-//                        {
-//                            startIndex = k;
-//                            while( k < trueWidget.events[0].length && trueWidget.events[c][k] == event)
-//                            {
-//                                k++;
-//                            }
-//                            endIndex = k;
-//                            break;
-//                        } // if
-//                    } // for
-//                    // search for numbers in the identified window of the true string
-//                    for(int j = startIndex; j < endIndex; j++)
-//                    {
-//                        tokenTr = trueAr[j];
-//                        // if we have not matched this number before
-//                        if(tokenTr.matches("\\p{Digit}+") && !identifiedIndices.contains(j))
-//                        {
-//                            // matched a deviation between numbers smaller than 5
-//                            if(Math.abs(Integer.valueOf(tokenPr) - Integer.valueOf(tokenTr)) <= 5 )
-//                            {
-//                                predAr[i] = tokenTr;
-//                                changesMade = true;
-//                                identifiedIndices.add(j);
-//                            }
-//                        }
-//                    }
-//                } // for
-//            } // if
-//        } // for
-//        if(changesMade)
-//        {
-//            String out = "";
-//            for(String s : predAr)
-//                out += s + " ";
-//            return out.trim();
-//        }
-//        return predStr;
-//    }
 }

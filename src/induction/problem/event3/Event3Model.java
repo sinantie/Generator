@@ -882,6 +882,9 @@ public abstract class Event3Model extends WordModel
             {
                 textLength = opts.averageTextLength;
             }
+            // apply max document length capping
+            if(textLength > opts.maxDocLength)
+                textLength = opts.maxDocLength;
             // Read text
             if(textInputExists)
             {
@@ -931,7 +934,10 @@ public abstract class Event3Model extends WordModel
                 // set text length                
 //                if(lengthPredictor == null)
                 if(opts.lengthPredictionMode == LengthPrediction.gold)
-                    textLength = text.length; // use gold value                
+                {
+                    // apply max document length capping if necessary            
+                    textLength = text.length < opts.maxDocLength ? text.length : opts.maxDocLength;
+                } // use gold value                
                 // Read alignments
                 if (alignInputExists)
                 {
@@ -1145,11 +1151,19 @@ public abstract class Event3Model extends WordModel
             }                
         }
         LogInfo.end_track();
-        if(opts.modelType == ModelType.generatePcfg)
+        if(opts.modelType == ModelType.generatePcfg && opts.nonRecursiveGrammar)
         {
-//            Utils.begin_track("Compute minimum number of span for rules...");
-            minWordsPerNonTerminal = new HashMap<Integer, Integer>();            
-//            countMinWords(rulesIndexer.getIndex("S")); // we don't housekeep word spans for the start symbol 'S'
+            minWordsPerNonTerminal = new HashMap<Integer, Integer>();    
+            try
+            {
+                Utils.begin_track("Compute minimum number of span for rules...");
+                countMinWords(rulesIndexer.getIndex("S")); // we don't housekeep word spans for the start symbol 'S'
+            }
+            catch(StackOverflowError e)
+            {
+                LogInfo.error("Recursive grammar found. Switching to non-recursive alternative. May take longer to decode...");
+                opts.nonRecursiveGrammar = false;
+            }
             LogInfo.end_track();
         }
     }
@@ -1163,7 +1177,7 @@ public abstract class Event3Model extends WordModel
      * @return 
      */
     private Integer countMinWords(int lhs)
-    {                
+    {                        
         Integer maxCount = minWordsPerNonTerminal.get(lhs); // in case we've already computed it
         if(maxCount == null)
         {
@@ -1183,7 +1197,7 @@ public abstract class Event3Model extends WordModel
                     maxCount = count;
             }
             minWordsPerNonTerminal.put(lhs, maxCount);
-        }                
+        }        
         return maxCount;
     }
             

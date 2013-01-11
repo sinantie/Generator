@@ -145,8 +145,9 @@ public class Options {
   @Option(gloss="interpolation factor for DMV + LM integration") public double interpolationFactor = 1.0;
   @Option(gloss="Output PCFG derivation trees (for debugging)") public boolean outputPcfgTrees = false;
   @Option(gloss="Document length bins") public int docLengthBinSize = 5;
-  @Option(gloss="Maximum document length") public int maxDocLength = 90;
+  @Option(gloss="Maximum document length") public int maxDocLength = Integer.MAX_VALUE;//90;
   @Option(gloss="Use words per root rule node parameter") public boolean wordsPerRootRule = false;
+  @Option(gloss="Use non-recursive heuristics to avoid empty edges on the hypergraph") public boolean nonRecursiveGrammar = true;
   @Option(gloss="Maximum number of fields per event") public int maxNumOfFields = Integer.MAX_VALUE;
   
   //Dependencies
