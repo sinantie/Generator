@@ -10,10 +10,11 @@ interpolationFactor=$7
 lengthPredictionFile=$8
 lengthPredictionFeatureType=$9
 shift 1
-treebankRules=$8
+treebankRules=$9
 
-java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
+java -Xmx6500m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
+-numThreads 1 \
 -outputFullPred \
 -create \
 -overwriteExecDir \
@@ -33,10 +34,13 @@ java -Xmx2000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -ngramSize 3 \
 -binariseAtWordLevel \
 -useStopNode \
--modelType generate \
--maxPhraseLength 18 \
--reorderType eventType \
+-modelType generatePcfg \
+-maxPhraseLength 12 \
+-reorderType ignore \
+-outputPcfgTrees \
+-treebankRules ${treebankRules} \
 -wordsPerRootRule \
+-Options.stage1.cfgThreshold 0.14 \
 -maxDocLength 100 \
 -docLengthBinSize 15 \
 -allowConsecutiveEvents
