@@ -123,7 +123,7 @@ public class ExtractLengthPredictionFeatures
             fos.append(header);
             for(Event3Example example : Utils.readEvent3Examples(inputFilename, examplesInOneFile))
             {
-                fos.append(extractFeatures(example.getText(), example.getEvents()));
+                fos.append(extractFeatures(example.getText(), example.getEvents()) + "\n");
             }                  
             fos.close();
         }
@@ -162,7 +162,13 @@ public class ExtractLengthPredictionFeatures
                 if(type == FeatureType.binary)
                     vector[currentIndex] = "1";
                 else if(type == FeatureType.counts)
-                    vector[currentIndex] = String.valueOf(Integer.valueOf(vector[currentIndex]) + 1);
+                {                    
+                    vector[currentIndex] = features.get(currentIndex).type == FieldType.CAT ? 
+                            // for categorical types just increment the number of times we've seen this field with a value
+                            String.valueOf(Integer.valueOf(vector[currentIndex]) + 1) : 
+                            // for string types add the number of words of the string
+                            String.valueOf(value.split(" ").length); 
+                }
                 else if(type == FeatureType.values)
                     // account only for the first event of this eventType
                     if(vector[currentIndex].equals("--"))
@@ -230,12 +236,16 @@ public class ExtractLengthPredictionFeatures
             {
                 type = FieldType.NUM;
             }
-            else // we currently support categorical fields only
+            else if (field instanceof CatField)
             {
                 type = FieldType.CAT;
                 CatField catField = (CatField)field;
                 for(String value : catField.getIndexer().getObjects())
                     values.add(!value.equals("") ? value : "--");
+            }
+            else // we only support counts type at the moment
+            {
+                type = FieldType.STR;
             }
         }
 

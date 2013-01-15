@@ -53,15 +53,15 @@ public class ProcessGridSearchFiles
         } // if
     }
     
-    private String header()
+    private String generationHeader()
     {
-        return "k-best\tinterpolation factor\tBLEU-4\tBLEU-3\tMETEOR\tRecall\n";
+        return "k-best\tinterpolation factor\tBLEU-4\tBLEU-3\tMETEOR\tRecall\tWER\n";
     }
     
     private void saveOutputToFile()
     {
         StringBuilder str = new StringBuilder();
-        str.append(header());
+        str.append(generationHeader());
         for(BlockOfResults block : blocksMap.values())
         {
             str.append(block).append("\n");
@@ -295,6 +295,8 @@ public class ProcessGridSearchFiles
                         foundMeteor = false;
                     } // if METEOR
                     if(line.contains("Total Recall:"))
+                        res.add(parseResult(line));
+                    if(line.contains("Total Record WER:"))
                         res.add(parseResult(line));
                 } // for
             } // if

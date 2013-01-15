@@ -10,7 +10,7 @@ public class LinearRegressionOptions
 {
     public enum Mode {train, test};
     public enum FeatureType {binary, counts, values};
-    public enum FieldType {CAT, NUM};
+    public enum FieldType {CAT, NUM, STR};
     
     @Option(gloss="File containing db input. Used only if we want to extract features") public String inputFeaturesFile;
     @Option(gloss="File containing features interface CSV format") public String outputFeaturesFile;

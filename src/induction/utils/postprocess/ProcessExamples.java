@@ -197,7 +197,7 @@ public class ProcessExamples
             // 2nd entry is the text
             w = example.getText().split("\\s").length;
             words += w;
-//            System.out.println(w);
+            System.out.println(w);
             docs++;
             return null;
         }
