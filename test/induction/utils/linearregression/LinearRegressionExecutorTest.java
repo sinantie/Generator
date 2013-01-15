@@ -1,18 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package induction.utils.linearregression;
 
-import induction.problem.event3.generative.GenerativeEvent3Model;
-import induction.problem.event3.Event3Model;
 import fig.exec.Execution;
-import induction.problem.event3.Example;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -46,69 +40,84 @@ public class LinearRegressionExecutorTest
     {
     }
 
-//    @Test
-//    public void testTrainWinHelp()
-//    {
-//        int fold = 2;
-//        String type = "values";
-//        String args = "-mode train "
-//                    + "-inputFeaturesFile data/branavan/winHelpHLA/winHelpRL.sents.all "
-////                    + "-inputFeaturesFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train "
-//                    + "-outputFeaturesFile data/branavan/winHelpHLA/winHelpRL.sents.all."+type+".features.csv "
-////                    + "-outputFeaturesFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train."+type+".features.csv "
-//                    + "-examplesInSingleFile "
-//                    + "-paramsFile results/output/winHelp/alignments/model_3_no_null_pos_auto/all/stage1.params.obj.gz "
-////                    + "-paramsFile results/output/winHelp/alignments/model_3_no_null_pos_auto/fold"+fold+"/stage1.params.obj.gz "
-//                    + "-modelFile data/branavan/winHelpHLA/lengthPrediction."+type+".linear-reg.model "
-////                    + "-modelFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train.lengthPrediction."+type+".linear-reg.model "
-//                    + "-type "+type+ " "
-//                    + "-startIndex 2 "
-//                    + "-extractFeatures "
-//                    + "-saveModel";
-//        LinearRegressionOptions opts = new LinearRegressionOptions();
-//        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
-//        lrw = new LinearRegressionWekaWrapper(opts);
-//        lrw.train(opts.outputFeaturesFile, opts.saveModel);
-//        // original text: click start , point to settings , and then click control panel (12 words)
-//        String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button\n" 
-//                        +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button\n"
-//                        +".id:2	.type:action	@envCmd:left click 	@objName:Control Panel	@objType:Button\n";
-//        assertEquals((int)lrw.predict(events), 14);
-//    }
-    
-//    @Test
-//    public void testTrainRobocup()
-//    {        
-//        String type = "values";
-//        String args = "-mode train "
-//                    + "-inputFeaturesFile robocupLists/robocupFold1PathsTrain "
-//                    + "-outputFeaturesFile robocupLists/robocupFold1PathsTrain."+type+".features.csv "
-//                    + "-paramsFile results/output/robocup/alignments/model_3_percy_oneEvent_unk_no_generic_newField_POS/fold1/stage1.params.obj.gz "
-//                    + "-modelFile robocupLists/robocupFold1PathsTrain.lengthPrediction."+type+".linear-reg.model "
-////                    + "-modelFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train.lengthPrediction."+type+".linear-reg.model "
-//                    + "-type "+type+ " "
-//                    + "-startIndex 3 "
-//                    + "-extractFeatures ";
-////                    + "-saveModel";
-//        LinearRegressionOptions opts = new LinearRegressionOptions();
-//        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
-//        lrw = new LinearRegressionWekaWrapper(opts);
-//        lrw.train(opts.outputFeaturesFile, opts.saveModel);
-//        // original text: click start , point to settings , and then click control panel (12 words)
-//        String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button\n" 
-//                        +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button\n"
-//                        +".id:2	.type:action	@envCmd:left click 	@objName:Control Panel	@objType:Button\n";
-//        try
-//        {
-//            assertEquals((int)lrw.predict(events), 14);
-//        }
-//        catch(Exception e)
-//        {
-//            System.out.println("Error " + e.getMessage());
-//        }
-//    }
-    
     @Test
+    public void testTrainWinHelp()
+    {
+        int fold = 2;
+        String type = "counts";
+        String args = "-mode train "
+//                    + "-inputFeaturesFile data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+                    + "-inputFeaturesFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train "
+                    + "-outputFeaturesFile data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation."+type+".features.csv "
+//                    + "-outputFeaturesFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train."+type+".features.csv "
+                    + "-examplesInSingleFile "
+                    + "-paramsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
+//                    + "-paramsFile results/output/winHelp/alignments/model_3_no_null_pos_auto/fold"+fold+"/stage1.params.obj.gz "
+                    + "-modelFile data/branavan/winHelpHLA/lengthPrediction."+type+".linear-reg.model "
+//                    + "-modelFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train.lengthPrediction."+type+".linear-reg.model "
+                    + "-type "+type+ " "
+                    + "-startIndex 2 "
+                    + "-extractFeatures "
+                    + "-saveModel";
+        LinearRegressionOptions opts = new LinearRegressionOptions();
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+        lrw = new LinearRegressionWekaWrapper(opts);
+        lrw.train(opts.outputFeaturesFile, opts.saveModel);
+        /* original text: 
+         * click start , point to settings , and then click control panel . 
+         * double-click power options . on the advanced tab , 
+         * click to select the prompt for password when computer goes off standby check box . (37 words)*/
+        String events = ".id:0	.type:navigate-desktop	@envCmd:left click	$objName:start	@objType:Button\n"
+                + ".id:1	.type:navigate-start	@envCmd:left click	$objName:settings	@objType:Button\n"
+                + ".id:2	.type:navigate-start-target	@envCmd:left click	$objName:control panel	@objType:Button\n"
+                + ".id:3	.type:navigate-window-target	@envCmd:double click	$objName:power options	@objType:Item\n"
+                + ".id:4	.type:navigate-contextMenu	@envCmd:left click	$objName:advanced	@objType:Tab\n"
+                + ".id:5	.type:action-contextMenu	@envCmd:left click	$objName:prompt for password when computer goes off standby	$typeInto:--	@objType:checkbox\n";
+        try
+        {
+            int pred = (int)lrw.predict(events);
+            System.out.println(pred);
+            assertEquals(pred, 37);
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+//    @Test
+    public void testTrainRobocup()
+    {        
+        String type = "values";
+        String args = "-mode train "
+                    + "-inputFeaturesFile robocupLists/robocupFold1PathsTrain "
+                    + "-outputFeaturesFile robocupLists/robocupFold1PathsTrain."+type+".features.csv "
+                    + "-paramsFile results/output/robocup/alignments/model_3_percy_oneEvent_unk_no_generic_newField_POS/fold1/stage1.params.obj.gz "
+                    + "-modelFile robocupLists/robocupFold1PathsTrain.lengthPrediction."+type+".linear-reg.model "
+//                    + "-modelFile data/branavan/winHelpHLA/folds/winHelpFold"+fold+"Train.lengthPrediction."+type+".linear-reg.model "
+                    + "-type "+type+ " "
+                    + "-startIndex 3 "
+                    + "-extractFeatures ";
+//                    + "-saveModel";
+        LinearRegressionOptions opts = new LinearRegressionOptions();
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+        lrw = new LinearRegressionWekaWrapper(opts);
+        lrw.train(opts.outputFeaturesFile, opts.saveModel);
+        // original text: click start , point to settings , and then click control panel (12 words)
+        String events = ".id:0	.type:action	@envCmd:left click 	@objName:start	@objType:Button\n" 
+                        +".id:1	.type:action	@envCmd:left click 	@objName:Settings	@objType:Button\n"
+                        +".id:2	.type:action	@envCmd:left click 	@objName:Control Panel	@objType:Button\n";
+        try
+        {
+            assertEquals((int)lrw.predict(events), 14);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Error " + e.getMessage());
+        }
+    }
+    
+//    @Test
     public void testTestWeatherGov()
     {        
         String type = "values";

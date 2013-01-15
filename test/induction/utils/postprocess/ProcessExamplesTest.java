@@ -62,13 +62,14 @@ public class ProcessExamplesTest
      */
     @Test
     public void testWinHelp()
-    {        
+    {
+        int fold = 10;
         String args = 
                    "-examplesInSingleFile "
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+                 + "data/branavan/winHelpHLA/folds/docs.newAnnotation.removedOutliers/winHelpFold"+fold+"Eval "
                  + "-execDir "
                  + "statistics/winHelp "
                  + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
@@ -81,8 +82,8 @@ public class ProcessExamplesTest
 //                 + "-actionType averageWordsPerDocument "; // 52.07
 //                 + "-actionType averageWordsPerSentence"; // 11.97
 //                 + "-actionType maxDocLength"; // 153
-//                 + "-actionType maxValueLength"; // 18
-                 + "-actionType computePermMetrics";
+                 + "-actionType maxValueLength"; // 18
+//                 + "-actionType computePermMetrics";
 //                 + "-actionType splitDocToSentences";
 //                 + "-actionType exportExamplesAsSentences";
 //                 + "-actionType averageSentencesPerDocument";
