@@ -52,6 +52,7 @@ public class ReorderAlignmentPredictions
             else
             {
                 System.out.println("Could not find example " + ex.getName());
+                predictionsOrdered[i++] = "not_found";
             }
         }
         // write output
@@ -61,14 +62,23 @@ public class ReorderAlignmentPredictions
     public static void main(String[] args)
     {
         boolean examplesInSingleFile = true;
+        // weatherGov
 //        String prefix = "data/weather-data-full/data/";
 //        String goldFile = "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz";
 //        String predFile = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14";
 //        String refFile = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.full-pred.14";        
+        
+        
+        // winhelp all
         String prefix = "";
 //        String goldFile = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation";
 //        String predFile = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.pred.1";
 //        String refFile = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.full-pred.1";
+//        
+//        ReorderAlignmentPredictions rep = new ReorderAlignmentPredictions(goldFile, predFile, refFile, examplesInSingleFile, prefix);
+//        rep.execute();
+        
+        // winhelp folds
         int folds=10;
         for(int f = 1; f<=folds; f++)
         {
@@ -77,7 +87,6 @@ public class ReorderAlignmentPredictions
             String refFile = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/fold"+f+"/stage1.train.full-pred.1";
             ReorderAlignmentPredictions rep = new ReorderAlignmentPredictions(goldFile, predFile, refFile, examplesInSingleFile, prefix);
             rep.execute();
-        }
-        
+        }        
     }
 }

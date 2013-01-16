@@ -165,6 +165,8 @@ public class ExtractRecordsStatistics
             int[] text = e.getText();            
             List<Integer> eventTypes = new ArrayList<Integer>();
             String[] events = preds[iter++].split(" ");
+            if(events[0].equals("not_found")) // for some reason this example doesn't have alignments; skip it
+                continue;
             int[] eventIds = new int[events.length];
             for(int i = 0; i < events.length; i++)
                 eventIds[i] = Integer.valueOf(events[i]);
@@ -174,11 +176,15 @@ public class ExtractRecordsStatistics
                 if(eventId != -1)
                 {                        
                     Object element = null;
+                    try{
                     switch(opts.exportType)
                     {
                         case record : element = eventId; break;
                         default: case recordType : element = opts.useEventTypeNames ? 
                                 e.events.get(eventId).getEventTypeName() : e.events.get(eventId).getEventTypeIndex(); break;
+                    }
+                    }catch(Exception exa){
+                        System.out.println(ex.getName());
                     }
                     int indexOfElement = indexer.getIndex(element);
                     // we don't allow repetitions of record tokens in the same sentence

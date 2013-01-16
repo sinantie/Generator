@@ -482,9 +482,15 @@ public class Utils
         }
     }
 
-    public static <A> A same(A x, A y)
+    public static int same(int x, int y)
     {
         if (x != y)
+            throw new IllegalArgumentException(fmts("Different: %s %s", x, y));
+        return x;
+    }
+    public static <A> A same(A x, A y)
+    {
+        if (!x.equals(y))
         {
             throw new IllegalArgumentException(fmts("Different: %s %s",
                     x.toString(), y.toString()));
