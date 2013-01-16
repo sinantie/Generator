@@ -34,8 +34,8 @@ public class MergeParamsWithExternalTreebankTest
                  + "-execDir "
                  + "weatherGovLM/recordStatistics "
                  + "-stagedParamsFile results/output/weatherGov/alignments/model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
-                 + "-externalTreebankFile data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRulesFilteredAlignments "
-                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRulesFilteredAlignments "
+                 + "-externalTreebankFile data/weatherGov/treebanks/recordTreebankTrainRightBinarizeAlignmentsMarkov1 "
+                 + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeAlignmentsMarkov1 "
                  + "-inputFileExt events ";
         MergeParamsWithExternalTreebankOptions opts = new MergeParamsWithExternalTreebankOptions();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params        
