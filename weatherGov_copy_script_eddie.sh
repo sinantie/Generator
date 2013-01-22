@@ -21,21 +21,21 @@ cp $origDir/$distDir/Generator.jar $destDir/$distDir
 #cp $origDir/$distDir/lib/*.jar $destDir/$distDir/lib
 
 # create output directory
-mkdir -p $expDir/$resultsDir
+#mkdir -p $expDir/$resultsDir
 
 # copy input files
-mkdir -p $destDir/$inputDir
-cp $origDir/$inputDir $destDir/$inputDir
+#mkdir -p $destDir/$inputDir
+#cp $origDir/$inputDir $destDir/$inputDir
 
 # copy treebank files
-mkdir -p $destDir/$treebanksDir
-for f in ${treebanks[@]}
-do
-	cp -R $origDir/$treebanksDir/${f} $destDir/$treebanksDir/${f}
-done
+#mkdir -p $destDir/$treebanksDir
+#for f in ${treebanks[@]}
+#do
+#	cp -R $origDir/$treebanksDir/${f} $destDir/$treebanksDir/${f}
+#done
 
 # copy LM file
-cp $origDir/$lmDir $destDir/$lmDir
+#cp $origDir/$lmDir $destDir/$lmDir
 
 # copy models
 mkdir -p $destDir/$modelsDir

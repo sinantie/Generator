@@ -140,19 +140,19 @@ public class ExportExamplesToSingleFile
     {
         // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
         String inputPath[] = {
-                              "gaborLists/trainListPathsGabor", 
+                              "gaborLists/trainListPathsGaborArchived", 
                               "gaborLists/genDevListPathsGabor", 
                               "gaborLists/genEvalListPathsGabor"
                              };
         // recordTreebankTrainRightBinarize, recordTreebankGenDevRightBinarize, recordTreebankGenEvalRightBinarize
         String treebankInputFile[] = {
-                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeUnaryRulesAlignments",
+                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeAlignmentsThres10",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRulesAlignments.gz",
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres10.gz",
                                "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
                                "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
                               };        

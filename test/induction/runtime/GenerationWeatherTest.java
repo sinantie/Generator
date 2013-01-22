@@ -47,7 +47,7 @@ public class GenerationWeatherTest
 //                    + "-testInputLists test/testWeatherGovEvents "
                     + "-examplesInSingleFile "
                     + "-inputLists "
-                    + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_test "
+                    + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
                     + "-inputFileExt events "
                     + "-stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
@@ -58,7 +58,7 @@ public class GenerationWeatherTest
 //                    + "-indepEventTypes 0,1 "
                     + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
 //                    + "-ngramModelFile weatherGovLM/dev/gabor-srilm-abs-weather-dev-3-gram.model.arpa "
-                    + "-ngramWrapper srilm "
+                    + "-ngramWrapper kylm "
                     + "-allowConsecutiveEvents "
                     + "-reorderType eventType "
 //                    + "-allowNoneEvent "
@@ -76,8 +76,8 @@ public class GenerationWeatherTest
                     + "-interpolationFactor 1 "
 //                    + "-posAtSurfaceLevel "                    
                     + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
-                    + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz "
-                    + "-excludedEventTypes windChill gust snowChance freezingRainChance sleetChance"; 
+                    + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz ";
+//                    + "-excludedEventTypes windChill gust snowChance freezingRainChance sleetChance"; 
 //                 + "-oracleReranker";
 //                    + "-omitEmptyEvents";
 //                    + "-useGoldStandardOnly";

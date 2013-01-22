@@ -23,11 +23,15 @@
 #COMMENT weights parameter
 
 #WinHelp
-input=results/output/winHelp/generation/generative/no_pos/no_null/
-formattedString=model_3_docs_newAnnotation_\$param1\$-best_iter\$param2\$_gold
-output=${input}/grid_docs.results
+#input=results/output/winHelp/generation/generative/no_pos/no_null
+#formattedString=model_3_docs_newAnnotation_\$param1\$-best_iter\$param2\$_max14_newFolds_predLength
+#output=${input}/grid_docs_newAnnotation_hmm14_predLength.results
+input=results/output/winHelp/generation/generative/no_pos/no_null/pcfg
+formattedString=model_3_docs_newAnnotation_markov1_\$param1\$-best_iter\$param2\$_max12_newFolds_predLength
+output=${input}/grid_docs_newAnnotation_pcfg12_predLength.results
 crossValidate=true
 #weights=509#505#506#515#508#510#505#484#500#471
+weights=12#11#13#10#11#12#12#12#10#20
 
 java -cp dist/Generator.jar induction.utils.postprocess.ProcessGridSearchFiles \
 ${input} \

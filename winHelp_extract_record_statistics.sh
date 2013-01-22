@@ -4,7 +4,8 @@ input=$1
 stagedParamsFile=$2
 execDir=$3
 suffix=$4
-#predInput=
+predInput=$5
+markovOrder=$6
 
 java -Xmx500m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar \
@@ -21,15 +22,14 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile}/stage1.params.obj.gz \
 -extractNoneEvent \
 -binarize right \
--markovOrder 0 \
+-markovOrder ${markovOrder} \
 -delimitSentences \
 -extractRecordTrees \
 -suffix ${suffix} \
--initType random \
+-initType staged \
 -useEventTypeNames \
--modifiedBinarization
+-predInput ${predInput}
 
-#-predInput ${predInput} \
 #-ruleCountThreshold 5
 #-examplesInSingleFile \
 #-exportEvent3 \

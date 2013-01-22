@@ -1,21 +1,21 @@
 #!/bin/bash
 
 #genDevListPathsGabor, genEvalListPathsGabor
-inputLists=data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz
-numThreads=2
+inputLists=data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2
+numThreads=1
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/model_3_15_NO_STOP_NEW/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz
-stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_noNone_markov1_externalTreebank/stage1.extTreebank.params.obj.gz
+stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_thres10_externalTreebank/stage1.extTreebank.params.obj.gz
 dmvModelParamsFile=results/output/weatherGov/dmv/train/weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz
 kBest=60
 interpolationFactor=1
 #execDir=results/output/weatherGov/generation/dependencies/model_3_${kBest}-best_0.01_NO_STOP_inter${interpolationFactor}_condLM_hypRecomb_lmLEX_NO_STOP
 #execDir=results/output/weatherGov/generation/dev/model_3_${kBest}-best_0.01_NO_STOP
-execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_0.01_treebank_unaryRules_no_null_markov1_wordsPerRootRule_0.04_svrPredLength
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeNoNoneMarkov1
+execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_TEST
+treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeAlignmentsThres10
 
-java -Xmx7g -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
+java -Xmx3000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/lib/stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -numThreads $numThreads \
@@ -47,7 +47,8 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -lengthCompensation 0 \
 -numAsSymbol \
 -binariseAtWordLevel \
--outputFullPred
+-outputFullPred \
+-excludedEventTypes sleetChance windChill freezingRainChance
 
 #-allowNoneEvent \
 #-excludedEventTypes sleetChance windChill

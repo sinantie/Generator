@@ -16,6 +16,7 @@ java -cp dist/Generator.jar induction.utils.linearregression.LinearRegressionExe
 -type ${featureType} \
 -startIndex ${startIndex} \
 -extractFeatures \
+-examplesInSingleFile \
 -saveModel
 
 #-examplesInSingleFile \
