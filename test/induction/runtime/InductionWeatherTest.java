@@ -45,7 +45,7 @@ public class InductionWeatherTest
     {
          String args = 
                    "-modelType event3 "
-                 + "-Options.stage1.numIters 15 "
+                 + "-Options.stage1.numIters 1 "
 //                 + "-Options.stage1.hardUpdate "        // Viterbi EM
                  + "-examplesInSingleFile "
                  + "-inputLists "

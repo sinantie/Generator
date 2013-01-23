@@ -185,7 +185,7 @@ public class AlignmentPerformance extends APerformance<Widget>
     
     protected String getWerResult(float wer, int count)
     {
-        return String.format(" WER = %s", Fmt.D(count > 1 ? wer : wer / (float)count));
+        return String.format(" WER = %s", Fmt.D(count == 1 ? wer : (wer / (float)count)) );
     }
     
     protected float computeWer(Widget trueWidget, Widget predWidget)

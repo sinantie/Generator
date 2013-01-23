@@ -319,7 +319,8 @@ public class ExtractRecordsStatistics
                 StringBuilder str = new StringBuilder("(S "); // start symbol span
                 for(Sentence sentence : p.getSentences())
                 {
-                    str.append(sentence.toPennTreebankStyle());
+                    if(!sentence.isEmpty())
+                        str.append(sentence.toPennTreebankStyle());
                 }
                 str.append(")"); // close start symbol span            
                 Tree<String> tree;
@@ -549,6 +550,11 @@ public class ExtractRecordsStatistics
             return size;
         }
 
+        public boolean isEmpty()
+        {
+            return size == 0;
+        }
+        
         public List<Integer> getTokens()
         {
             return tokens;
@@ -580,7 +586,12 @@ public class ExtractRecordsStatistics
             }
             if(tokens.size() == 1) // make lhs of unary rules unique
                 intermediateLabel.insert(0, "SENT-");
+            try{
             str.insert(0, "(" + intermediateLabel.substring(0, intermediateLabel.length() - 1) + " ");
+            }catch(Exception e)
+            {
+                e.printStackTrace();
+            }
             str.append(")");
 
             
