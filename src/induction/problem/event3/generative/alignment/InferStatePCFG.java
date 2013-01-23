@@ -86,7 +86,7 @@ public class InferStatePCFG extends InferState
             } // for
         } // if
 
-        if(opts.fixRecordSelection)
+        if(opts.fixRecordSelection && recordTree != null)
             hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree));
         else
             hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S"), sentenceBoundaries));

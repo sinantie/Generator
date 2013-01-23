@@ -48,7 +48,8 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -numAsSymbol \
 -binariseAtWordLevel \
 -outputFullPred \
--excludedEventTypes sleetChance windChill freezingRainChance
+-maxDocLength 90 \
+-docLengthBinSize 5
 
 #-allowNoneEvent \
 #-excludedEventTypes sleetChance windChill

@@ -27,7 +27,7 @@ public class ProcessExamplesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-//    @Test
+    @Test
     public void testWeather()
     {        
         String args = 
@@ -35,12 +35,12 @@ public class ProcessExamplesTest
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-//                 + "data/weatherGov/weatherGovTrainGabor.gz "
-                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
+                 + "data/weatherGov/weatherGovTrainGabor.gz "
+//                 + "data/weatherGov/weatherGovGenDevGabor.gz "
+//                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
-                 + "-execDir "
-                 + "statistics/weatherGov "
+                 + "-execDir data/weatherGov "
                  + "-stagedParamsFile results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.params.obj "
                  + "-predFileType generation " // 0.42509076
                  + "-fullPredOutput "
@@ -48,7 +48,8 @@ public class ProcessExamplesTest
 //                 + "-predFileType alignment " // 0.42520976
 //                 + "-fullPredOutput "
 //                 + "/home/sinantie/EDI/Generator/results/output/weatherGov/alignments/model_3_gabor_bigrams_again/stage1.train.full-pred.14 "
-                 + "-actionType computePermMetrics";
+//                 + "-actionType computePermMetrics";
+                 + "-actionType splitDocToSentences";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
         ProcessExamplesOptions opts = new ProcessExamplesOptions();
@@ -60,7 +61,7 @@ public class ProcessExamplesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-    @Test
+//    @Test
     public void testWinHelp()
     {
         int fold = 10;

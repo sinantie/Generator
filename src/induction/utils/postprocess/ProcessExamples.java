@@ -1,5 +1,7 @@
 package induction.utils.postprocess;
 
+import fig.basic.IOUtils;
+import fig.exec.Execution;
 import induction.Options.InitType;
 import induction.Utils;
 import induction.problem.event3.Event3Example;
@@ -74,7 +76,8 @@ public class ProcessExamples
         for (Event3Example example : examples) {
             action.act(example);
         }
-        System.out.println(action.result());
+//        System.out.println(action.result());                
+        Utils.write("data/weatherGov/weatherGovTrainGaborSplit.gz", (String)action.result());
     }
 
     public void testExecute()

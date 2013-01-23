@@ -47,9 +47,9 @@ public class InductionPCFGWeatherTest
                 + "-Options.stage1.numIters 5 "
                 + "-examplesInSingleFile "
                 + "-inputLists "
-                //                 + "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz "
-                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
-                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarizeUnaryRules "
+                + "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres10.gz "
+//                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
+                + "-treebankRules data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeAlignmentsThres10 "
                 + "-fixRecordSelection "
                 + "-wordsPerRootRule "
                 + "-inputFileExt events "
@@ -59,16 +59,15 @@ public class InductionPCFGWeatherTest
                 + "-dontCrossPunctuation "
                 + "-Options.stage1.smoothing 0.1 "
                 + "-allowNoneEvent "
+                + "-maxDocLength 90 "
+                + "-docLengthBinSize 5 "
 //                 + "-maxExamples 5 "
                 + "-conditionNoneEvent ";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
-        Execution.init(args.split(" "), new Object[]
-                {
-                    opts
-                }); // parse input params
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
         model.readExamples();
         model.logStats();
@@ -96,6 +95,6 @@ public class InductionPCFGWeatherTest
         System.out.println(model.testInitLearn(name, lopts).trim());
 //        model.learn(name, lopts);
 //        assertEquals(model.testInitLearn(name, lopts).trim(), targetOutput);
-        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+//        System.out.println("\n\nAFTER\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
     }
 }

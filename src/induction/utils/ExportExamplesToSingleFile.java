@@ -127,7 +127,8 @@ public class ExportExamplesToSingleFile
         if(treebankMap != null) // write record tree
         {
             out.println("$RECORD_TREE");
-            out.print(treebankMap.get(stripped));
+            String entry = treebankMap.get(stripped);            
+            out.print(entry != null ? entry : "N/A\n");
         }
         if(new File(stripped + ALIGN_EXT).exists()) // write alignments
         {

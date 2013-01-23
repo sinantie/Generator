@@ -2,10 +2,10 @@
 threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovTrainGaborRecordTreebank.gz
-output=results/output/weatherGov/alignments/model_3_gabor_bigrams_again
+input=data/weatherGov/weatherGovTrainGaborSplit.gz
+output=results/output/weatherGov/alignments/model_3_gabor_split
 numIters=15
-memory=-Xmx3000m
+memory=-Xmx1000m
 
 
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
@@ -25,7 +25,7 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -newEventTypeFieldPerWord 0,5 \
 -newFieldPerWord 0,5 \
 -dontCrossPunctuation \
--Options.stage1.smoothing 0.1 \
+-Options.stage1.smoothing 0.01 \
 -disallowConsecutiveRepeatFields \
 -noneFieldSmoothing 0 \
 -outputFullPred \

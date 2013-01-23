@@ -220,20 +220,24 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         for(AExample aex : examples)
         {
             Tree<String> tree = ((Example)aex).getTrueWidget().getRecordTree();
-            if(tree == null)
+            if(tree != null)
+            {
+                // add 1 count to each cfg rule in each subtree of the parse tree
+                for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
+                {
+                    Tree<String> subtree = it.next();
+                    if(Utils.countableRule(subtree)) // count only the binary rules
+                    {
+                        CFGRule rule = new CFGRule(subtree, rulesIndexer);
+                        cfgRulesChoices.get(rule.getLhs()).addCount(getCfgRuleIndex(rule), 1.0);
+                    }
+                }
+            }
+            else
             {
                 LogInfo.error("Input file does not contain parse trees!");
-                Execution.finish();
-            }
-            // add 1 count to each cfg rule in each subtree of the parse tree
-            for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
-            {
-                Tree<String> subtree = it.next();
-                if(Utils.countableRule(subtree)) // count only the binary rules
-                {
-                    CFGRule rule = new CFGRule(subtree, rulesIndexer);
-                    cfgRulesChoices.get(rule.getLhs()).addCount(getCfgRuleIndex(rule), 1.0);
-                }
+                continue;
+//                Execution.finish();
             }
         }
 //        System.out.println(cfgParams.outputNonZero(ParamsType.COUNTS));

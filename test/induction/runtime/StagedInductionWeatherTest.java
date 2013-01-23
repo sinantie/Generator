@@ -45,42 +45,43 @@ public class StagedInductionWeatherTest
     {
         String args = 
                    "-modelType event3 "
-                 + "-Options.stage1.numIters 15 "
+                 + "-Options.stage1.numIters 2 "
+                 + "-examplesInSingleFile "
                  + "-inputLists "
-                 + "test/testWeatherGovEvents "
-//                 + "gaborLists/trainListPathsGabor "
+//                 + "test/testWeatherGovEvents "
+                 + "data/weatherGov/weatherGovTrainGabor.gz "
                  + "-stagedParamsFile "
-                    + "results/output/weatherGov/alignments/"
-                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+//                    + "results/output/weatherGov/alignments/"
+//                    + "model_3_gabor_cond_null_correct/2.exec/stage1.params.obj "
+                    + "/home/sinantie/EDI/Generator/results/output/weatherGov/alignments/model_3_gabor_split/stage1.params.obj.gz "
                  + "-inputFileExt events "
                  + "-ngramWrapper kylm "
                  + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa "
-                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
+//                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
-                 + "-indepWords 0,-1 "
+//                 + "-indepWords 0,-1 "
                  + "-dontCrossPunctuation "
-                 + "-Options.stage1.smoothing 0.1 "
-                 + "-allowNoneEvent "
+                 + "-Options.stage1.smoothing 0.01 "
+                 + "-initNoise 0 "                 
                  + "-maxExamples 5 "
-//                 + "-conditionNoneEvent "
-                 + "-posAtSurfaceLevel "
-                 + "-inputPosTagged"; // IMPORTANT
+                 + "-allowNoneEvent "                
+                 + "-conditionNoneEvent "
+                 + "-useStopNode ";
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
         model.init(InitType.staged, opts.initRandom, "");
+        model.logStats();
         model.readExamples();
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";
     }
-
-    @After
-    public void tearDown() {
-    }
-
+   
     /**
      * Test of run method, of class Induction.
      */

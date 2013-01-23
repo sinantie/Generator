@@ -50,7 +50,8 @@ public class InductionWeatherTest
                  + "-examplesInSingleFile "
                  + "-inputLists "
 //                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
-                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
+//                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
+                 + "data/weatherGov/weatherGovTrainGaborSplit.gz "
 //                 + "gaborLists/genDevListPathsGabor "
                  + "-inputFileExt events "
                  + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
@@ -58,7 +59,7 @@ public class InductionWeatherTest
                  + "-indepWords 0,5 "
                  + "-dontCrossPunctuation "
                  + "-Options.stage1.smoothing 0.1 "
-                 + "-excludedEventTypes sleetChance windChill "
+//                 + "-excludedEventTypes sleetChance windChill "
                  + "-allowNoneEvent "
 //                 + "-maxExamples 5 "
                  + "-conditionNoneEvent ";

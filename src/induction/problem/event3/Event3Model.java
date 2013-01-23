@@ -810,9 +810,9 @@ public abstract class Event3Model extends WordModel
             textInput = res[1];
             eventInput = res[2];
             alignInput = res[3];
-            if(res[4] != null)
-            {                
-                recordTree = new PennTreeReader(new StringReader(res[4])).next();                                
+            if(res[4] != null && !res[4].equals("N/A"))
+            {               
+                recordTree = new PennTreeReader(new StringReader(res[4])).next();                                                
 //                System.out.println(getRootRuleIndex(recordTree));
             }
             alignInputExists = alignInput != null;

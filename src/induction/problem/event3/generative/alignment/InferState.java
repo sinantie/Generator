@@ -330,13 +330,20 @@ public class InferState extends Event3InferState
     
     protected Object genCatFieldValueNode(int i, int c, int event, int field)
     {
+        final int v = getValue(event, field);
+        final CatFieldParams fparams = getCatFieldParams(event, field);
+        // check if we try to emit a value which is not already in the parameter set.
+        // This is the case with staged initialisation.
+        
+        if(v >= fparams.emissions.length) 
+            return hypergraph.invalidNode;
         CatFieldValueNode node = new CatFieldValueNode(i, c, event, field);
         if(hypergraph.addSumNode(node))
         {
             // Consider generating words(i) from category v
-            final int v = getValue(event, field);
+//            final int v = getValue(event, field);
             final int w = words[i];
-            final CatFieldParams fparams = getCatFieldParams(event, field);
+//            final CatFieldParams fparams = getCatFieldParams(event, field);
             final CatFieldParams fcounts = getCatFieldCounts(event, field);
 
             hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
