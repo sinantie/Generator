@@ -1,12 +1,11 @@
 package induction.utils.postprocess;
 
-import fig.basic.IOUtils;
-import fig.exec.Execution;
 import induction.Options.InitType;
 import induction.Utils;
 import induction.problem.event3.Event3Example;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.utils.HistMap;
 import induction.utils.humanevaluation.ExportScenarios;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +40,9 @@ public class ProcessExamples
             case averageAlignmentsPerExample:
                 action = new AverageAlignmentsPerExample();
                 break;
+            case averageRecordsPerExample:
+                action = new AverageRecordsPerExample();
+                break;
             case averageFieldsWithNoValuePerRecord:
                 action = new AverageFieldsWithNoValuePerRecord(opts.record, opts.totalNumberOfFields);
                 break;
@@ -65,6 +67,9 @@ public class ProcessExamples
             case exportExamplesAsSentences:
                 action = new ExportExamplesAsSentences(opts.lmOrder, opts.splitSentences);
                 break;
+            case recordTypeStatistics:
+                action = new RecordTypeStatistics(opts.excludeField);
+                break;
             case computePermMetrics:
                 Event3Model model = new GenerativeEvent3Model(opts.modelOpts);
                 model.init(InitType.staged, opts.modelOpts.initRandom, "");            
@@ -76,8 +81,8 @@ public class ProcessExamples
         for (Event3Example example : examples) {
             action.act(example);
         }
-//        System.out.println(action.result());                
-        Utils.write("data/weatherGov/weatherGovTrainGaborSplit.gz", (String)action.result());
+        System.out.println(action.result());                
+//        Utils.write("data/weatherGov/weatherGovTrainGaborSplit.gz", (String)action.result());
     }
 
     public void testExecute()
@@ -107,6 +112,30 @@ public class ProcessExamples
         public Object result()
         {
             return new Double((double) totalAlignedEvents / (double) totalExamples);
+        }
+    }
+    
+    static class AverageRecordsPerExample implements Action<Event3Example>
+    {
+
+        int totalRecords = 0, totalExamples = 0, max = 0;
+
+        @Override
+        public Object act(Event3Example example)
+        {            
+            int r = example.getEventsList().size();
+            totalRecords += r;
+            totalExamples++;
+            if(r > max)
+                max = r;
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+//            return new Double((double) totalRecords / (double) totalExamples);
+            return String.format("Avg: %s, Max: %s", new Double((double) totalRecords / (double) totalExamples), max);
         }
     }
 
@@ -477,6 +506,56 @@ public class ProcessExamples
         }
     }
 
+     private static class RecordTypeStatistics implements Action<Event3Example>
+    {
+
+        private HistMap<String> types = new HistMap<String>();
+        String excludeField;
+
+        public RecordTypeStatistics(String excludeField)
+        {
+            this.excludeField = excludeField;
+        }
+                
+        @Override
+        public Object act(Event3Example example)
+        {          
+            for(String event : example.getEventsList())
+            {
+                String[] tokens = event.split("\t");
+                String type = tokens[1].split(":")[1];
+                boolean empty = true;
+                for(String token : tokens)
+                {                    
+                    String t[] = token.split(":");
+                    if(!(t[0].contains(excludeField)) && (token.startsWith("@") || token.startsWith("#") || token.startsWith("$")))
+                    {
+                        try{
+                        if(!(t[1].equals("--") || t[1].equals("0")))
+                        {
+                            empty = false;
+                            break;
+                        } 
+                        }
+                        catch(Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    } // for
+                } // for
+                if(!empty)
+                    types.add(type);
+            }
+            return null;
+        }
+
+        @Override
+        public Object result()
+        {
+            return types.toString();
+        }
+    }
+     
     interface Action<T>
     {
 

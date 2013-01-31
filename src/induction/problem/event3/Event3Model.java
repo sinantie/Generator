@@ -810,11 +810,14 @@ public abstract class Event3Model extends WordModel
             textInput = res[1];
             eventInput = res[2];
             alignInput = res[3];
-            if(res[4] != null && !res[4].equals("N/A"))
+            if(!(res[4] == null || res[4].equals("N/A")))
             {               
                 recordTree = new PennTreeReader(new StringReader(res[4])).next();                                                
 //                System.out.println(getRootRuleIndex(recordTree));
             }
+            // we currently don't support pcfg training with no treebank input
+            if(res[4].equals("N/A") && opts.modelType == Options.ModelType.event3pcfg)
+                return;
             alignInputExists = alignInput != null;
             textInputExists = textInput != null;
         }

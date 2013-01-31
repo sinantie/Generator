@@ -2,10 +2,12 @@ package induction.utils;
 
 import fig.basic.IOUtils;
 import induction.Utils;
+import induction.problem.event3.Event3Example;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,17 +21,18 @@ import java.util.Map;
  */
 public class ExportExamplesToSingleFile
 {
-
+    public static enum Type {DIR, FILES, SINGLE_FILE};
     private static final String EVENTS_EXT = ".events",
             TEXT_EXT = ".text",
             ALIGN_EXT = ".align",
             TAGGED_TEXT = ".text.tagged";
     private String inputPath, outputFile;
     private Map<String, String> treebankMap;
-    private boolean isDirectory, inputPosTagged;
+    private boolean inputPosTagged;
+    private Type inputType;
 
     public ExportExamplesToSingleFile(String path, String treebankInputFile, 
-            String outputFile, boolean isDirectory, boolean inputPosTagged)
+            String outputFile, boolean inputPosTagged, Type inputType)
     {
         this.inputPath = path;        
         if(treebankInputFile != null)
@@ -38,8 +41,8 @@ public class ExportExamplesToSingleFile
             readTreebankFile(treebankInputFile, treebankMap);
         }
         this.outputFile = outputFile;
-        this.isDirectory = isDirectory;
         this.inputPosTagged = inputPosTagged;
+        this.inputType = inputType;
     }
 
     public void execute()
@@ -47,18 +50,12 @@ public class ExportExamplesToSingleFile
         try
         {                        
             PrintWriter out = IOUtils.openOutEasy(outputFile);
-            if (isDirectory)
+            switch(inputType)
             {
-                addPath(inputPath, out);
+                case DIR : addPath(inputPath, out); break;
+                case FILES : addPath(Utils.readLines(inputPath), out); break;
+                case SINGLE_FILE : addPath(Utils.readEvent3Examples(inputPath, true), out); break;
             }
-            else // input is a list of files
-            {
-                for (String line : Utils.readLines(inputPath))
-                {
-                    addPath(line, out);
-                }
-            }
-
             out.close();
         } catch (IOException ioe)
         {
@@ -109,6 +106,22 @@ public class ExportExamplesToSingleFile
         }
     }
 
+    private void addPath(String[] lines, PrintWriter out) throws IOException
+    {
+        for (String line : Utils.readLines(inputPath))
+        {
+            addPath(line, out);
+        }
+    }
+    
+    private void addPath(List<Event3Example> examples, PrintWriter out) throws IOException
+    {
+        for(Event3Example example : examples)
+        {
+            writeFile(example, out);
+        }
+    }
+    
     private boolean validName(String path)
     {
         return (path.endsWith(EVENTS_EXT))
@@ -136,33 +149,41 @@ public class ExportExamplesToSingleFile
             out.print(Utils.readFileAsString(stripped + ALIGN_EXT));
         } // write text                    
     }
+    
+    private void writeFile(Event3Example example, PrintWriter out) throws IOException
+    {
+        // set record tree
+        String entry = treebankMap.get(example.getName());            
+        example.setTree(entry != null ? entry : "N/A\n");
+        out.println(example.toString());
+    }
 
     public static void main(String[] args)
-    {
+    {        
         // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
         String inputPath[] = {
-                              "gaborLists/trainListPathsGaborArchived", 
-                              "gaborLists/genDevListPathsGabor", 
-                              "gaborLists/genEvalListPathsGabor"
+                              "data/weatherGov/weatherGovTrainGabor.gz", 
+                              "data/weatherGov/weatherGovGenDevGabor.gz", 
+                              "data/weatherGov/weatherGovGenEvalGabor.gz"
                              };
         // recordTreebankTrainRightBinarize, recordTreebankGenDevRightBinarize, recordTreebankGenEvalRightBinarize
         String treebankInputFile[] = {
-                                      "data/weatherGov/treebanks/recordTreebankTrainRightBinarizeAlignmentsThres10",
+                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsThres5",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres10.gz",
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres5.gz",
                                "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
                                "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
-                              };        
-        boolean isDirectory = false;
+                              };                
+        Type inputType = Type.SINGLE_FILE;
         boolean inputPosTagged = false;
         for(int i = 0; i < 1; i++)
         {
             System.out.println("Creating " + outputFile[i]);
-            new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], isDirectory, inputPosTagged).execute();
+            new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], inputPosTagged, inputType).execute();
         }
     }
 }

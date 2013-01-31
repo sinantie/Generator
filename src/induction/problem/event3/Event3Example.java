@@ -37,6 +37,11 @@ public class Event3Example
         return map;
     }
     
+    public List<String> getEventsList()
+    {
+        return Arrays.asList(getEvents().split("\n"));
+    }
+    
     public static String packEvents(String[] tokens)
     {
         StringBuilder str = new StringBuilder();
@@ -105,6 +110,11 @@ public class Event3Example
         return hasTree() ? records[4] : "";
     }
 
+    public void setTree(String tree)
+    {        
+        records[4] = tree;
+    }
+    
     public boolean hasTree()
     {
         return records[4] != null;
@@ -119,8 +129,8 @@ public class Event3Example
     public String toString()
     {
         if(hasTree())
-            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s$RECORD_TREE\n%s\n$ALIGN\n%s", 
-                getName(), getText(), getEvents(), getTree(), getAlignments());
+            return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s\n$RECORD_TREE\n%s\n$ALIGN\n%s", 
+                getName(), getText(), getEvents(), getTree().trim(), getAlignments());
         if(hasAlignments())
             return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s\n$ALIGN\n%s\n", 
                 getName(), getText(), getEvents().trim(), getAlignments());

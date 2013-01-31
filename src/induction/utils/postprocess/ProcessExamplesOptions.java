@@ -10,10 +10,10 @@ import induction.Options;
  */
 public class ProcessExamplesOptions
 { 
-    public enum ActionType {averageAlignmentsPerExample, averageFieldsWithNoValuePerRecord,
+    public enum ActionType {averageAlignmentsPerExample, averageRecordsPerExample, averageFieldsWithNoValuePerRecord,
                             averageWordsPerSentence, averageWordsPerDocument, 
                             averageSentencesPerDocument, maxDocLength, maxValueLength, splitDocToSentences,
-                            exportExamplesAsSentences, computePermMetrics};
+                            exportExamplesAsSentences, computePermMetrics, recordTypeStatistics};
     public enum PredFileType {alignment, generation}
     
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();    
@@ -24,5 +24,6 @@ public class ProcessExamplesOptions
     @Option(gloss="The number of <s> to put in front of a sentence") public int lmOrder = 3;
     @Option(gloss="The generation predicted output file that contains alignments") public String fullPredOutput;
     @Option(gloss="The input type of the predicted output file (for computing permutation metrics only)") public PredFileType predFileType;
+    @Option(gloss="Exclude a field from the statistics counting (for record type statistics only)") public String excludeField;
     
 }

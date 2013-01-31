@@ -65,8 +65,8 @@ public class ReorderAlignmentPredictions
         // weatherGov
         String prefix = "data/weather-data-full/data/";
         String goldFile = "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz";
-        String predFile = "results/output/weatherGov/alignments/model_3_gabor_staged/stage1.train.pred.1";
-        String refFile = "results/output/weatherGov/alignments/model_3_gabor_staged/stage1.train.full-pred.1";
+        String predFile = "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.pred.29";
+        String refFile = "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.full-pred.29";
         
         
         // winhelp all
