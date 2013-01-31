@@ -27,7 +27,7 @@ public class ProcessExamplesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-    @Test
+//    @Test
     public void testWeather()
     {        
         String args = 
@@ -35,7 +35,7 @@ public class ProcessExamplesTest
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovTrainGabor.gz "
+                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
 //                 + "data/weatherGov/weatherGovGenDevGabor.gz "
 //                 + "data/weatherGov/weatherGovGenEvalGabor.gz "
 //                 + "test/testWeatherGovEvents "
@@ -49,7 +49,9 @@ public class ProcessExamplesTest
 //                 + "-fullPredOutput "
 //                 + "/home/sinantie/EDI/Generator/results/output/weatherGov/alignments/model_3_gabor_bigrams_again/stage1.train.full-pred.14 "
 //                 + "-actionType computePermMetrics";
-                 + "-actionType splitDocToSentences";
+//                 + "-actionType splitDocToSentences";
+                 + "-actionType recordTypeStatistics "
+                 + "-excludeField time";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
         ProcessExamplesOptions opts = new ProcessExamplesOptions();
@@ -61,7 +63,7 @@ public class ProcessExamplesTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-//    @Test
+    @Test
     public void testWinHelp()
     {
         int fold = 10;
@@ -70,7 +72,8 @@ public class ProcessExamplesTest
                  + "-inputFileExt events "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/branavan/winHelpHLA/folds/docs.newAnnotation.removedOutliers/winHelpFold"+fold+"Eval "
+//                 + "data/branavan/winHelpHLA/folds/docs.newAnnotation.removedOutliers/winHelpFold"+fold+"Eval "
+                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
                  + "-execDir "
                  + "statistics/winHelp "
                  + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
@@ -80,10 +83,12 @@ public class ProcessExamplesTest
                  + "-predFileType alignment " // 0.23474468
                  + "-fullPredOutput "
                  + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.full-pred.1 "
-//                 + "-actionType averageWordsPerDocument "; // 52.07
-//                 + "-actionType averageWordsPerSentence"; // 11.97
+                 + "-actionType averageAlignmentsPerExample "; // 9.11
+//                 + "-actionType averageWordsPerDocument "; // 51.92
+//                 + "-actionType averageWordsPerSentence"; // 11.91
 //                 + "-actionType maxDocLength"; // 153
-                 + "-actionType maxValueLength"; // 18
+//                 + "-actionType maxValueLength"; // 18
+//                 + "-actionType averageRecordsPerExample"; // 9.2 (Max 25)
 //                 + "-actionType computePermMetrics";
 //                 + "-actionType splitDocToSentences";
 //                 + "-actionType exportExamplesAsSentences";
