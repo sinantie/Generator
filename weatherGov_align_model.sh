@@ -3,7 +3,7 @@ threads=2
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
 input=data/weatherGov/weatherGovTrainGaborSplit.gz
-output=results/output/weatherGov/alignments/model_3_gabor_split
+output=results/output/weatherGov/alignments/model_3_gabor_split_no_null
 numIters=15
 memory=-Xmx1000m
 
@@ -34,9 +34,10 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -initType random \
 -initNoise 1e-3 \
 -initSmoothing 0.01 \
--conditionNoneEvent \
--allowNoneEvent \
 -dontOutputParams
+
+#-conditionNoneEvent \
+#-allowNoneEvent \
 
 #-initType staged \
 #-stagedParamsFile results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.params.obj.gz

@@ -201,9 +201,9 @@ public class RecomputeMetricsGabor
         if(args.length < 3)
         {
             // Robocup
-            inputFile = "../Gabor/gaborFiles/2010emnlp-generation/results-robocup2004.xml";
-            arg = "robocupLists/robocupFold4PathsEvalText";
-            type = TypeOfId.goldText;
+//            inputFile = "../Gabor/gaborFiles/2010emnlp-generation/results-robocup2004.xml";
+//            arg = "robocupLists/robocupFold4PathsEvalText";
+//            type = TypeOfId.goldText;
             // WeatherGov
 //            inputFile = "../Gabor/gaborFiles/2010emnlp-generation/results-weather.xml";
 //            arg = "gaborLists/genEvalListPathsGaborText";
@@ -212,6 +212,10 @@ public class RecomputeMetricsGabor
 //            inputFile = "../Gabor/generation/outs/atis/1.exec/results-test.xml";
 //            arg = "Example_";
 //            type = TypeOfId.orderedText;
+            // WinHelp
+            inputFile = "../Gabor/generation/outs/winHelp.docs.newAnnotation.removedOutliers/fold1/0.exec/results-test.xml";
+            arg = "Example_";
+            type = TypeOfId.orderedText;
         }
         else
         {
