@@ -729,7 +729,7 @@ public abstract class Event3Model extends WordModel
         return mrList;
     }
 
-    private int[][] readTrueEvents(String[] alignLines, int N, Map<Integer, Event> events,
+    protected int[][] readTrueEvents(String[] alignLines, int N, Map<Integer, Event> events,
                                    ArrayList<Integer> lineToStartText, HashSet<Integer> excludedEventsIndices)
     {
         int maxTracks = 0, eventId = 0, lineIndex = 0;

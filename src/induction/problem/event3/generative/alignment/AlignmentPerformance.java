@@ -151,7 +151,7 @@ public class AlignmentPerformance extends APerformance<Widget>
         return hit;
     }
     
-    protected Integer[] computeGoldSequence(int[] startIndices, Widget widget)
+    protected Integer[] computeGoldEventsSequence(int[] startIndices, Widget widget)
     {                
         List<Integer> list = new ArrayList<Integer>();
         for(int l = 0; l < startIndices.length-1; l++)
@@ -167,7 +167,7 @@ public class AlignmentPerformance extends APerformance<Widget>
         return list.toArray(new Integer[0]);
     }
     
-    protected Integer[] computePredSequence(Widget widget)
+    protected Integer[] computePredEventsSequence(Widget widget)
     {
         List<Integer> list = new ArrayList<Integer>();
         int prev = -5;
@@ -190,8 +190,8 @@ public class AlignmentPerformance extends APerformance<Widget>
     
     protected float computeWer(Widget trueWidget, Widget predWidget)
     {
-        Integer[] trueSeq = computeGoldSequence(trueWidget.getStartIndices(), trueWidget);
-        Integer[] predSeq = computePredSequence(predWidget);
+        Integer[] trueSeq = computeGoldEventsSequence(trueWidget.getStartIndices(), trueWidget);
+        Integer[] predSeq = computePredEventsSequence(predWidget);
         float wer = Utils.computeWER(predSeq, trueSeq);
         totalWer += wer;
         totalCounts++;

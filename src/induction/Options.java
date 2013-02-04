@@ -5,7 +5,10 @@ import fig.basic.*;
 import induction.utils.linearregression.LinearRegressionOptions;
 
 public class Options {
-  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, event3pcfg, precompute, generate, generatePcfg, discriminativeTrain, semParse, writeParams };
+  public enum ModelType { gmm, pmmm, hmm, pcfg, dmv, seg, align, event3, 
+                          event3pcfg, precompute, generate, generatePcfg, 
+                          discriminativeTrain, semParse, writeParams,
+                          evalPlanning, evalPlanningPcfg };
   public enum InitType { random, bait, supervised, uniformz, artificial, staged };
   public enum InputFormat { raw, tag, mrg, conll, seg, zmert };
   public enum AlignmentModel { m1, m2, hmm };
