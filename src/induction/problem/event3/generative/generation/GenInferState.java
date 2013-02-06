@@ -87,14 +87,7 @@ public class GenInferState extends InferState
 //        segPenalty[6] = 0.9;
         N = ex.N();
         this.vocabulary = ((Event3Model)model).getWordIndexer();
-    }
-        
-    protected int[] newMatrixOne()
-    {
-        int[] out = new int[N];        
-        Arrays.fill(out, -1);
-        return out;
-    }   
+    }               
 
     @Override
     protected Widget newWidget()

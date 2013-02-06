@@ -76,17 +76,20 @@ public class Example implements AExample<Widget>
             }
         } 
         eventsByEventType = new HashMap<Integer, List<Event>>();
-        for(Event e : events.values())
+        if(events != null)
         {
-            Integer eventType = e.getEventTypeIndex();
-            List<Event> list = eventsByEventType.get(eventType);
-            if(list == null)
+            for(Event e : events.values())
             {
-                list = new ArrayList<Event>();
-                eventsByEventType.put(eventType, list);
+                Integer eventType = e.getEventTypeIndex();
+                List<Event> list = eventsByEventType.get(eventType);
+                if(list == null)
+                {
+                    list = new ArrayList<Event>();
+                    eventsByEventType.put(eventType, list);
+                }
+                list.add(e);
             }
-            list.add(e);
-        }
+        }        
     }
 
     @Override

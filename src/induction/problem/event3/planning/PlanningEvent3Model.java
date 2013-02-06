@@ -186,4 +186,25 @@ public abstract class PlanningEvent3Model extends Event3Model implements Seriali
         LogInfo.end_track();
     }
     
+    /**
+     * helper method for testing the planning evaluation output. Simulates generate(...) method
+     * for a single example without the thread mechanism
+     * @return a String with the performance output
+     */
+    @Override
+    public String testGenerate(String name, LearnOptions lopts)
+    {
+        opts.alignmentModel = lopts.alignmentModel;
+        FullStatFig complexity = new FullStatFig();
+        double temperature = lopts.initTemperature;
+        testPerformance = newPerformance();
+//        AParams counts = newParams();        
+        AInferState inferState = null;
+        for(AExample ex : examples)
+        {
+            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
+            testPerformance.add(ex, inferState.bestWidget);
+        }
+        return testPerformance.output();        
+    }
 }

@@ -1123,11 +1123,14 @@ public abstract class Event3Model extends WordModel
         } // for
         LogInfo.end_track();
         Utils.begin_track("Setting up examples");
-        for(AExample ex: exAr)
+        if(!(opts.modelType == ModelType.evalPlanning || opts.modelType == ModelType.evalPlanningPcfg))
         {
-            ((Example)ex).computeEventTypeCounts();
-//            ex.computeTrackEvents();
-        }
+            for(AExample ex: exAr)
+            {
+                ((Example)ex).computeEventTypeCounts();
+    //            ex.computeTrackEvents();
+            }
+        }        
         LogInfo.end_track();
         if(opts.treebankRules != null && cfgRules == null) // if we haven't read the rules yet (staged init)
         {

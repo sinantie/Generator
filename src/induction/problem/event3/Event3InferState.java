@@ -52,6 +52,13 @@ public abstract class Event3InferState
         N = ex.N();
     }
     
+    protected int[] newMatrixOne()
+    {
+        int[] out = new int[N];        
+        Arrays.fill(out, -1);
+        return out;
+    }
+    
     protected int[][] newMatrix()
     {        
         int[][] out = new int[((Event3Model)model).C][ex.N()];

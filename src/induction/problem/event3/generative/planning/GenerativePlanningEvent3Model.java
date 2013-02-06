@@ -1,6 +1,5 @@
 package induction.problem.event3.generative.planning;
 
-import edu.uci.ics.jung.graph.Graph;
 import fig.basic.IOUtils;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
@@ -16,13 +15,10 @@ import induction.problem.VecFactory;
 import induction.problem.event3.EventType;
 import induction.problem.event3.Example;
 import induction.problem.event3.Field;
-import induction.problem.event3.generative.alignment.InferState;
-import induction.problem.event3.generative.alignment.InferStatePCFG;
-import induction.problem.event3.generative.generation.GenInferState;
 import induction.problem.event3.generative.generation.GenInferStatePCFG;
-import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.planning.PlanningEvent3Model;
+import induction.problem.event3.planning.PlanningExample;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,13 +103,13 @@ public class GenerativePlanningEvent3Model extends PlanningEvent3Model
     @Override
     protected AInferState newInferState(AExample aex, AParams aparams, AParams acounts, InferSpec ispec) 
     {
-        Example ex = (Example)aex;
+        PlanningExample ex = (PlanningExample)aex;
         Params params = (Params)aparams;
         Params counts = (Params)acounts;
         
         switch(opts.modelType)
         {
-            case evalPlanning : return new GenInferState(this, ex, params, counts, ispec, ngramModel);
+            case evalPlanning : return new PlanningInferState(this, ex, params, counts, ispec);
             case evalPlanningPcfg : default: return new GenInferStatePCFG(this, ex, params, counts, ispec, ngramModel);            
         }
     }

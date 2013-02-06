@@ -1,23 +1,24 @@
 package induction.problem.event3.planning;
 
-import induction.problem.wordproblem.Example;
-import induction.problem.wordproblem.WordModel;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.Example;
 
 /**
  *
  * @author konstas
  */
-public class PlanningExample extends Example<PlanningWidget>
+public class PlanningExample extends Example
 {
-
-    public PlanningExample(WordModel model, int[] eventTypeIds, PlanningWidget trueWidget) 
+    private int[] eventTypeIds;
+    
+    public PlanningExample(Event3Model model, int[] eventTypeIds, PlanningWidget trueWidget, String name) 
     {
-        super(model, eventTypeIds, trueWidget);
+        super(model, name, null, null, null, null, eventTypeIds.length, trueWidget);
+        this.eventTypeIds = eventTypeIds;
     }
 
-    public PlanningExample(WordModel model, int[] eventTypeIds, PlanningWidget trueWidget, String name) 
-    {
-        super(model, eventTypeIds, trueWidget, name);
+    public int[] getEventTypeIds() {
+        return eventTypeIds;
     }
     
 }
