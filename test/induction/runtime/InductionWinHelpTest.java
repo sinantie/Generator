@@ -39,23 +39,23 @@ public class InductionWinHelpTest
     public void setUp() 
     {
          String args = "-modelType event3 "
-                 + "-Options.stage1.numIters 1 "
+                 + "-Options.stage1.numIters 15 "
                  + "-examplesInSingleFile "
                  + "-inputLists "
 //                 + "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged "
 //                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
-                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation "
-//                 + "data/branavan/winHelpHLA/folds/docs.cleaned/winHelpFold3Train "
+//                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
+                 + "data/branavan/winHelpHLA/folds/sents.newAnnotation/winHelpFold1Train "
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_cleaned_objType/all/stage1.params.obj.gz "                 
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation/all/stage1.params.obj.gz "
-                 + "-stagedParamsFile data/branavan/winHelpHLA/stage1.test.params.obj.gz "
+//                 + "-stagedParamsFile data/branavan/winHelpHLA/stage1.test.params.obj.gz "
                  + "-examplesInSingleFile "
                  + "-indepEventTypes 0,10 "
                  + "-indepFields 0,5 "
                  + "-newEventTypeFieldPerWord 0,5 "
                  + "-newFieldPerWord 0,5 "
                  + "-disallowConsecutiveRepeatFields "
-                 + "-indepWords 0,5 "
+                 + "-indepWords 0,0 "
                  + "-initNoise 0 "
                  + "-dontCrossPunctuation "
 //                 + "-posAtSurfaceLevel "
@@ -68,11 +68,11 @@ public class InductionWinHelpTest
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
-        model.init(InitType.staged, opts.initRandom, "");
+//        model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();        
         model.logStats();
         opts.outputIterFreq = opts.stage1.numIters;
-//        model.init(InitType.random, opts.initRandom, "");
+        model.init(InitType.random, opts.initRandom, "");
         lopts = opts.stage1;
         name = "stage1";
 //        model.saveParams(name, "data/branavan/winHelpHLA/stage1.test.params.obj.gz");

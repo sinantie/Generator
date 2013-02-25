@@ -53,8 +53,6 @@ public class PlanningEvaluationPCFGWeatherTest
 //                + "results/output/weatherGov/alignments/pcfg/"
 //                + "model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.params.obj.gz "
                 + "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_treebank_20iter/stage1.params.obj.gz "
-//                + "model_3_gabor_record_pcfg_treebank_alignments_no_windChill_sleet_externalTreebank/stage1.extTreebank.params.obj.gz "
-//                + "model_3_gabor_record_pcfg_treebank_noNone_alignments_markov1_externalTreebank/stage1.extTreebank.params.obj.gz "
 //                 + "-fixRecordSelection "
                 + "-wordsPerRootRule "
                 + "-Options.stage1.cfgThreshold 0.04 "

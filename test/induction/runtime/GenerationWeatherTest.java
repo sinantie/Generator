@@ -47,7 +47,7 @@ public class GenerationWeatherTest
 //                    + "-testInputLists test/testWeatherGovEvents "
                     + "-examplesInSingleFile "
                     + "-inputLists "
-                    + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
+                    + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
                     + "-inputFileExt events "
                     + "-stagedParamsFile "
                     + "results/output/weatherGov/alignments/"

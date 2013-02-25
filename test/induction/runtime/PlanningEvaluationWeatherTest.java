@@ -48,10 +48,9 @@ public class PlanningEvaluationWeatherTest
                 + "-stagedParamsFile "
                 + "results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.params.obj "
                 + "-inputFileExt events "
-                + "-allowConsecutiveEvents "
-                + "-reorderType ignore "
+//                + "-useStopNode "
 //                + "-allowNoneEvent "
-                + "-numAsSymbol ";
+                + "-randomPermutations 10"; // 0.999 (35238/35280)
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params

@@ -3,6 +3,7 @@ package induction.utils.humanevaluation;
 import induction.Options;
 import induction.Utils;
 import induction.problem.event3.Event;
+import induction.problem.event3.Event3Example;
 import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.Field;
 import java.io.BufferedReader;
@@ -32,9 +33,10 @@ public class ExportScenarios
     private final String HUMAN = "human";
     private String scenariosPath, imagesPathUrl, outputPath;
     private String humanPath;
+    private Map<String, Event3Example> humanMap;
     String[] permutationOrder;
     Map<String, String> modelPaths;
-    private boolean nullifyOrder, outputAllFields, exportStdOut;
+    private boolean nullifyOrder, outputAllFields, exportStdOut, examplesInSingleFile, breakTextIntoSentences;
     private final Properties properties;    
     private GenerativeEvent3Model model;
     private List<Scenario> scenariosList;
@@ -69,15 +71,18 @@ public class ExportScenarios
         this.imagesPathUrl = properties.getProperty("imagesPathUrl");
         
         this.humanPath = properties.getProperty("humanPath");
+        humanMap = new HashMap<String, Event3Example>();
+        this.examplesInSingleFile = Boolean.valueOf(properties.getProperty("examplesInSingleFile"));
         this.nullifyOrder = Boolean.valueOf(properties.getProperty("nullifyOrder"));
         this.outputAllFields = Boolean.valueOf(properties.getProperty("outputAllFields"));        
+        this.breakTextIntoSentences = Boolean.valueOf(properties.getProperty("breakTextIntoSentences"));        
         this.exportStdOut = Boolean.valueOf(properties.getProperty("exportStdOut"));
         this.tagDelimiter = properties.getProperty("tagDelimiter");
         Options opts = new Options();
         opts.useGoldStandardOnly = true;
         model = new GenerativeEvent3Model(opts);
         scenariosList = new ArrayList<Scenario>();
-        filterFieldsList = new ArrayList<String>();        
+        filterFieldsList = new ArrayList<String>();    
     }        
     
     public void execute()
@@ -86,9 +91,15 @@ public class ExportScenarios
         {
            BufferedReader scenariosReader = new BufferedReader(new FileReader(scenariosPath));
            Map<String, Object> modelObjects = new HashMap<String, Object>();
-           String[] humanLines = null;
+//           String[] humanLines = null;
            if(humanPath != null)
-               humanLines = Utils.readLines(humanPath);                      
+           {
+//               humanLines = Utils.readLines(humanPath);
+               for(Event3Example ex : Utils.readEvent3Examples(humanPath, examplesInSingleFile))
+               {
+                   humanMap.put(ex.getName(), ex);
+               }
+           }                      
            for(Entry<String, String> entry : modelPaths.entrySet())
            {
                String name = entry.getKey();
@@ -102,7 +113,7 @@ public class ExportScenarios
                String path = line.split("#")[0].trim(); // read the first string in the line
                if(path.equals(""))
                    continue;               
-                if(processHuman(path, humanLines))
+                if(processHuman(path, humanMap))
                     msg("system processed succesfully", path, HUMAN);
                 else
                     msg("system error!", path, HUMAN);
@@ -226,6 +237,38 @@ public class ExportScenarios
         scn.setText(HUMAN, text.trim().toUpperCase());
         return scenariosList.add(scn);
     }
+    
+    /**
+     * Process the goldText standard text, events and alignments. Read all events
+     * and a new Scenario instance to the <code>scenariosList</code>
+     * @param basename the stripped basename path of the scenario to be processed
+     * @param map the event3 examples in a map
+     * @return true if all corresponding files exist 
+     */
+    private boolean processHuman(String basename, Map<String, Event3Example> map)
+    {           
+        Event3Example ex = map.get(basename);        
+        Scenario scn = new Scenario(basename,
+                                    model.readEvents(ex.getEventsArray(),
+                                    new HashSet(), new HashSet(), new HashSet()), tagDelimiter);
+        // read the goldText-standard human events
+        for(String eventLine : ex.getAlignmentsArray())
+        {
+            // each line holds line number and aligned event(s)
+            String []lineEvents = eventLine.split(" ");
+            for(int i = 1; i < lineEvents.length; i++)
+            {
+                // soft alignment: add duplicate events only once (adding to a set)
+                scn.getEventIndices(HUMAN).add(Integer.valueOf(lineEvents[i]));
+            }
+        }
+        // read the goldText-standard text
+        String text = "";
+        for(String line : ex.getTextArray())
+            text += line + " ";
+        scn.setText(HUMAN, text.trim().toUpperCase());
+        return scenariosList.add(scn);
+    }
 
     /**
      * Find the excerpt in the goldText standard file (not the best solution for many searches!)
@@ -239,7 +282,7 @@ public class ExportScenarios
         StringBuilder str = new StringBuilder();
         for(String line : lines)
         {
-            if(line.startsWith("Example_"))
+            if(line.startsWith("Example_") || line.equals("$NAME"))
             {
                 if(key != null) // only for the first example
                 {
@@ -330,7 +373,7 @@ public class ExportScenarios
         final String GABOR = "gabor";
         // get current scenario
         Scenario scn = scenariosList.get(scenariosList.size() - 1);
-        CompetitorEntry ge = gaborEntries.get(scn.getText(HUMAN));
+        CompetitorEntry ge = gaborEntries.get(scn.getText(HUMAN, false));
         if(ge == null)
             return false;
         scn.setText(GABOR, ge.getPredText());
@@ -372,7 +415,7 @@ public class ExportScenarios
             String text = String.format("<h2>Translation %s</h2>\n" +
                                         "<table id=\"text\"><tr><td>%s" +
                                         "</td></tr></table></center>\n</html>", 
-                                        count, scn.getText(system));
+                                        count, scn.getText(system, breakTextIntoSentences));
 // fix-weatherX.sh script only
 //            String id = String.format("<id>%s_%s</id>", scn.getPath(), system);
 //            System.out.println(outputReplaceString(
@@ -422,7 +465,7 @@ public class ExportScenarios
             // write text            
             String text = String.format("<h2>Translation %s</h2>\n" +
                           "<table class=\"text\" id=\"text\"><tr><td>%s</td></tr></table>",
-                          count, scn.getText(system));
+                          count, scn.getText(system, breakTextIntoSentences));
             writeLine(fos, events+text);
 //            writeLine(fos, htmlEncode(events+text));
             // write div footer
@@ -500,7 +543,7 @@ public class ExportScenarios
         {
             str.append("\n").append(scn.getPath()).append("\n");
             for(String modelName : permutationOrder)
-                str.append(modelName).append(": ").append(scn.getText(modelName)).append("\n");            
+                str.append(modelName).append(": ").append(scn.getText(modelName, breakTextIntoSentences)).append("\n");            
         }
         return str.toString();
     }
@@ -563,11 +606,13 @@ public class ExportScenarios
 //        outputAllFields = true;
 
         // robocup
-        String propertiesPath = "robocup_humanEval.properties";
+//        String propertiesPath = "robocup_humanEval.properties";
         // weatherGov
 //        String propertiesPath = "weatherGov_humanEval.properties";
         // atis        
 //        String propertiesPath = "atis_humanEval.properties";
+        // winHelp
+        String propertiesPath = "winHelp_humanEval.properties";
 
         if(args.length > 0)
         {

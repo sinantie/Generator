@@ -1,5 +1,6 @@
 package induction.problem.event3.generative.planning;
 
+import induction.BigDouble;
 import induction.Hypergraph;
 import induction.problem.InferSpec;
 import induction.problem.event3.Event3InferState;
@@ -25,7 +26,7 @@ public class PlanningInferState extends Event3InferState
        
     @Override
     protected PlanningWidget newWidget() 
-    {
+    {        
         return new PlanningWidget(newMatrixOne());
     }
        
@@ -42,17 +43,22 @@ public class PlanningInferState extends Event3InferState
         final TrackParams cparams = params.trackParams[0];
         int[] eventTypeIndices = ((PlanningExample)ex).getEventTypeIds();
         // chain probabilities
-        double logFit = 0;
+//        double logFit = 0;
+        BigDouble fit = BigDouble.one();
         for(int i = 1; i < eventTypeIndices.length; i++)
         {
-            logFit += getLogProb(cparams.getEventTypeChoices()[eventTypeIndices[i-1]], eventTypeIndices[i]);
+//            logFit += getLogProb(cparams.getEventTypeChoices()[eventTypeIndices[i-1]], eventTypeIndices[i]);
+            fit.mult(get(cparams.getEventTypeChoices()[eventTypeIndices[i-1]], eventTypeIndices[i]) *
+                                          (1.0/(double)ex.getEventTypeCounts()[eventTypeIndices[i]]));
         }
         if(opts.useStopNode)
         {
-            logFit += getLogProb(cparams.getEventTypeChoices()[eventTypeIndices[N-1]], cparams.boundary_t);
+//            logFit += getLogProb(cparams.getEventTypeChoices()[eventTypeIndices[N-1]], cparams.boundary_t);
+            fit.mult(get(cparams.getEventTypeChoices()[eventTypeIndices[N-1]], cparams.boundary_t));
         }
         PlanningWidget result = newWidget();
-        result.setLogVZ(logFit);
+//        result.setLogVZ(logFit);
+        result.setLogVZ(fit.toLogDouble());
         bestWidget = result;
     }
     

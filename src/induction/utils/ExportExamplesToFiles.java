@@ -92,11 +92,12 @@ public class ExportExamplesToFiles
 //        String inputPath = "data/branavan/winHelpHLA/folds/docs.newAnnotation.removedOutliers/";
 //        String outputPath = "../Gabor/generation/data/winHelp.docs.newAnnotation.removedOutliers/";
         String inputPath = "data/branavan/winHelpHLA/folds/sents.newAnnotation/";
-        String outputPath = "../Gabor/generation/data/winHelp.sents.newAnnotation/";
+        String masterOutputPath = "../Gabor/generation/data/winHelp.sents.newAnnotation/";
         for(int fold = 1; fold <= folds; fold++)
         {
+            String outputPath = masterOutputPath+"fold"+fold+"/";
             startIndex = 0;            
-            new File(outputPath+"fold"+fold+"/").mkdir();
+            new File(outputPath).mkdir();
             // write train files
             String inputFilename = inputPath + "winHelpFold"+fold+"Train";
             ExportExamplesToFiles ex = new ExportExamplesToFiles(outputPath, inputFilename, startIndex);

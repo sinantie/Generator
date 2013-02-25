@@ -816,7 +816,7 @@ public abstract class Event3Model extends WordModel
 //                System.out.println(getRootRuleIndex(recordTree));
             }
             // we currently don't support pcfg training with no treebank input
-            if(res[4].equals("N/A") && opts.modelType == Options.ModelType.event3pcfg)
+            if(opts.modelType == Options.ModelType.event3pcfg && res[4].equals("N/A"))
                 return;
             alignInputExists = alignInput != null;
             textInputExists = textInput != null;
@@ -1123,7 +1123,7 @@ public abstract class Event3Model extends WordModel
         } // for
         LogInfo.end_track();
         Utils.begin_track("Setting up examples");
-        if(!(opts.modelType == ModelType.evalPlanning || opts.modelType == ModelType.evalPlanningPcfg))
+//        if(!(opts.modelType == ModelType.evalPlanning || opts.modelType == ModelType.evalPlanningPcfg))
         {
             for(AExample ex: exAr)
             {

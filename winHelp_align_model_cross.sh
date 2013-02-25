@@ -3,12 +3,12 @@
 exec=winHelp_align_model.sh
 numIters=15
 numThreads=2
-outputPath=results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation
+outputPath=results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation_TEST
 mkdir -p $outputPath
 
 # FOLDS
 inputPath=data/branavan/winHelpHLA/folds/sents.newAnnotation
-folds=10
+folds=1
 
 for (( f=1; f<=folds; f++ ))
 do

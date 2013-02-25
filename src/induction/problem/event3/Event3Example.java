@@ -42,6 +42,11 @@ public class Event3Example
         return Arrays.asList(getEvents().split("\n"));
     }
     
+    public String[] getEventsArray()
+    {
+        return getEvents().split("\n");
+    }
+    
     public static String packEvents(String[] tokens)
     {
         StringBuilder str = new StringBuilder();
@@ -90,6 +95,11 @@ public class Event3Example
         return records.length > 0 ? records[1] : "";
     }
     
+    public String[] getTextArray()
+    {
+        return records.length > 0 ? records[1].split("\n") : new String[0];
+    }
+    
     public String getEvents()
     {
         return records.length > 0 ? records[2] : "";
@@ -98,6 +108,11 @@ public class Event3Example
     public String getAlignments()
     {
         return hasAlignments() ? records[3] : "";
+    }
+
+    public String[] getAlignmentsArray()
+    {
+        return hasAlignments() ? records[3].split("\n") : new String[0];
     }
     
     public boolean hasAlignments()

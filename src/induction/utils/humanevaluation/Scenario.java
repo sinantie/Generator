@@ -70,9 +70,10 @@ public class Scenario
         systemsTextMap.put(system, Utils.stripTags(text, tagDelimiter));
     }
 
-    public String getText(String system)
-    {
-        return systemsTextMap.get(system);
+    public String getText(String system, boolean breakTextIntoSentences)
+    {        
+        String out = systemsTextMap.get(system);
+        return breakTextIntoSentences ? out.replaceAll("[.]", ".<br />") : out;
     }
 
     public TreeSet<Integer> getEventIndices(String system)

@@ -1,10 +1,7 @@
 package induction.problem.event3.planning;
 
-import edu.berkeley.nlp.ling.Tree;
-import edu.berkeley.nlp.ling.Trees;
 import edu.uci.ics.jung.graph.Graph;
 import fig.basic.FullStatFig;
-import fig.basic.IOUtils;
 import fig.basic.ListUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
@@ -19,16 +16,9 @@ import induction.problem.APerformance;
 import induction.problem.InferSpec;
 import induction.problem.event3.Event;
 import induction.problem.event3.Event3Model;
-import induction.problem.event3.Example;
-import induction.problem.event3.MRToken;
-import induction.problem.event3.Widget;
-import induction.problem.event3.generative.generation.GenWidget;
-import induction.problem.event3.generative.generation.SemParseWidget;
 import induction.problem.event3.params.Parameters;
-import induction.utils.ExtractRecordsStatistics;
 import java.io.File;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -44,9 +35,12 @@ import java.util.Map;
 public abstract class PlanningEvent3Model extends Event3Model implements Serializable
 {
 
+    Set<Permutation> goldPermutations;
+    
     public PlanningEvent3Model(Options opts) 
     {
         super(opts);
+        goldPermutations = new HashSet<Permutation>();
     }
         
     @Override
@@ -117,18 +111,23 @@ public abstract class PlanningEvent3Model extends Event3Model implements Seriali
             {
                 eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
             }
-            int[] goldAlignments = parseAlignments(alignInput, eventTypeIndices, excludedEventsIndices);
-            // add the reference plan to get the model's probability for it. 
-            // NOTE: It should always be added before the random permutations.
-            examples.add(new PlanningExample(this, goldAlignments, new PlanningWidget(goldAlignments), name + "_GOLD"));
-            int[] clone = Arrays.copyOf(goldAlignments, goldAlignments.length);
-            ListUtils.randomPermute(clone, opts.initRandom);
-            examples.add(new PlanningExample(this, clone, new PlanningWidget(goldAlignments), name));
-            
+            Permutation goldAlignments = parseAlignments(alignInput, eventTypeIndices, excludedEventsIndices);
+            if(goldPermutations.add(goldAlignments)) // add unique permutations
+            {
+                // add the reference plan to get the model's probability for it. 
+                // NOTE: It should always be added before the random permutations.
+                int[] goldAlignmentsIntAr = goldAlignments.toInt();
+                examples.add(new PlanningExample(this, goldAlignmentsIntAr, events, new PlanningWidget(goldAlignmentsIntAr), name + "_GOLD"));
+                for(int i = 0; i < opts.randomPermutations; i++)
+                {                                    
+                    examples.add(new PlanningExample(this, goldAlignments.newRandomPermutation().toInt(), 
+                                 events, new PlanningWidget(goldAlignmentsIntAr), name));
+                }
+            }
         } // if
     }
     
-    protected int[] parseAlignments(String alignments, HashMap<Integer, Integer> eventTypeIndices,
+    protected Permutation parseAlignments(String alignments, HashMap<Integer, Integer> eventTypeIndices,
                                     HashSet<Integer> excludedEventsIndices)
     {
         List<Integer> out = new ArrayList<Integer>(), eventTypesLine = new ArrayList<Integer>();
@@ -153,7 +152,7 @@ public abstract class PlanningEvent3Model extends Event3Model implements Seriali
                 eventTypesLine.clear();
             }                        
         } // for
-        return ListUtils.toInt(out.toArray(new Integer[0]));
+        return new Permutation(out.toArray(new Integer[0]));
     }
     
     @Override
@@ -206,5 +205,63 @@ public abstract class PlanningEvent3Model extends Event3Model implements Seriali
             testPerformance.add(ex, inferState.bestWidget);
         }
         return testPerformance.output();        
+    }
+    
+    protected class Permutation
+    {
+        Integer[] sequence;
+
+        public Permutation(Integer[] sequence)
+        {
+            this.sequence = sequence;
+        }
+        
+        int[] toInt()
+        {
+            return ListUtils.toInt(sequence);
+        }
+
+        Permutation newRandomPermutation()
+        {
+            Integer[] clone = Arrays.copyOf(sequence, sequence.length);
+            do
+            {                    
+                ListUtils.randomPermute(clone, opts.initRandom);
+            }
+            while(Arrays.deepEquals(clone, sequence));
+            return new Permutation(clone);
+        }
+        
+        @Override
+        public boolean equals(Object obj)
+        {
+            assert obj instanceof Permutation;
+            Permutation p = (Permutation)obj;
+            
+            for(int i = 0; i < sequence.length; i++)
+            {
+                if(!sequence[i].equals(p.sequence[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int hash = 7;
+            hash = 97 * hash + Arrays.deepHashCode(this.sequence);
+            return hash;
+        }
+
+        @Override
+        public String toString()
+        {
+            return Arrays.toString(sequence);
+        }
+        
+        
     }
 }

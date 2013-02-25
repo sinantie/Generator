@@ -182,6 +182,9 @@ public class Options {
   // Semantic Parsing
   @Option(gloss="generate semantic parsing parameters (default=false)") public boolean generateSemParParams = false;
 
+  // Planning Evaluation
+  @Option(gloss="Number of random permutations to create against the gold-standard") public int randomPermutations = 10;
+  
   @Option public boolean debug = false;
 
   // Generic

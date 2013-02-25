@@ -42,7 +42,7 @@ public class GenerationPCFGWinHelpTest
     {
          String args = "-modelType generatePcfg "
 //                    + "-inputLists data/branavan/winHelpHLA/folds/docs.newAnnotation/winHelpFold1Eval "
-                    + "-inputLists data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation "
+                    + "-inputLists data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-stagedParamsFile "
