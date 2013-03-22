@@ -9,7 +9,7 @@ import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
 import induction.MyCallable;
 import induction.Utils;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.Event3Example;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -202,40 +202,49 @@ public class PosTagger
     private List<Example> readExamplesFromSingleFile() throws IOException
     {
         List<Example> out = new ArrayList<Example>();
-        if(new File(path).exists())
+        int counter = 0;
+        for(Event3Example ex : Utils.readEvent3Examples(path, true))
         {
-            int counter = 0;
-            if(typeOfInput == TypeOfInput.events)
-            {
-                String key = null;
-                StringBuilder str = new StringBuilder();
-                for(String line : Utils.readLines(path))
-                {
-                    if(line.startsWith("Example_"))
-                    {
-                        if(key != null) // only for the first example
-                        {                      
-                            out.add(new Example(readExample(str.toString()), counter++));
-                            str = new StringBuilder();
-                        }
-                        key = line;
-                    } // if                   
-                    str.append(line).append("\n");                    
-                }  // for           
-                out.add(new Example(readExample(str.toString()), counter)); // don't forget last example
-            } // if
-            else
-            {
-//                out.addAll(Arrays.asList(Utils.readLines(inputPath)));
-                String[] sentences = Utils.readLines(path);
-                int i = 0;
-                for(String sentence : sentences)
-                {
-                    String[] ar = {("Example_" + ++i), sentence};
-                    out.add(new Example(ar, counter++));
-                }
+            if(typeOfInput == TypeOfInput.events && replaceNumbers)
+            {                
+                ex.setText(Utils.replaceNumbers(ex.getText()));
             }
-        } // if        
+            out.add(new Example(ex, counter++));
+        }
+//        if(new File(path).exists())
+//        {
+//            int counter = 0;
+//            if(typeOfInput == TypeOfInput.events)
+//            {
+//                String key = null;
+//                StringBuilder str = new StringBuilder();
+//                for(String line : Utils.readLines(path))
+//                {
+//                    if(line.startsWith("Example_"))
+//                    {
+//                        if(key != null) // only for the first example
+//                        {                      
+//                            out.add(new Example(readExample(str.toString()), counter++));
+//                            str = new StringBuilder();
+//                        }
+//                        key = line;
+//                    } // if                   
+//                    str.append(line).append("\n");                    
+//                }  // for           
+//                out.add(new Example(readExample(str.toString()), counter)); // don't forget last example
+//            } // if
+//            else
+//            {
+////                out.addAll(Arrays.asList(Utils.readLines(inputPath)));
+//                String[] sentences = Utils.readLines(path);
+//                int i = 0;
+//                for(String sentence : sentences)
+//                {
+//                    String[] ar = {("Example_" + ++i), sentence};
+//                    out.add(new Example(ar, counter++));
+//                }
+//            }
+//        } // if        
         return out;
     }
     
@@ -265,12 +274,11 @@ public class PosTagger
      * @param inputPath
      * @return 
      */
-    private String[] readExample(String path, String input)
+    private Event3Example readExample(String path, String input)
     {
         if(typeOfInput == TypeOfInput.raw)
         {
-            String[] out = {path, replaceNumbers ? Utils.replaceNumbers(input) : input};
-            return out;
+            return new Event3Example(path, replaceNumbers ? Utils.replaceNumbers(input) : input, null, null);            
         }
         return null;
     }
@@ -281,7 +289,7 @@ public class PosTagger
      * @return
      * @throws IOException 
      */
-    private String[] readFile(String path) throws IOException
+    private Event3Example readFile(String path) throws IOException
     {        
         InputStream in = new FileInputStream(new File(path));
         OutputStream out = new ByteArrayOutputStream();
@@ -358,13 +366,15 @@ public class PosTagger
                 str.append(taggedText).append("\n");
             else
             {
-                for(int i = 0; i < example.body.length; i++)
-                {
-                    if(i == 1)
-                        str.append(taggedText).append("\n");
-                    else
-                        str.append(example.body[i]).append("\n");
-                } // for
+                example.body.setText(taggedText); // store to the example the new tagged text
+                str.append(example.body.toString());
+//                for(int i = 0; i < example.body.getNumberOfRecords(); i++)
+//                {
+//                    if(i == 1)
+//                        str.append(taggedText).append("\n");
+//                    else
+//                        str.append(example.body[i]).append("\n");
+//                } // for
             } // else
             //writerService.submit(new Writer(fileOutputStream, str.toString()));
             // delay writing until after all threads are done to preserve order
@@ -374,7 +384,7 @@ public class PosTagger
             } 
         } // if
         else        
-            writerService.submit(new Writer(example.body[0], taggedText));
+            writerService.submit(new Writer(example.body.getName(), taggedText));
         
         
 //        synchronized(fileOutputStream)
@@ -402,7 +412,7 @@ public class PosTagger
 //        if(typeOfInput == TypeOfInput.raw)
 //            input = example[0];
 //        else
-        input = example.body[1]; // res[0] = name, res[1] = text
+        input = example.body.getText(); // res[0] = name, res[1] = text
         String taggedText;
         if(posDictionary == null) // use trained pos tagger
         {
@@ -448,7 +458,7 @@ public class PosTagger
                                 System.err.println("Ambiguity in word '" + token + "' of sentence '" + input + "'");
                             else
                                 System.err.println("Ambiguity in word '" + token + 
-                                        "' in example " + example.body[0]); 
+                                        "' in example " + example.body.getName()); 
                         }
                             
                     } // if
@@ -594,10 +604,10 @@ public class PosTagger
     }
     
     protected class Example {
-        String[] body;
+        Event3Example body;
         int id;
 
-        public Example(String[] body, int id)
+        public Example(Event3Example body, int id)
         {
             this.body = body;
             this.id = id;

@@ -84,7 +84,7 @@ public class Event3Example
     {        
         return String.format(".id:%s\t%s", id, tokens);
     }
-        
+            
     public String getName()
     {
         return records.length > 0 ? records[0] : "";
@@ -95,6 +95,11 @@ public class Event3Example
         return records.length > 0 ? records[1] : "";
     }
     
+    public void setText(String text)
+    {
+        if(records.length > 0)
+            records[1] = text;
+    }
     public String[] getTextArray()
     {
         return records.length > 0 ? records[1].split("\n") : new String[0];

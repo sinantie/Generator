@@ -225,8 +225,8 @@ public abstract class PlanningEvent3Model extends Event3Model implements Seriali
         {
             Integer[] clone = Arrays.copyOf(sequence, sequence.length);
             do
-            {                    
-                ListUtils.randomPermute(clone, opts.initRandom);
+            {   // TO-DO: UNCOMMENT!!!
+                //ListUtils.randomPermute(clone, opts.initRandom);
             }
             while(Arrays.deepEquals(clone, sequence));
             return new Permutation(clone);
