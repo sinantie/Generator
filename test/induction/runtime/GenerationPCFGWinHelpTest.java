@@ -68,7 +68,7 @@ public class GenerationPCFGWinHelpTest
 //                    + "-maxNumOfFields 6 "
                     + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
-                    + "-lengthPredictionMode linearRegression "
+                    + "-lengthPredictionMode gold "
                     + "-lengthPredictionModelFile data/branavan/winHelpHLA/folds/winHelpFold1Train.lengthPrediction.counts.linear-reg.model "
                     + "-lengthPredictionFeatureType counts "
                     + "-lengthPredictionStartIndex 2 "
