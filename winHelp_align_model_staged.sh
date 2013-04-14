@@ -26,7 +26,8 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -fixedGenericProb 0 \
 -useStopNode \
 -outputFullPred \
--dontOutputParams
+-dontOutputParams \
+-inputPosTagged
 #-indepEventTypes 0,10 \
 #-indepFields 0,5 \
 #-newEventTypeFieldPerWord 0,5 \

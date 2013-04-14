@@ -29,7 +29,8 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -indepFields 0,5 \
 -newEventTypeFieldPerWord 0,5 \
 -newFieldPerWord 0,5 \
--indepWords 0,0
+-indepWords 0,0 \
+-inputPosTagged
 
 #-posAtSurfaceLevel \
 #-inputPosTagged

@@ -1,6 +1,6 @@
 #!/bin/bash
 folds=10
-input=data/branavan/winHelpHLA/folds
+input=data/branavan/winHelpHLA/folds/sents.newAnnotation
 
 for (( f=1; f<=folds; f++ ))
 do
