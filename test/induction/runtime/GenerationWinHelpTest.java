@@ -45,7 +45,7 @@ public class GenerationWinHelpTest
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-stagedParamsFile "
-                    + "results/output/winHelp/alignments/"
+                    + "results/output/winHelp/alignments/pos/"
 //                    + "model_3_no_null_pos_auto/fold1/stage1.params.obj.gz "
                     + "model_3_docs_no_null_newAnnotation/fold2/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "

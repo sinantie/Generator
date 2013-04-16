@@ -5,7 +5,7 @@ output=$2
 numIters=$3
 numThreads=$4
 
-java -Xmx1800m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
+java -Xmx1000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -create \
 -modeltype event3 \

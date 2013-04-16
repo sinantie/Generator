@@ -36,8 +36,9 @@ public class TestPosTagger extends TestCase
     public void testWinHelpPosTagger()
     {                      
         String args =
-                  "-inputPath data/branavan/winHelpHLA/folds/sents.newAnnotation/winHelpFold10Train "
-//                  "-inputPath data/branavan/winHelpHLA/winHelpRL.sents.all "
+//                  "-inputPath data/branavan/winHelpHLA/folds/sents.newAnnotation/winHelpFold10Train "
+                  "-inputPath data/branavan/winHelpHLA/folds/docs.newAnnotation/winHelpFold1Train "
+//                  "-inputPath data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation "
                 + "-typeOfPath file "
                 + "-typeOfInput events "
 //                + "-posDictionaryPath data/branavan/winHelpHLA/winHelpRL.sents.all.vocabulary "

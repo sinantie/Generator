@@ -45,7 +45,7 @@ public class InductionWinHelpTest
 //                 + "data/branavan/winHelpHLA/winHelpRL.sents.all.tagged "
 //                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.docs.all "
 //                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
-                 + "data/branavan/winHelpHLA/folds/sents.newAnnotation/winHelpFold1Train "
+                 + "data/branavan/winHelpHLA/folds/sents.newAnnotation/winHelpFold1Train.tagged "
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_cleaned_objType/all/stage1.params.obj.gz "                 
 //                 + "-stagedParamsFile results/output/winHelp/alignments/model_3_sents_no_null_newAnnotation/all/stage1.params.obj.gz "
 //                 + "-stagedParamsFile data/branavan/winHelpHLA/stage1.test.params.obj.gz "
@@ -59,7 +59,7 @@ public class InductionWinHelpTest
                  + "-initNoise 0 "
                  + "-dontCrossPunctuation "
 //                 + "-posAtSurfaceLevel "
-//                 + "-inputPosTagged "                // IMPORTANT!
+                 + "-inputPosTagged "                // IMPORTANT!
                  + "-Options.stage1.smoothing 0.001 ";
 //                 + "-modelUnkWord "
 //                 + "-Options.stage1.useVarUpdates";

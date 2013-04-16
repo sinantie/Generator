@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
+import fig.basic.LogInfo;
 import induction.MyCallable;
 import induction.Utils;
 import induction.problem.event3.Event3Example;
@@ -150,7 +151,7 @@ public class PosTagger
         }
         catch(IOException ioe)
         {
-            ioe.printStackTrace();
+            LogInfo.error(ioe);            
         }
     }
 
@@ -331,7 +332,8 @@ public class PosTagger
     private void parse(Example example)
     {
         String taggedText = tag(example);
-        
+        // in case the example contains string fields, we need to pos tag the values as well
+        example.body.tagStringValues(taggedText);
         try // TO-DO: needs a seperate thread, as it will eventually slow down seperate workers...
         {
             saveToFile(example, taggedText);
@@ -554,7 +556,7 @@ public class PosTagger
             }
             catch(IOException ioe)
             {
-                ioe.printStackTrace();
+                LogInfo.error(ioe);
             }
         }
 
@@ -579,7 +581,7 @@ public class PosTagger
             }
             catch(IOException ioe)
             {
-                ioe.printStackTrace();
+                LogInfo.error(ioe);
             }
             return null;
         }
@@ -593,7 +595,7 @@ public class PosTagger
             }
             catch(IOException ioe)
             {
-                ioe.printStackTrace();
+                LogInfo.error(ioe);
             }
         }
         

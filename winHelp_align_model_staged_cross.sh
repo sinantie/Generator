@@ -10,7 +10,7 @@ mkdir -p $outputPath
 
 # FOLDS
 inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
-folds=10
+folds=1
 
 for (( f=1; f<=folds; f++ ))
 do
