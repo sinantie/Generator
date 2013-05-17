@@ -30,6 +30,7 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Use modified binarization. Intermediate labels are generated from children labels.") public boolean modifiedBinarization = false;
     @Option(gloss="Export in event3 v.2 format.") public boolean exportEvent3 = false;
     @Option(gloss="Predicted input file") public String predInput;
+    @Option(gloss="External input file containing trees (e.g. output of CCM)") public String externalTreesInput;
     @Option(gloss="Remove records with one words") public boolean removeRecordsWithOneWord  = false;
     @Option(gloss="Rule count threshold") public int ruleCountThreshold  = Integer.MIN_VALUE;
     @Option(gloss="Prefix of output filenames") public String prefix = "";

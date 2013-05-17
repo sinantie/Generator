@@ -53,7 +53,7 @@ public class ExportMrgToString
                 List<Tree<String>> trees = Utils.loadTrees(file.getAbsolutePath(), removePunctuation);
                 for(Tree tree : trees)
                 {
-                    fos.write((tree.toSurfaceString() + "\n").getBytes());
+                    fos.write((tree.toSurfaceStringLowerCase() + "\n").getBytes());
 //                        readExample(tree, Integer.MAX_VALUE);
                 }
             }

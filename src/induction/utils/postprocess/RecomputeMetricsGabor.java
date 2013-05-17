@@ -213,7 +213,8 @@ public class RecomputeMetricsGabor
 //            arg = "Example_";
 //            type = TypeOfId.orderedText;
             // WinHelp
-            inputFile = "../Gabor/generation/outs/winHelp.docs.newAnnotation.removedOutliers/fold1/0.exec/results-test.xml";
+            inputFile = "../Gabor/generation/outs/winHelp.docs.newAnnotation.removedOutliers/fold5/0.exec/results-test.xml";
+//            inputFile = "../Gabor/generation/outs/winHelp.docs.newAnnotation.removedOutliers/all";
             arg = "Example_";
             type = TypeOfId.orderedText;
         }

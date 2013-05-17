@@ -76,32 +76,35 @@ public class MergeParamsWithExternalTreebank
             }
             // add 1 count to the corresponding document length bin of the root rule
             Example ex = examplesMap.get(treebankEntry.getKey());
-            int N = ex.N();
-//            int docLengthBin = N >= opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;   
-            int docLengthBin = N >= opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;   
-            int indexOfRule = model.getCfgRuleIndex(new CFGRule(tree, model.getRulesIndexer()));
-            cfgParams.getWordsPerRootRule()[indexOfRule].addCount(docLengthBin, 1.0);
-            
-            // add 1 count to each cfg rule in each subtree of the parse tree
-            for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
+            if(ex != null)
             {
-                Tree<String> subtree = it.next();
-                if(Utils.countableRule(subtree)) // count only the binary or preterminal rules
-//                if(subtree.getChildren().size() > 1) // count only the binary rules
+                int N = ex.N();
+    //            int docLengthBin = N >= opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;   
+                int docLengthBin = N >= opts.modelOpts.maxDocLength ? cfgParams.getNumOfBins() - 1 : N / opts.modelOpts.docLengthBinSize;   
+                int indexOfRule = model.getCfgRuleIndex(new CFGRule(tree, model.getRulesIndexer()));
+                cfgParams.getWordsPerRootRule()[indexOfRule].addCount(docLengthBin, 1.0);
+
+                // add 1 count to each cfg rule in each subtree of the parse tree
+                for(Iterator<Tree> it = tree.iterator(); it.hasNext(); )
                 {
-                    CFGRule rule = new CFGRule(subtree, model.getRulesIndexer());
-                    cfgRulesChoices.get(rule.getLhs()).addCount(model.getCfgRuleIndex(rule), 1.0);
+                    Tree<String> subtree = it.next();
+                    if(Utils.countableRule(subtree)) // count only the binary or preterminal rules
+    //                if(subtree.getChildren().size() > 1) // count only the binary rules
+                    {
+                        CFGRule rule = new CFGRule(subtree, model.getRulesIndexer());
+                        cfgRulesChoices.get(rule.getLhs()).addCount(model.getCfgRuleIndex(rule), 1.0);
+                    }
+                    else if(subtree.getChildren().size() > 0)// leaf node
+                    {                    
+                        String label = subtree.getLabel();
+                        int t0 = label.equals("none") ? cfgParams.none_t : model.getEventTypeNameIndexer().getIndex(label);
+                        if(t0 == cfgParams.none_t)
+                            cparams.getEventTypeChoices()[cparams.boundary_t].addCount(cparams.none_t, 1.0);
+                        else
+                            cparams.getEventTypeChoices()[cparams.boundary_t].addCount(t0, 1.0d/(double)ex.getEventTypeCounts()[t0]);
+                    }
                 }
-                else if(subtree.getChildren().size() > 0)// leaf node
-                {                    
-                    String label = subtree.getLabel();
-                    int t0 = label.equals("none") ? cfgParams.none_t : model.getEventTypeNameIndexer().getIndex(label);
-                    if(t0 == cfgParams.none_t)
-                        cparams.getEventTypeChoices()[cparams.boundary_t].addCount(cparams.none_t, 1.0);
-                    else
-                        cparams.getEventTypeChoices()[cparams.boundary_t].addCount(t0, 1.0d/(double)ex.getEventTypeCounts()[t0]);
-                }
-            }
+            }            
         }
         // normalise cfg choices and eventType multinomial distributions
         cfgParams.optimise(opts.modelOpts.initSmoothing);

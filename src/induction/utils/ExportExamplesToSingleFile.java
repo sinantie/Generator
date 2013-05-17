@@ -162,22 +162,24 @@ public class ExportExamplesToSingleFile
     {        
         // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
         String inputPath[] = {
-//                              "data/weatherGov/weatherGovTrainGabor.gz", 
-                              "data/weatherGov/weatherGovTrainGaborPosTagged.gz", 
+                              "data/weatherGov/weatherGovTrainGabor.gz", 
+//                              "data/weatherGov/weatherGovTrainGaborPosTagged.gz", 
                               "data/weatherGov/weatherGovGenDevGabor.gz", 
                               "data/weatherGov/weatherGovGenEvalGabor.gz"
                              };
         // recordTreebankTrainRightBinarize, recordTreebankGenDevRightBinarize, recordTreebankGenEvalRightBinarize
         String treebankInputFile[] = {
 //                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsThres5",
-                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsTreebank",
+//                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsTreebank",
+                                      "data/weatherGov/treebanks/ccm/recordTreebankTrainCcm",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
         // weatherGovTrainGabor.gz, weatherGovGenDevGabor.gz, weatherGovGenEvalGabor.gz
         String outputFile[] = {
 //                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres5.gz",
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsTreebank_PosTagged.gz",
+//                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsTreebank_PosTagged.gz",
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankCcm.gz",
                                "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
                                "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
                               };                
