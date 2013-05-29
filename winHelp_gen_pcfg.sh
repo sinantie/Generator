@@ -12,7 +12,7 @@ lengthPredictionFeatureType=$9
 shift 1
 treebankRules=$9
 
-java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
+java -Xmx6500m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -numThreads 1 \
 -outputFullPred \
@@ -40,7 +40,7 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -outputPcfgTrees \
 -treebankRules ${treebankRules} \
 -wordsPerRootRule \
--Options.stage1.cfgThreshold 0.14 \
+-Options.stage1.cfgThreshold 0.54 \
 -maxDocLength 100 \
 -docLengthBinSize 15 \
 -allowConsecutiveEvents

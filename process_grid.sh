@@ -23,6 +23,7 @@
 #COMMENT weights parameter
 
 #WinHelp
+#WinHelp
 #input=results/output/winHelp/generation/generative/no_pos/no_null
 #formattedString=model_3_docs_newAnnotation_\$param1\$-best_iter\$param2\$_max14_newFolds_predLength
 #output=${input}/grid_docs_newAnnotation_hmm14_predLength.results

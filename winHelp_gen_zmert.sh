@@ -28,13 +28,14 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -allowConsecutiveEvents \
 -kBest ${kBest} \
 -ngramModelFile ${ngramModelFile} \
--ngramWrapper srilm \
--outputExampleFreq 100  \
+-ngramWrapper kylm \
+-outputExampleFreq 5  \
 -reorderType eventType \
 -maxPhraseLength 5 \
 -ngramSize 3 \
 -binariseAtWordLevel \
 -useStopNode \
+-lengthPredictionMode gold \
 -interpolationFactor ${interpolationFactor} \
 -useDependencies \
 -posAtSurfaceLevel \

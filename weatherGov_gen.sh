@@ -1,19 +1,20 @@
 #!/bin/bash
 
 #genDevListPathsGabor, genEvalListPathsGabor
-inputLists=data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2
+inputLists=data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz
 numThreads=1
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/model_3_15_NO_STOP_NEW/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz
-stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_thres10_externalTreebank/stage1.extTreebank.params.obj.gz
+#stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_thres10_externalTreebank/stage1.extTreebank.params.obj.gz
+stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_treebank_20iter_posTagged/stage1.params.obj.gz
 dmvModelParamsFile=results/output/weatherGov/dmv/train/weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz
-kBest=60
-interpolationFactor=1
+kBest=65
+interpolationFactor=0.3
 #execDir=results/output/weatherGov/generation/dependencies/model_3_${kBest}-best_0.01_NO_STOP_inter${interpolationFactor}_condLM_hypRecomb_lmLEX_NO_STOP
 #execDir=results/output/weatherGov/generation/dev/model_3_${kBest}-best_0.01_NO_STOP
-execDir=results/output/weatherGov/generation/pcfg/model_3_${kBest}-best_TEST
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeAlignmentsThres10
+execDir=results/output/weatherGov/generation/pcfg/dependencies/model_3_${kBest}-best_inter${interpolationFactor}_alignments_treebank_gold
+treebankRules=data/weatherGov/treebanks/final/recordTreebankRulesTrainRightBinarizeAlignmentsTreebank
 
 java -Xmx3000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/lib/stanford-postagger-2010-05-26.jar \
@@ -32,15 +33,15 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -inputFileExt events \
 -disallowConsecutiveRepeatFields \
 -ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa \
--ngramWrapper srilm \
--outputExampleFreq 500 \
+-ngramWrapper kylm \
+-outputExampleFreq 10 \
 -allowConsecutiveEvents \
 -kBest ${kBest} \
 -testInputLists ${inputLists} \
 -execDir ${execDir} \
 -stagedParamsFile ${stagedParamsFile} \
 -dmvModelParamsFile ${dmvModelParamsFile} \
--lengthPredictionMode file \
+-lengthPredictionMode gold \
 -lengthPredictionModelFile gaborLists/genEvalGaborScaledPredLength_c6_g1.1.svr_round.length \
 -lengthPredictionFeatureType values \
 -lengthPredictionStartIndex 4 \
@@ -49,7 +50,10 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -binariseAtWordLevel \
 -outputFullPred \
 -maxDocLength 90 \
--docLengthBinSize 5
+-docLengthBinSize 5 \
+-posAtSurfaceLevel \
+-interpolationFactor ${interpolationFactor} \
+-useDependencies
 
 #-allowNoneEvent \
 #-excludedEventTypes sleetChance windChill

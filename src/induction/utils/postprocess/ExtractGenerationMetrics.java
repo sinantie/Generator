@@ -128,7 +128,7 @@ public class ExtractGenerationMetrics
             {
                 Element docElement = (Element) docNode; 
                 // get id from doc tag
-                String id = docElement.getAttribute("docid");
+                String id = Utils.stripExtension(docElement.getAttribute("docid"));
                 // get seg node
                 Element segElement = (Element) docElement.getElementsByTagName("seg").item(0);
                 for(int i = 0; i < METRICS.length; i++)

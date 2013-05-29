@@ -6,7 +6,7 @@ numIters=$3
 numThreads=$4
 stagedParamsFile=$5
 
-java -Xmx1800m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
+java -Xmx1800m -Xshare:off -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -create \
 -modeltype event3 \
@@ -27,7 +27,9 @@ dist/stanford-postagger-2010-05-26.jar induction.runtime.Induction \
 -useStopNode \
 -outputFullPred \
 -dontOutputParams \
+-outputExampleFreq 1 \
 -inputPosTagged
+#-inputPosTagged
 #-indepEventTypes 0,10 \
 #-indepFields 0,5 \
 #-newEventTypeFieldPerWord 0,5 \

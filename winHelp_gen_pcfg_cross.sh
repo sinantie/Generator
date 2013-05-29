@@ -3,8 +3,8 @@
 exec=winHelp_gen_pcfg.sh
 kBest=$1
 interpolationFactor=$2
-inputLists=data/branavan/winHelpHLA/folds/docs.newAnnotation
-output=results/output/winHelp/generation/generative/no_pos/no_null/pcfg/model_3_docs_newAnnotation_markov1_${kBest}-best_iter${interpolationFactor}_max12_gold
+inputLists=data/branavan/winHelpHLA/folds/docs.newAnnotation.removedOutliers
+output=results/output/winHelp/generation/generative/no_pos/no_null/pcfg/model_3_docs_newAnnotation_markov1_${kBest}-best_iter${interpolationFactor}_newFolds_54_max12_gold
 modelPath=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation_markov1_externalTreebank
 treebankRules=data/branavan/winHelpHLA/folds/treebanks
 suffix=NewAnnotationMarkov1Fold
@@ -30,6 +30,3 @@ do
 	${lengthPredictionFeatureType} \
 	${treebankRules}/recordTreebankRulesRightBinarize${suffix}${f}
 done
-
-
-

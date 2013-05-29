@@ -12,7 +12,7 @@ lengthPredictionFeatureType=$9
 shift 1
 treebankRules=$8
 
-java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
+java -Xmx3500m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -outputFullPred \
 -create \
@@ -27,15 +27,21 @@ java -Xmx3000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -examplesInSingleFile \
 -kBest ${kBest} \
 -ngramModelFile ${ngramModelFile} \
--ngramWrapper srilm \
+-ngramWrapper kylm \
 -outputExampleFreq 5  \
 -lengthPredictionMode gold \
+-lengthPredictionModelFile ${lengthPredictionFile} \
+-lengthPredictionFeatureType ${lengthPredictionFeatureType} \
+-lengthPredictionStartIndex 2 \
 -ngramSize 3 \
 -useStopNode \
 -modelType generate \
--maxPhraseLength 12  \
+-maxPhraseLength 14  \
 -reorderType eventType \
 -allowConsecutiveEvents
+#-useDependencies \
+#-posAtSurfaceLevel \
+#-tagDelimiter "_"
 #-allowNoneEvent
 
 #-binariseAtWordLevel \

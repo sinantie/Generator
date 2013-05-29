@@ -1,10 +1,10 @@
 #!/bin/bash
 
 exec=winHelp_align_model_staged.sh
-outputPath=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
+outputPath=results/output/winHelp/alignments/pos/model_3_docs_no_null_newAnnotation
 stagedParamsFile=results/output/winHelp/alignments/pos/model_3_sents_no_null_newAnnotation
 numIters=2
-numThreads=2
+numThreads=1
 
 mkdir -p $outputPath
 

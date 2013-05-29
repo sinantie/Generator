@@ -54,7 +54,7 @@ public class GenerationPCFGWeatherTest
                 + "-stagedParamsFile "
 //                + "results/output/weatherGov/alignments/pcfg/"
 //                + "model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.params.obj.gz "
-                + "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_treebank_20iter/stage1.params.obj.gz "
+                + "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_treebank_20iter_posTagged/stage1.params.obj.gz "
 //                + "model_3_gabor_record_pcfg_treebank_alignments_no_windChill_sleet_externalTreebank/stage1.extTreebank.params.obj.gz "
 //                + "model_3_gabor_record_pcfg_treebank_noNone_alignments_markov1_externalTreebank/stage1.extTreebank.params.obj.gz "
 //                 + "-fixRecordSelection "
@@ -83,12 +83,12 @@ public class GenerationPCFGWeatherTest
                 + "-lengthPredictionFeatureType values "
                 + "-lengthPredictionStartIndex 4 "
 //                + "-excludedEventTypes windChill sleetChance "
-                + "-numAsSymbol ";
-//                + "-useDependencies "
-//                + "-interpolationFactor 0.3 "
-//                + "-posAtSurfaceLevel "                    
-//                + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
-//                + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz "
+                + "-numAsSymbol "
+                + "-useDependencies "
+                + "-interpolationFactor 0.3 "
+                + "-posAtSurfaceLevel "
+                + "-dmvModelParamsFile results/output/weatherGov/dmv/train/"
+                + "weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz ";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT
         /*initialisation procedure from Induction class*/

@@ -1,4 +1,4 @@
-#!/usr/bin/octave -qf
+#!/usr/bin/octave3.2 -qf
 
 arg_list = argv ();
 data = dlmread(arg_list{1});

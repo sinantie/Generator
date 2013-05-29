@@ -1,12 +1,14 @@
 #!/bin/bash
-threads=2
+threads=1
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_unaryRules_wordsPerRootRule_30iter
+#input=data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres10.gz
+input=data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarize_PosTagged.gz
+output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_20iter_posTagged
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
-#treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRulesAlignments
-memory=-Xmx4000m
+treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
+#treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeAlignmentsThres10
+memory=-Xmx2000m
 java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
 -create \
@@ -15,7 +17,7 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -examplesInSingleFile \
 -inputLists $input \
 -execDir $output \
--Options.stage1.numIters 30 \
+-Options.stage1.numIters 20 \
 -inputFileExt events \
 -numThreads $threads \
 -treebankRules $treebankRules \
@@ -33,7 +35,10 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -initSmoothing 0.01 \
 -initType artificial \
 -fixRecordSelection \
--wordsPerRootRule
+-wordsPerRootRule \
+-maxDocLength 90 \
+-docLengthBinSize 5 \
+-inputPosTagged
 
 # Record PCFG - Treebank Input
 #-treebankRules $treebankRules \

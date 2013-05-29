@@ -1,7 +1,7 @@
 #!/bin/bash
 
 exec=winHelp_dmvTrain.sh
-inputLists=data/branavan/winHelpHLA/folds
+inputLists=data/branavan/winHelpHLA/folds/sents.newAnnotation
 #inputLists=data/branavan/winHelpHLA/winHelpRL.sents.all.tagged
 outputPath=results/output/winHelp/dmv/train/winHelp_uniformZ_initNoise_POS_auto_100
 numIters=100
