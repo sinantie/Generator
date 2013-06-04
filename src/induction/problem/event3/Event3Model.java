@@ -265,6 +265,7 @@ public abstract class Event3Model extends WordModel
 //            System.out.println(rule);
 //        }
 //        return t;
+//        System.out.println(rule.getLhs() + " " + rule);
         return cfgRules.get(rule.getLhs()).get(rule);
         
     }

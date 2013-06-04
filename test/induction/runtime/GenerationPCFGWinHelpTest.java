@@ -1,18 +1,18 @@
 package induction.runtime;
 
-import fig.basic.StopWatch;
 import fig.basic.StopWatchSet;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
 import induction.Options.InitType;
+import induction.problem.AParams.ParamsType;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import induction.problem.event3.params.Params;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -48,7 +48,8 @@ public class GenerationPCFGWinHelpTest
                     + "-stagedParamsFile "
                     + "results/output/winHelp/alignments/"
 //                    + "model_3_docs_no_null_newAnnotation_externalTreebank/fold2/stage1.extTreebank.params.obj.gz "
-                    + "model_3_docs_no_null_newAnnotation_alignments_markov1_externalTreebank/all/stage1.extTreebank.params.obj.gz "
+//                    + "model_3_docs_no_null_newAnnotation_alignments_markov1_externalTreebank/all/stage1.extTreebank.params.obj.gz "
+                    + "model_3_docs_no_null_newAnnotation_markov1_externalTreebank/all/stage1.extTreebank.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
                     + "-kBest 40 "
 //                    + "-ngramModelFile winHelpLM/docs.newAnnotation/srilm-abs-winHelpRL-docs-fold2-3-gram.model.arpa "
@@ -57,7 +58,8 @@ public class GenerationPCFGWinHelpTest
 //                    + "-allowConsecutiveEvents "
                     + "-reorderType ignore "
 //                    + "-treebankRules data/branavan/winHelpHLA/folds/treebanks/recordTreebankRulesRightBinarizeNewAnnotationFold2 "
-                    + "-treebankRules data/branavan/winHelpHLA/recordTreebankRulesRightBinarizeNewAnnotationAlignmentsMarkov1 "
+//                    + "-treebankRules data/branavan/winHelpHLA/recordTreebankRulesRightBinarizeNewAnnotationAlignmentsMarkov1 "
+                    + "-treebankRules data/branavan/winHelpHLA/recordTreebankRulesRightBinarizeNewAnnotationMarkov1 "
                     + "-wordsPerRootRule "
                     + "-Options.stage1.cfgThreshold 0.14 "
                     + "-outputPcfgTrees "
@@ -87,6 +89,9 @@ public class GenerationPCFGWinHelpTest
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);        
         model.init(InitType.staged, opts.initRandom, "");
+//        System.out.println(
+//        ((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+//        System.exit(1);
         model.readExamples();        
         model.logStats();        
 //        opts.outputIterFreq = opts.stage1.numIters;

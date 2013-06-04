@@ -171,7 +171,7 @@ public class ExportExamplesToSingleFile
         String treebankInputFile[] = {
 //                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsThres5",
 //                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsTreebank",
-                                      "data/weatherGov/treebanks/ccm/recordTreebankTrainCcm",
+                                      "data/weatherGov/treebanks/ccm/recordTreebankRightBinarizeCcm",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
@@ -179,7 +179,7 @@ public class ExportExamplesToSingleFile
         String outputFile[] = {
 //                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres5.gz",
 //                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsTreebank_PosTagged.gz",
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebankCcm.gz",
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeCcm.gz",
                                "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
                                "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
                               };                

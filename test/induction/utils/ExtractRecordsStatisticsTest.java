@@ -75,7 +75,7 @@ public class ExtractRecordsStatisticsTest
         String args = 
                    "-exportType recordType "
                  +  "-examplesInSingleFile "
-                 +  "-initType random "
+                 +  "-initType staged "
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
 //                 + "-ruleCountThreshold 5 "
@@ -89,7 +89,8 @@ public class ExtractRecordsStatisticsTest
 //                 + "-delimitSentences "
                  + "-modelType event3 "
                  + "-inputLists "
-                 + "data/weatherGov/weatherGovTrainGabor.gz "
+//                 + "data/weatherGov/weatherGovTrainGabor.gz "
+                 + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_test "
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
@@ -102,7 +103,8 @@ public class ExtractRecordsStatisticsTest
 ////                 + "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted "
 //                 + "results/output/weatherGov/alignments/model_3_gabor_staged/stage1.train.pred.1.sorted "
                  + "-suffix Ccm "
-                 + "-externalTreesInput data/weatherGov/treebanks/ccm/permutations.kleinParsing.20 "
+//                 + "-externalTreesInput data/weatherGov/treebanks/ccm/permutations.kleinParsing.20 "
+                 + "-externalTreesInput data/weatherGov/treebanks/ccm/permutationsAligns.kleinParsing.20.test "
 //                 + "-excludedEventTypes sleetChance windChill "
                  + "-inputFileExt events ";
 //                 + "-ngramWrapper kylm "
