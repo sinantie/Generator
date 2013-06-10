@@ -428,6 +428,37 @@ public class Utils
     {
         return readLines(path, Integer.MAX_VALUE);
     }
+    
+    public static String[] readDocuments(String path)
+    {
+        ArrayList<String> docsList = null;
+        final BufferedReader in = IOUtils.openInEasy(path);
+        if(in != null)
+        {
+            docsList = new ArrayList<String>();
+            String line = "";
+            StringBuilder str = new StringBuilder();
+            try
+            {
+                while((line = in.readLine()) != null)
+                {
+                    if(line.equals("")) // documents are separated by an empty line
+                    {
+                        docsList.add(str.toString());
+                        str = new StringBuilder();
+                    }
+                    str.append(line);
+                }
+                docsList.add(str.toString()); // add the last one
+                in.close();
+            }
+            catch(IOException ioe)
+            {
+                LogInfo.logs("Error reading file %s", path);
+            }
+        }        
+        return docsList.toArray(new String[docsList.size()]);
+    }
 
     public static String readFileAsString(String filePath) throws java.io.IOException
     {

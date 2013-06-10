@@ -97,12 +97,16 @@ public class ExtractRecordsStatistics
                 PrintWriter out = IOUtils.openOut(Execution.getFile("recordTreebank" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize") + opts.suffix);
                 if(opts.externalTreesInput == null)
                     extractRecordTrees(out);
-                else
+                else // use trees produced externally (e.g., by CCM or an RST discourse parser)
                 {
                     LogInfo.logs("using external trees from file.");
-                    extractRecordTrees(Utils.readLines(opts.externalTreesInput), out);
+                    if(opts.externalTreesInputType == ExtractRecordsStatisticsOptions.TreeType.unlabelled)
+                        extractUnlabelledRecordTrees(Utils.readLines(opts.externalTreesInput), out);
+                    else if(opts.externalTreesInputType == ExtractRecordsStatisticsOptions.TreeType.rst)
+                        extractRstRecordTrees(Utils.readDocuments(opts.externalTreesInput), out);
                 }
                 out.close();
+                // write trees to file
                 out = IOUtils.openOut(Execution.getFile("recordTreebankRules" + (opts.binarize == Direction.left ? "Left" : "Right") + "Binarize") + opts.suffix);
                 writeRules(out);
                 out.close();
@@ -366,7 +370,7 @@ public class ExtractRecordsStatistics
         LogInfo.logs("Removed " + countRemoved + " examples");
     }   
     
-    private void extractRecordTrees(String[] inputTrees, PrintWriter out)
+    private void extractUnlabelledRecordTrees(String[] inputTrees, PrintWriter out)
     {
         rules = new TreeSet<String>();
         int countRemoved = 0;
@@ -378,6 +382,62 @@ public class ExtractRecordsStatistics
             {
                 // Read the unlabelled tree, and set the names of the non-terminals. 
                 // The names of the intermediate non-terminals come from the names of the preterminals they span.
+                Tree<String> tree = new PennTreeReader(new StringReader(inputTrees[i++])).next();
+                tree.setLabel("S"); // set the root to the start symbol
+                List<Tree<String>> subtrees = tree.subTreeList();
+                for(int t = 1; t < subtrees.size(); t++)
+                {
+                    Tree<String> subtree = subtrees.get(t);
+                    if(!subtree.getChildren().isEmpty())
+                    {
+                        subtree.setLabel(subtree.toSurfaceString("_")); // apply renaming                                        
+                        if(subtree.isPreTerminal()) // remove leaves as they have already been promoted as the names of the preterminals 
+                        {
+                            subtree.getChildren().get(0).setLabel("");
+                        }
+                    } // if
+                } // for
+                // extract the rules from the tree
+                for (Tree<String> subtree : tree.subTreeList())
+                {
+                    if(!subtree.getChildren().isEmpty())
+                    {                    
+                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
+                        Tree<String> ch = subtree.getChildren().get(0);
+                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                        if(subtree.getChildren().size() > 1)
+                        {
+                            ch = subtree.getChildren().get(1);
+                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                            rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
+                        }
+                        else if(!subtree.isPreTerminal()) // unary rules
+                        {
+                            rules.add(String.format("%s -> %s", lhs, rhs1));
+                        }                                            
+                    } // if
+                } // for
+
+                out.println(p.getName());
+                out.println(PennTreeRenderer.render(tree));
+            } // if
+            else
+                countRemoved++;
+        } // for        
+        LogInfo.logs("Removed " + countRemoved + " examples");
+    }      
+    
+    private void extractRstRecordTrees(String[] inputTrees, PrintWriter out)
+    {
+        rules = new TreeSet<String>();
+        int countRemoved = 0;
+        int i = 0;
+        for(ExampleRecords p : examples)
+        {     
+            // exclude examples with frequency less than the threshold (useful when extracting rules from alignment input)
+            if(documentNgrams.getFrequency(p.toString()) > opts.ruleCountThreshold)
+            {
+                // Read the rst tree                
                 Tree<String> tree = new PennTreeReader(new StringReader(inputTrees[i++])).next();
                 tree.setLabel("S"); // set the root to the start symbol
                 List<Tree<String>> subtrees = tree.subTreeList();
@@ -524,7 +584,10 @@ public class ExtractRecordsStatistics
             }
             else
             {
-                extractRecordTrees(Utils.readLines(opts.externalTreesInput), new PrintWriter(System.out));
+                if(opts.externalTreesInputType == ExtractRecordsStatisticsOptions.TreeType.unlabelled)
+                    extractUnlabelledRecordTrees(Utils.readLines(opts.externalTreesInput), new PrintWriter(System.out));
+                else if(opts.externalTreesInputType == ExtractRecordsStatisticsOptions.TreeType.rst)
+                        extractRstRecordTrees(Utils.readDocuments(opts.externalTreesInput), new PrintWriter(System.out));
             }
             writeRules(new PrintWriter(System.out));
         }

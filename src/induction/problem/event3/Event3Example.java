@@ -1,5 +1,6 @@
 package induction.problem.event3;
 
+import induction.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -256,6 +257,22 @@ public class Event3Example
         return records.length > 0 ? records[1].split("\n") : new String[0];
     }
     
+    public String[] getTextSentences()
+    {
+        StringBuilder out = new StringBuilder();
+        StringBuilder sentence = new StringBuilder();        
+        for(String line : getTextArray())
+        {
+            sentence.append(line).append(" ");
+            if(Utils.isSentencePunctuation(String.valueOf(line.charAt(line.length()-1))))
+            {
+                out.append(sentence.toString().trim()).append("\n");
+                sentence = new StringBuilder();
+            }
+        }
+        return out.deleteCharAt(out.length()-1).toString().split("\n");
+    }
+    
     public String getEvents()
     {
         return records.length > 0 ? records[2] : "";
@@ -294,6 +311,66 @@ public class Event3Example
     public int getNumberOfRecords()
     {
         return records.length;
+    }
+    
+    /**
+     * Exports an event3example into a string that contains the name, the text
+     * split in sentences, and the elementary discourse units (EDUs), conforming
+     * to the event3 ver.2 format.
+     * 
+     * @param alignmentsString a string containing word-by-word record alignments 
+     * @return a string in event3 ver.2 format containing the text and EDUs
+     */
+    public String exportToEdusFormat(String alignmentsString) throws Exception
+    {
+        // compile text
+        StringBuilder text = new StringBuilder();
+        String[] sentences = getTextSentences();
+        for(int i = 0; i < sentences.length -1; i++)
+        {
+            text.append(sentences[i]).append("<s>\n");
+        }
+        text.append(sentences[sentences.length-1]).append("<p>");
+        // compile EDUS.
+        // collapse text into a single line; number of words should match the number
+        // of record alignments
+        StringBuilder str = new StringBuilder();
+        for(String line : getTextArray())
+            str.append(line).append(" ");
+        String[] words = str.toString().trim().split(" ");
+        String[] alignments = alignmentsString.split(" ");
+        // check that the number of words matches with the number of record alignments
+        if(words.length != alignments.length)
+            throw new Exception(getName() + ": Number of words does not match with the number of record alignments");
+        // assign to each edu the substring of the text which corresponds to a 
+        // sequence of consecutive record alignments
+        StringBuilder edus = new StringBuilder();
+        String prev = alignments[0];
+        int prevIndex = 0;        
+        for(int i = 1; i < alignments.length; i++)
+        {
+            if(!alignments[i].equals(prev))
+            {
+                edus.append(wordsToEdu(Arrays.copyOfRange(words, prevIndex, i))).append("\n");
+                prevIndex = i;
+            }
+            prev = alignments[i];            
+        }
+        // don't forget the last edu
+        edus.append(wordsToEdu(Arrays.copyOfRange(words, prevIndex, words.length))).append("\n");
+        return String.format("$NAME\n%s\n$TEXT\n%s\n$EDUS\n%s", getName(), text, edus);
+    }
+    
+    private String wordsToEdu(String[] words)
+    {
+        StringBuilder str = new StringBuilder("<edu>");
+        for(String word : words)
+        {
+            str.append(word).append(" ");
+        }
+        str.deleteCharAt(str.length()-1);
+        str.append("</edu>");
+        return str.toString();
     }
     
     @Override

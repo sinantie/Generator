@@ -12,6 +12,7 @@ public class ExtractRecordsStatisticsOptions
 {
     public enum Type {record, recordType};
     public enum Direction {left, right};
+    public enum TreeType {unlabelled, rst};
     
     @OptionSet(name="modelOpts") public Options modelOpts = new Options();
     
@@ -31,6 +32,7 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Export in event3 v.2 format.") public boolean exportEvent3 = false;
     @Option(gloss="Predicted input file") public String predInput;
     @Option(gloss="External input file containing trees (e.g. output of CCM)") public String externalTreesInput;
+    @Option(gloss="External input tree type (e.g. CCM)") public TreeType externalTreesInputType = TreeType.unlabelled;
     @Option(gloss="Remove records with one words") public boolean removeRecordsWithOneWord  = false;
     @Option(gloss="Rule count threshold") public int ruleCountThreshold  = Integer.MIN_VALUE;
     @Option(gloss="Prefix of output filenames") public String prefix = "";
