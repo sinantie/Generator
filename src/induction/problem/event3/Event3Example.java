@@ -318,10 +318,10 @@ public class Event3Example
      * split in sentences, and the elementary discourse units (EDUs), conforming
      * to the event3 ver.2 format.
      * 
-     * @param alignmentsString a string containing word-by-word record alignments 
+     * @param alignments a string containing word-by-word record alignments 
      * @return a string in event3 ver.2 format containing the text and EDUs
      */
-    public String exportToEdusFormat(String alignmentsString) throws Exception
+    public String exportToEdusFormat(String[] alignments) throws Exception
     {
         // compile text
         StringBuilder text = new StringBuilder();
@@ -337,8 +337,7 @@ public class Event3Example
         StringBuilder str = new StringBuilder();
         for(String line : getTextArray())
             str.append(line).append(" ");
-        String[] words = str.toString().trim().split(" ");
-        String[] alignments = alignmentsString.split(" ");
+        String[] words = str.toString().trim().split(" ");        
         // check that the number of words matches with the number of record alignments
         if(words.length != alignments.length)
             throw new Exception(getName() + ": Number of words does not match with the number of record alignments");
