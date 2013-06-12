@@ -94,7 +94,7 @@ public class ExtractRecordsStatisticsTest
 //                 + "test/testWeatherGovEvents "
 //                 + "gaborLists/trainListPathsGabor "                 
                  + "-execDir "
-                 + "data/weatherGov/treebanks/ccm "
+                 + "data/weatherGov/treebanks/torontoRST "
                  + "-stagedParamsFile "
                     + "results/output/weatherGov/alignments/"
 //                    + "model_3_gabor_no_sleet_windChill_15iter/stage1.params.obj.gz "
