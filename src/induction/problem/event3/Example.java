@@ -545,6 +545,16 @@ public class Example implements AExample<Widget>
         return text;
     }
 
+    public String[] getTextString()
+    {
+        String[] str = new String[text.length];
+        for(int i = 0; i < text.length; i++)
+        {
+            str[i] = model.wordToString(text[i]);
+        }
+        return str;
+    }
+    
     public int[] getLabels()
     {
         return labels;

@@ -4,6 +4,7 @@ import fig.basic.IOUtils;
 import induction.Utils;
 import induction.problem.event3.Event3Example;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class ExportExamplesToEdusFile
             for(Event3Example example : examples)
             {                
                 out.print(example.exportToEdusFormat(
-                        clean(recordAlignments[i++].split(" "), example.getTextInOneLine())));
+                        cleanRecordAlignments(recordAlignments[i++].split(" "), example.getTextInOneLine())));
             }
             
             out.close();
@@ -54,13 +55,15 @@ public class ExportExamplesToEdusFile
     /**
      * Record alignments cleansing. 
      * 1. Remove records aligning to one word.
-     * 2. 
+     * 2. If a record alignment spans phrases from two adjacent sentences (separated with full-stop)
+     * then keep the alignment up to the full-stop and assign the rest words of the phrase
+     * to the next record alignment.
      * @param alignments
      * @return 
      */
-    private String[] clean(String[] alignments, String[] words)
+    public static String[] cleanRecordAlignments(String[] alignments, String[] words)
     {
-        return fixSplitSentenceAlignments(removeRecordsWithOneWord(alignments), words);                
+        return fixSplitSentenceAlignments(removeRecordsWithOneWord(alignments, words), words);                
     }
     
     /**
@@ -75,16 +78,37 @@ public class ExportExamplesToEdusFile
      * @param words
      * @return 
      */
-    private String[] fixSplitSentenceAlignments(String[] alignments, String[] words)
+    private static String[] fixSplitSentenceAlignments(String[] alignments, String[] words)
     {
-        String[] out = new String[alignments.length];
-        for(int i = 0; i < words.length; i++)
+//        String[] out = new String[alignments.length];
+        String[] out = Arrays.copyOf(alignments, alignments.length);
+        int startIndex = 0;
+        // restart the process for each delimiter found. In this case we avoid nested
+        // splitting points.
+        while(startIndex < out.length)
+        {
+            startIndex = fixSplitSentenceAlignment(out, words, startIndex);
+        }
+        return out;
+    }
+    
+    private static int fixSplitSentenceAlignment(String[] alignments, String[] words, int startIndex)
+    {
+        int i;
+        for(i = startIndex; i < words.length; i++)
         {
             if(Utils.isSentencePunctuation(words[i])) // found a sentence delimiter
             {
                 if(i < words.length - 1 && (alignments[i].equals(alignments[i + 1]))) // the alignment span crosses the delimiter
-                {
-                    out[i] = alignments[i]; // copy the delimiter record alignment
+                {            
+                    // very rare: if the record-delimiter is the beginning of a span, i.e., different
+                    // from the previous record span (obviously a wrong alignment)
+                    // then assign it to the previous record span, as it is more likely to belog there.
+                    if(!alignments[i].equals(alignments[i - 1]))
+                    {
+                        alignments[i] = alignments[i - 1];
+                        break;
+                    }
                     // find the next record alignment
                     int j;
                     for(j = i + 1; j < words.length; j++)
@@ -94,14 +118,14 @@ public class ExportExamplesToEdusFile
                     }
                     for(int k = i + 1; k < j; k++) // replace the crossing alignments with the next record
                     {
-                        out[k] = alignments[j];
+                        alignments[k] = alignments[j];
                     }
-                    i = j; // continue with the rest of the string
+                    break;
+//                    i = j; // continue with the rest of the string
                 } // if
-            } // if
-            out[i] = alignments[i];
-        }                
-        return out;
+            } // if            
+        }
+        return i;
     }
     
     /**
@@ -111,20 +135,29 @@ public class ExportExamplesToEdusFile
      * @param alignments
      * @return 
      */
-    private String[] removeRecordsWithOneWord(String[] alignments)
+    private static String[] removeRecordsWithOneWord(String[] alignments, String[] words)
     {
         String[] out = new String[alignments.length];
+        // First tackle single alignments on punctuation tokens. 
         for(int i = 0; i < alignments.length; i++)
         {
-            if(!recordWithOneWord(alignments, alignments[i], i - 1, i + 1))
-                out[i] = alignments[i];
+            // get the record alignment of the previous word. No need to check bounaries, 
+            // as it is very unlikely to begin a sentence with punctuation.
+            if(recordWithOneWord(alignments, alignments[i], i - 1, i + 1) && Utils.isPunctuation(words[i]))                            
+                out[i] = alignments[i - 1];             
             else
-                out[i] = i == 0 ? alignments[i + 1] : alignments[i - 1];
+                out[i] = alignments[i];
+        }
+        // Tackle remaining single word alignments
+        for(int i = 0; i < out.length; i++)
+        {
+            if(recordWithOneWord(out, out[i], i - 1, i + 1))           
+                out[i] = i == 0 ? out[i + 1] : out[i - 1];
         }
         return out;
     }
     
-    private boolean recordWithOneWord(String[] records, String current, int from, int to)
+    private static boolean recordWithOneWord(String[] records, String current, int from, int to)
     {
         if(records.length == 1)
             return true;
@@ -142,12 +175,12 @@ public class ExportExamplesToEdusFile
     public static void main(String[] args)
     {        
         // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
-//        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
-        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
-//        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
-        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
-//        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAlignedRemovedSingleRecord.gz";
-        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
+//        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
+        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
+//        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
+        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
+//        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
         System.out.println("Creating " + outputFile);
         new ExportExamplesToEdusFile(inputPath, inputPathRecordAlignments, outputFile).execute();        
     }
