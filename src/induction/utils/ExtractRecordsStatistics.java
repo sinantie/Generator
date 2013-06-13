@@ -373,13 +373,13 @@ public class ExtractRecordsStatistics
                     {
                         if(!subtree.getChildren().isEmpty())
                         {
-                            String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
+                            String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabelNoSpan()) : subtree.getLabelNoSpan();
                             Tree<String> ch = subtree.getChildren().get(0);
-                            String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                            String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabelNoSpan()) : ch.getLabelNoSpan();
                             if(subtree.getChildren().size() > 1)
                             {
                                 ch = subtree.getChildren().get(1);
-                                String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                                String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabelNoSpan()) : ch.getLabelNoSpan();
                                 rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
                             }
                             else if(!subtree.isPreTerminal()) // unary rules
@@ -436,13 +436,13 @@ public class ExtractRecordsStatistics
                 {
                     if(!subtree.getChildren().isEmpty())
                     {                    
-                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
+                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabelNoSpan()) : subtree.getLabelNoSpan();
                         Tree<String> ch = subtree.getChildren().get(0);
-                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabelNoSpan()) : ch.getLabelNoSpan();
                         if(subtree.getChildren().size() > 1)
                         {
                             ch = subtree.getChildren().get(1);
-                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabelNoSpan()) : ch.getLabelNoSpan();
                             rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
                         }
                         else if(!subtree.isPreTerminal()) // unary rules
@@ -465,7 +465,8 @@ public class ExtractRecordsStatistics
      * Takes as input a list of RST-annotated discourse trees and assigns the
      * corresponding tree for each example. Leaf nodes in the RST trees are
      * phrase segments. We map the span of these phrase segments to their corresponding
-     * records, based on the input record alignments.
+     * records, based on the input record alignments. We also append the span length
+     * for each non-terminal.
      * @param inputTrees
      * @param out 
      */
@@ -483,7 +484,10 @@ public class ExtractRecordsStatistics
                 Tree<String> rstTree = new PennTreeReader(new StringReader(inputTrees[i++])).next();
                 try
                 {
-                    changeLeafsOfTree(rstTree, new LinkedList(p.getOriginalSequence()));
+                    // assign span size to the root non-terminal
+                    int spanSize = rstTree.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
+                    rstTree.setLabel(String.format("%s[span^%s^%s]", rstTree.getLabelNoSpan(), 0, spanSize));
+                    renameLabelsOfTree(rstTree, 0, new LinkedList(p.getOriginalSequence()));
                 }
                 catch(Exception e)
                 {
@@ -501,13 +505,13 @@ public class ExtractRecordsStatistics
                 {
                     if(!subtree.getChildren().isEmpty())
                     {                    
-                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabel()) : subtree.getLabel();
+                        String lhs = subtree.isIntermediateNode() ? String.format("[%s]", subtree.getLabelNoSpan()) : subtree.getLabelNoSpan();
                         Tree<String> ch = subtree.getChildren().get(0);
-                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();                            
+                        String rhs1 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabelNoSpan()) : ch.getLabelNoSpan();
                         if(subtree.getChildren().size() > 1)
                         {
                             ch = subtree.getChildren().get(1);
-                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabel()) : ch.getLabel();
+                            String rhs2 = ch.isIntermediateNode() ? String.format("[%s]", ch.getLabelNoSpan()) : ch.getLabelNoSpan();
                             rules.add(String.format("%s -> %s %s", lhs, rhs1, rhs2));
                         }
                         else if(!subtree.isPreTerminal()) // unary rules
@@ -527,27 +531,35 @@ public class ExtractRecordsStatistics
         LogInfo.logs("Removed " + countRemoved + " examples");
     }      
     
-    private void changeLeafsOfTree(Tree<String> tree, Queue<String> leafs) throws Exception
+    private void renameLabelsOfTree(Tree<String> tree, int start, Queue<String> leafs) throws Exception
     {
+        int currentIndex = start, spanSize = 0;
         for(Tree<String> child : tree.getChildren())
         {
             if(child.isPreTerminal() && !child.getChildren().isEmpty()) // set the pre-terminal symbol to the recordType it spans
             {
                 // we assume that each pre-terminal spans a segment of the document
                 // that corresponds to a record. The number of segments should be the same as the number of records                
-                child.setLabel(leafs.poll());                
+                spanSize = child.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
+                child.setLabel(String.format("%s[span^%s^%s]", leafs.poll(), currentIndex, currentIndex + spanSize));
+//                child.setLabel(leafs.poll());                
                 child.getChildren().get(0).setLabel(""); // delete the text span       
             }
             else
             {
-                changeLeafsOfTree(child, leafs);
+                // append the span length to each non-terminal
+                spanSize = child.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
+                child.setLabel(String.format("%s[span^%s^%s]", child.getLabelNoSpan(), currentIndex, currentIndex + spanSize));
+                renameLabelsOfTree(child, currentIndex,  leafs);
+                
             }
+            currentIndex += spanSize;
         }
-    }
-    
+    }        
+       
     public Tree<String> binarize(Tree<String> tree) 
     {
-        String rootLabel = tree.getLabel();
+        String rootLabel = tree.getLabelNoSpan();
 
         if (tree.getChildren().isEmpty())
         {
@@ -557,7 +569,7 @@ public class ExtractRecordsStatistics
         {
             Tree<String> child = tree.getChildren().get(0);
             if(!tree.isPreTerminal())
-                rules.add(String.format("%s -> %s", rootLabel, child.getLabel()));
+                rules.add(String.format("%s -> %s", rootLabel, child.getLabelNoSpan()));
             return new Tree<String>(rootLabel,
                     tree.isIntermediateNode(),
                     ListUtils.newList(binarize(child)));
@@ -577,8 +589,8 @@ public class ExtractRecordsStatistics
             for (int i = 1; i < newChildren.size(); i++)
             {
                 String intermediateLabel =
-                        (i == newChildren.size() - 1 ? rootLabel : (newTree.getLabel() + "_" + newChildren.get(i).getLabel())).replaceAll("SENT-", "");
-                rules.add(String.format("%s -> %s %s", intermediateLabel, newTree.getLabel(), newChildren.get(i).getLabel()));
+                        (i == newChildren.size() - 1 ? rootLabel : (newTree.getLabelNoSpan() + "_" + newChildren.get(i).getLabelNoSpan())).replaceAll("SENT-", "");
+                rules.add(String.format("%s -> %s %s", intermediateLabel, newTree.getLabelNoSpan(), newChildren.get(i).getLabelNoSpan()));
                 newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newTree, newChildren.get(i)));            
             }
             return newTree;
@@ -588,8 +600,8 @@ public class ExtractRecordsStatistics
             Tree<String> newTree = newChildren.get(newChildren.size()-1);
             for(int i = newChildren.size()-2; i >= 0; i--) 
             {
-              String intermediateLabel = (i == 0 ? rootLabel : (newChildren.get(i).getLabel() + "_" + newTree.getLabel())).replaceAll("SENT-", "");              
-              rules.add(String.format("%s -> %s %s", intermediateLabel, newChildren.get(i).getLabel(), newTree.getLabel()));
+              String intermediateLabel = (i == 0 ? rootLabel : (newChildren.get(i).getLabelNoSpan() + "_" + newTree.getLabelNoSpan())).replaceAll("SENT-", "");              
+              rules.add(String.format("%s -> %s %s", intermediateLabel, newChildren.get(i).getLabelNoSpan(), newTree.getLabelNoSpan()));
               newTree = new Tree<String>(intermediateLabel, false, ListUtils.newList(newChildren.get(i), newTree));
             }
             return newTree;

@@ -49,12 +49,14 @@ public class InductionPCFGWeatherTest
                 + "-inputLists "
 //                + "data/weatherGov/weatherGovTrainGaborRecordTreebankCcm.gz "
                 + "data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz "
+//                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2 "
 //                + "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsStagedNoNullThres5.gz "
 //                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
 //                + "-treebankRules data/weatherGov/treebanks/ccm/recordTreebankRulesTrainCcm "
                 + "-treebankRules data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeAlignedRst "
 //                + "-treebankRules data/weatherGov/treebanks/final/recordTreebankRulesTrainRightBinarizeAlignmentsStagedNoNullThres5 "
                 + "-fixRecordSelection "
+//                + "-binarizedAtSentenceLevel " // CAREFUL: this is the case with the grammar of the paper, not RST (or CCM)
                 + "-wordsPerRootRule "
                 + "-inputFileExt events "
                 + "-indepEventTypes 0,10 -indepFields 0,5 -newEventTypeFieldPerWord 0,5 -newFieldPerWord 0,5 "
@@ -79,7 +81,7 @@ public class InductionPCFGWeatherTest
         opts.outputIterFreq = opts.stage1.numIters;
 //        model.init(InitType.random, opts.initRandom, "");
         model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
-        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));        
+//        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));        
         name = "stage1";
     }
 

@@ -87,9 +87,14 @@ public class InferStatePCFG extends InferState
         } // if
 
         if(opts.fixRecordSelection && recordTree != null)
-            hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree));
+        {
+            if(opts.binarizedAtSentenceLevel)
+                hypergraph.addEdge(hypergraph.prodStartNode(), genEdgeBinarizedAtSentenceLevel(0, N, recordTree));
+            else
+                hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, recordTree));
+        }            
         else
-            hypergraph.addEdge(hypergraph.prodStartNode(), genEdge(0, N, indexer.getIndex("S"), sentenceBoundaries));
+            hypergraph.addEdge(hypergraph.prodStartNode(), genEdgeBinarizedAtSentenceLevel(0, N, indexer.getIndex("S"), sentenceBoundaries));
     }              
     
     /**
@@ -105,11 +110,11 @@ public class InferStatePCFG extends InferState
      * @param tree the input (sub)-tree in Penn Treebank format
      * @return the head node of the hyperedge
      */
-    protected CFGNode genEdge(int start, int end, Tree<String> tree)
+    protected CFGNode genEdgeBinarizedAtSentenceLevel(int start, int end, Tree<String> tree)
     {
         final CFGParams cfgParams = params.cfgParams;
         final CFGParams cfgCounts = counts.cfgParams;
-        final int lhs = indexer.getIndex(tree.getLabel());
+        final int lhs = indexer.getIndex(tree.getLabelNoSpan());
         final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(lhs) : false;
         CFGNode node = new CFGNode(start, end, lhs);
         
@@ -120,7 +125,7 @@ public class InferStatePCFG extends InferState
 //            if (tree.getChildren().size() == 1 || tree.isLeaf())
             if (tree.isPreTerminal() || tree.isLeaf())
             {
-                String label = tree.getLabel();
+                String label = tree.getLabelNoSpan();
                 int eventTypeIndex = label.equals("none") ? cfgParams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
             }  // if
@@ -136,9 +141,9 @@ public class InferStatePCFG extends InferState
                     sentenceBoundaries.poll();                         
                     if(children.size() == 1) // unary trees
                     {
-                        hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)),                                              
+                        hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, nextBoundary, children.get(0)),                                              
                           new Hypergraph.HyperedgeInfo<Widget>() {
-                              int rhs = indexer.getIndex(children.get(0).getLabel());
+                              int rhs = indexer.getIndex(children.get(0).getLabelNoSpan());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
                               public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
@@ -154,11 +159,11 @@ public class InferStatePCFG extends InferState
                     }
                     else
                     {
-                        hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)), 
-                                                 genEdge(nextBoundary, end, children.get(1)),
+                        hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, nextBoundary, children.get(0)), 
+                                                 genEdgeBinarizedAtSentenceLevel(nextBoundary, end, children.get(1)),
                           new Hypergraph.HyperedgeInfo<Widget>() {
-                              int rhs1 = indexer.getIndex(children.get(0).getLabel());
-                              int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                              int rhs1 = indexer.getIndex(children.get(0).getLabelNoSpan());
+                              int rhs2 = indexer.getIndex(children.get(1).getLabelNoSpan());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
                               public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
@@ -179,9 +184,9 @@ public class InferStatePCFG extends InferState
                 {
                     if(children.size() == 1) // unary trees
                     {
-                        hypergraph.addEdge(node, genEdge(start, end, children.get(0)),                                              
+                        hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, end, children.get(0)),                                              
                           new Hypergraph.HyperedgeInfo<Widget>() {
-                              int rhs = indexer.getIndex(children.get(0).getLabel());
+                              int rhs = indexer.getIndex(children.get(0).getLabelNoSpan());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
                               public double getWeight() {
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
@@ -199,11 +204,11 @@ public class InferStatePCFG extends InferState
                     {
                         for(int k = start + 1; k < end ; k++)
                         {                                                
-                            hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
-                                                     genEdge(k, end, children.get(1)),
+                            hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, k, children.get(0)), 
+                                                     genEdgeBinarizedAtSentenceLevel(k, end, children.get(1)),
                               new Hypergraph.HyperedgeInfo<Widget>() {
-                                  int rhs1 = indexer.getIndex(children.get(0).getLabel());
-                                  int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                                  int rhs1 = indexer.getIndex(children.get(0).getLabelNoSpan());
+                                  int rhs2 = indexer.getIndex(children.get(1).getLabelNoSpan());
                                   int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
                                   public double getWeight() {
                                       return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
@@ -224,7 +229,90 @@ public class InferStatePCFG extends InferState
         return node;
     }
     
-    protected Object genEdge(int start, int end, final int lhs, LinkedList<Integer> sentenceBoundaries)
+    protected CFGNode genEdge(int start, int end, Tree<String> tree)
+    {
+        final CFGParams cfgParams = params.cfgParams;
+        final CFGParams cfgCounts = counts.cfgParams;
+        final int lhs = indexer.getIndex(tree.getLabelNoSpan());
+        final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(lhs) : false;
+        CFGNode node = new CFGNode(start, end, lhs);
+        
+        if(hypergraph.addSumNode(node))
+        {           
+            // check if we are in a record leaf, or a pre-terminal.
+            // In either case we treat them as equal, i.e., generate the record / field set
+            if (tree.isPreTerminal() || tree.isLeaf())
+            {
+//                String[] labelWithSpan = getLabelWithSpan(tree.getLabel());
+                String label = tree.getLabelNoSpan();
+                int eventTypeIndex = label.equals("none") ? cfgParams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
+                hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
+            }  // if
+            else // we are in a subtree with a non-terminal lhs and two rhs symbols
+            {
+                final List<Tree<String>> children = tree.getChildren();                                                    
+                if(children.size() == 1) // unary trees
+                {
+                    String[] labelWithSpan = getLabelWithSpan(children.get(0).getLabel());
+                    final String label = labelWithSpan[0];
+                    int endOfSpan = Integer.valueOf(labelWithSpan[2]);
+                    hypergraph.addEdge(node, genEdge(start, endOfSpan, children.get(0)),                                              
+                      new Hypergraph.HyperedgeInfo<Widget>() {
+                          int rhs = indexer.getIndex(label);
+                          int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
+                          public double getWeight() {
+                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                          }
+                          public void setPosterior(double prob) { 
+                              if(isRootRule)
+                                  update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                          }
+                          public Widget choose(Widget widget) {                          
+                              return widget;
+                          }
+                      }); 
+                }
+                else
+                {
+                    String[] labelWithSpanRhs1 = getLabelWithSpan(children.get(0).getLabel());
+                    final String labelRhs1 = labelWithSpanRhs1[0];
+                    int endOfSpanRhs1 = Integer.valueOf(labelWithSpanRhs1[2]);
+                    String[] labelWithSpanRhs2 = getLabelWithSpan(children.get(1).getLabel());
+                    final String labelRhs2 = labelWithSpanRhs2[0];
+                    int startOfSpanRhs2 = Integer.valueOf(labelWithSpanRhs2[1]);
+                    hypergraph.addEdge(node, genEdge(start, endOfSpanRhs1, children.get(0)), 
+                                             genEdge(startOfSpanRhs2, end, children.get(1)),
+                      new Hypergraph.HyperedgeInfo<Widget>() {
+                          int rhs1 = indexer.getIndex(labelRhs1);
+                          int rhs2 = indexer.getIndex(labelRhs2);
+                          int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
+                          public double getWeight() {
+                              return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule);
+                          }
+                          public void setPosterior(double prob) { 
+                              if(isRootRule)
+                                  update(cfgCounts.getWordsPerRootRule()[indexOfRule], docLengthBin, prob);
+                          }
+                          public Widget choose(Widget widget) {                          
+                              return widget;
+                          }
+                      });
+                } // binary trees only                                                                          
+            } // else
+        } // if
+        return node;
+    }
+    
+    private String[] getLabelWithSpan(String node)
+    {        
+        // the span string is in the format [span^0^10]
+        int index = node.lastIndexOf("[span");
+        String label = node.substring(0, index);
+        String []ar = node.substring(index).split("\\^");
+        return new String[] {label, ar[1], ar[2].substring(0, ar[2].length()-1)};
+    }
+    
+    protected Object genEdgeBinarizedAtSentenceLevel(int start, int end, final int lhs, LinkedList<Integer> sentenceBoundaries)
     {
         Indexer eventTypeIndxer = ((Event3Model)model).getEventTypeNameIndexer();
         final CFGParams cfgParams = params.cfgParams;
@@ -253,7 +341,7 @@ public class InferStatePCFG extends InferState
                     final boolean isRootRule = opts.wordsPerRootRule ? ((Event3Model)model).isRootRule(candidateRule.getKey()) : false;
                     if(isUnary) // unary trees
                     {
-                        hypergraph.addEdge(node, genEdge(start, end, rhs1, sentenceBoundaries),
+                        hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, end, rhs1, sentenceBoundaries),
                           new Hypergraph.HyperedgeInfo<Widget>() {                              
                               public double getWeight() {                                  
                                   return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
@@ -278,8 +366,8 @@ public class InferStatePCFG extends InferState
                             {
                                 LinkedList<Integer> sentenceBoundariesCloned = new LinkedList<Integer>(sentenceBoundaries);
                                 sentenceBoundariesCloned.poll();                            
-                                hypergraph.addEdge(node, genEdge(start, nextBoundary, rhs1, sentenceBoundariesCloned), 
-                                                         genEdge(nextBoundary, end, rhs2, sentenceBoundariesCloned),
+                                hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, nextBoundary, rhs1, sentenceBoundariesCloned), 
+                                                         genEdgeBinarizedAtSentenceLevel(nextBoundary, end, rhs2, sentenceBoundariesCloned),
                                   new Hypergraph.HyperedgeInfo<Widget>() {                              
                                       public double getWeight() {
                                           return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *
@@ -308,8 +396,8 @@ public class InferStatePCFG extends InferState
                             {
                                 for(int k = start + 1; k < end ; k++)
                                 {                                                                                        
-                                    hypergraph.addEdge(node, genEdge(start, k, rhs1, sentenceBoundaries), 
-                                                             genEdge(k, end, rhs2, sentenceBoundaries),
+                                    hypergraph.addEdge(node, genEdgeBinarizedAtSentenceLevel(start, k, rhs1, sentenceBoundaries), 
+                                                             genEdgeBinarizedAtSentenceLevel(k, end, rhs2, sentenceBoundaries),
                                       new Hypergraph.HyperedgeInfo<Widget>() {                                      
                                           public double getWeight() {
                                               return get(cfgParams.getCfgRulesChoices().get(lhs), indexOfRule) *

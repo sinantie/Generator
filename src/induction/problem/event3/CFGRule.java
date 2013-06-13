@@ -60,12 +60,12 @@ public class CFGRule
     {
         this.vocabulary = vocabulary;        
         assert subtree.getChildren().size() > 0; // make sure the tree has at least one child
-        lhs = vocabulary.getIndex(subtree.getLabel());
+        lhs = vocabulary.getIndex(subtree.getLabelNoSpan());
         List<Tree<String>> children = subtree.getChildren();
         rhs = new ArrayList<Integer>(children.size());
         for(Tree<String> ch : children)
         {           
-            rhs.add(vocabulary.getIndex(ch.getLabel()));
+            rhs.add(vocabulary.getIndex(ch.getLabelNoSpan()));
         }        
         this.unary = rhs.size() == 1;
     }

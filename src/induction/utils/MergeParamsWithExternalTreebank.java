@@ -96,7 +96,7 @@ public class MergeParamsWithExternalTreebank
                     }
                     else if(subtree.getChildren().size() > 0)// leaf node
                     {                    
-                        String label = subtree.getLabel();
+                        String label = subtree.getLabelNoSpan();
                         int t0 = label.equals("none") ? cfgParams.none_t : model.getEventTypeNameIndexer().getIndex(label);
                         if(t0 == cfgParams.none_t)
                             cparams.getEventTypeChoices()[cparams.boundary_t].addCount(cparams.none_t, 1.0);

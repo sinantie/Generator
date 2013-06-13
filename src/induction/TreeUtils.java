@@ -15,7 +15,7 @@ public class TreeUtils {
   // Create new labels such as @S-NP
   // If order == -1, then don't even put @
   public static Tree<String> leftBinarize(Tree<String> tree, int order) {
-    String rootLabel = tree.getLabel();
+    String rootLabel = tree.getLabelNoSpan();
 
     if( tree.getChildren().isEmpty())
       return tree;
@@ -32,9 +32,9 @@ public class TreeUtils {
     // Construct the labels of the intermediate nodes
     List<String> intermediateLabels = new ArrayList();
     for(Tree<String> child : tree.getChildren())
-      intermediateLabels.add(child.getLabel());
+      intermediateLabels.add(child.getLabelNoSpan());
     for(int i = intermediateLabels.size()-1; i >= 0; i--) {
-      StringBuilder buf = new StringBuilder((order == -1 ? "" : "@")+tree.getLabel());
+      StringBuilder buf = new StringBuilder((order == -1 ? "" : "@")+tree.getLabelNoSpan());
       for(int k = 0; k < order && i-k >= 0; k++)
             buf.append("-").append(intermediateLabels.get(i-k));
       intermediateLabels.set(i, buf.toString());
@@ -51,7 +51,7 @@ public class TreeUtils {
     return newTree;
   }
   public static Tree<String> rightBinarize(Tree<String> tree, int order) {
-    String rootLabel = tree.getLabel();
+    String rootLabel = tree.getLabelNoSpan();
 
     if( tree.getChildren().isEmpty())
       return tree;
@@ -68,9 +68,9 @@ public class TreeUtils {
     // Construct the labels of the intermediate nodes
     List<String> intermediateLabels = new ArrayList();
     for(Tree<String> child : tree.getChildren())
-      intermediateLabels.add(child.getLabel());
+      intermediateLabels.add(child.getLabelNoSpan());
     for(int i = intermediateLabels.size()-1; i >= 0; i--) {
-      StringBuilder buf = new StringBuilder((order == -1 ? "" : "@")+tree.getLabel());
+      StringBuilder buf = new StringBuilder((order == -1 ? "" : "@")+tree.getLabelNoSpan());
       for(int k = 0; k < order && i-k >= 0; k++)
             buf.append("-").append(intermediateLabels.get(i-k));
       intermediateLabels.set(i, buf.toString());
@@ -93,7 +93,7 @@ public class TreeUtils {
   // In (X A B C D E), if C is the head, then the result is
   // (X A (Xl B (Xr (Xr C D) E)))
   public static Tree<String> headBinarize(Tree<String> tree, int order) {
-    String rootLabel = tree.getLabel();
+    String rootLabel = tree.getLabelNoSpan();
 
     if( tree.getChildren().isEmpty())
       return tree;
@@ -141,19 +141,19 @@ public class TreeUtils {
         tree = tree.getChildren().get(0);
       for(Tree<T> child : tree.getChildren())
         children.add(removeUnaries(child));
-      return new Tree<T>(tree.getLabel(), tree.isIntermediateNode(), children);
+      return new Tree<T>(tree.getLabelNoSpan(), tree.isIntermediateNode(), children);
     }
   }
 
   public static <T> Tree<T> replaceTerminalsWithPreterminals(Tree<T> tree) {
     if(tree.isPreTerminal()) {
-      return new Tree<T>(tree.getLabel(), tree.isIntermediateNode(),
-          ListUtils.newList(new Tree<T>(tree.getLabel(), tree.isIntermediateNode())));
+      return new Tree<T>(tree.getLabelNoSpan(), tree.isIntermediateNode(),
+          ListUtils.newList(new Tree<T>(tree.getLabelNoSpan(), tree.isIntermediateNode())));
     }
     List<Tree<T>> children = new ArrayList();
     for(Tree<T> child : tree.getChildren())
       children.add(replaceTerminalsWithPreterminals(child));
-    return new Tree<T>(tree.getLabel(), tree.isIntermediateNode(), children);
+    return new Tree<T>(tree.getLabelNoSpan(), tree.isIntermediateNode(), children);
   }
 
   public interface NodeFunc<T> {
@@ -164,7 +164,7 @@ public class TreeUtils {
   // parent if it's a unary).
   public static <T> Tree<T> transformNonterminals(Tree<T> tree, NodeFunc<T> func) {
     if(tree.isLeaf()) return tree;
-    T label = func.apply(tree.getLabel());
+    T label = func.apply(tree.getLabelNoSpan());
     if(label == null) return null;
     List<Tree<T>> newChildren = new ArrayList();
     for(Tree<T> child : tree.getChildren()) {

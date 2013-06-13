@@ -277,9 +277,9 @@ public abstract class Event3Model extends WordModel
     
     public int getRootRuleIndex(Tree<String> tree)
     {
-        int lhs = rulesIndexer.getIndex(tree.getLabel());
-        int rhs1 = rulesIndexer.getIndex(tree.getChildren().get(0).getLabel());
-        int rhs2 = rulesIndexer.getIndex(tree.getChildren().get(1).getLabel());
+        int lhs = rulesIndexer.getIndex(tree.getLabelNoSpan());
+        int rhs1 = rulesIndexer.getIndex(tree.getChildren().get(0).getLabelNoSpan());
+        int rhs2 = rulesIndexer.getIndex(tree.getChildren().get(1).getLabelNoSpan());
         CFGRule rule = new CFGRule(lhs, rhs1, rhs2);
         return containsCfgRule(rule) ? getCfgRuleIndex(rule) : -1;        
     }

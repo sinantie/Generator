@@ -263,7 +263,7 @@ public class GenInferStatePCFG extends GenInferState
     protected CFGNode genEdge(int start, int end, Tree<String> tree)
     {
         final CFGParams cfgParams = params.cfgParams;
-        final int lhs = indexer.getIndex(tree.getLabel());
+        final int lhs = indexer.getIndex(tree.getLabelNoSpan());
         CFGNode node = new CFGNode(start, end, lhs);
         
         if(hypergraph.addSumNode(node))
@@ -273,7 +273,7 @@ public class GenInferStatePCFG extends GenInferState
 //            if (tree.getChildren().size() == 1 || tree.isLeaf())
             if (tree.isPreTerminal() || tree.isLeaf())
             {
-                String label = tree.getLabel();
+                String label = tree.getLabelNoSpan();
                 int eventTypeIndex = label.equals("none") ? cfgParams.none_t : ((Event3Model)model).getEventTypeNameIndexer().getIndex(label);
                 hypergraph.addEdge(node, genRecord(start, end, eventTypeIndex));
             }  // if
@@ -291,7 +291,7 @@ public class GenInferStatePCFG extends GenInferState
                     {
                         hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)),                                              
                           new Hypergraph.HyperedgeInfo<Widget>() {
-                              int rhs = indexer.getIndex(children.get(0).getLabel());
+                              int rhs = indexer.getIndex(children.get(0).getLabelNoSpan());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
                               public double getWeight()
                               {
@@ -308,8 +308,8 @@ public class GenInferStatePCFG extends GenInferState
                         hypergraph.addEdge(node, genEdge(start, nextBoundary, children.get(0)), 
                                                  genEdge(nextBoundary, end, children.get(1)),
                           new Hypergraph.HyperedgeInfo<Widget>() {
-                              int rhs1 = indexer.getIndex(children.get(0).getLabel());
-                              int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                              int rhs1 = indexer.getIndex(children.get(0).getLabelNoSpan());
+                              int rhs2 = indexer.getIndex(children.get(1).getLabelNoSpan());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
                               public double getWeight()
                               {
@@ -330,7 +330,7 @@ public class GenInferStatePCFG extends GenInferState
                     {
                         hypergraph.addEdge(node, genEdge(start, end, children.get(0)),                                              
                           new Hypergraph.HyperedgeInfo<Widget>() {
-                              int rhs = indexer.getIndex(children.get(0).getLabel());
+                              int rhs = indexer.getIndex(children.get(0).getLabelNoSpan());
                               int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs));
                               public double getWeight()
                               {
@@ -348,8 +348,8 @@ public class GenInferStatePCFG extends GenInferState
                         // respect minimum word span of each rhs non terminal if the grammar is non-recursive
                         if(opts.nonRecursiveGrammar)
                         {
-                            int rhs1 = indexer.getIndex(children.get(0).getLabel());
-                            int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                            int rhs1 = indexer.getIndex(children.get(0).getLabelNoSpan());
+                            int rhs2 = indexer.getIndex(children.get(1).getLabelNoSpan());
                             int minWordsRhs1 = minWordsPerNonTerminal.get(rhs1);                                                 
                             int minWordsRhs2 = minWordsPerNonTerminal.get(rhs2);
                             kStart = start+minWordsRhs1;
@@ -366,8 +366,8 @@ public class GenInferStatePCFG extends GenInferState
                             hypergraph.addEdge(node, genEdge(start, k, children.get(0)), 
                                                      genEdge(k, end, children.get(1)),
                               new Hypergraph.HyperedgeInfo<Widget>() {
-                                  int rhs1 = indexer.getIndex(children.get(0).getLabel());
-                                  int rhs2 = indexer.getIndex(children.get(1).getLabel());
+                                  int rhs1 = indexer.getIndex(children.get(0).getLabelNoSpan());
+                                  int rhs2 = indexer.getIndex(children.get(1).getLabelNoSpan());
                                   int indexOfRule = ((Event3Model)model).getCfgRuleIndex(new CFGRule(lhs, rhs1, rhs2));
                                   public double getWeight()
                                   {

@@ -618,6 +618,7 @@ public abstract class AModel
 //            Example ex = examples.get(0);
             for(AExample ex: examples)
             {
+//                System.out.println(ex.getName());
                 try
                 {
                     inferState =  createInferState(ex, 1, counts, temperature,
@@ -628,7 +629,7 @@ public abstract class AModel
                 }
                 catch(Exception e)
                 {
-                    System.out.println(ex.toString());
+                    System.out.println("Error in example: " + ex.getName());
                     e.printStackTrace(LogInfo.stderr);
 //                    e.printStackTrace();
                     System.exit(0);

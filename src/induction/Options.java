@@ -28,6 +28,7 @@ public class Options {
   @Option(gloss="Description file for initializing artificial parameters") public String artificialDescriptionPath;
   @Option(gloss="File containing PCFG rules for record selection") public String treebankRules;  
   @Option(gloss="Fix record selection on input treebank parse trees") public boolean fixRecordSelection;
+  @Option(gloss="input PCFG grammar is binarized on sentence level") public boolean binarizedAtSentenceLevel;
   @Option(gloss="Fix number of sentences") public boolean fixNumSentences;
   @Option(gloss="Format of input") public InputFormat inputFormat = InputFormat.raw;
   @Option(gloss="Maximum number of examples") public int maxExamples = Integer.MAX_VALUE;

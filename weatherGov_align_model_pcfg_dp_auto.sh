@@ -39,7 +39,8 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -fixRecordSelection \
 -wordsPerRootRule \
 -maxDocLength 90 \
--docLengthBinSize 5
+-docLengthBinSize 5 \
+-binarizedAtSentenceLevel
 #-inputPosTagged
 
 # Record PCFG - Treebank Input

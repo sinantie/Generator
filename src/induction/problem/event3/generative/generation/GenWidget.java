@@ -107,7 +107,7 @@ public class GenWidget extends Widget
     void addEdge(CFGRule rule)
     {
         Tree<String> first = queue.poll();
-        if(first.getLabel().equals(rule.getLhsToString()))
+        if(first.getLabelNoSpan().equals(rule.getLhsToString()))
         {
             List<Tree<String>> newChildren = new ArrayList(2);
             for(String rhs : rule.getRhsListToString())
