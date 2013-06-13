@@ -23,9 +23,10 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -176,6 +177,7 @@ public class ExtractRecordsStatistics
             Example e = (Example)ex;
             int[] text = e.getText();            
             List<Integer> eventTypes = new ArrayList<Integer>();
+            List<Integer> originalEventTypesIds = new ArrayList<Integer>(); // no process (e.g., don't remove duplicate events in a sentence)
 //            String[] events = preds[iter++].split(" ");
             String[] events = ExportExamplesToEdusFile.cleanRecordAlignments(preds[iter++].split(" "), e.getTextString());
             if(events[0].equals("not_found")) // for some reason this example doesn't have alignments; skip it
@@ -200,11 +202,16 @@ public class ExtractRecordsStatistics
                         System.out.println(ex.getName());
                     }
                     int indexOfElement = indexer.getIndex(element);
-//                     we don't allow repetitions of record tokens in the same sentence (DEPRECATED)
+//                     we don't allow repetitions of record tokens in the same sentence
                     if((opts.removeRecordsWithOneWord && !recordWithOneWord(eventIds, eventId, i-1, i+1) &&
                         (eventTypes.isEmpty() || !eventTypes.contains(indexOfElement))) ||
                        eventTypes.isEmpty() || !eventTypes.contains(indexOfElement))                    
                         eventTypes.add(indexOfElement);
+                    // simply add the event (not type, in case two records with the same type get concatenated). 
+                    // Concatenate spans of many words.
+                    if(originalEventTypesIds.isEmpty() || 
+                       !(originalEventTypesIds.isEmpty() || originalEventTypesIds.get(originalEventTypesIds.size() - 1).equals(eventId)))
+                        originalEventTypesIds.add(eventId);
                 } // if                    
                 else if(opts.extractNoneEvent)
                     eventTypes.add(indexer.getIndex(opts.useEventTypeNames ? "none" : -1));
@@ -217,6 +224,23 @@ public class ExtractRecordsStatistics
                     eventTypes.clear();
                 } // if
             } // for
+            // add the original sequence of event types (useful for extraction of RST trees)
+            List<String> originalEventTypes = new ArrayList<String>();
+            for(int i = 0; i < originalEventTypesIds.size(); i++) // HACK (overrides indexer functionality)!!!
+            {
+//                Object element = null;
+//                switch(opts.exportType)
+//                {
+//                    case record : element = originalEventTypes.get(i); break;
+//                    default: case recordType : element = opts.useEventTypeNames ? 
+//                            e.events.get(originalEventTypes.get(i)).getEventTypeName() : e.events.get(originalEventTypes.get(i)).getEventTypeIndex(); break;
+//                }
+//                originalEventTypes.set(i, indexer.getIndex(element));
+                originalEventTypes.add(opts.useEventTypeNames ? 
+                            e.events.get(originalEventTypesIds.get(i)).getEventTypeName() : 
+                            String.valueOf(e.events.get(originalEventTypesIds.get(i)).getEventTypeIndex()));
+            }
+            er.setOriginalSequence(originalEventTypes);
             examples.add(er);
         }
     }
@@ -457,20 +481,21 @@ public class ExtractRecordsStatistics
             {
                 // Read the rst tree                
                 Tree<String> rstTree = new PennTreeReader(new StringReader(inputTrees[i++])).next();
+                try
+                {
+                    changeLeafsOfTree(rstTree, new LinkedList(p.getOriginalSequence()));
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                    System.out.println("Error in: " + p.name);
+                    System.out.println(rstTree);
+                    System.exit(1);
+                }
                 Tree<String> tree = new Tree<String>("S", false); // set the root to the start symbol
-                tree.setChildren(rstTree.subTreeList());                
-                Iterator<String> recordTypesIterator = Arrays.asList(p.documentToString(false).split(" ")).iterator();
-                for(Tree<String> child : tree.getChildren())
-                {                    
-//                    if(!subtree.getChildren().isEmpty())
-                    if(child.isPreTerminal() && !child.getChildren().isEmpty()) // set the pre-terminal symbol to the recordType it spans
-                    {
-                        // we assume that each pre-terminal spans a segment of the document
-                        // that corresponds to a record. The number of segments should be the same as the number of records
-                        child.setLabel(recordTypesIterator.next());
-                        child.getChildren().get(0).setLabel(""); // delete the text span                        
-                    } // if
-                } // for
+                List child = new ArrayList<Tree<String>>();
+                child.add(rstTree);
+                tree.setChildren(child);
                 // extract the rules from the tree
                 for (Tree<String> subtree : tree.subTreeList())
                 {
@@ -493,14 +518,32 @@ public class ExtractRecordsStatistics
                 } // for
 
                 out.println(p.getName());
-                out.println(PennTreeRenderer.render(rstTree));
-//                System.out.println(PennTreeRenderer.render(rstTree));
+                out.println(PennTreeRenderer.render(tree));                
+//                System.out.println(PennTreeRenderer.render(tree));
             } // if
             else
                 countRemoved++;
         } // for        
         LogInfo.logs("Removed " + countRemoved + " examples");
     }      
+    
+    private void changeLeafsOfTree(Tree<String> tree, Queue<String> leafs) throws Exception
+    {
+        for(Tree<String> child : tree.getChildren())
+        {
+            if(child.isPreTerminal() && !child.getChildren().isEmpty()) // set the pre-terminal symbol to the recordType it spans
+            {
+                // we assume that each pre-terminal spans a segment of the document
+                // that corresponds to a record. The number of segments should be the same as the number of records                
+                child.setLabel(leafs.poll());                
+                child.getChildren().get(0).setLabel(""); // delete the text span       
+            }
+            else
+            {
+                changeLeafsOfTree(child, leafs);
+            }
+        }
+    }
     
     public Tree<String> binarize(Tree<String> tree) 
     {
@@ -616,7 +659,8 @@ public class ExtractRecordsStatistics
     {
         private String name;
         private List<Sentence> sentences;
-
+        private List<String> originalSequenceOfRecordTypes;
+        
         public ExampleRecords(String name)
         {
             this.name = name;
@@ -633,6 +677,20 @@ public class ExtractRecordsStatistics
             sentences.add(new Sentence(types));
         }
 
+        private void setOriginalSequence(List<String> originalRecordTypes)
+        {
+            this.originalSequenceOfRecordTypes = originalRecordTypes;
+        }
+        
+        protected List<String> getOriginalSequence()
+        {
+//            List<String> list = new ArrayList<String>();
+//            for(Integer id : originalSequenceOfRecordTypes)
+//                list.add((String)indexer.getObject(id));
+//            return list;
+            return originalSequenceOfRecordTypes;
+        }
+        
         protected List getPermutation()
         {
             List permutation = new ArrayList();

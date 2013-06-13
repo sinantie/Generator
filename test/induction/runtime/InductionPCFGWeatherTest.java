@@ -47,10 +47,12 @@ public class InductionPCFGWeatherTest
                 + "-Options.stage1.numIters 5 "
                 + "-examplesInSingleFile "
                 + "-inputLists "
-                + "data/weatherGov/weatherGovTrainGaborRecordTreebankCcm.gz "
+//                + "data/weatherGov/weatherGovTrainGaborRecordTreebankCcm.gz "
+                + "data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz "
 //                + "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsStagedNoNullThres5.gz "
 //                + "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz "
-                + "-treebankRules data/weatherGov/treebanks/ccm/recordTreebankRulesTrainCcm "
+//                + "-treebankRules data/weatherGov/treebanks/ccm/recordTreebankRulesTrainCcm "
+                + "-treebankRules data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeAlignedRst "
 //                + "-treebankRules data/weatherGov/treebanks/final/recordTreebankRulesTrainRightBinarizeAlignmentsStagedNoNullThres5 "
                 + "-fixRecordSelection "
                 + "-wordsPerRootRule "
@@ -77,7 +79,7 @@ public class InductionPCFGWeatherTest
         opts.outputIterFreq = opts.stage1.numIters;
 //        model.init(InitType.random, opts.initRandom, "");
         model.init(InitType.artificial, opts.initRandom, ""); // fixed record selection
-//        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));        
+        System.out.println("BEFORE\n" +((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));        
         name = "stage1";
     }
 

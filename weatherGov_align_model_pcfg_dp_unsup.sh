@@ -2,12 +2,13 @@
 threads=6
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsTreebank_PosTagged.gz
-output=/disk/scratch/konstas/results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_treebank_20iter_posTagged
+#input=data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsTreebank_PosTagged.gz
+input=data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz
+output=results/output/weatherGov/alignments/pcfg/rst/model_3_gabor_record_pcfg_treebank_alignments_treebank_rst_20iter
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
 #treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
-treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeAlignmentsTreebank
-memory=-Xmx25000m
+treebankRules=data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeAlignedRst
+memory=-Xmx2500m
 
 mkdir -p $output
 
@@ -39,8 +40,8 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -fixRecordSelection \
 -wordsPerRootRule \
 -maxDocLength 90 \
--docLengthBinSize 5 \
--inputPosTagged
+-docLengthBinSize 5
+#-inputPosTagged
 
 # Record PCFG - Treebank Input
 #-treebankRules $treebankRules \
