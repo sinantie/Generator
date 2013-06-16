@@ -174,13 +174,19 @@ public class ExportExamplesToEdusFile
     
     public static void main(String[] args)
     {        
-        // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
-        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
-//        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
-        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
-//        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
-        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
-//        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+        // WEATHERGOV
+//        // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
+//        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
+////        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
+//        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
+////        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
+//        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
+////        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+        
+        // WINHELP
+        String inputPath = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation";
+        String inputPathRecordAlignments = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.pred.1.sorted";
+        String outputFile = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation.aligned.edus";
         System.out.println("Creating " + outputFile);
         new ExportExamplesToEdusFile(inputPath, inputPathRecordAlignments, outputFile).execute();        
     }
