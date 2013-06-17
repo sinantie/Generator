@@ -1,6 +1,7 @@
 package induction.utils;
 
 import edu.berkeley.nlp.ling.Tree;
+import edu.berkeley.nlp.ling.Tree;
 import edu.berkeley.nlp.ling.Trees.PennTreeReader;
 import edu.berkeley.nlp.ling.Trees.PennTreeRenderer;
 import fig.basic.IOUtils;
@@ -21,8 +22,8 @@ import induction.utils.HistMap.Counter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.lang.String;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -211,7 +212,9 @@ public class ExtractRecordsStatistics
                     // Concatenate spans of many words.
                     if(originalEventTypesIds.isEmpty() || 
                        !(originalEventTypesIds.isEmpty() || originalEventTypesIds.get(originalEventTypesIds.size() - 1).equals(eventId)))
+                    {
                         originalEventTypesIds.add(eventId);
+                    }
                 } // if                    
                 else if(opts.extractNoneEvent)
                     eventTypes.add(indexer.getIndex(opts.useEventTypeNames ? "none" : -1));
@@ -486,8 +489,20 @@ public class ExtractRecordsStatistics
                 {
                     // assign span size to the root non-terminal
                     int spanSize = rstTree.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
-                    rstTree.setLabel(String.format("%s[span^%s^%s]", rstTree.getLabelNoSpan(), 0, spanSize));
-                    renameLabelsOfTree(rstTree, 0, new LinkedList(p.getOriginalSequence()));
+                    rstTree.setLabel(String.format("%s[span^%s^%s]", rstTree.getLabelNoSpan(), 0, spanSize));                    
+                    List<String> originalSequenceOfRecords = p.getOriginalSequence();
+                    List<Tree<String>> nullPreTerminals = new ArrayList<Tree<String>>();
+                    renameLabelsOfTree(rstTree, 0, new LinkedList(originalSequenceOfRecords), nullPreTerminals);
+                    // HACK: in case the number of records doesn't match with the number of leaf nodes
+                    // the pre-terminal will get a null label. To avoid this, we keep track of the null pre-terminals,
+                    // and re-assign the label to the value of the previous pre-terminal, i.e., record.
+                    // At the moment we capture such anomalies only at the end of the tree, i.e., between the last two leafs, counting left-to-right. 
+                    if(!nullPreTerminals.isEmpty())
+                    {
+                        String lastRecord = originalSequenceOfRecords.get(originalSequenceOfRecords.size() - 1);
+                        Tree<String> nullPreTerminal = nullPreTerminals.get(0);
+                        nullPreTerminal.setLabel(nullPreTerminal.getLabel().replace("null", lastRecord));
+                    }
                 }
                 catch(Exception e)
                 {
@@ -522,6 +537,7 @@ public class ExtractRecordsStatistics
                 } // for
 
                 out.println(p.getName());
+                System.out.println(p.getName());
                 out.println(PennTreeRenderer.render(tree));                
 //                System.out.println(PennTreeRenderer.render(tree));
             } // if
@@ -531,7 +547,7 @@ public class ExtractRecordsStatistics
         LogInfo.logs("Removed " + countRemoved + " examples");
     }      
     
-    private void renameLabelsOfTree(Tree<String> tree, int start, Queue<String> leafs) throws Exception
+    private void renameLabelsOfTree(Tree<String> tree, int start, Queue<String> leafs, List<Tree<String>> nullPreTerminals) throws Exception
     {
         int currentIndex = start, spanSize = 0;
         for(Tree<String> child : tree.getChildren())
@@ -541,7 +557,9 @@ public class ExtractRecordsStatistics
                 // we assume that each pre-terminal spans a segment of the document
                 // that corresponds to a record. The number of segments should be the same as the number of records                
                 spanSize = child.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
-                child.setLabel(String.format("%s[span^%s^%s]", leafs.poll(), currentIndex, currentIndex + spanSize));
+                if(leafs.isEmpty())
+                    nullPreTerminals.add(child);
+                child.setLabel(String.format("%s[span^%s^%s]", leafs.poll(), currentIndex, currentIndex + spanSize));                
 //                child.setLabel(leafs.poll());                
                 child.getChildren().get(0).setLabel(""); // delete the text span       
             }
@@ -550,7 +568,7 @@ public class ExtractRecordsStatistics
                 // append the span length to each non-terminal
                 spanSize = child.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
                 child.setLabel(String.format("%s[span^%s^%s]", child.getLabelNoSpan(), currentIndex, currentIndex + spanSize));
-                renameLabelsOfTree(child, currentIndex,  leafs);
+                renameLabelsOfTree(child, currentIndex,  leafs, nullPreTerminals);
                 
             }
             currentIndex += spanSize;

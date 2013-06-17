@@ -277,7 +277,7 @@ public class Utils
         if(actions.size() == 1)
         {
             try
-            {
+            {                
                 A action = actions.iterator().next();
                 action.setLog(true);
                 action.call();

@@ -8,11 +8,11 @@ output=results/output/weatherGov/alignments/pcfg/rst/model_3_gabor_record_pcfg_t
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
 #treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
 treebankRules=data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeAlignedRst
-memory=-Xmx2500m
+memory=-Xmx25000m
 
 mkdir -p $output
 
-java $memory -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
+java $memory -XX:+UseConcMarkSweepGC -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
 dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers induction.runtime.Induction \
 -create \
 -overwriteExecDir \

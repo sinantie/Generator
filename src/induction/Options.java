@@ -237,5 +237,6 @@ public class Options {
 
   // General
   @Option(gloss="Number of parameters per state to print") public int numOutputParams = 10;
-  @Option(gloss="Number of threads to use") public int numThreads = Runtime.getRuntime().availableProcessors();
+//  @Option(gloss="Number of threads to use") public int numThreads = Runtime.getRuntime().availableProcessors();
+  @Option(gloss="Number of threads to use") public int numThreads = 2;
 }

@@ -137,7 +137,7 @@ public class ExtractRecordsStatisticsTest
                  + "-binarize right "
 //                 + "-modifiedBinarization "
                  + "-markovOrder 1 "
-                 + "-extractNoneEvent "
+//                 + "-extractNoneEvent "
                  + "-useEventTypeNames "
 //                 + "-countSentenceNgrams "
 //                 + "-countDocumentNgrams "
@@ -146,15 +146,18 @@ public class ExtractRecordsStatisticsTest
                  + "-modelType event3 "
                  + "-inputLists "
                  + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation "
-                 + "-execDir data/branava/winHelpHLA "
+//                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation "
+                 + "-execDir data/branavan/winHelpHLA "
                  + "-initType staged "
                  + "-stagedParamsFile results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.params.obj.gz "
                  + "-predInput "
                  + "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.pred.1.sorted "
-//                 + "-excludedEventTypes sleetChance windChill "
+//                 + "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation.align "
+                 + "-suffix AlignedRst "
+                 + "-externalTreesInput data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation.aligned.edus "
+//                 + "-externalTreesInput data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation.aligned.edus.tree "
+                 + "-externalTreesInputType rst "                
                  + "-inputFileExt events ";
-//                 + "-ngramWrapper kylm "
-//                 + "-ngramModelFile weatherGovLM/gabor-srilm-abs-3-gram.model.arpa ";
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged"; // IMPORTANT        
         ExtractRecordsStatisticsOptions opts = new ExtractRecordsStatisticsOptions();

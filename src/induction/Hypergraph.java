@@ -576,11 +576,11 @@ public class Hypergraph<Widget> {
 //                return 1.0; // we currently don't support LM for semantic parsing
                 String[] ngramStr = new String[ngram.size()];
                 
-                String temp = "";
+//                String temp;// = "";
                 for(int i = 0; i < ngram.size(); i++)
                 {
                     String token = vocabulary.getObject(ngram.get(i));
-                    temp = Utils.stripTag(token, tagDelimiter);
+                    String temp = Utils.stripTag(token, tagDelimiter);
                     // ngram inferState needs to convert numbers to symbol <num>
                     // syntax parser can process numbers
                     ngramStr[i] = numbersAsSymbol ? Utils.replaceNumber(temp, posAtSurfaceLevel, tagDelimiter) : temp;
@@ -683,7 +683,8 @@ public class Hypergraph<Widget> {
         this.graph = graph;
         if(graph != null)
             graph.addVertex(startNode);
-        cache = Collections.synchronizedMap(new LRUMap<List<Integer>, Double>(1000));
+//        cache = Collections.synchronizedMap(new LRUMap<List<Integer>, Double>(1000));
+        cache = new LRUMap<List<Integer>, Double>(1000);
   }
 
     public void setNumbersAsSymbol(boolean numbersAsSymbol)
@@ -1224,7 +1225,7 @@ public class Hypergraph<Widget> {
 //        Collections.sort(buf, Collections.reverseOrder());
         Collections.sort(buf);
         v.derivations = new ArrayList();
-        doHypothesisRecombination(buf);
+//        doHypothesisRecombination(buf);
         v.derivations.addAll(buf);
 //        this.logZ += ((Derivation)v.derivations.get(0)).weight.toLogDouble();
     }

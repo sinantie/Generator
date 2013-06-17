@@ -20,11 +20,18 @@ import java.util.List;
  */
 public class ExportExamplesToEdusFile
 {    
-    private String inputPath, recordAlignmentsPath, outputFile;
-   
-    public ExportExamplesToEdusFile(String path, String recordAlignmentsPath, 
+    private String inputPath, recordAlignmentsPath, outputFile;    
+    public enum InputType {aligned, goldStandard};
+    public enum Dataset {weatherGov, winHelp};
+    private InputType type;
+    private Dataset dataset;
+    int total = 0;
+    
+    public ExportExamplesToEdusFile(InputType type, Dataset dataset, String path, String recordAlignmentsPath, 
             String outputFile)
     {
+        this.type = type;
+        this.dataset = dataset;
         this.inputPath = path;               
         this.recordAlignmentsPath = recordAlignmentsPath;
         this.outputFile = outputFile;        
@@ -39,11 +46,17 @@ public class ExportExamplesToEdusFile
             String[] recordAlignments = Utils.readLines(recordAlignmentsPath);
             int i = 0;
             for(Event3Example example : examples)
-            {                
-                out.print(example.exportToEdusFormat(
+            {               
+//                System.out.println(example.getName());
+                switch(type)
+                {
+                    case aligned : out.print(example.exportToEdusFormat(
                         cleanRecordAlignments(recordAlignments[i++].split(" "), example.getTextInOneLine())));
+//                    case goldStandard : out.print(example.exportToEdusFormat(mapGoldStandardAlignments(dataset, example.getAlignmentsArray())));
+                    case goldStandard : mapGoldStandardAlignments(dataset, example.getAlignmentsArray());
+                }
             }
-            
+            System.out.println(total);
             out.close();
         } catch (Exception ioe)
         {
@@ -85,9 +98,11 @@ public class ExportExamplesToEdusFile
         int startIndex = 0;
         // restart the process for each delimiter found. In this case we avoid nested
         // splitting points.
-        while(startIndex < out.length)
+        int timeOut = 0;
+        while(startIndex < out.length && timeOut < words.length)
         {
             startIndex = fixSplitSentenceAlignment(out, words, startIndex);
+            timeOut++;
         }
         return out;
     }
@@ -111,7 +126,7 @@ public class ExportExamplesToEdusFile
                     }
                     // find the next record alignment
                     int j;
-                    for(j = i + 1; j < words.length; j++)
+                    for(j = i + 1; j < words.length - 1; j++)
                     {
                         if(!alignments[j].equals(alignments[i]))
                             break;
@@ -172,22 +187,48 @@ public class ExportExamplesToEdusFile
         }        
     }
     
+    private String[] mapGoldStandardAlignments(Dataset dataset, String[] alignments)
+    {
+        for(String line : alignments)
+        {
+            if(line.split(" ").length > 2)
+                total++ ;
+        }
+        return new String[] {};
+    }
+    
     public static void main(String[] args)
-    {        
+    {
+        InputType type = InputType.goldStandard;
         // WEATHERGOV
-//        // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
-//        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
-////        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
+        Dataset dataset = Dataset.weatherGov;
+        // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
+        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";        
+//        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
 //        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
-////        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
+        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
 //        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
-////        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+        new ExportExamplesToEdusFile(type, dataset, inputPath, inputPathRecordAlignments, outputFile).execute();        
         
-        // WINHELP
-        String inputPath = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation";
-        String inputPathRecordAlignments = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.pred.1.sorted";
-        String outputFile = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.sents.all.newAnnotation.aligned.edus";
-        System.out.println("Creating " + outputFile);
-        new ExportExamplesToEdusFile(inputPath, inputPathRecordAlignments, outputFile).execute();        
+        // WINHELP - ALL
+////        String inputPath = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation";
+//////        String inputPath = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation";
+////        String inputPathRecordAlignments = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/all/stage1.train.pred.1.sorted";
+//////        String inputPathRecordAlignments = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.single.newAnnotation.align";
+////        String outputFile = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation.aligned.edus";
+////        System.out.println("Creating " + outputFile);
+////        new ExportExamplesToEdusFile(inputPath, inputPathRecordAlignments, outputFile).execute();        
+        
+        // WINHELP - FOLDS
+//        int folds = 10;
+//        for (int fold = 1; fold <= folds; fold++)
+//        {
+//            String inputPath = "data/branavan/winHelpHLA/folds/docs.newAnnotation/winHelpFold"+fold+"Train";    
+//            String inputPathRecordAlignments = "results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation/fold"+fold+"/stage1.train.pred.1.sorted";
+//            String outputFile = "data/branavan/winHelpHLA/folds/docs.newAnnotation/winHelpFold"+fold+"Train.aligned.edus";
+//            System.out.println("Creating " + outputFile);
+//            new ExportExamplesToEdusFile(inputPath, inputPathRecordAlignments, outputFile).execute();       
+//        }
     }
 }

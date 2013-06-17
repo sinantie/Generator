@@ -368,9 +368,14 @@ public class Event3Example
     private String wordsToEdu(String[] words)
     {
         StringBuilder str = new StringBuilder("<edu>");
-        for(String word : words)
+        for(int i = 0; i < words.length; i++)
         {
-            str.append(word).append(" ");
+            String word = words[i];
+            // in case we have two sentences spanned by the same record, we need to split.
+            if(Utils.isSentencePunctuation(word) && i != words.length - 1)
+                str.append(word).append("</edu>\n<edu>");   
+            else
+                str.append(word).append(" ");            
         }
         str.deleteCharAt(str.length()-1);
         str.append("</edu>");
