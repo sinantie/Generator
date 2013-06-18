@@ -432,6 +432,11 @@ public class Event3Example
             return elements;
         }
 
+        public void setElements(String[] elements)
+        {
+            this.elements = elements;
+        }
+
         @Override
         public String toString()
         {
