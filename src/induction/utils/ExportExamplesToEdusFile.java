@@ -3,6 +3,7 @@ package induction.utils;
 import fig.basic.IOUtils;
 import induction.Utils;
 import induction.problem.event3.Event3Example;
+import induction.problem.event3.Event3Example.Alignment;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -42,8 +43,8 @@ public class ExportExamplesToEdusFile
         try
         {                        
             PrintWriter out = IOUtils.openOutEasy(outputFile);
-            List<Event3Example> examples = Utils.readEvent3Examples(inputPath, true); 
-            String[] recordAlignments = Utils.readLines(recordAlignmentsPath);
+            List<Event3Example> examples = Utils.readEvent3Examples(inputPath, true);             
+            String[] recordAlignments = type == InputType.aligned ? Utils.readLines(recordAlignmentsPath) : null;
             int i = 0;
             for(Event3Example example : examples)
             {               
@@ -53,7 +54,7 @@ public class ExportExamplesToEdusFile
                     case aligned : out.print(example.exportToEdusFormat(
                         cleanRecordAlignments(recordAlignments[i++].split(" "), example.getTextInOneLine())));
 //                    case goldStandard : out.print(example.exportToEdusFormat(mapGoldStandardAlignments(dataset, example.getAlignmentsArray())));
-                    case goldStandard : mapGoldStandardAlignments(dataset, example.getAlignmentsArray());
+                    case goldStandard : mapGoldStandardAlignments(dataset, example.getName(), example.getAlignmentsPerLineArray(), example.getTextArray());
                 }
             }
             System.out.println(total);
@@ -187,12 +188,19 @@ public class ExportExamplesToEdusFile
         }        
     }
     
-    private String[] mapGoldStandardAlignments(Dataset dataset, String[] alignments)
+    private String[] mapGoldStandardAlignments(Dataset dataset, String name, Alignment[] alignments, String[] text)
     {
-        for(String line : alignments)
+        int i = 0;
+        for(Alignment alignment : alignments)
         {
-            if(line.split(" ").length > 2)
-                total++ ;
+            if(alignment.size() > 1)
+            {                
+//                System.out.println(name);
+                System.out.println(text[i]);
+//                System.out.println(alignment);             
+                total++;
+            }
+            i++;
         }
         return new String[] {};
     }
@@ -203,12 +211,13 @@ public class ExportExamplesToEdusFile
         // WEATHERGOV
         Dataset dataset = Dataset.weatherGov;
         // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
-        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";        
+        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
 //        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
 //        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
         String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
 //        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
-        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+//        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusGold";
         new ExportExamplesToEdusFile(type, dataset, inputPath, inputPathRecordAlignments, outputFile).execute();        
         
         // WINHELP - ALL

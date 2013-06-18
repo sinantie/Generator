@@ -194,7 +194,7 @@ public class Event3Example
         }
         // append events
         records[2] += str.toString();
-        // remap alignment ids and append to to the list of existing alignments
+        // remap alignment ids and append to to the elements of existing alignments
         records[3] += "\n" + reMapAlignments(example.getAlignments(), mapOfIds, oldNumberOfLinesInText);
         
     }
@@ -296,6 +296,24 @@ public class Event3Example
         return hasAlignments() ? records[3].split("\n") : new String[0];
     }
     
+    public Alignment[] getAlignmentsPerLineArray()
+    {
+        if(hasAlignments())
+        {
+            String[] aligns = records[3].split("\n");
+            String[] text = getTextArray();
+            Alignment out[] = new Alignment[text.length];
+            Arrays.fill(out, new Alignment(new String[] {"-1"}));
+            for(int i = 0; i < aligns.length; i++)
+            {
+                String[] ar = aligns[i].split(" ");
+                out[Integer.valueOf(ar[0])] = new Alignment(Arrays.copyOfRange(ar, 1, ar.length));
+            }
+            return out;
+        }
+        return new Alignment[0];
+    }
+    
     public boolean hasAlignments()
     {
         return records[3] != null;
@@ -394,4 +412,32 @@ public class Event3Example
         return String.format("$NAME\n%s\n$TEXT\n%s\n$EVENTS\n%s", 
             getName(), getText(), getEvents());
     }   
+    
+    public class Alignment
+    {
+        String[] elements;
+
+        public Alignment(String[] array)
+        {
+            this.elements = array;
+        }
+        
+        public int size()
+        {
+            return elements.length;
+        }
+
+        public String[] getElements()
+        {
+            return elements;
+        }
+
+        @Override
+        public String toString()
+        {
+            return Arrays.toString(elements);
+        }
+        
+        
+    }
 }
