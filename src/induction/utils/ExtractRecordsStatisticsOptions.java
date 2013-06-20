@@ -37,4 +37,5 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Rule count threshold") public int ruleCountThreshold  = Integer.MIN_VALUE;
     @Option(gloss="Prefix of output filenames") public String prefix = "";
     @Option(gloss="Suffix of output filenames") public String suffix = "";
+    @Option(gloss="Override cleaning heuristics on alignment input (useful for RST)") public boolean overrideCleaningHeuristics = false;
 }

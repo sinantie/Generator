@@ -1370,6 +1370,7 @@ public abstract class Event3Model extends WordModel
         AInferState inferState = null;
         for(AExample ex : examples)
         {
+            System.out.println("Processing " + ex.getName() + "...");
             inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
             testPerformance.add(ex, inferState.bestWidget);
             if(opts.outputFullPred)

@@ -36,7 +36,7 @@ java -Xmx3500m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist
 -ngramSize 3 \
 -useStopNode \
 -modelType generate \
--maxPhraseLength 14  \
+-maxPhraseLength 12  \
 -reorderType eventType \
 -allowConsecutiveEvents
 #-useDependencies \

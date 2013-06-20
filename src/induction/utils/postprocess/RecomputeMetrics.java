@@ -7,6 +7,7 @@ import edu.cmu.meteor.scorer.MeteorScorer;
 import edu.cmu.meteor.scorer.MeteorStats;
 import fig.basic.IOUtils;
 import induction.Utils;
+import induction.problem.event3.Event3Example;
 import induction.problem.event3.TERMetric;
 import java.io.BufferedReader;
 import java.io.File;
@@ -233,7 +234,11 @@ public class RecomputeMetrics
     {
         // get all reference examples in the map
         System.out.print("Reading files from " + referenceExamplesPath + "...");
-        addList(referenceExamplesPath);
+//        addList(referenceExamplesPath);
+        for(Event3Example example : Utils.readEvent3Examples(referenceExamplesPath, true))
+        {
+            referenceExamples.put(example.getName(), example.getTextAsSentence().toLowerCase());
+        }
 //        referenceExamples.put("data/weather-data-full/data/texas/gatesville/2009-02-09-0.text",
 //                              "partly cloudy , with a low around 56 . south southwest wind around 10 mph .");
         System.out.print("done\nRecomputing metrics...");
@@ -289,9 +294,10 @@ public class RecomputeMetrics
         String referenceExamplesPath = "", inputFile = "", refFile = null;
         if(args.length < 1)
         {
-            referenceExamplesPath = "gaborLists/genEvalListPathsGabor";
-            inputFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength_hyp_recomb/stage1.tst.xml";
-            refFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength_hyp_recomb/stage1.ref.xml";
+            referenceExamplesPath = "data/weatherGov/weatherGovGenEvalGabor.gz";
+//            inputFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength_hyp_recomb/stage1.tst.xml";
+            inputFile = "results/output/weatherGov/generation/pcfg/rst/model_3_65-best_inter1_noHypRecomb_dp_unsup_treebank_gold_part1_2/stage1.tst.xml_part1_2";
+//            refFile = "results/output/weatherGov/generation/15-best_reordered_eventTypes_exact_wordLength_hyp_recomb/stage1.ref.xml";
         }
         else
         {

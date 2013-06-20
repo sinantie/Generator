@@ -609,7 +609,7 @@ public class Utils
         }
         return false;
     }
-
+    
     public static boolean write(String path, String text)
     {
         PrintWriter out = IOUtils.openOutEasy(path);
@@ -1188,5 +1188,17 @@ public class Utils
             LogInfo.error(ioe);
         }
         return examples;
+    }
+    
+    public static String arrayToString(String[] array)
+    {
+//        if(array.length == 0)
+//            return "empty";
+        StringBuilder str = new StringBuilder();
+        for(String ar : array)
+        {
+            str.append(ar).append(" ");            
+        }
+        return str.toString().trim();
     }
 }

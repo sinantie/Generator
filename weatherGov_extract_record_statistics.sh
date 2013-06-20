@@ -11,15 +11,17 @@ input=data/weatherGov/weatherGovTrainGabor.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.params.obj.gz
 stagedParamsFile=results/output/weatherGov/alignments/model_3_gabor_staged/stage1.params.obj.gz
-predInput=results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted
+#predInput=results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted
+predInput=data/weatherGov/weatherGovTrainGaborEdusGold.align
 #predInput=results/output/weatherGov/alignments/model_3_gabor_cond_null_bigrams_correct/1.exec/stage1.train.pred.14.sorted
 #predInput=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.pred.29.sorted
 #externalTreesInput=data/weatherGov/treebanks/ccm/permutationsAligns.kleinParsing.20
 #externalTreesInput=data/weatherGov/treebanks/ccm/permutations.kleinParsing.20
-externalTreesInput=data/weatherGov/treebanks/torontoRST/weatherGovTrainGaborEdusAlignedRemoved.tree
+#externalTreesInput=data/weatherGov/treebanks/torontoRST/weatherGovTrainGaborEdusAlignedRemoved.tree
+externalTreesInput=data/weatherGov/treebanks/torontoRST/weatherGovTrainGaborEdusGold.tree
 #suffix=AlignmentsExclThres5
 #suffix=AlignThres5Ccm
-suffix=AlignedRst
+suffix=GoldRst
 externalTreesInputType=rst
 
 execDir=data/weatherGov/treebanks/torontoRST
@@ -46,7 +48,8 @@ dist/stanford-postagger-2010-05-26.jar \
 -extractRecordTrees \
 -externalTreesInput ${externalTreesInput} \
 -externalTreesInputType rst \
--predInput ${predInput}
+-predInput ${predInput} \
+-overrideCleaningHeuristics
 #delimitSentences
 
 #-writePermutations \

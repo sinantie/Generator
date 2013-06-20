@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  *
@@ -280,7 +282,15 @@ public class Event3Example
             str.append(line).append(" ");
         return str.toString().trim().split(" ");
     }
-    
+
+    public String getTextAsSentence()
+    {
+        StringBuilder str = new StringBuilder();
+        for(String line : getTextArray())
+            str.append(line).append(" ");
+        return str.toString().trim();
+    }
+
     public String getEvents()
     {
         return records.length > 0 ? records[2] : "";
@@ -432,6 +442,11 @@ public class Event3Example
             return elements;
         }
 
+        public Queue<String> getElementsAsQueue()
+        {
+            return new LinkedList<String>(Arrays.asList(Arrays.copyOf(elements, elements.length)));
+        }
+        
         public void setElements(String[] elements)
         {
             this.elements = elements;

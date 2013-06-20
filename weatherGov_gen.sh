@@ -1,10 +1,10 @@
 #!/bin/bash
 
 #genDevListPathsGabor, genEvalListPathsGabor
-inputLists=data/weatherGov/weatherGovGenEvalGabor_part2
+inputLists=data/weatherGov/weatherGovGenEvalGabor_part3
 #inputLists=data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz
 #inputLists=data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz
-numThreads=2
+numThreads=1
 #stagedParamsFile=results/output/weatherGov/alignments/pos/model_3_cond_null_POS_CDNumbers/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/model_3_15_NO_STOP_NEW/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_30iter/stage1.params.obj.gz
@@ -19,7 +19,7 @@ interpolationFactor=1
 #execDir=results/output/weatherGov/generation/dev/model_3_${kBest}-best_0.01_NO_STOP
 #execDir=results/output/weatherGov/generation/pcfg/dependencies/model_3_${kBest}-best_inter${interpolationFactor}_alignments_treebank_gold
 #execDir=results/output/weatherGov/generation/pcfg/ccm/model_3_${kBest}-best_inter${interpolationFactor}_dp_auto_ccm_gold
-execDir=results/output/weatherGov/generation/pcfg/rst/model_3_${kBest}-best_inter${interpolationFactor}_noHypRecomb_dp_unsup_treebank_gold_part2
+execDir=results/output/weatherGov/generation/pcfg/rst/model_3_${kBest}-best_inter${interpolationFactor}_noHypRecomb_dp_unsup_treebank_gold_part3
 #treebankRules=data/weatherGov/treebanks/final/recordTreebankRulesTrainRightBinarizeAlignmentsTreebank
 #treebankRules=data/weatherGov/treebanks/ccm/recordTreebankRulesRightBinarizeCcm
 treebankRules=data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeAlignedRst

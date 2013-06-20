@@ -108,10 +108,12 @@ public class ExtractRecordsStatisticsTest
 //                 + "-externalTreesInput data/weatherGov/treebanks/ccm/permutations.kleinParsing.20 "
 //                 + "-externalTreesInput data/weatherGov/treebanks/ccm/permutationsAligns.kleinParsing.20.test "
 //                + "-externalTreesInputType unlabelled " 
-                 + "-suffix AlignedRst "
+                 + "-suffix GoldRst "
 //                 + "-externalTreesInput data/weatherGov/treebanks/torontoRST/weatherGovTrainGaborEdusAlignedRemoved.tree "
                  + "-externalTreesInput data/weatherGov/treebanks/torontoRST/weatherGovTrainGabor_single_test.tree "
                  + "-externalTreesInputType rst " 
+                 + "-overrideCleaningHeuristics " 
+                 + "-extractNoneEvent " 
                 
 //                 + "-excludedEventTypes sleetChance windChill "
                  + "-inputFileExt events ";

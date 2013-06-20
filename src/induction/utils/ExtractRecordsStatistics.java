@@ -180,7 +180,7 @@ public class ExtractRecordsStatistics
             List<Integer> eventTypes = new ArrayList<Integer>();
             List<Integer> originalEventTypesIds = new ArrayList<Integer>(); // no process (e.g., don't remove duplicate events in a sentence)
 //            String[] events = preds[iter++].split(" ");
-            String[] events = ExportExamplesToEdusFile.cleanRecordAlignments(preds[iter++].split(" "), e.getTextString());
+            String[] events = opts.overrideCleaningHeuristics ? preds[iter++].split(" ") : ExportExamplesToEdusFile.cleanRecordAlignments(preds[iter++].split(" "), e.getTextString());
             if(events[0].equals("not_found")) // for some reason this example doesn't have alignments; skip it
                 continue;
             int[] eventIds = new int[events.length];
