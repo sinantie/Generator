@@ -2,12 +2,12 @@
 threads=4
 #gaborLists/genDevListPathsGabor, trainListPathsGabor, genEvalListPathsGabor
 #data/weatherGov/weatherGovGenDevGaborRecordTreebank.gz, weatherGovTrainGaborRecordTreebank.gz
-input=data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeCcm.gz
-output=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_ccm_20iter
+input=data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeGoldRst.gz
+output=results/output/weatherGov/alignments/pcfg/rst/model_3_gabor_record_pcfg_treebank_gold_treebank_rst_20iter
 #data/weatherGov/treebanks/recordTreebankRulesGenDevRightBinarize recordTreebankRulesTrainRightBinarize
 #treebankRules=data/weatherGov/treebanks/recordTreebankRulesTrainRightBinarizeUnaryRules
-treebankRules=data/weatherGov/treebanks/ccm/recordTreebankRulesRightBinarizeCcm
-memory=-Xmx20000m
+treebankRules=data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeGoldRst
+memory=-Xmx25000m
 
 mkdir -p $output
 
@@ -39,8 +39,8 @@ dist/stanford-postagger-2010-05-26.jar -ea -Djava.library.path=lib/wrappers indu
 -fixRecordSelection \
 -wordsPerRootRule \
 -maxDocLength 90 \
--docLengthBinSize 5 \
--binarizedAtSentenceLevel
+-docLengthBinSize 5
+#-binarizedAtSentenceLevel
 #-inputPosTagged
 
 # Record PCFG - Treebank Input

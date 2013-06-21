@@ -38,4 +38,5 @@ public class ExtractRecordsStatisticsOptions
     @Option(gloss="Prefix of output filenames") public String prefix = "";
     @Option(gloss="Suffix of output filenames") public String suffix = "";
     @Option(gloss="Override cleaning heuristics on alignment input (useful for RST)") public boolean overrideCleaningHeuristics = false;
+    @Option(gloss="Parent annotation of non-terminals with their parent label, as in Johnson (1998) (implemented for RST only)") public boolean parentAnnotation = false;
 }

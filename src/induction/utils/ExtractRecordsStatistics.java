@@ -1,7 +1,6 @@
 package induction.utils;
 
 import edu.berkeley.nlp.ling.Tree;
-import edu.berkeley.nlp.ling.Tree;
 import edu.berkeley.nlp.ling.Trees.PennTreeReader;
 import edu.berkeley.nlp.ling.Trees.PennTreeRenderer;
 import fig.basic.IOUtils;
@@ -180,7 +179,9 @@ public class ExtractRecordsStatistics
             List<Integer> eventTypes = new ArrayList<Integer>();
             List<Integer> originalEventTypesIds = new ArrayList<Integer>(); // no process (e.g., don't remove duplicate events in a sentence)
 //            String[] events = preds[iter++].split(" ");
-            String[] events = opts.overrideCleaningHeuristics ? preds[iter++].split(" ") : ExportExamplesToEdusFile.cleanRecordAlignments(preds[iter++].split(" "), e.getTextString());
+//            String[] events = opts.overrideCleaningHeuristics ? preds[iter++].split(" ") : ExportExamplesToEdusFile.cleanRecordAlignments(preds[iter++].split(" "), e.getTextString());
+            String[] events = opts.overrideCleaningHeuristics ? ExportExamplesToEdusFile.fixSplitSentenceAlignments(preds[iter++].split(" "), e.getTextString()): 
+                    ExportExamplesToEdusFile.cleanRecordAlignments(preds[iter++].split(" "), e.getTextString());
             if(events[0].equals("not_found")) // for some reason this example doesn't have alignments; skip it
                 continue;
             int[] eventIds = new int[events.length];
@@ -485,6 +486,8 @@ public class ExtractRecordsStatistics
             {
                 // Read the rst tree                
                 Tree<String> rstTree = new PennTreeReader(new StringReader(inputTrees[i++])).next();
+                if(opts.parentAnnotation)
+                    parentAnnotation(rstTree);
                 try
                 {
                     // assign span size to the root non-terminal
@@ -502,6 +505,8 @@ public class ExtractRecordsStatistics
                         String lastRecord = originalSequenceOfRecords.get(originalSequenceOfRecords.size() - 1);
                         Tree<String> nullPreTerminal = nullPreTerminals.get(0);
                         nullPreTerminal.setLabel(nullPreTerminal.getLabel().replace("null", lastRecord));
+                        if(nullPreTerminals.size()>1)
+                            System.out.println(p.getName() + "\n" + rstTree);
                     }
                 }
                 catch(Exception e)
@@ -515,6 +520,13 @@ public class ExtractRecordsStatistics
                 List child = new ArrayList<Tree<String>>();
                 child.add(rstTree);
                 tree.setChildren(child);
+                if(opts.parentAnnotation)
+                {
+                    parentAnnotationChildren(tree);
+                    parentAnnotationAppendPreTerminals(tree);
+                }
+//                if(opts.markovOrder >= 0)
+//                    tree = opts.binarize == Direction.left ? TreeUtils.leftBinarize(tree, opts.markovOrder) : TreeUtils.rightBinarize(tree, opts.markovOrder);
                 // extract the rules from the tree
                 for (Tree<String> subtree : tree.subTreeList())
                 {
@@ -537,7 +549,7 @@ public class ExtractRecordsStatistics
                 } // for
 
                 out.println(p.getName());
-                System.out.println(p.getName());
+//                System.out.println(p.getName());
                 out.println(PennTreeRenderer.render(tree));                
 //                System.out.println(PennTreeRenderer.render(tree));
             } // if
@@ -558,10 +570,12 @@ public class ExtractRecordsStatistics
                 // that corresponds to a record. The number of segments should be the same as the number of records                
                 spanSize = child.toSurfaceString().replaceAll("\\^", " ").split(" ").length;
                 if(leafs.isEmpty())
-                    nullPreTerminals.add(child);
-                child.setLabel(String.format("%s[span^%s^%s]", leafs.poll(), currentIndex, currentIndex + spanSize));                
+                    nullPreTerminals.add(child);  
+                String recordName = leafs.poll();
+                String recordLabel = opts.parentAnnotation ? String.format("%s@%s", recordName, child.getLabelNoSpan().split("@")[1]) : recordName;
+                child.setLabel(String.format("%s[span^%s^%s]", recordLabel, currentIndex, currentIndex + spanSize));                
 //                child.setLabel(leafs.poll());                
-                child.getChildren().get(0).setLabel(""); // delete the text span       
+                child.getChildren().get(0).setLabel(""); // delete the text span                    
             }
             else
             {
@@ -574,7 +588,54 @@ public class ExtractRecordsStatistics
             currentIndex += spanSize;
         }
     }        
-       
+    
+    private void parentAnnotation(Tree<String> tree)
+    {
+        // in case the node has been already annotated use only the original label
+        String parentLabel = tree.getLabelNoSpan().split("\\@")[0];
+        for(Tree<String> child : tree.getChildren())
+        {
+            if(!child.isLeaf())
+            {
+                child.setLabel(String.format("%s@%s", child.getLabelNoSpan(), parentLabel));
+                parentAnnotation(child);
+            }            
+        }
+    }
+    
+    private void parentAnnotationAppendPreTerminals(Tree<String> tree)
+    {
+        for(Tree<String> child : tree.getChildren())
+        {
+            if(child.isPreTerminal() && !child.getChildren().isEmpty() && child.getLabel().contains("@"))
+            {
+                String name = child.getLabelNoSpan().split("@")[0];
+                Tree<String> terminal = new Tree<String>(name, false);
+                List<Tree<String>> childTemp = new ArrayList<Tree<String>>();
+                childTemp.add(new Tree<String>("", false));
+                terminal.setChildren(childTemp);
+                List<Tree<String>> termTemp = new ArrayList<Tree<String>>();
+                termTemp.add(terminal);
+                child.setChildren(termTemp);
+            }    
+            parentAnnotationAppendPreTerminals(child);
+        }
+    }
+    
+    private void parentAnnotationChildren(Tree<String> tree)
+    {
+        // in case the node has been already annotated use only the original label
+        String parentLabel = tree.getLabelNoSpan().split("\\@")[0];
+        for(Tree<String> child : tree.getChildren())
+        {
+            if(!child.isLeaf())
+            {
+                child.setLabel(String.format("%s@%s", child.getLabelNoSpan(), parentLabel));                
+            }            
+        }
+    }
+    
+    
     public Tree<String> binarize(Tree<String> tree) 
     {
         String rootLabel = tree.getLabelNoSpan();

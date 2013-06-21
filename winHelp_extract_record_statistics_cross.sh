@@ -2,8 +2,8 @@
 
 exec=winHelp_extract_record_statistics.sh
 stagedParamsFile=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
-suffix=GoldRst
-markovOrder=1
+suffix=GoldRstParent
+markovOrder=2
 externalTreesInputType=rst
 #aligned, gold
 type=gold
@@ -11,7 +11,7 @@ type=gold
 #FOLDS
 inputPath=data/branavan/winHelpHLA/folds/docs.newAnnotation
 execDir=data/branavan/winHelpHLA/folds/treebanks
-# ALIGN
+## ALIGN
 #predInput=results/output/winHelp/alignments/model_3_docs_no_null_newAnnotation
 # GOLD
 predInput=data/branavan/winHelpHLA/folds/docs.newAnnotation
@@ -22,7 +22,7 @@ mkdir -p $execDir
 for (( f=1; f<=folds; f++ ))
 do
 ## ALIGN
-#	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f} ${predInput}/fold${f}/#stage1.train.pred.1.sorted ${markovOrder} ${inputPath}/winHelpFold${f}Train.${type}.edus.tree ${externalTreesInputType}
+#	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f} ${predInput}/fold${f}/stage1.train.pred.1.sorted ${markovOrder} ${inputPath}/winHelpFold${f}Train.${type}.edus.tree ${externalTreesInputType}
 
 #GOLD
 	./${exec} ${inputPath}/winHelpFold${f}Train ${stagedParamsFile}/fold${f} ${execDir} ${suffix}Fold${f} ${predInput}/winHelpFold${f}Train.${type}.align ${markovOrder} ${inputPath}/winHelpFold${f}Train.${type}.edus.tree ${externalTreesInputType}
@@ -40,4 +40,4 @@ done
 #GOLD
 #./${exec} ${inputPath} ${stagedParamsFile}/all ${execDir} ${suffix} ${inputPath}.${type}.align ${markovOrder} ${inputPath}.${type}.edus.tree ${externalTreesInputType}
 
-#./${exec} ${inputPath} ${stagedParamsFile} ${execDir} ${suffix} 
+

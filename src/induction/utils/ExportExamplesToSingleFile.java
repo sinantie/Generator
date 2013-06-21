@@ -30,7 +30,8 @@ public class ExportExamplesToSingleFile
     private Map<String, String> treebankMap;
     private boolean inputPosTagged;
     private Type inputType;
-
+    private int textLengthLimit = -1;
+    
     public ExportExamplesToSingleFile(String path, String treebankInputFile, 
             String outputFile, boolean inputPosTagged, Type inputType)
     {
@@ -43,6 +44,13 @@ public class ExportExamplesToSingleFile
         this.outputFile = outputFile;
         this.inputPosTagged = inputPosTagged;
         this.inputType = inputType;
+    }
+
+    public ExportExamplesToSingleFile(String path, String treebankInputFile, 
+            String outputFile, boolean inputPosTagged, Type inputType, int textLengthLimit)
+    {
+        this(path, treebankInputFile, outputFile, inputPosTagged, inputType);
+        this.textLengthLimit = textLengthLimit;
     }
 
     public void execute()
@@ -118,7 +126,8 @@ public class ExportExamplesToSingleFile
     {
         for(Event3Example example : examples)
         {
-            writeFile(example, out);
+            if(textLengthLimit == -1 || example.getTextSize() >= textLengthLimit)
+                writeFile(example, out);
         }
     }
     
@@ -153,13 +162,18 @@ public class ExportExamplesToSingleFile
     private void writeFile(Event3Example example, PrintWriter out) throws IOException
     {
         // set record tree
-        String entry = treebankMap.get(example.getName());            
-        example.setTree(entry != null ? entry : "N/A\n");
+        if(treebankMap != null)
+        {
+            String entry = treebankMap.get(example.getName());            
+            example.setTree(entry != null ? entry : "N/A\n");
+        }
         out.println(example.toString());
     }
 
     public static void main(String[] args)
-    {        
+    {     
+        int textLengthLimit = 20;
+        
         // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
         String inputPath[] = {
                               "data/weatherGov/weatherGovTrainGabor.gz", 
@@ -172,7 +186,8 @@ public class ExportExamplesToSingleFile
 //                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsThres5",
 //                                      "data/weatherGov/treebanks/final/recordTreebankTrainRightBinarizeAlignmentsTreebank",
 //                                      "data/weatherGov/treebanks/ccm/recordTreebankRightBinarizeCcm",
-                                      "data/weatherGov/treebanks/torontoRST/recordTreebankRightBinarizeAlignedRst",
+//                                      "data/weatherGov/treebanks/torontoRST/recordTreebankRightBinarizeAlignedRst",
+                                      "data/weatherGov/treebanks/torontoRST/recordTreebankRightBinarizeGoldRst",
                                       "data/weatherGov/treebanks/recordTreebankGenDevRightBinarizeUnaryRules",
                                       "data/weatherGov/treebanks/recordTreebankGenEvalRightBinarizeUnaryRules"
                                      };
@@ -180,9 +195,11 @@ public class ExportExamplesToSingleFile
         String outputFile[] = {
 //                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsThres5.gz",
 //                               "data/weatherGov/weatherGovTrainGaborRecordTreebankTrainRightBinarizeAlignmentsTreebank_PosTagged.gz",
-                               "data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz",
+//                               "data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeAlignedRst.gz",                               
+                               "data/weatherGov/weatherGovTrainGaborRecordTreebankRightBinarizeGoldRst.gz",                               
                                "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules.gz",
-                               "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
+//                               "data/weatherGov/weatherGovGenEvalGaborRecordTreebankUnaryRules.gz"
+                               "data/weatherGov/weatherGovGenEvalGaborMoreThan20.gz"
                               };                
         Type inputType = Type.SINGLE_FILE;
         boolean inputPosTagged = false;
@@ -190,6 +207,8 @@ public class ExportExamplesToSingleFile
         {
             System.out.println("Creating " + outputFile[i]);
             new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], inputPosTagged, inputType).execute();
+//            new ExportExamplesToSingleFile(inputPath[i], treebankInputFile[i], outputFile[i], inputPosTagged, inputType, textLengthLimit).execute();
+//            new ExportExamplesToSingleFile(inputPath[i], null, outputFile[i], inputPosTagged, inputType, textLengthLimit).execute();
         }
     }
 }

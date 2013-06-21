@@ -41,7 +41,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -stagedParamsFile ${stagedParamsFile} \
 -suffix ${suffix} \
 -binarize right \
--markovOrder 1 \
+-markovOrder 0 \
 -useEventTypeNames \
 -modifiedBinarization \
 -ruleCountThreshold 0 \
@@ -50,6 +50,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -externalTreesInputType rst \
 -predInput ${predInput} \
 -overrideCleaningHeuristics
+
 #delimitSentences
 
 #-writePermutations \

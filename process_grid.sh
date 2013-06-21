@@ -29,8 +29,8 @@
 #output=${input}/grid_docs_newAnnotation_hmm14_predLength.results
 input=results/output/winHelp/generation/generative/no_pos/no_null/pcfg/rst
 #formattedString=model_3_docs_newAnnotation_alignments_markov1_\$param1\$-best_iter\$param2\$_max12_newFolds_predLength
-formattedString=model_3_docs_newAnnotation_aligned_rst_\$param1\$-best_iter\$param2\$_gold
-output=${input}/grid_aligned_rst_goldLength.results
+formattedString=model_3_docs_newAnnotation_gold_rst_parent_\$param1\$-best_iter\$param2\$_054_gold
+output=${input}/grid_gold_rst_parent_054_goldLength.results
 crossValidate=true
 #weights=509#505#506#515#508#510#505#484#500#471
 weights=12#11#13#10#11#12#12#12#10#20

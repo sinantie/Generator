@@ -29,7 +29,7 @@ java -Xmx28000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dis
 -kBest ${kBest} \
 -ngramModelFile ${ngramModelFile} \
 -ngramWrapper kylm \
--outputExampleFreq 100  \
+-outputExampleFreq 5  \
 -lengthPredictionMode gold \
 -ngramSize 3 \
 -binariseAtWordLevel \
@@ -43,7 +43,7 @@ java -Xmx28000m -cp dist/Generator.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dis
 -maxDocLength 100 \
 -docLengthBinSize 15 \
 -allowConsecutiveEvents \
--Options.stage1.cfgThreshold 0.14
+-Options.stage1.cfgThreshold 0.54
 
 #-allowNoneEvent
 #-forceOutputOrder \

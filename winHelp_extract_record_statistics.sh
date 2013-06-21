@@ -32,6 +32,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -externalTreesInput ${externalTreesInput} \
 -externalTreesInputType rst \
 -predInput ${predInput} \
+-parentAnnotation \
 -overrideCleaningHeuristics
 
 #-overrideCleaningHeuristics # USEFUL for gold-standard

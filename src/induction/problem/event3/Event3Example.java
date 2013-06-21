@@ -283,6 +283,11 @@ public class Event3Example
         return str.toString().trim().split(" ");
     }
 
+    public int getTextSize()
+    {
+        return getTextInOneLine().length;
+    }
+    
     public String getTextAsSentence()
     {
         StringBuilder str = new StringBuilder();
