@@ -289,7 +289,8 @@ public class ExportExamplesToEdusFile
         {
             if(text.contains("becoming"))                
             { 
-                return segmentWeatherGovWindDirWindSpeed(alignment, text);
+//                return segmentWeatherGovWindDirWindSpeed(alignment, text);
+                return segmentWeatherGovWindDirWindSpeedNormalise(alignment, text);
             }
             if(text.contains("increasing"))
             {
@@ -441,6 +442,12 @@ public class ExportExamplesToEdusFile
         return out;
     }
     
+    /**
+     * Segment windDir and windSpeed using word-matching heuristics.
+     * @param alignment
+     * @param text
+     * @return 
+     */
     private String[] segmentWeatherGovWindDirWindSpeed(Alignment alignment, String text)
     {
         String[] words = text.split(" ");
@@ -505,6 +512,27 @@ public class ExportExamplesToEdusFile
         }
         System.out.println(text);
         return out;
+    }
+    
+    /**
+     * Segment windDir and windSpeed using word-matching heuristics, but only
+     * split at the first boundary, i.e., don't introduce extra record alignments.
+     * @param alignment
+     * @param text
+     * @return 
+     */
+    private String[] segmentWeatherGovWindDirWindSpeedNormalise(Alignment alignment, String text)
+    {
+        String[] words = text.split(" ");
+        if(text.contains("between"))
+        {
+            return segmentUsingPatternWeatherGov(alignment, words, "between", false);
+        }
+        if(text.contains("around"))
+        {
+            return segmentUsingPatternWeatherGov(alignment, words, "around", false);
+        }
+        return segmentUsingPatternWeatherGov(alignment, words, "wind", true);
     }
     
     private int countNumberOfOccurences(String word, String[] text)
@@ -661,8 +689,8 @@ public class ExportExamplesToEdusFile
 //        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
 //        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
 //        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
-        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusGold";
-        String outputFileAlignments = "data/weatherGov/weatherGovTrainGaborEdusGold.align";        
+        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal";
+        String outputFileAlignments = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal.align";        
         new ExportExamplesToEdusFile(type, dataset, inputPath, inputPathRecordAlignments, outputFile, outputFileAlignments).execute();        
         
         // WINHELP - ALL
