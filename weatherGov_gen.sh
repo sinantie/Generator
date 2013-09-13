@@ -11,7 +11,7 @@ numThreads=4
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_thres10_externalTreebank/stage1.extTreebank.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_alignments_treebank_20iter_posTagged/stage1.params.obj.gz
 #stagedParamsFile=results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_ccm_20iter/stage1.params.obj.gz
-stagedParamsFile=results/output/weatherGov/alignments/pcfg/rst/model_3_gabor_record_pcfg_treebank_gold_treebank_rst_20iter/stage1.params.obj.gz
+stagedParamsFile=results/output/weatherGov/alignments/pcfg/rst/model_3_gabor_record_pcfg_treebank_gold_normal_treebank_rst_20iter/stage1.params.obj.gz
 dmvModelParamsFile=results/output/weatherGov/dmv/train/weatherGov_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz
 kBest=65
 interpolationFactor=1
@@ -19,10 +19,10 @@ interpolationFactor=1
 #execDir=results/output/weatherGov/generation/dev/model_3_${kBest}-best_0.01_NO_STOP
 #execDir=results/output/weatherGov/generation/pcfg/dependencies/model_3_${kBest}-best_inter${interpolationFactor}_alignments_treebank_gold
 #execDir=results/output/weatherGov/generation/pcfg/ccm/model_3_${kBest}-best_inter${interpolationFactor}_dp_auto_ccm_gold
-execDir=results/output/weatherGov/generation/pcfg/rst/model_3_${kBest}-best_inter${interpolationFactor}_noHypRecomb_dp_gold_treebank_gold_lessThan20
+execDir=results/output/weatherGov/generation/pcfg/rst/model_3_${kBest}-best_inter${interpolationFactor}_noHypRecomb_dp_gold_normal_treebank_gold_lessThan20_no_binarise
 #treebankRules=data/weatherGov/treebanks/final/recordTreebankRulesTrainRightBinarizeAlignmentsTreebank
 #treebankRules=data/weatherGov/treebanks/ccm/recordTreebankRulesRightBinarizeCcm
-treebankRules=data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeGoldRst
+treebankRules=data/weatherGov/treebanks/torontoRST/recordTreebankRulesRightBinarizeGoldRstNormal
 
 java -Xmx28000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
 dist/lib/stanford-postagger-2010-05-26.jar \
@@ -55,10 +55,11 @@ dist/lib/stanford-postagger-2010-05-26.jar \
 -lengthPredictionStartIndex 4 \
 -lengthCompensation 0 \
 -numAsSymbol \
--binariseAtWordLevel \
 -outputFullPred \
 -maxDocLength 90 \
 -docLengthBinSize 5
+
+#-binariseAtWordLevel \
 #-posAtSurfaceLevel \
 #-interpolationFactor ${interpolationFactor} \
 #-useDependencies

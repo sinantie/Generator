@@ -69,7 +69,7 @@ public class ExtractRecordsStatisticsTest
     /**
      * Test of main method, of class ExtractRecordsStatistics.
      */
-    @Test
+//    @Test
     public void testWeather()
     {     
         String args = 
@@ -78,6 +78,7 @@ public class ExtractRecordsStatisticsTest
                  +  "-initType staged "
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
+                 + "-countNonTerminals "
 //                 + "-ruleCountThreshold 5 "
                  + "-binarize right "
                  + "-modifiedBinarization "
@@ -129,7 +130,7 @@ public class ExtractRecordsStatisticsTest
         ers.testExecute();
     }
     
-//    @Test
+    @Test
     public void testWinHelp()
     {     
         String args = 
@@ -137,6 +138,7 @@ public class ExtractRecordsStatisticsTest
                  +  "-examplesInSingleFile "
 //                 + "-countRepeatedRecords "
                  + "-extractRecordTrees "
+                 + "-countNonTerminals "
 //                 + "-ruleCountThreshold 5 "
                  + "-binarize right "
 //                 + "-modifiedBinarization "

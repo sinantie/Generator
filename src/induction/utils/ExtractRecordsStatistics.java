@@ -479,6 +479,7 @@ public class ExtractRecordsStatistics
         rules = new TreeSet<String>();
         int countRemoved = 0;
         int i = 0;
+        HistMap<String> nonTerminalsHist = new HistMap<String>();
         for(ExampleRecords p : examples)
         {     
             // exclude examples with frequency less than the threshold (useful when extracting rules from alignment input)
@@ -486,6 +487,8 @@ public class ExtractRecordsStatistics
             {
                 // Read the rst tree                
                 Tree<String> rstTree = new PennTreeReader(new StringReader(inputTrees[i++])).next();
+                if(opts.countNonTerminals)
+                    countNonTerminals(nonTerminalsHist, rstTree);
                 if(opts.parentAnnotation)
                     parentAnnotation(rstTree);
                 try
@@ -557,6 +560,11 @@ public class ExtractRecordsStatistics
                 countRemoved++;
         } // for        
         LogInfo.logs("Removed " + countRemoved + " examples");
+        if(opts.countNonTerminals)
+        {
+//            System.out.println(nonTerminalsHist);
+            LogInfo.logs(nonTerminalsHist);
+        }
     }      
     
     private void renameLabelsOfTree(Tree<String> tree, int start, Queue<String> leafs, List<Tree<String>> nullPreTerminals) throws Exception
@@ -635,6 +643,15 @@ public class ExtractRecordsStatistics
         }
     }
     
+    private void countNonTerminals(HistMap map, Tree<String> tree)
+    {
+        map.add(tree.getLabel());
+        for(Tree child : tree.getChildren())
+        {
+            if(!child.isLeaf())
+                countNonTerminals(map, child);
+        }
+    }
     
     public Tree<String> binarize(Tree<String> tree) 
     {
