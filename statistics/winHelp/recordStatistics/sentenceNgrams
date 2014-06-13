@@ -1,0 +1,52 @@
+Button : 135
+Item : 74
+Item Menu : 53
+Item Button : 34
+TreeItem : 32
+Button Menu : 30
+Tab : 28
+checkbox : 20
+Tab Button : 19
+Button Item : 18
+checkbox Button : 13
+radiobutton Button : 7
+ComboBox Item : 7
+TreeItem Button : 7
+radiobutton : 7
+Edit : 6
+TreeItem Menu : 5
+Button Menu Tab : 5
+Item Button Menu : 4
+Button Tab : 4
+ComboBox Item Button : 4
+Tab checkbox : 3
+Tab Item Button : 3
+TreeItem Item : 3
+ComboBox : 3
+Item ComboBox : 2
+Item TreeItem : 2
+Tab TreeItem : 2
+Tab radiobutton Button : 2
+Edit Button : 2
+Tab ComboBox Item : 2
+Item TreeItem Menu : 1
+Item Button Tab : 1
+Item radiobutton : 1
+Tab Edit Button : 1
+Item Tab : 1
+Button radiobutton checkbox : 1
+Item Tab Button : 1
+Button Tab radiobutton : 1
+Tab radiobutton : 1
+radiobutton Item : 1
+Tab Item : 1
+Button Item Menu : 1
+Button radiobutton : 1
+Button checkbox : 1
+radiobutton checkbox Button : 1
+Item Menu Button : 1
+TreeItem Menu Tab : 1
+Menu : 1
+Menu Tab : 1
+ListBox Item Button : 1
+Tab Button Item : 1

@@ -1,0 +1,76 @@
+main() {
+  Execution directory: statistics/weatherGov/recordStatistics
+  Init parameters: staged {
+    stagedInitParams {
+      Loading results/output/weatherGov/alignments/model_3_gabor/1.exec/stage1.params.obj
+    }
+  }
+  Reading examples {
+    data/weather-data-full/data/alabama/alabaster/2009-02-07-0.events (1 examples so far)
+    data/weather-data-full/data/alabama/alabaster/2009-02-07-1.events (2 examples so far)
+    data/weather-data-full/data/alabama/alabaster/2009-02-08-0.events (3 examples so far)
+    data/weather-data-full/data/alabama/athens/2009-02-07-0.events (31 examples so far)
+    data/weather-data-full/data/alabama/gardendale/2009-02-10-1.events (174 examples so far)
+    data/weather-data-full/data/alabama/troy/2009-02-08-1.events (416 examples so far)
+    data/weather-data-full/data/arizona/sierra_vista_southeast/2009-02-09-1.events (770 examples so far)
+    data/weather-data-full/data/california/anaheim/2009-02-08-0.events (1181 examples so far)
+    data/weather-data-full/data/california/chino/2009-02-09-1.events (1616 examples so far)
+    data/weather-data-full/data/california/eureka/2009-02-10-0.events (2039 examples so far)
+    data/weather-data-full/data/california/laguna_beach/2009-02-07-1.events (2454 examples so far)
+    data/weather-data-full/data/california/menlo_park/2009-02-10-0.events (2873 examples so far)
+    data/weather-data-full/data/california/pasadena/2009-02-08-0.events (3299 examples so far)
+    data/weather-data-full/data/california/san_diego/2009-02-07-0.events (3729 examples so far)
+    data/weather-data-full/data/california/susanville/2009-02-10-1.events (4162 examples so far)
+    data/weather-data-full/data/colorado/canon_city/2009-02-09-1.events (4592 examples so far)
+    data/weather-data-full/data/connecticut/cromwell/2009-02-09-0.events (5023 examples so far)
+    data/weather-data-full/data/connecticut/south_windsor/2009-02-09-0.events (5461 examples so far)
+    data/weather-data-full/data/florida/cape_coral/2009-02-10-0.events (5905 examples so far)
+    data/weather-data-full/data/florida/gulf_gate_estates/2009-02-09-1.events (6352 examples so far)
+    data/weather-data-full/data/florida/melbourne/2009-02-09-1.events (6802 examples so far)
+    data/weather-data-full/data/florida/punta_gorda/2009-02-07-0.events (7251 examples so far)
+    data/weather-data-full/data/florida/wright/2009-02-08-1.events (7704 examples so far)
+    data/weather-data-full/data/georgia/roswell/2009-02-08-0.events (8159 examples so far)
+    data/weather-data-full/data/illinois/bartlett/2009-02-07-0.events (8621 examples so far)
+    data/weather-data-full/data/illinois/forest_park/2009-02-09-1.events (9088 examples so far)
+    data/weather-data-full/data/illinois/morris/2009-02-09-0.events (9551 examples so far)
+    data/weather-data-full/data/illinois/taylorville/2009-02-09-0.events (10007 examples so far)
+    data/weather-data-full/data/indiana/lafayette/2009-02-09-0.events (10463 examples so far)
+    data/weather-data-full/data/iowa/muscatine/2009-02-07-1.events (10920 examples so far)
+    data/weather-data-full/data/kentucky/frankfort/2009-02-10-0.events (11381 examples so far)
+    data/weather-data-full/data/louisiana/moss_bluff/2009-02-07-1.events (11842 examples so far)
+    data/weather-data-full/data/maryland/chillum/2009-02-07-0.events (12305 examples so far)
+    data/weather-data-full/data/maryland/owings_mills/2009-02-08-0.events (12771 examples so far)
+    data/weather-data-full/data/massachusetts/chicopee/2009-02-09-0.events (13239 examples so far)
+    data/weather-data-full/data/massachusetts/middleborough/2009-02-07-0.events (13703 examples so far)
+    data/weather-data-full/data/massachusetts/watertown/2009-02-07-1.events (14166 examples so far)
+    data/weather-data-full/data/michigan/garden_city/2009-02-09-0.events (14631 examples so far)
+    data/weather-data-full/data/michigan/traverse_city/2009-02-07-0.events (15097 examples so far)
+    data/weather-data-full/data/minnesota/maplewood/2009-02-09-0.events (15565 examples so far)
+    data/weather-data-full/data/mississippi/oxford/2009-02-07-0.events (16035 examples so far)
+    data/weather-data-full/data/missouri/sedalia/2009-02-07-1.events (16506 examples so far)
+    data/weather-data-full/data/new_hampshire/hanover/2009-02-07-1.events (16980 examples so far)
+    data/weather-data-full/data/new_jersey/glen_rock/2009-02-10-0.events (17459 examples so far)
+    data/weather-data-full/data/new_jersey/perth_amboy/2009-02-10-0.events (17941 examples so far)
+    data/weather-data-full/data/new_mexico/artesia/2009-02-08-1.events (18418 examples so far)
+    data/weather-data-full/data/new_york/clifton_park/2009-02-08-0.events (18897 examples so far)
+    data/weather-data-full/data/new_york/hampton_bays/2009-02-07-0.events (19375 examples so far)
+    data/weather-data-full/data/new_york/montgomery/2009-02-10-1.events (19854 examples so far)
+    data/weather-data-full/data/new_york/riverhead/2009-02-07-1.events (20334 examples so far)
+    data/weather-data-full/data/new_york/wheatfield/2009-02-10-0.events (20815 examples so far)
+    data/weather-data-full/data/north_carolina/shelby/2009-02-08-0.events (21295 examples so far)
+    data/weather-data-full/data/ohio/dayton/2009-02-09-1.events (21776 examples so far)
+    data/weather-data-full/data/ohio/niles/2009-02-08-0.events (22257 examples so far)
+    data/weather-data-full/data/ohio/westerville/2009-02-10-0.events (22739 examples so far)
+    data/weather-data-full/data/oregon/coos_bay/2009-02-07-1.events (23222 examples so far)
+    data/weather-data-full/data/pennsylvania/easton/2009-02-07-0.events (23707 examples so far)
+    data/weather-data-full/data/pennsylvania/south_park_township/2009-02-08-1.events (24194 examples so far)
+    data/weather-data-full/data/south_carolina/forest_acres/2009-02-10-0.events (24681 examples so far)
+    ... 24941 lines omitted ...
+  } [50s, cum. 51s]
+  C=1 tracks {
+    Track ALL (12 event types)
+  }
+  Setting up examples
+  Writing permutations...
+  Execution directory: statistics/weatherGov/recordStatistics
+} [51s]
