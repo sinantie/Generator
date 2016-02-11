@@ -26,7 +26,7 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
     public DiscriminativeEventTypeParams(Event3Model model, EventType eventType, 
                            VecFactory.Type vectorType, int maxNumOfWords)
     {        
-        super(model, eventType, vectorType);
+        super(model, eventType, model.W(), vectorType);
         this.model = (DiscriminativeEvent3Model)model;
         this.eventType = eventType;
         this.maxNumOfWords = maxNumOfWords;        

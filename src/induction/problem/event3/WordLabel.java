@@ -5,6 +5,7 @@ import fig.basic.IntPair;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import util.Stemmer;
 
 /**
  *
@@ -45,6 +46,19 @@ public class WordLabel implements Serializable
         }
     }
 
+    public List<String> getWords(boolean stemAll, boolean lemmatiseAll)
+    {
+        List<String> out = new ArrayList<>();
+        for(IntPair pair :  list)
+        {
+            if(lemmatiseAll) // we assume that values are already lemmatised (partially true for AMR input)
+                out.add(Event3Model.wordToString(wordIndexer, pair.first, false, null));
+            else if(stemAll)
+                out.add(Stemmer.stem(Event3Model.wordToString(wordIndexer, pair.first, false, null)));
+        }
+        return out;
+    }
+    
     @Override
     public String toString()
     {

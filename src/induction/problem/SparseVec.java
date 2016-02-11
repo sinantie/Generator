@@ -126,7 +126,7 @@ public class SparseVec implements Serializable, Vec
     @Override
     public Vec addCount(int i, double x)
     {
-        counts.setEntry(i, counts.getEntry(i));
+        counts.setEntry(i, counts.getEntry(i) + x);
         sum += x;
         return this;
     }

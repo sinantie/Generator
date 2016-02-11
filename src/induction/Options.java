@@ -67,6 +67,7 @@ public class Options {
   @Option public String[] excludedEventTypes = new String[0]; // List of <event type name>
   @Option(gloss="Take the first event of each type (don't do this)") public boolean takeOneOfEventType = false;
   @Option public boolean treatCatAsSym = false;
+  @Option public boolean useStringLabels = true;
   @Option public boolean useOnlyLabeledExamples = false;
 
   // Changes to the model can happen during training, so each of these specifies a starting and ending 
@@ -103,7 +104,8 @@ public class Options {
 
   // Modify
   @Option public boolean includeEventTypeAsSymbol = false;
-  @Option(gloss="Stem symbols, strings, and words") public static boolean stemAll = false;
+  @Option(gloss="Stem symbols, strings, and words") public boolean stemAll = false;
+  @Option(gloss="Lemmatise symbols, strings, and words") public boolean lemmatiseAll = false;
   @Option(gloss="Annotate and generate numeric quantities with labels (the word that follows)") public Pair<Integer,Integer> genLabels = new Pair(0, 0);
 
   @Option public String wordRolesPath;
@@ -232,7 +234,7 @@ public class Options {
   @Option public Random genInitRandom = new Random(1);
   @Option public InitType genInitType = InitType.supervised;
 
-  @Option public int artNumWords = 100;
+  @Option public int artNumWords = -1;
   @Option public double artAlpha = 0.5;
 
   // General

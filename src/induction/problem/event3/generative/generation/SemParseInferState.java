@@ -65,7 +65,7 @@ public class SemParseInferState extends GenInferState
                 {
                     for(int i = 0; i < f.getV(); i++)
                     {
-                        vocabulary.add(Event3Model.processWord(f.valueToString(i)).toLowerCase());
+                        vocabulary.add(Event3Model.processWord(f.valueToString(i), opts.stemAll, opts.lemmatiseAll).toLowerCase());
                     }
                 }
             }

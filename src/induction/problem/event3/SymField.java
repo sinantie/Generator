@@ -49,7 +49,7 @@ public class SymField extends Field
     }
 
     @Override
-    public AParams newParams(Event3Model model, VecFactory.Type vectorType, String prefix)
+    public AParams newParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix)
     {
         return new SymFieldParams(model, vectorType, GenerativeEvent3Model.LB(), prefix);
     }

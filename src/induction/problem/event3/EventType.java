@@ -77,6 +77,29 @@ public class EventType implements Serializable
         return fields[f].getName();
     }
 
+    public int getFieldIndex(String name)
+    {
+        if(name.equals("(none)"))
+            return none_f;
+        if (name.equals("(boundary)"))
+            return boundary_f;
+        int i = 0;
+        for(Field f : fields)
+        {
+            if (f.name.equals(name))
+            {
+                return i;
+            }
+            i++;
+        }
+        return -1;
+    }
+    
+    public boolean isUseFieldSets()
+    {
+        return useFieldSets;
+    }
+
     @Override
     public String toString()
     {

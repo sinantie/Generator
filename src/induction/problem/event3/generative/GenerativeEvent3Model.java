@@ -38,6 +38,7 @@ import induction.problem.event3.generative.generation.GenInferStatePCFG;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
 import induction.problem.event3.params.CFGParams;
+import induction.problem.event3.params.TrackParams;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -147,7 +148,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         LogInfo.end_track();
         loadLengthPredictionModel();
         loadPosTagger();
-        loadLanguageModel();
+        loadLanguageModel();                
     }
 
     public void saveParams(String name, String filename)
@@ -244,7 +245,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
 //        cfgParams.optimiseVar(opts.stage1.smoothing);
         cfgParams.optimise(opts.initSmoothing);
     }            
-    
+        
     @Override
     protected void baitInitParams()
     { // Hard code things
@@ -254,6 +255,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
     @Override
     protected Params newParams()
     {
+        if(opts.artNumWords != -1)
+            return new Params(this, opts, opts.artNumWords, VecFactory.Type.DENSE);
         if(!opts.fixRecordSelection || params == null)
             return new Params(this, opts, VecFactory.Type.DENSE);
         else // in case we are using a treebank for record selection, copy rule probabilites from previous iteration
@@ -264,7 +267,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
             return p;
         }
     }
-
+    
     @Override
     protected APerformance newPerformance()
     {
@@ -343,7 +346,8 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
 
             // Batch EM only
             Params counts = newParams();
-
+//            if(opts.initType == Options.InitType.staged && iter == 0)
+//                counts.setVecs(params.getVecs());
             // E-step
             Utils.begin_track("E-step");
             Collection<BatchEM> list = new ArrayList(examples.size());

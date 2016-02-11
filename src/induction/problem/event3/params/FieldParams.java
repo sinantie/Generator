@@ -20,12 +20,23 @@ public abstract class FieldParams extends AParams implements Serializable
 
     public FieldParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
+        this(model, model.W(), vectorType, prefix);
+    }
+    
+    public FieldParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix)
+    {
         super(model);
-        this.W = model.W();
+        this.W = numOfWords;
         this.prefix = prefix;
-        wordBigramChoices = VecFactory.zeros2(vectorType, W, W);
-        addVec(getLabels(W, "wordBi "  + prefix + " ",
-                    ((Event3Model)model).wordsToStringArray()), wordBigramChoices);
+        // don't compute in cases where W is prohibitively large
+        if(model.isIndepWords())
+            wordBigramChoices = VecFactory.zeros2(vectorType, 0, 0);
+        else
+        {
+            wordBigramChoices = VecFactory.zeros2(vectorType, W, W);
+            addVec(getLabels(W, "wordBi "  + prefix + " ",
+                        ((Event3Model)model).wordsToStringArray()), wordBigramChoices);
+        }
     }
 
     // Provide potentials for salience

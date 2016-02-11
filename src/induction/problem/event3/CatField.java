@@ -57,9 +57,9 @@ public class CatField extends Field implements Serializable
     }
 
     @Override
-    public AParams newParams(Event3Model model, VecFactory.Type vectorType, String prefix)
+    public AParams newParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix)
     {
-        return new CatFieldParams(model, vectorType, prefix, this);
+        return new CatFieldParams(model, numOfWords, vectorType, prefix, this);
     }
 
     @Override

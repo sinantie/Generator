@@ -264,11 +264,20 @@ public abstract class AParams implements Serializable
     
     public String forEachProbNonZero(Vec v, String[] labels)
     {
+        return forEachProbNonZero(v, labels, Integer.MAX_VALUE);
+    }
+    
+    public String forEachProbNonZero(Vec v, String[] labels, int limit)
+    {
         StringBuilder out = new StringBuilder();
+        int count = 0;
         for(Pair<Integer> p : v.getProbsSorted())
         {
-            if(p.value != 0)
+            if(p.value != 0 && count <= limit)
+            {
                 out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
+                count++;
+            }
         }
         return out.toString();
     }

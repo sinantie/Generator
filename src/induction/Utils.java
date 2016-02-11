@@ -4,6 +4,11 @@ import edu.berkeley.nlp.ling.Tree;
 import edu.berkeley.nlp.ling.Trees;
 import edu.berkeley.nlp.ling.Trees.PennTreeReader;
 import edu.berkeley.nlp.ling.Trees.StandardTreeNormalizer;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.WordTag;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.process.Morphology;
 import fig.basic.IOUtils;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
@@ -1083,7 +1088,9 @@ public class Utils
                 str.append(ar[i++]).append("\n");                
             }
             if(ar.length > 4) // if the example contains events input
-                res[2] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            {
+                res[2] = str.deleteCharAt(str.length()-1).toString();
+            } // delete last \n
             if(i< ar.length && ar[i].equals("$RECORD_TREE"))
             {
                 i++; // move past $RECORD_TREE tag
@@ -1201,4 +1208,10 @@ public class Utils
         }
         return str.toString().trim();
     }
+    
+    public static String lemmatiseStatic(String word)
+    {        
+        return Morphology.lemmatizeStatic(WordTag.valueOf(word)).lemma();
+    }    
+    
 }

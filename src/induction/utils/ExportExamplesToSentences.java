@@ -3,13 +3,14 @@ package induction.utils;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import induction.Utils;
-import induction.problem.event3.Event3Model;
+import induction.problem.event3.Event3Example;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import opennlp.tools.tokenize.SimpleTokenizer;
 
 /**
@@ -26,6 +27,7 @@ public class ExportExamplesToSentences
     BufferedOutputStream bos;
     SimpleTokenizer tokenizer;
     String tagDelimiter;
+    final String SOS = "<START>", EOS = "</START>";
     
     public enum SourceType {PATH, LIST, FILE};
     SourceType type;
@@ -54,7 +56,7 @@ public class ExportExamplesToSentences
         {
             for(int i = 0; i < ngramSize - 1; i++)
             {
-                HEADER += "<s> ";
+                HEADER += SOS + " ";
             }
             bos = new BufferedOutputStream(new FileOutputStream(target));
             if(tokeniseOnly)
@@ -115,25 +117,37 @@ public class ExportExamplesToSentences
 
     private void processExamplesInSingleFile(String source)
     {
-        if(new File(source).exists())
+        List<Event3Example> examples = Utils.readEvent3Examples(source, true);
+        for(Event3Example ex : examples)
         {
-            String key = null;
-            StringBuilder str = new StringBuilder();
-            for(String line : Utils.readLines(source))
+            try
             {
-                if(line.startsWith("Example_"))
-                {
-                    if(key != null) // only for the first example
-                    {                      
-                        processEventExample(str.toString());
-                        str = new StringBuilder();
-                    }
-                    key = line;
-                } // if                   
-                str.append(line).append("\n");
-            }  // for           
-            processEventExample(str.toString()); // don't forget last example
+                writeToFile(processExample(ex.getText()));
+            }            
+            catch(IOException ioe)
+            {
+                System.err.println(ioe.getMessage());
+            }   
         }
+//        if(new File(source).exists())
+//        {
+//            String key = null;
+//            StringBuilder str = new StringBuilder();
+//            for(String line : Utils.readLines(source))
+//            {
+//                if(line.startsWith("Example_") || line.equals("$NAME"))
+//                {
+//                    if(key != null) // only for the first example
+//                    {                      
+//                        processEventExample(str.toString());
+//                        str = new StringBuilder();
+//                    }
+//                    key = line;
+//                } // if                   
+//                str.append(line).append("\n");
+//            }  // for           
+//            processEventExample(str.toString()); // don't forget last example
+//        }
     }
     
     protected void processFile(String path)
@@ -185,7 +199,7 @@ public class ExportExamplesToSentences
     protected void writeToFile(String input) throws IOException
     {
         bos.write(( (toLowerCase ? input.trim().toLowerCase() : input.trim())
-                  + " </s>\n").getBytes());
+                  + " "+EOS + "\n").getBytes());
     }
     
     /**
@@ -205,11 +219,12 @@ public class ExportExamplesToSentences
                     // tokenisation might give numbers not found previously
                     out += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
                                  "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
+                                 s.matches("-?\\p{Digit}+,\\p{Digit}+") || // decimals
                                  (s.matches("\\p{Digit}+") && // numbers
                                   !(s.contains("am") || s.contains("pm")))) // but not hours!
                            ) ?  "<num> " : s + " ";
                 }
-                bos.write((HEADER + out + " </s>\n").getBytes());
+                bos.write((HEADER + out + " "+EOS+"\n").getBytes());
             }
             br.close();
         }
@@ -230,18 +245,23 @@ public class ExportExamplesToSentences
 //        String target = "weatherGovLM/gabor-srilm-abs-3-gram.model.tagged.sentences";
         //ROBOCUP
 //        String source = "robocupLists/robocupAllPathsTrain";
-//        String target = "robocupLM/robocup-all-3-gram.tagged.sentences";
-        //WINHELP        
+//        String target = "robocupLM/robocup-all-3-gram.tagged.sentences";        
+        //WINHELP     
+//        String source = "data/branavan/winHelpHLA/winHelpRL.sents.all";
+//        String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.sentences";        
+        //AMR-LDC
+        String source = "../hackathon/data/ldc/split/training/training.event3";
+        String target = "../hackathon/data/ldc/split/training/training-3-gram.sentences";
         boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;
         int folds = 1;
         for(int i = 1; i <= folds; i++)    
         {
             String tagDelimiter = "_";
+            // FOLDS
 //            String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
-            String source = "data/branavan/winHelpHLA/winHelpRL.sents.all";
-//            String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";
-            String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.sentences";
+//            String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";            
+            
             String fileExtension = "text.tagged";            
             ExportExamplesToSentences lmp = new ExportExamplesToSentences(target, source, ngramSize, 
                                                     SourceType.FILE, fileExtension, 

@@ -620,7 +620,8 @@ public class GenInferState extends InferState
                 hypergraph.addEdge(node, genFieldValue(i, c, event, field, posInFieldValue),
                         new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
-                    return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_VALUE);
+                    return 1.0;
+                    //return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_VALUE);
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
@@ -649,28 +650,28 @@ public class GenInferState extends InferState
                 }
                 else
                 {
-                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-                        public double getWeight() {
-                            return 1.0;
-                        }
-                        public void setPosterior(double prob) { }
-                        public GenWidget choose(GenWidget widget) { return widget; }
-                        public Pair getWeightAtRank(int rank)
-                        {
-                            Pair p =  getAtRank(params.genericEmissions, rank);
-                            p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-                            return p;
-                        }
-                        public Pair getDepWeight(int word)
-                        {
-                            return getLeafDepHead(word, i);              
-                        }
-                        public GenWidget chooseWord(GenWidget widget, int word)
-                        {
-                            widget.getText()[i] = word;
-                            return widget;
-                        }
-                        });
+//                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+//                        public double getWeight() {
+//                            return 1.0;
+//                        }
+//                        public void setPosterior(double prob) { }
+//                        public GenWidget choose(GenWidget widget) { return widget; }
+//                        public Pair getWeightAtRank(int rank)
+//                        {
+//                            Pair p =  getAtRank(params.genericEmissions, rank);
+//                            p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+//                            return p;
+//                        }
+//                        public Pair getDepWeight(int word)
+//                        {
+//                            return getLeafDepHead(word, i);              
+//                        }
+//                        public GenWidget chooseWord(GenWidget widget, int word)
+//                        {
+//                            widget.getText()[i] = word;
+//                            return widget;
+//                        }
+//                        });
                 }
             } // else
         }
@@ -774,7 +775,8 @@ public class GenInferState extends InferState
             if((f == eventTypeParams.none_f || // If not none, then...
                ((!opts.disallowConsecutiveRepeatFields || f != f0) && // Can't repeat fields
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
-               (!opts.limitFieldLength || j-i <= ex.events.get(event).getFields()[f].getMaxLength()))) && 
+               (!opts.limitFieldLength || j-i <= ex.events.get(event).getFields()[f].getMaxLength())) &&
+               !ex.events.get(event).fieldContainsEmptyValue(f)) &&                
                curPos < opts.maxNumOfFields-1)
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;

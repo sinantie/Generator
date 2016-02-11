@@ -16,10 +16,10 @@ public class CatFieldParams extends FieldParams
 //    private String prefix;
     private CatField field;
     private int W;
-    public CatFieldParams(Event3Model model, VecFactory.Type vectorType, String prefix, CatField field)
+    public CatFieldParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix, CatField field)
     {
-        super(model, vectorType, prefix);
-        this.W = model.W();
+        super(model, numOfWords, vectorType, prefix);
+        this.W = numOfWords;
 //        this.prefix = prefix;
         this.field = field;
         // v, w -> express value v with word w

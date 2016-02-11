@@ -2,6 +2,9 @@ package induction.problem.event3;
 
 import edu.berkeley.nlp.ling.Tree;
 import edu.berkeley.nlp.ling.Trees.PennTreeReader;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import induction.problem.event3.json.JsonWrapper;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.FullStatFig;
@@ -10,6 +13,7 @@ import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.params.Parameters;
 import fig.basic.Indexer;
 import fig.basic.LogInfo;
+import fig.basic.Pair;
 import fig.exec.Execution;
 import induction.LearnOptions;
 import induction.Options;
@@ -96,6 +100,7 @@ public abstract class Event3Model extends WordModel
     // Stuff for labels (each word has a label)
     protected static Indexer<String> labelIndexer = new Indexer<String>();
     protected static int none_lb, misc_lb;
+    protected static boolean useStringLabels;
     // Word roles
     private Indexer<String> wordRoleNameIndexer = new Indexer<String>();
     private static HashMap<String, Integer> wordRoleMap = new HashMap<String,Integer>();
@@ -112,13 +117,15 @@ public abstract class Event3Model extends WordModel
     // The internal hashmap maps the cfg rule to the position in the associated parameter vector.
     protected Map<Integer, HashMap<CFGRule, Integer>> cfgRules;
     protected Map<Integer, Integer> minWordsPerNonTerminal;
-    protected Indexer<String> rulesIndexer = new Indexer<String>();
-    
+    protected Indexer<String> rulesIndexer = new Indexer<String>();    
+    protected static StanfordCoreNLP pipeline;
+    protected static Map<String, String> word2LemmaMap = new HashMap<>();
     public Event3Model(Options opts)
     {
         super(opts);
         none_lb = labelIndexer.getIndex("-");
         misc_lb = labelIndexer.getIndex("*");
+        useStringLabels = opts.useStringLabels;
     }
 
     public NgramModel getSecondaryNgramModel()
@@ -143,28 +150,33 @@ public abstract class Event3Model extends WordModel
         return Utils.set(new int[n], x); // Helper
     }
 
-    public static String processWord(String word)
+    public static String processWord(String word, boolean stemAll, boolean lemmatiseAll)
     {
-        if(Options.stemAll)
-        {
-            return Stemmer.stem(word);
-        }
+//        if(stemAll)
+//        {
+//            return Stemmer.stem(word);
+//        }        
         return word;
     }
-
+    
     public int getWordIndex(String str)
     {
-        return wordIndexer.getIndex(processWord(str));
+        return wordIndexer.getIndex(processWord(str, opts.stemAll, opts.lemmatiseAll));
     }
-
-    public static int getWordIndex(Indexer<String> wordIndexer, String str)
+    
+    public int getWordIndexSafe(String str)
     {
-        return wordIndexer.getIndex(processWord(str));
+        return wordIndexer.indexOf(processWord(str, opts.stemAll, opts.lemmatiseAll));
+    }
+    
+    public static int getWordIndex(Indexer<String> wordIndexer, String str, boolean stemAll, boolean lemmatiseAll)
+    {
+        return wordIndexer.getIndex(processWord(str, stemAll, lemmatiseAll));
     }
     
     public int getTestSetWordIndex(String str)
     {
-        return testSetWordIndexer.getIndex(processWord(str));
+        return testSetWordIndexer.getIndex(processWord(str, opts.stemAll, opts.lemmatiseAll));
     }
 
     public String testSetWordToString(int w)
@@ -179,7 +191,29 @@ public abstract class Event3Model extends WordModel
     {
         return testSetWordIndexer;
     }
-        
+    
+    public static void initLemmatiser()
+    {
+        Properties props = new Properties();
+        props.setProperty("annotators", "tokenize, ssplit, pos, lemma");
+        pipeline = new StanfordCoreNLP(props);
+    }
+    
+    public static String lemmatise(String input)
+    {
+        String lemma = word2LemmaMap.get(input);
+        if(lemma == null)
+        {
+            if(pipeline == null)
+                initLemmatiser();
+            Annotation document = new Annotation(input);
+            pipeline.annotate(document);
+            lemma = document.get(CoreAnnotations.SentencesAnnotation.class).get(0).get(CoreAnnotations.TokensAnnotation.class).get(0).get(CoreAnnotations.LemmaAnnotation.class);
+            word2LemmaMap.put(input, lemma);
+        }        
+        return lemma;
+    }
+    
     public int getT()
     {
         return eventTypes.length;
@@ -299,6 +333,11 @@ public abstract class Event3Model extends WordModel
         return rulesIndexer.getObject(lhs).equals("S");
     }
     
+    public boolean isIndepWords()
+    {
+        return opts.indepWords.equals(new Pair(0, -1));
+    }
+    
     public EventType[] getEventTypes()
     {
         return eventTypes;
@@ -359,7 +398,7 @@ public abstract class Event3Model extends WordModel
     public static int getLabelIndex(List<String> textStr, int i)
     {
         // For now, let the label of a word be the word after it if it's a number
-        if (Constants.str2num(textStr.get(i)) == Constants.NaN)
+        if (Constants.str2num(textStr.get(i)) == Constants.NaN || !useStringLabels)
         {
             return none_lb;
         }

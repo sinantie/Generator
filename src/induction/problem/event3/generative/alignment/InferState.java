@@ -45,6 +45,8 @@ import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.FieldParams;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import util.Stemmer;
 
 /**
  *
@@ -403,7 +405,10 @@ public class InferState extends Event3InferState
     
     protected  Object genStrFieldValue(int i, int c, int event, int field)
     {
+        boolean postProcessWords = opts.lemmatiseAll || opts.stemAll;
         final ArrayList<Integer> valueWords, valueLabels;
+        List<String> valueWordsProcessed = null;
+        String wordProcessed = null;
         Field tempField = ex.events.get(event).getFields()[field];
         if (tempField instanceof StrField) // nonsense!!
         {
@@ -413,12 +418,21 @@ public class InferState extends Event3InferState
             valueWords = new ArrayList<Integer>();
             valueLabels = new ArrayList<Integer>();
             wl.getWordsLabels(valueWords, valueLabels);
+            valueWordsProcessed = postProcessWords ? wl.getWords(opts.stemAll, opts.lemmatiseAll) : null;
+            if(opts.lemmatiseAll)
+            {
+                wordProcessed = Event3Model.lemmatise(Event3Model.wordToString(((Event3Model)model).getWordIndexer(), words[i], false, null));
+            }
+            else if(opts.stemAll)
+            {
+                wordProcessed = Stemmer.stem(Event3Model.wordToString(((Event3Model)model).getWordIndexer(), words[i], false, null));
+            }
         }
         else
         {
             throw Utils.impossible();
         }
-        if (!valueWords.contains(words[i]))
+        if((postProcessWords && !valueWordsProcessed.contains(wordProcessed)) || (!postProcessWords && !valueWords.contains(words[i])))
         {
             return hypergraph.invalidNode;
         }
@@ -435,7 +449,8 @@ public class InferState extends Event3InferState
                 // That was mathematically wrong, but overfit slightly less
                 for(int v_i = 0; v_i < Utils.same(valueWords.size(), valueLabels.size()); v_i++)
                 {
-                    if(valueWords.get(v_i) == words[i]) // Match
+                    if(((postProcessWords && valueWordsProcessed.get(v_i).equals(wordProcessed)) ||
+                            (!postProcessWords && valueWords.get(v_i) == words[i]))) // Match
                     {
                         final int valueLabel = valueLabels.get(v_i);
                         hypergraph.addEdge(node, new Hypergraph.HyperedgeInfo<Widget>() {
@@ -705,7 +720,7 @@ public class InferState extends Event3InferState
                          final int f0, int efs,
                          final EventTypeParams eventTypeParams,
                          final EventTypeParams eventTypeCounts, FieldsNode node, int curPos)
-    {
+    {        
         // Choose a new field to talk about (including none field, but not boundary)
         for(int f = 0; f < ex.events.get(event).getF() + 1; f++)
         {
@@ -715,7 +730,8 @@ public class InferState extends Event3InferState
                eventTypeParams.efs_canBePresent(efs, f) && // Make sure f can be there
                (!opts.limitFieldLength ||
 //               j-i <= ((Event3Model)inferState).getEventTypes()[ex.events[event].getEventTypeIndex()].fields[f].maxLength)))
-               j-i <= ex.events.get(event).getFields()[f].getMaxLength())))
+               j-i <= ex.events.get(event).getFields()[f].getMaxLength())) &&
+                    !ex.events.get(event).fieldContainsEmptyValue(f))
             { // Limit field length
                 int remember_f = indepFields() ? eventTypeParams.boundary_f : f;
                 int new_efs = (f == eventTypeParams.none_f) ? efs :

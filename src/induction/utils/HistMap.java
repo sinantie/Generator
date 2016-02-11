@@ -1,9 +1,11 @@
 package induction.utils;
 
+import fig.basic.Pair;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -31,14 +33,72 @@ public class HistMap<T>
         return map.entrySet();
     }
     
+    public Set<Entry<T, Integer>> getEntriesFreqs()
+    {
+        Map<T, Integer> m = new HashMap();
+        for(Entry<T, Counter> e : map.entrySet())
+        {
+            m.put(e.getKey(), e.getValue().value);
+        }
+        return m.entrySet();
+    }
+    
     public Set<T> getKeys()
     {
         return map.keySet();
     }
    
+    public int getTotalFrequency()
+    {
+        int total = 0;
+        for(Entry <T, Integer> e : getEntriesFreqs())
+            total += e.getValue();
+        return total;
+    }
+    
+    public int size()
+    {
+        return map.size();
+    }
+    
+    /**
+     *
+     * Return the most frequent key in the Map.
+     * Warning: this can be a slow computation. Always pre-cache.
+     */
+    public T getFirstKey()
+    {
+        return getKeysSorted().get(0);
+    }
+    
+    public Pair<T, Integer> getFirstEntry()
+    {
+        return getEntriesSorted().get(0);
+    }
+    
+    public List<T> getKeysSorted()
+    {
+        List<Counter> list = new ArrayList<Counter>(map.values());
+        Collections.sort(list);
+        List<T> out = new ArrayList();
+        for(Counter c : list)
+            out.add(c.key);
+        return out;
+    }
+    
+    public List<Pair<T,Integer>> getEntriesSorted()
+    {
+        List<Counter> list = new ArrayList<Counter>(map.values());
+        Collections.sort(list);
+        List<Pair<T,Integer>> out = new ArrayList();
+        for(Counter c : list)
+            out.add(new Pair(c.key, c.value));
+        return out;
+    }
+    
     public int getFrequency(T key)
     {
-        return map.get(key).value;
+        return map.containsKey(key) ? map.get(key).value : - 1;
     }
     
     /**

@@ -1,6 +1,7 @@
 package induction.problem.event3;
 
 import induction.Utils;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class Event
     private List<Integer> values;
 
     public Event(int id, EventType eventType, List<Integer> values)
-    {
+    {        
         this.id = id;
         this.eventType = eventType;
         fields = eventType.fields;
@@ -48,7 +49,7 @@ public class Event
     }
 
     public int getF()
-    {
+    {       
         return F;
     }
 
@@ -118,6 +119,20 @@ public class Event
         return true;
     }
 
+    public boolean fieldContainsEmptyValue(int field)
+    {
+        // check if none_field
+        if(field == F + 1)
+            return true;
+        boolean isNumType = fields[field] instanceof NumField;
+        return fields[field].valueToString(values.get(field)).equals(isNumType ? "0" : "--");
+    }
+    
+    public String fieldValueToString(int field)
+    {
+        return fields[field].valueToString(values.get(field));
+    }
+    
     @Override
     public String toString()
     {

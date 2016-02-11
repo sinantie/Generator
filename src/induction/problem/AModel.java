@@ -3,6 +3,7 @@ package induction.problem;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
+import fig.basic.Fmt;
 import fig.basic.FullStatFig;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
@@ -22,6 +23,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
@@ -41,7 +43,8 @@ public abstract class AModel
 {
     protected Options opts;
     protected AParams params;
-    protected List<AExample> examples = new ArrayList<AExample>();
+//    protected List<AExample> examples = new ArrayList<AExample>();
+    protected List<AExample> examples = new ArrayList<>();
     protected int numExamples, maxExamples;
     protected PrintWriter trainPredOut, testPredOut, trainFullPredOut, testFullPredOut, testPcfgTreesPredOut;
     protected APerformance trainPerformance, testPerformance;
@@ -57,7 +60,7 @@ public abstract class AModel
     public AModel(Options opts)
     {
         this.opts = opts;
-        maxExamples = opts.maxExamples;
+        maxExamples = opts.maxExamples;        
     }
 
     public AParams getParams()
@@ -615,6 +618,8 @@ public abstract class AModel
             System.out.println("Iteration " + (iter+1));
             trainPerformance = newPerformance();
             AParams counts = newParams();
+//            if(opts.initType == InitType.staged && iter == 0)
+//                counts.setVecs(params.getVecs());
 //            Example ex = examples.get(0);
             for(AExample ex: examples)
             {
@@ -639,11 +644,14 @@ public abstract class AModel
             params = counts;
             params.optimise(lopts.smoothing);            
             iter++;
+            record(String.valueOf(iter), name, complexity, true);
+            System.out.println("accuracy=" + Fmt.D(trainPerformance.getAccuracy()));
         }
-//        System.out.println(params.output());
+//        System.out.println(params.outputNonZero(ParamsType.PROBS));
 //        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
-        System.out.println(widgetToFullString(examples.get(examples.size()-1), inferState.bestWidget));
-        System.out.println(trainPerformance.output());
+//        System.out.println(widgetToFullString(examples.get(examples.size()-1), inferState.bestWidget));
+        System.out.println(trainPerformance.summary());
+//        System.out.println(trainPerformance.output());
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
     

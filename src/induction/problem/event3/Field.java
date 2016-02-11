@@ -27,6 +27,6 @@ public abstract class Field implements Serializable
         
     public abstract int getV(); // number of possible values
     public abstract String valueToString(int v);
-    public abstract int parseValue(int role, String str);
-    public abstract AParams newParams(Event3Model model, VecFactory.Type vectorType, String prefix);
+    public abstract int parseValue(int role, String str);    
+    public abstract AParams newParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix);
 }
