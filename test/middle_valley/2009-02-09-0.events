@@ -1,9 +1,0 @@
-.id:0	.type:temperature	.date:2009-02-09	.label:Tonight	@time:17-30	#min:51	#mean:58	#max:71
-.id:2	.type:windSpeed	.date:2009-02-09	.label:Tonight	@time:17-30	#min:10	#mean:11	#max:14	@mode-bucket-0-20-2:10-20
-.id:3	.type:windDir	.date:2009-02-09	.label:Tonight	@time:17-30	@mode:S
-.id:4	.type:gust	.date:2009-02-09	.label:Tonight	@time:17-30	#min:0	#mean:4	#max:21
-.id:5	.type:skyCover	.date:2009-02-09	.label:Tonight	@time:17-30	@mode-bucket-0-100-4:50-75
-.id:6	.type:skyCover	.date:2009-02-09	.label:Tonight	@time:17-21	@mode-bucket-0-100-4:25-50
-.id:7	.type:skyCover	.date:2009-02-09	.label:Tonight	@time:17-26	@mode-bucket-0-100-4:50-75
-.id:8	.type:skyCover	.date:2009-02-09	.label:Tonight	@time:21-30	@mode-bucket-0-100-4:50-75
-.id:9	.type:skyCover	.date:2009-02-09	.label:Tonight	@time:26-30	@mode-bucket-0-100-4:50-75

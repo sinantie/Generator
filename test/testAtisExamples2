@@ -1,6 +1,0 @@
-Example_274
-milwaukee to phoenix on saturday
-.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
-.id:1	.type:search	@of:--	@typed:lambda	@what:flight
-.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
-0 0 1 2

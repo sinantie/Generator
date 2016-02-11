@@ -16,13 +16,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class InductionAtisTest
+public class InductionMathWorldTest
 {
     LearnOptions lopts;
     String name;
     GenerativeEvent3Model model;
 
-    public InductionAtisTest() {
+    public InductionMathWorldTest() {
     }
 
     @BeforeClass
@@ -40,33 +40,55 @@ public class InductionAtisTest
     {
          String args = "-modelType event3 "
                  + "-Options.stage1.numIters 15 "
+                 + "-overWriteExecDir "
+                 + "-execDir results/output/mathWorld/alignments/model_3_test/ "
                  + "-inputLists "
-                 + "../datasets/atis/train/atis5000.sents.full.tagged.CDnumbers "                 
-//                 + "data/atis/test/atis-test.txt "
-//                 + "test/testAtisExamples  "
+                 + "../datasets/mathWorld/revisedFullRecords.event3 "                 
                  + "-examplesInSingleFile "
+                 + "-initType random "
+//                 + "-stagedParamsFile results/output/amr/ldc/alignments/bootstrap_word_estimates/ignoreFields-noSmooth/bootstrap.params.obj.gz "
+//                 + "-stagedParamsFile results/output/amr/ldc/alignments/bootstrap_word_estimates/ignoreFields-catFields-noSmooth/bootstrap.params.obj.gz "
+                 
                  + "-indepEventTypes 0,10 "
                  + "-indepFields 0,5 "
                  + "-newEventTypeFieldPerWord 0,5 "
-                 + "-newFieldPerWord 0,5 "
+                 + "-newFieldPerWord 0,10 "                                  
+//                 + "-maxPhraseLength 3 "                                  
+                 
+//                 + "-allowNoneEvent "
                  + "-disallowConsecutiveRepeatFields "
                  + "-indepWords 0,5 "
                  + "-initNoise 0 "
                  + "-dontCrossPunctuation "
-                 + "-posAtSurfaceLevel "
-                 + "-inputPosTagged "                // IMPORTANT!
-                 + "-Options.stage1.smoothing 0.01 "
+                 + "-andIsPunctuation "
+//                 + "-useStringLabels false "
+                 + "-useFieldSets 0,-1 "
+                 + "-omitEmptyEvents ";
+//                 + "-lemmatiseAll ";
+//                 + "-stemAll ";
+//                 + "-artNumWords 100 "                 
+//                 + "-usePosTagger "
+//                 + "-posAtSurfaceLevel "
+//                 + "-inputPosTagged "                // IMPORTANT!
+//                 + "-Options.stage1.smoothing 0.01 ";
 //                 + "-modelUnkWord "
-                 + "-Options.stage1.useVarUpdates";
+//                 + "-Options.stage1.useVarUpdates";
 //                + "-excludedEventTypes airline airport booking_class city entity fare_basis_code location transport";
         /*initialisation procedure from Induction class*/
         Options opts = new Options();
         Execution.init(args.split(" "), new Object[] {opts}); // parse input params
         model = new GenerativeEvent3Model(opts);
+        if(opts.initType == InitType.staged)
+        {
+            model.init(InitType.staged, opts.initRandom, "");
+        }
         model.readExamples();        
         model.logStats();
-        opts.outputIterFreq = opts.stage1.numIters;
-        model.init(InitType.random, opts.initRandom, "");
+        opts.outputIterFreq = opts.stage1.numIters;     
+        if(opts.initType != InitType.staged)
+        {
+            model.init(InitType.random, opts.initRandom, "");
+        }
         lopts = opts.stage1;
         name = "stage1";
     }

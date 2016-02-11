@@ -16,13 +16,13 @@ import static org.junit.Assert.*;
  *
  * @author konstas
  */
-public class GenerationAtisTest
+public class GenerationAmrTest
 {
     LearnOptions lopts;
     String name;
     GenerativeEvent3Model model;
 
-    public GenerationAtisTest() {
+    public GenerationAmrTest() {
     }
 
     @BeforeClass
@@ -39,36 +39,38 @@ public class GenerationAtisTest
     public void setUp() 
     {
          String args = "-modelType generate "
-                    + "-testInputLists test/testAtisExamples "
-//                    + "-testInputLists data/atis/test/atis-test.txt "
+                    + "-testInputLists ../hackathon/data/ldc/split/training/training-thres-5-test.event3 "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-stagedParamsFile "
-                    + "results/output/atis/alignments/"
-//                    + "model_3/prior_0.01/stage1.params.obj "
-                    + "model_3/prior_0.01_POS/stage1.params.obj.gz "
+                    + "results/output/amr/ldc/alignments/model_3-thres-5-bootstrap-ignoreFields/5.exec/stage1.params.obj.gz "
+//                    + "results/output/amr/ldc/alignments/model_3-thres-5/lemmatise-generateNonEmptyFieldsOnly/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
-                    + "-kBest 40 "
-                    + "-ngramModelFile atisLM/atis-all-train-3-gram.model.arpa "
+                    + "-kBest 100 "
+                    + "-ngramModelFile amrLM/training-3-gram-sentences.arpa "
 //                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
-//                    + "-ngramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.model.arpa "
                     + "-ngramWrapper kylm "
                     + "-allowConsecutiveEvents "
                     + "-reorderType eventTypeAndField "
-                    + "-maxPhraseLength 5 "
+                    + "-maxPhraseLength 3 "
                     + "-binariseAtWordLevel "
+                    + "-indepWords 0,-1 "
+                    + "-useFieldSets 0,-1 "
+                    + "-omitEmptyEvents "
                     + "-ngramSize 3 "
-                    + "-lengthPredictionMode linearRegression "
-                    + "-lengthPredictionModelFile ../datasets/atis/train/lengthPrediction.counts.linear-reg.model "
-                    + "-lengthPredictionFeatureType counts "
-                    + "-lengthPredictionStartIndex 2 "
+//                    + "-lengthPredictionMode linearRegression "
+                    + "-lengthPredictionMode gold "
+//                    + "-lengthPredictionModelFile ../datasets/atis/train/lengthPrediction.counts.linear-reg.model "
+//                    + "-lengthPredictionFeatureType counts "
+//                    + "-lengthPredictionStartIndex 2 "
                     + "-lengthCompensation 0 "
 //                    + "-useDependencies "
                     + "-interpolationFactor 1 "
-                    + "-posAtSurfaceLevel "
-                    + "-useStopNode "
-                    + "-dmvModelParamsFile results/output/atis/dmv/train/"
-                    + "atis_raw5000_full_indexers_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz "
+                    + "-outputFullPred "
+//                    + "-posAtSurfaceLevel "
+//                    + "-useStopNode "
+//                    + "-dmvModelParamsFile results/output/atis/dmv/train/"
+//                    + "atis_raw5000_full_indexers_uniformZ_initNoise_POS_100/stage1.dmv.params.obj.gz "
                     + "-forceOutputOrder";
 //                    + "atis_raw5000_full_indexers_prior_01_LEX_100/stage1.dmv.params.obj.gz";
         /*initialisation procedure from Generation class*/
@@ -93,12 +95,7 @@ public class GenerationAtisTest
     @Test
     public void testRun()
     {
-        System.out.println("run");
-        String targetOutput = "<doc docid=\"Example_1\" genre=\"nw\"><p>"
-                + "<seg id=\"1\" bleu=\"0.4673945708424301\" bleu_modified=\"0.4673945708424301\" "
-                + "meteor=\"0.6853734613927462\" ter=\"0.42857142857142855\">"
-                + "show me flights from dallas to baltimore</seg></p></doc>";
-        String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");
-        assertEquals(in, targetOutput);
+        System.out.println("run");        
+        String in = model.testGenerate(name, lopts).trim().replaceAll("\\n", "");        
     }
 }
