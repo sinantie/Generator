@@ -88,7 +88,7 @@ public class PosTagger
         this.tagDelimeter = opts.tagDelimiter;
         if(this.useUniversalTags)
         {
-            universalMaps = new HashMap<String, String>();
+            universalMaps = new HashMap<>();
             String[] lines = Utils.readLines("lib/universal_pos_tags/en-ptb.map");
             for(String line : lines)
             {
@@ -104,7 +104,7 @@ public class PosTagger
         }
         else
             loadPosTagger();
-        taggedVocabulary = new HashSet<String>();
+        taggedVocabulary = new HashSet<>();
         syncVocabulary = Collections.synchronizedSet(taggedVocabulary);        
     }
 
@@ -125,7 +125,7 @@ public class PosTagger
                 System.err.println("Invalid argument");
                 return;
             }
-            Collection<Worker> list = new ArrayList<Worker>(examples.size());
+            Collection<Worker> list = new ArrayList<>(examples.size());
             for(int i = 0; i < examples.size(); i++)
                 list.add(new Worker(i, examples.get(i)));
             Utils.parallelForeach(NUM_OF_THREADS, list);
@@ -159,7 +159,8 @@ public class PosTagger
     {
         try
         {
-            tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
+//            tagger = new MaxentTagger("lib/models/bidirectional-distsim-wsj-0-18.tagger");
+            tagger = new MaxentTagger();
         }
         catch(Exception ioe)
         {
@@ -175,7 +176,7 @@ public class PosTagger
      */
     private List<Example> readFromList() throws IOException
     {
-        List<Example> out = new ArrayList<Example>();
+        List<Example> out = new ArrayList<>();
         BufferedReader fin = new BufferedReader(new FileReader(path));
         String line = "";
         int counter = 0;
@@ -202,7 +203,7 @@ public class PosTagger
      */
     private List<Example> readExamplesFromSingleFile() throws IOException
     {
-        List<Example> out = new ArrayList<Example>();
+        List<Example> out = new ArrayList<>();
         int counter = 0;
         for(Event3Example ex : Utils.readEvent3Examples(path, true))
         {
@@ -309,7 +310,7 @@ public class PosTagger
 
     private Map<String, List<String>> readPosDictionary(String path)
     {
-        Map<String, List<String>> map = new HashMap<String, List<String>>();        
+        Map<String, List<String>> map = new HashMap<>();        
         for(String line : Utils.readLines(path))
         {
             int indexOfDelimeter = line.lastIndexOf(tagDelimeter);
@@ -317,7 +318,7 @@ public class PosTagger
             String tag = line.substring(indexOfDelimeter + 1);
             if(!map.containsKey(word))
             {
-                ArrayList tags = new ArrayList<String>(1);
+                ArrayList tags = new ArrayList<>(1);
                 tags.add(tag);
                 map.put(word, tags);
             }

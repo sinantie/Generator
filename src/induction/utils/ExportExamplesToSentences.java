@@ -1,5 +1,8 @@
 package induction.utils;
 
+import edu.stanford.nlp.ling.Word;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.process.TokenizerFactory;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import induction.Utils;
@@ -10,8 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
-import opennlp.tools.tokenize.SimpleTokenizer;
 
 /**
  * Parses an input list or path of text files and outputs each to a given output file,
@@ -25,7 +28,7 @@ public class ExportExamplesToSentences
     String target, source, HEADER = "", fileExtension;
     int ngramSize;
     BufferedOutputStream bos;
-    SimpleTokenizer tokenizer;
+    TokenizerFactory<Word> tokenizer;
     String tagDelimiter;
     final String SOS = "<START>", EOS = "</START>";
     
@@ -41,7 +44,7 @@ public class ExportExamplesToSentences
         this.target = targetFile;
         this.source = sourceDir;
         this.ngramSize = ngramSize;
-        this.tokenizer = new SimpleTokenizer();
+        this.tokenizer = PTBTokenizer.factory();
         this.type = type;
         this.fileExtension = fileExtension;
         this.replaceNumbers = replaceNumbers;
@@ -214,8 +217,10 @@ public class ExportExamplesToSentences
             while((line = br.readLine()) != null)
             {
                 out = "";
-                for(String s : tokenizer.tokenize(line.substring(HEADER.length(), line.length() - 5))) // ignore <s>'s and </s>
+//                for(String s : tokenizer.tokenize(line.substring(HEADER.length(), line.length() - 5))) // ignore <s>'s and </s>
+                for(Word w : tokenizer.getTokenizer(new StringReader(line.substring(HEADER.length(), line.length() - 5))).tokenize()) // ignore <s>'s and </s>
                 {
+                    String s = w.word();
                     // tokenisation might give numbers not found previously
                     out += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
                                  "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
@@ -250,7 +255,7 @@ public class ExportExamplesToSentences
 //        String source = "data/branavan/winHelpHLA/winHelpRL.sents.all";
 //        String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.sentences";        
         //AMR-LDC
-        String source = "../hackathon/data/ldc/split/training/training.event3";
+        String source = "../hackathon/data/ldc/split/training/training-thres-5.event3";
         String target = "../hackathon/data/ldc/split/training/training-3-gram.sentences";
         boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
         int ngramSize = 3;

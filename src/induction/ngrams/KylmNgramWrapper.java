@@ -8,7 +8,6 @@ import kylm.model.ngram.NgramLM;
 import kylm.model.ngram.NgramNode;
 import kylm.model.ngram.reader.ArpaNgramReader;
 import kylm.model.ngram.reader.NgramReader;
-import opennlp.tools.util.Cache;
 
 /**
  * Wrapper class for kylm ngram modeling toolkit
@@ -145,25 +144,6 @@ public class KylmNgramWrapper extends NgramModel
     }
     public static void main(String[] args)
     {
-//        String in = "with a low around 70 , snow between -0.1 and 0.4 inches, at 5pm and -5 degrees";
-//        String out = "";
-//
-//        for(String s : in.split(" "))
-//        {
-//            out += (s.matches("-\\p{Digit}+|" + // negative numbers
-//                         "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
-//                         (s.matches("\\p{Digit}+") && // numbers
-//                          !(s.contains("am") || s.contains("pm"))) // but not hours!
-//                   ) ?  "<num> " : s + " ";
-//        }
-        String[] t1 = {"with", "west", "wind"};
-        String[] t2 = {"with", "west", "wind"};
-        Cache c = new Cache(1);
-        c.put(Arrays.deepHashCode(t1), -2);
-        System.out.println(Arrays.deepHashCode(t1) + " " +
-                           Arrays.deepHashCode(t2) + " " +
-                           c.containsKey(Arrays.deepHashCode(t2)));
-        System.exit(0);
         KylmNgramWrapper model = new KylmNgramWrapper(args[0]);
         String[] input = Arrays.copyOfRange(args, 1, args.length);
         System.out.println("Input : " + Arrays.asList(input));

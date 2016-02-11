@@ -1,0 +1,14 @@
+0. Create LMs (only once)
+1. Export dataset in single file - sentences
+2. Export dataset in single file - documents
+3. Run alignment on sentences - initType random (15 iterations)
+4. Run alignment on docs - initType staged (2 iterations)
+5. Extract record statistics
+5b. Export dataset in single file - with treebankFile (optional)
+6a. Merge alignment parameters with external treebank
+OR
+6b. Run alignment PCFG
+7. Run generation experiment
+8. Run process grid (if running cross-fold validation experiment)
+9. Enjoy!
+

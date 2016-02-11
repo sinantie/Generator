@@ -1,0 +1,4 @@
+#!/bin/bash
+./atis_gen_grid.sh 40 0
+./atis_gen_grid.sh 40 0.1
+./atis_gen_grid.sh 40 0.2
