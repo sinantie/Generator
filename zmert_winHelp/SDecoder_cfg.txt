@@ -1,2 +1,0 @@
-kBest 15.0
-interpolationFactor 0.5

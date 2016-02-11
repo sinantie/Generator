@@ -1,3 +1,0 @@
-kBest		|||	15	Opt	5	250	5	250
-interpolationFactor	|||	0.5	Opt	0	1	0	1
-normalization = none
