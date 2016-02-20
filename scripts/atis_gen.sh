@@ -10,8 +10,8 @@ execDir=results/output/atis/generation/dependencies/noRecursiveWeight/model_3_${
 
 CUR_DIR=`pwd`
 cd ..
-java -Xmx10000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:dist/lib/srilmWrapper:\
-dist/stanford-postagger-2010-05-26.jar \
+java -Xmx10000m -cp dist/Generator.jar:lib/Helper.jar:lib/kylm.jar:lib/meteor.jar:lib/tercom.jar:lib/srilmWrapper:\
+stanford-postagger-2010-05-26.jar \
 -Djava.library.path=lib/wrappers induction.runtime.Generation \
 -numThreads $numThreads \
 -outputFullPred -create -overwriteExecDir \
@@ -29,16 +29,16 @@ dist/stanford-postagger-2010-05-26.jar \
 -testInputLists ${inputLists} \
 -execDir ${execDir} \
 -stagedParamsFile  ${stagedParamsFile} \
--dmvModelParamsFile ${dmvModelParamsFile} \
+#-dmvModelParamsFile ${dmvModelParamsFile} \
 -ngramModelFile atisLM/atis-all-train-3-gram.model.arpa \
--lengthPredictionModelFile ../datasets/atis/train/lengthPrediction.counts.linear-reg.model \
--lengthPredictionFeatureType counts \
--lengthPredictionStartIndex 2 \
+#-lengthPredictionModelFile ../datasets/atis/train/lengthPrediction.counts.linear-reg.model \
+#-lengthPredictionFeatureType counts \
+#-lengthPredictionStartIndex 2 \
 -lengthCompensation 0 \
--posAtSurfaceLevel \
+#-posAtSurfaceLevel \
 -useStopNode \
--interpolationFactor ${interpolationFactor} \
--useDependencies
+#-interpolationFactor ${interpolationFactor} \
+#-useDependencies
 #-oracleReranker
 #
 #-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa
