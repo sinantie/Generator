@@ -7,6 +7,7 @@ import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import induction.problem.event3.params.EventTypeParams;
+import java.io.PrintWriter;
 import java.util.Map;
 
 /**
@@ -20,8 +21,8 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
     public Vec fieldNgrams;
     public Vec numOfFields;
     public Vec emptyValue;
-    private DiscriminativeEvent3Model model;
-    private EventType eventType;
+    private final DiscriminativeEvent3Model model;
+    private final EventType eventType;
     
     public DiscriminativeEventTypeParams(Event3Model model, EventType eventType, 
                            VecFactory.Type vectorType, int maxNumOfWords)
@@ -67,11 +68,12 @@ public class DiscriminativeEventTypeParams extends EventTypeParams
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder(outputDiscriminativeOnly(paramsType));                
+//        StringBuilder out = new StringBuilder(outputDiscriminativeOnly(paramsType));                
+        out.append(outputDiscriminativeOnly(paramsType));
         out.append(super.output(paramsType));
-        return out.toString();
+//        return out.toString();
     }
     
     public String outputDiscriminativeOnly(ParamsType paramsType)

@@ -4,6 +4,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import java.io.PrintWriter;
 
 /**
  *
@@ -48,9 +49,10 @@ public class StrFieldParams extends FieldParams
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder(super.output(paramsType));
+//        StringBuilder out = new StringBuilder(super.output(paramsType));
+//        out.append(super.output(paramsType));
         String[][] labels = getLabels(LB, LB, "labelC " + prefix + " ",        
                           GenerativeEvent3Model.labelsToStringArray(),
                           GenerativeEvent3Model.labelsToStringArray());
@@ -62,7 +64,7 @@ public class StrFieldParams extends FieldParams
             else
                 out.append(forEachCountNonZero(v, labels[i++]));
         }
-        return out.toString();
+//        return out.toString();
     }
 
 }

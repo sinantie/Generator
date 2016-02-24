@@ -4,10 +4,7 @@ import induction.problem.AParams;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
-import induction.problem.event3.CFGRule;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.io.PrintWriter;
 
 /**
  *
@@ -93,11 +90,11 @@ public class TrackParams extends AParams
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
         Event3Model event3Model = (Event3Model)this.model;
         String[] words = event3Model.wordsToStringArray();
-        StringBuilder out = new StringBuilder();
+//        StringBuilder out = new StringBuilder();
         
         out.append(outputEventTypeChoicesNonZero(paramsType));
         
@@ -115,7 +112,7 @@ public class TrackParams extends AParams
 //        {
 //            out += forEachProb(v, labelsNone[i++]);
 //        }
-        return out.toString();
+//        return out.toString();
     }
     
     public String outputEventTypeChoicesNonZero(ParamsType paramsType)

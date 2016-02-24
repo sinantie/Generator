@@ -6,6 +6,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
 import induction.problem.event3.params.Params;
+import java.io.PrintWriter;
 
 /**
  * The weights of the perceptron model
@@ -70,11 +71,12 @@ public class DiscriminativeParams extends Params
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder(outputDiscriminativeOnly(paramsType));
-        out.append(super.outputNonZero(paramsType));
-        return out.toString();
+//        StringBuilder out = new StringBuilder(outputDiscriminativeOnly(paramsType));
+        out.append(outputDiscriminativeOnly(paramsType));
+        super.outputNonZero(paramsType, out);
+//        return out.toString();
     }
     
     public String outputDiscriminativeOnly(ParamsType paramsType)

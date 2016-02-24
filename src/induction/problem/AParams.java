@@ -1,8 +1,11 @@
 package induction.problem;
 
+import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import induction.Utils;
 import induction.problem.event3.Constants.TypeAdd;
+import java.io.File;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +24,7 @@ public abstract class AParams implements Serializable
     static final long serialVersionUID = -8920104157808512229L;
     protected Map<String, Vec> vecsMap;
     protected AModel model;
+    protected final int MAX_OUTPUT_PARAMS=20;
     
     public AParams(AModel model)
     {
@@ -158,7 +162,7 @@ public abstract class AParams implements Serializable
     }
     
     public abstract String output(ParamsType paramsType);
-    public abstract String outputNonZero(ParamsType paramsType);
+    public abstract void outputNonZero(ParamsType paramsType, PrintWriter pw);
 
     public void output(String path, ParamsType paramsType)
     {
@@ -170,7 +174,10 @@ public abstract class AParams implements Serializable
     public void outputNonZero(String path, ParamsType paramsType)
     {
         Utils.begin_track("AParams.outputNonZero(%s)", path);
-        Utils.write(path, outputNonZero(paramsType));
+        PrintWriter pw = IOUtils.openOutEasy(path);
+        outputNonZero(paramsType, pw);
+        pw.close();
+//        Utils.write(path, outputNonZero(paramsType));
         LogInfo.end_track();
     }
 
@@ -244,13 +251,24 @@ public abstract class AParams implements Serializable
 
     public String forEachProb(Vec v, String[] labels)
     {
+        return forEachProb(v, labels, MAX_OUTPUT_PARAMS);
+    }
+    
+    public String forEachProb(Vec v, String[] labels, int limit)
+    {
         StringBuilder out = new StringBuilder();
+        int count = 0;
         for(Pair<Integer> p : v.getProbsSorted())
         {
-            out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
+            if(p.value != 0 && count <= limit)
+            {
+                out.append(labels[p.label]).append("\t").append(Utils.fmt(p.value)).append("\n");
+                count++;
+            }
         }
         return out.toString();
     }
+    
     
     public String forEachCount(Vec v, String[] labels)
     {
@@ -264,7 +282,7 @@ public abstract class AParams implements Serializable
     
     public String forEachProbNonZero(Vec v, String[] labels)
     {
-        return forEachProbNonZero(v, labels, Integer.MAX_VALUE);
+        return forEachProbNonZero(v, labels, MAX_OUTPUT_PARAMS);
     }
     
     public String forEachProbNonZero(Vec v, String[] labels, int limit)

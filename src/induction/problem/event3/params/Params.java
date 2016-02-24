@@ -7,6 +7,7 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
 import induction.problem.event3.discriminative.params.DiscriminativeEventTypeParams;
+import java.io.PrintWriter;
 
 /**
  *
@@ -212,10 +213,10 @@ public class Params extends AParams
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
         String[] words = ((Event3Model)model).wordsToStringArray();
-        StringBuilder out = new StringBuilder();
+//        StringBuilder out = new StringBuilder();
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(trackChoices,
                     getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
@@ -223,10 +224,17 @@ public class Params extends AParams
             out.append(forEachCountNonZero(trackChoices,
                     getLabels(((Event3Model)model).getPC(), "trackC ", ((Event3Model)model).pcstrArray())));
         for(AParams params : trackParams)
-            out.append(params.outputNonZero(paramsType)).append("\n");
+        {
+//            out.append(params.outputNonZero(paramsType)).append("\n");
+            params.outputNonZero(paramsType, out);
+            out.append("\n");            
+        }
         // treebank rules
         if(cfgParams != null)
-            out.append(cfgParams.outputNonZero(paramsType)).append("\n");
+        {
+            cfgParams.outputNonZero(paramsType, out);
+            out.append("\n");
+        }
         if(paramsType == ParamsType.PROBS)
             out.append(outputGenericEmissions(paramsType, words)).
                     append(forEachProbNonZero(genericLabelChoices, getLabels(Event3Model.LB(), 
@@ -251,9 +259,11 @@ public class Params extends AParams
         out.append("\n");
         for(AParams params : eventTypeParams)
         {
-            out.append(params.outputNonZero(paramsType)).append("\n");
+//            out.append(params.outputNonZero(paramsType)).append("\n");
+            params.outputNonZero(paramsType, out);
+            out.append("\n");
         }
-        return out.toString();
+//        return out.toString();
     }
     
     public String outputGenericEmissions(ParamsType paramsType, String[] words)

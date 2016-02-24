@@ -6,6 +6,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.dmv.Constants;
 import induction.problem.dmv.generative.GenerativeDMVModel;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -17,10 +18,10 @@ public class DMVParams extends AParams
     public int W;
     public Vec starts;
     public Vec[][] continues, deps;
-    private GenerativeDMVModel model;
-    private Options opts;
-    private int[] wordIndexerLengths;
-    private String vocabulary[];
+    private final GenerativeDMVModel model;
+    private final Options opts;
+    private final int[] wordIndexerLengths;
+    private final String vocabulary[];
     
     public DMVParams(GenerativeDMVModel model, Options opts, VecFactory.Type vectorType)
     {
@@ -81,9 +82,9 @@ public class DMVParams extends AParams
     }
 
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder();
+//        StringBuilder out = new StringBuilder();
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(starts, getLabels(W, "S ", vocabulary)));
         else
@@ -116,7 +117,7 @@ public class DMVParams extends AParams
                     out.append(forEachCountNonZero(v, labelsList[i][j].toArray(new String[0])));
             }
         }
-        return out.toString();
+//        return out.toString();
     }
     
 }

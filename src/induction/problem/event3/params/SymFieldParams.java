@@ -5,6 +5,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.generative.GenerativeEvent3Model;
+import java.io.PrintWriter;
 
 /**
  *
@@ -14,9 +15,9 @@ public class SymFieldParams extends AParams
 {
     static final long serialVersionUID = 2095423547961557491L;
 
-    private int LB;
+    private final int LB;
     public Vec labelChoices;
-    private String prefix;
+    private final String prefix;
 
     public SymFieldParams(Event3Model model, VecFactory.Type vectorType, int LB, String prefix)
     {
@@ -43,16 +44,16 @@ public class SymFieldParams extends AParams
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
         if(paramsType == ParamsType.PROBS)
-            return forEachProbNonZero(labelChoices,
+            out.append(forEachProbNonZero(labelChoices,
                     getLabels(LB, "labelC " + prefix + " " ,
-                              GenerativeEvent3Model.labelsToStringArray()));
+                              GenerativeEvent3Model.labelsToStringArray())));
         else
-            return forEachCountNonZero(labelChoices,
+            out.append(forEachCountNonZero(labelChoices,
                     getLabels(LB, "labelC " + prefix + " " ,
-                              GenerativeEvent3Model.labelsToStringArray()));
+                              GenerativeEvent3Model.labelsToStringArray())));
     }
 
 }

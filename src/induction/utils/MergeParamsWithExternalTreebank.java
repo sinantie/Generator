@@ -15,6 +15,7 @@ import induction.problem.event3.generative.GenerativeEvent3Model;
 import induction.problem.event3.params.CFGParams;
 import induction.problem.event3.params.Params;
 import induction.problem.event3.params.TrackParams;
+import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,7 +34,7 @@ public class MergeParamsWithExternalTreebank
     public MergeParamsWithExternalTreebank(MergeParamsWithExternalTreebankOptions opts)
     {
         this.opts = opts;
-        this.treebankMap = new HashMap<String, String>();
+        this.treebankMap = new HashMap<>();
     }
     
     public void execute()
@@ -122,11 +123,12 @@ public class MergeParamsWithExternalTreebank
         model.readExamples();
         // read examples and put them in a map. The treebank file might have less
         // examples, so we need to crossref.
-        examplesMap = new HashMap<String, Example>();
+        examplesMap = new HashMap<>();
         for(AExample ex : model.getExamples())
             examplesMap.put(ex.getName(), (Example)ex);
         ExportExamplesToSingleFile.readTreebankFile(opts.externalTreebankFile, treebankMap);
         updateParams();
-        System.out.println(((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+//        System.out.println(((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS));
+        ((Params)model.getParams()).cfgParams.outputNonZero(ParamsType.PROBS, new PrintWriter(System.out));
     }
 }
