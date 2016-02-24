@@ -5,6 +5,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.CFGRule;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +18,7 @@ public class CFGParams extends AParams
 {
     Map<Integer, Vec> cfgRulesChoices; // map of rules indexed on the lhs nonterminal symbol
     // map of rules indexed on their name; used for excluding from optimization (fixRecordSelection)
-    Map<String, Vec> cfgRulesChoicesMap = new HashMap<String, Vec>(); 
+    Map<String, Vec> cfgRulesChoicesMap = new HashMap<>(); 
     Vec[] wordsPerRootRule;
     public int none_t;
     int binSize, maxDocLength, numOfBins;
@@ -97,10 +98,10 @@ public class CFGParams extends AParams
     }
 
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
         Event3Model event3Model = (Event3Model) this.model;
-        StringBuilder out = new StringBuilder();
+//        StringBuilder out = new StringBuilder();
         // treebank rules
         for (Entry<Integer, Vec> rule : cfgRulesChoices.entrySet())
         {
@@ -127,6 +128,6 @@ public class CFGParams extends AParams
             else
                 out.append(forEachCountNonZero(v, labels[i++]));
         }
-        return out.toString();
+//        return out.toString();
     }
 }

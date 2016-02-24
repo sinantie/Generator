@@ -4,6 +4,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.CatField;
 import induction.problem.event3.Event3Model;
+import java.io.PrintWriter;
 
 /**
  *
@@ -14,8 +15,8 @@ public class CatFieldParams extends FieldParams
     static final long serialVersionUID = 5817675789060800073L;
     public Vec[] emissions, filters, valueEmissions;
 //    private String prefix;
-    private CatField field;
-    private int W;
+    private final CatField field;
+    private final int W;
     public CatFieldParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix, CatField field)
     {
         super(model, numOfWords, vectorType, prefix);
@@ -40,7 +41,8 @@ public class CatFieldParams extends FieldParams
     @Override
     public String output(ParamsType paramsType)
     {
-        StringBuilder out = new StringBuilder(super.output(paramsType));
+//        StringBuilder out = new StringBuilder(super.output(paramsType));
+        StringBuilder out = new StringBuilder();
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), ((Event3Model)model).wordsToStringArray());
         int i = 0;
@@ -75,9 +77,10 @@ public class CatFieldParams extends FieldParams
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));
+//        super.outputNonZero(paramsType, out);
+//        StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));
         String[][] labels = getLabels(field.getV(), W, "catE " + prefix + " ",
                     field.valuesToStringArray(), ((Event3Model)model).wordsToStringArray());
         int i = 0;
@@ -108,7 +111,7 @@ public class CatFieldParams extends FieldParams
                 out.append(forEachCountNonZero(v, labels[i++]));
                 
         }
-        return out.toString();
+//        return out.toString();
     }
 
     public boolean isEmptyValue(int value)

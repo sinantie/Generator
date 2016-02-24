@@ -5,6 +5,7 @@ import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Example;
+import java.io.PrintWriter;
 import java.io.Serializable;
 
 /**
@@ -55,25 +56,25 @@ public abstract class FieldParams extends AParams implements Serializable
         String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ", words, words);
         int i = 0;
         // if too huge parameter set, comment
-        for(Vec v: wordBigramChoices)
-        {
-            out.append(forEachProb(v, labels[i++]));
-        }
+//        for(Vec v: wordBigramChoices)
+//        {
+//            out.append(forEachProb(v, labels[i++]));
+//        }
         return out.toString();
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
         String[] words = ((Event3Model)model).wordsToStringArray();
-        StringBuilder out = new StringBuilder();
+//        StringBuilder out = new StringBuilder();
         String[][] labels = getLabels(W, W, "wordBiC " + prefix + " ", words, words);
         int i = 0;
         // if too huge parameter set, comment
-        for(Vec v: wordBigramChoices)
-        {
-            out.append(forEachProbNonZero(v, labels[i++]));
-        }
-        return out.toString();
+//        for(Vec v: wordBigramChoices)
+//        {
+//            out.append(forEachProbNonZero(v, labels[i++]));
+//        }
+//        return out.toString();
     }
 }

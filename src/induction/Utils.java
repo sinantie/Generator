@@ -111,7 +111,7 @@ public class Utils
 
     public static String fmt(int x)
     {
-        return x + "";
+        return String.valueOf(x);
     }
 
     public static String fmt(double x)

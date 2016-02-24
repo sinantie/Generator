@@ -6,6 +6,7 @@ import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.Constants;
 import induction.problem.event3.EventType;
+import java.io.PrintWriter;
 
 /**
  *
@@ -219,13 +220,13 @@ public class EventTypeParams extends AParams
     }
 
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder();
+//        StringBuilder out = new StringBuilder();
         out.append(outputFieldChoices(paramsType));
         
         if(paramsType == ParamsType.PROBS)
-            out.append(forEachProbNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
+            out.append(forEachProbNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString), MAX_OUTPUT_PARAMS)).
                     append(outputNoneFieldEmissions(paramsType));
         else
             out.append(forEachCountNonZero(fieldSetChoices, getLabels(FS, "fieldSetC " + typeToString + " ", fieldSetToString))).
@@ -255,7 +256,7 @@ public class EventTypeParams extends AParams
             out.append(forEachCountNonZero(filters,
                    getLabels(Parameters.B, "filter " + typeToString + " ",
                               Parameters.booleanToString)));
-        return out.toString();
+//        return out.toString();
     }
     
     public String outputFieldChoices(ParamsType paramsType)
@@ -276,7 +277,7 @@ public class EventTypeParams extends AParams
     
     public String outputNoneFieldEmissions(ParamsType paramsType)
     {
-        return outputNoneFieldEmissions(paramsType, Integer.MAX_VALUE);
+        return outputNoneFieldEmissions(paramsType, MAX_OUTPUT_PARAMS);
     }
     
     public String outputNoneFieldEmissions(ParamsType paramsType, int limit)

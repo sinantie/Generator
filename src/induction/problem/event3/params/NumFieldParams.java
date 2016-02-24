@@ -3,6 +3,7 @@ package induction.problem.event3.params;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
 import induction.problem.event3.Event3Model;
+import java.io.PrintWriter;
 import java.io.Serializable;
 
 /**
@@ -13,7 +14,7 @@ public class NumFieldParams extends FieldParams implements Serializable
 {
     static final long serialVersionUID = 7731373078762243950L;    
     public  Vec methodChoices, leftNoiseChoices, rightNoiseChoices;
-    private Vec[] filters;
+    private final Vec[] filters;
 
     public NumFieldParams(Event3Model model, VecFactory.Type vectorType, String prefix)
     {
@@ -35,7 +36,8 @@ public class NumFieldParams extends FieldParams implements Serializable
     @Override
     public String output(ParamsType paramsType)
     {
-        StringBuilder out = new StringBuilder(super.output(paramsType));
+//        StringBuilder out = new StringBuilder(super.output(paramsType));
+        StringBuilder out = new StringBuilder();
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProb(methodChoices, getLabels(Parameters.M, "numMethodC " + prefix + " ", 
                     Parameters.numMethodsToString))).append(
@@ -64,9 +66,9 @@ public class NumFieldParams extends FieldParams implements Serializable
     }
     
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
-        StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));
+//        StringBuilder out = new StringBuilder(super.outputNonZero(paramsType));        
         if(paramsType == ParamsType.PROBS)
             out.append(forEachProbNonZero(methodChoices, getLabels(Parameters.M, "numMethodC " + prefix + " ", 
                     Parameters.numMethodsToString))).append(
@@ -91,7 +93,7 @@ public class NumFieldParams extends FieldParams implements Serializable
             else
                 out.append(forEachProbNonZero(v, labels[i++]));
         }
-        return out.toString();
+//        return out.toString();
     }    
 
 }

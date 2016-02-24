@@ -3,6 +3,7 @@ package induction.problem.event3.params;
 import induction.problem.AParams;
 import induction.problem.Vec;
 import induction.problem.event3.discriminative.DiscriminativeEvent3Model;
+import java.io.PrintWriter;
 import java.util.Map;
 
 /**
@@ -57,7 +58,7 @@ public class EmissionParams extends AParams
     }
 
     @Override
-    public String outputNonZero(ParamsType paramsType)
+    public void outputNonZero(ParamsType paramsType, PrintWriter out)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
