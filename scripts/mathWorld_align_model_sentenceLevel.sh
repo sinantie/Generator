@@ -5,12 +5,13 @@ input=../datasets/mathWorld/revisedFullRecords.event3
 output=results/output/mathWorld/alignments/model_3
 smooth=0.01
 
-mkdir -p ${output}
 
 CUR_DIR=`pwd`
 cd ..
-java -Xmx16000m -cp dist/Generator.jar:dist/lib/Helper.jar:dist/lib/kylm.jar:dist/lib/meteor.jar:dist/lib/tercom.jar:\dist/lib/srilmWrapper:\
-dist/lib/stanford-corenlp-3.5.1.jar:dist/lib/stanford-corenlp-3.5.1-models.jar: induction.runtime.Induction \
+
+mkdir -p ${output}
+java -Xmx16000m -cp dist/Generator.jar:lib/Helper.jar:lib/kylm.jar:lib/meteor.jar:lib/tercom.jar:lib/srilmWrapper:\
+lib/stanford-corenlp-3.5.1.jar:lib/stanford-corenlp-3.5.1-models.jar: induction.runtime.Induction \
 -create \
 -modeltype event3 \
 -examplesInSingleFile \
