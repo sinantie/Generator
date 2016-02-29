@@ -28,7 +28,8 @@ java -Xmx16000m -cp lib/jung/collections-generic-4.01.jar:lib/commons-math-2.2.j
 -dontCrossPunctuation \
 -Options.stage1.smoothing $smooth \
 -noneFieldSmoothing 0 \
--useStopNode 
+-useStopNode  \
+-allowNoneEvent
 
 #-outputFullPred \
 #-Options.stage1.useVarUpdates \

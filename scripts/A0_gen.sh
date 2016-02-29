@@ -2,10 +2,10 @@
 
 inputLists=A0/Dev.data
 numThreads=12
-stagedParamsFile=results/A0/alignments/model_3/0.exec/stage1.params.obj.gz
-kBest=120
+stagedParamsFile=results/A0/alignments/model_3/3.exec/stage1.params.obj.gz
+kBest=50
 interpolationFactor=0.3
-execDir=results/A0/generation/
+execDir=results/A0/generationNone_new/
 
 CUR_DIR=`pwd`
 cd ..
@@ -20,7 +20,6 @@ induction.runtime.Generation \
 -disallowConsecutiveRepeatFields \
 -ngramWrapper kylm \
 -outputExampleFreq 100 \
--allowConsecutiveEvents \
 -reorderType eventType \
 -maxPhraseLength 5 \
 -binariseAtWordLevel \
@@ -30,6 +29,12 @@ induction.runtime.Generation \
 -stagedParamsFile  ${stagedParamsFile} \
 -ngramModelFile results/A0/lang_file.arpa \
 -lengthCompensation 0 \
--useStopNode 
+-useStopNode \
+-lengthPredictionMode file \
+-lengthPredictionModelFile A0/Dev.lengths \
+-allowNoneEvent
+
+#-averageTextLength 12 \
+#-allowConsecutiveEvents \
 
 cd ${CUR_DIR}
