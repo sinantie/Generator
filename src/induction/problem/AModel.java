@@ -647,7 +647,7 @@ public abstract class AModel
             record(String.valueOf(iter), name, complexity, true);
             System.out.println("accuracy=" + Fmt.D(trainPerformance.getAccuracy()));
         }
-//        System.out.println(params.outputNonZero(ParamsType.PROBS));
+        params.outputNonZero(ParamsType.PROBS, new PrintWriter(System.out));
 //        return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
 //        System.out.println(widgetToFullString(examples.get(examples.size()-1), inferState.bestWidget));
         System.out.println(trainPerformance.summary());

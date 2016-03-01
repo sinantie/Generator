@@ -939,7 +939,7 @@ public abstract class Event3Model extends WordModel
                     textInput.split("\n") : Utils.readLines(textInput))
                 {
                     lineToStartText.add(textIndex);
-                    for(String s : (opts.inputPosTagged ? line : line.toLowerCase()).split(" "))
+                    for(String s : (opts.inputPosTagged ? line : line.toLowerCase()).split("\\s+"))
                     {
                         textStr.add(s);
                         textIndex++;
