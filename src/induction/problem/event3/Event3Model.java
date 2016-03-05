@@ -923,7 +923,7 @@ public abstract class Event3Model extends WordModel
             }
             else
             {
-                textLength = opts.averageTextLength;
+                textLength = opts.fixedTextLength;
             }
             // apply max document length capping
             if(textLength > opts.maxDocLength)
@@ -1032,7 +1032,7 @@ public abstract class Event3Model extends WordModel
                         examples.add(new Example(this, name, events,
                             null, null, null, textLength,
 //                            null, null, null, text.length,
-//                            null, null, null, opts.averageTextLength,
+//                            null, null, null, opts.fixedTextLength,
 //                            null, null, null, events.size()*opts.maxPhraseLength,
                             new GenWidget(trueEvents, text, lineStartIndices)));
                     } // if (generation WITH gold-standard)
@@ -1314,7 +1314,7 @@ public abstract class Event3Model extends WordModel
     
     protected int predictLength(String eventInput, String name)
     {
-        int textLength = opts.averageTextLength;
+        int textLength = opts.fixedTextLength;
         try
         {
             textLength = Integer.valueOf(opts.lengthCompensation.replaceAll("_", "-")) +
@@ -1465,7 +1465,7 @@ public abstract class Event3Model extends WordModel
                 return encodeToJson(new JsonResult[] {JsonWrapper.ERROR_EVENTS});
             }
             // set text length
-            int textLength = opts.averageTextLength;
+            int textLength = opts.fixedTextLength;
             if(lengthPredictor != null)
             {
                 try

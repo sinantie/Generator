@@ -41,6 +41,42 @@ public class LinearRegressionExecutorTest
     }
 
     @Test
+    public void testTrainA0()
+    {
+        int fold = 2;
+        String type = "values";
+        String args = "-mode train "
+//                    + "-inputFeaturesFile datasets/A0/Dev.data "
+//                    + "-outputFeaturesFile datasets/A0/Dev.data."+type+".features.csv "
+                    + "-inputFeaturesFile datasets/A0/Train.data "
+                    + "-outputFeaturesFile datasets/A0/Train.data."+type+".features.csv "
+                    + "-examplesInSingleFile "
+                    + "-paramsFile results/A0/alignments/model_3/1.exec/stage1.params.obj.gz "
+                    + "-modelFile results/A0/lengthPrediction."+type+".linear-reg.model "
+                    + "-type "+type+ " "
+                    + "-startIndex 2 "
+                    + "-extractFeatures ";
+//                    + "-saveModel";
+        LinearRegressionOptions opts = new LinearRegressionOptions();
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+        lrw = new LinearRegressionWekaWrapper(opts);
+        lrw.train(opts.outputFeaturesFile, opts.saveModel);
+        /* original text: 
+         * move the adidas block directly diagonally left and below the heineken block .*/
+        String events = ".id:0	.type:move	@source:1	@target:6	@RP:5\n";
+        try
+        {
+            int pred = (int)lrw.predict(events);
+            System.out.println(pred);
+            assertEquals(pred, 21);
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+//    @Test
     public void testTrainWinHelp()
     {
         int fold = 2;

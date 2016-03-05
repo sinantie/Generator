@@ -15,7 +15,7 @@ public class Options {
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
   public enum JsonFormat {wunderground,lowjet};
-  public enum LengthPrediction {gold, average, linearRegression, file};
+  public enum LengthPrediction {gold, fixed, linearRegression, file};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();
@@ -176,7 +176,7 @@ public class Options {
   // length prediction
   @Option(gloss="length prediction mode") public LengthPrediction lengthPredictionMode = LengthPrediction.gold;
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
-  @Option(gloss="Average text length (default=29 for weather-data)") public int averageTextLength = 29;
+  @Option(gloss="Fixed text length (default=29 for weather-data)") public int fixedTextLength = 12;
   @Option(gloss="Feature type for length prediction vector (default=value)") public LinearRegressionOptions.FeatureType
     lengthPredictionFeatureType = LinearRegressionOptions.FeatureType.values;
   @Option(gloss="Position of eventType in events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;

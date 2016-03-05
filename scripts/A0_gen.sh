@@ -5,7 +5,7 @@ numThreads=6
 stagedParamsFile=results/A0/alignments/model_3/1.exec/stage1.params.obj.gz
 kBest=120
 interpolationFactor=0.3
-execDir=results/A0/generationNone_new/
+execDir=results/A0/generationNone_fixedLength/
 
 CUR_DIR=`pwd`
 cd ..
@@ -31,7 +31,8 @@ induction.runtime.Generation \
 -ngramModelFile results/A0/lang_file.arpa \
 -lengthCompensation 0 \
 -useStopNode \
--lengthPredictionMode gold \
+-lengthPredictionMode fixed \
+-fixedTextLength 12 \
 -allowNoneEvent \
 -allowConsecutiveEvents
 
