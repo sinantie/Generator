@@ -17,9 +17,11 @@ import induction.problem.event3.TERMetric;
 import induction.problem.event3.Widget;
 import induction.problem.wordproblem.WordModel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import tercom.TERalignment;
 import tercom.TERcalc;
 
@@ -54,9 +56,18 @@ public class GenerationPerformance extends AlignmentPerformance
         {
             String predStr = widgetToString(model.getWordIndexer(), (GenWidget)predWidget, model.getOpts().posAtSurfaceLevel, 
                     model.getOpts().tagDelimiter).toLowerCase();
-//            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), (GenWidget)trueWidget, model.getOpts().tagDelimiter).toLowerCase();
-            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), 
-                    (GenWidget)trueWidget, model.getOpts().posAtSurfaceLevel, model.getOpts().tagDelimiter).toLowerCase();
+//            String trueStr = widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), 
+//                    (GenWidget)trueWidget, model.getOpts().posAtSurfaceLevel, model.getOpts().tagDelimiter).toLowerCase();
+            List<String> trueStr = new ArrayList<>();                    
+            if(model.getOpts().useMultipleReferences)
+            {
+                trueStr.addAll(Arrays.asList(((GenWidget)trueWidget).multipleReferences));
+            }
+            else
+            {
+                trueStr.add(widgetToString(model.getTestSetWordIndexer().isEmpty() ? model.getWordIndexer() : model.getTestSetWordIndexer(), 
+                    (GenWidget)trueWidget, model.getOpts().posAtSurfaceLevel, model.getOpts().tagDelimiter).toLowerCase());
+            }
 
 //            String predModifiedStr = modifyPredStr(predStr, trueStr, (GenWidget) predWidget, (GenWidget) trueWidget);
             // Compute BLEU
@@ -64,12 +75,10 @@ public class GenerationPerformance extends AlignmentPerformance
             // Compute modified BLEU (Don't penalise number deviations of 5 scalars)
             double bleuModifiedScore = bleuModifiedScorer.evaluateBleu(predStr, trueStr);
             // Compute METEOR
-            MeteorStats meteorWidgetStats = meteorScorer.getMeteorStats(
-                                      predStr,
-                                      trueStr);
+            MeteorStats meteorWidgetStats = meteorScorer.getMeteorStats(predStr, (ArrayList)trueStr);
             meteorAggStats.addStats(meteorWidgetStats);
             // Compute TER
-            TERalignment terWidgetStats = terScorer.getScore(predStr, trueStr);
+            TERalignment terWidgetStats = terScorer.getScore(predStr, trueStr.get(0));
             TERTotalEdits += terWidgetStats.numEdits;
             TERTotalWords += terWidgetStats.numWords;
             double terScore = terWidgetStats.score();
@@ -102,11 +111,11 @@ public class GenerationPerformance extends AlignmentPerformance
     private EvalResult computeFmeasure(GenWidget trueWidget, GenWidget predWidget)
     {
         EvalResult subResult = new EvalResult();
-        Collection<Integer> predHit = new ArrayList<Integer>();
+        Collection<Integer> predHit = new ArrayList<>();
         int prev = -5, cur;
         for(int i = 0; i < predWidget.getEvents()[0].length; i++)
         {
-            cur = new Integer(predWidget.getEvents()[0][i]);
+            cur = predWidget.getEvents()[0][i];
             if(Parameters.isRealEvent(cur))
             {                
                 if(prev != cur)
@@ -115,7 +124,7 @@ public class GenerationPerformance extends AlignmentPerformance
             }
         }
         // Get the things in common
-        HashSet<Integer> set = new HashSet<Integer>(trueWidget.trueEvents.size());
+        HashSet<Integer> set = new HashSet<>(trueWidget.trueEvents.size());
         set.addAll(trueWidget.trueEvents);
 //        Iterator<Integer> it = trueWidget.trueEvents.iterator();
         Iterator<Integer> it = set.iterator();
@@ -131,14 +140,8 @@ public class GenerationPerformance extends AlignmentPerformance
         } // for
         // Record differences between two sets
 //        for(Integer e : trueWidget.trueEvents)
-        for(Integer e : set)
-        {
-            addResult(subResult, true, false);
-        }
-        for(Integer e : predHit)
-        {
-            addResult(subResult, false, true);
-        }
+        set.stream().forEach(e -> addResult(subResult, true, false));
+        predHit.stream().forEach(e -> addResult(subResult, false, true));        
         return subResult;
     }
     
@@ -160,6 +163,7 @@ public class GenerationPerformance extends AlignmentPerformance
     
     /**
      * Print metrics
+     * @return 
      */
     @Override
     public String output()

@@ -325,7 +325,7 @@ public abstract class AModel
                 {                    
                     if(line.startsWith("Example_") || line.equals("$NAME"))
                     {
-                        if(key != null) // only for the first example
+                        if(key != null && !key.equals("$NAME")) // only for the first example
                         {
                             ++numExamples;
                             readExamples(str.toString(), maxExamples - numExamples);

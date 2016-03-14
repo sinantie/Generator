@@ -155,6 +155,7 @@ public class Options {
   @Option(gloss="Use words per root rule node parameter") public boolean wordsPerRootRule = false;
   @Option(gloss="Use non-recursive heuristics to avoid empty edges on the hypergraph") public boolean nonRecursiveGrammar = true;
   @Option(gloss="Maximum number of fields per event") public int maxNumOfFields = Integer.MAX_VALUE;
+  @Option(gloss="Evaluate against multiple references. Each reference should be in a separate sentence.") public boolean useMultipleReferences = false;
   
   //Dependencies
   @Option(gloss="Position of column of the word in the CONLL files (default=1)") public int connlWordPos = 1;

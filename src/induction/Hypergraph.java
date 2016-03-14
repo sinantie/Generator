@@ -1077,7 +1077,7 @@ public class Hypergraph<Widget> {
             chooser.widget = (Widget)new GenWidget(newMatrix(1, N), newMatrix(1, N),
                                            newMatrix(1, N), newMatrix(1, N),
                                            newMatrixOne(N), newMatrixOne(N), ((GenWidget)widget).getEventTypeAllowedOnTrack(),
-                                           ((GenWidget)widget).getEventTypeIndices());
+                                           ((GenWidget)widget).getEventTypeIndices(), new String[0]);
             chooser.choose = true;
             this.k = k;
             // get the k-best derivation

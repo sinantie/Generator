@@ -84,7 +84,7 @@ public class GenInferStatePCFG extends GenInferState
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                              newMatrixOne(), newMatrixOne(),
                              ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices, 
-                                opts.outputPcfgTrees ? "S" : null);
+                                opts.outputPcfgTrees ? "S" : null, new String[0]);
     }
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)

@@ -272,6 +272,8 @@ public class Event3Example
                 sentence = new StringBuilder();
             }
         }
+        if(out.length() == 0) // single line that does not end in '.'
+            return getTextArray();
         return out.deleteCharAt(out.length()-1).toString().split("\n");
     }
     

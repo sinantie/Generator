@@ -1113,12 +1113,17 @@ public class Utils
             }
         }
         else // event3 v.1 format
-        {
+        {            
             res[0] = ar[0]; // name
-            if(!ar[1].startsWith(".id")) // text was found
-                res[1] = ar[1];
-            int i;            
-            for(i = res[1] == null ? 1 : 2; i < ar.length; i++)
+            int counter = 1;
+//            if(!ar[1].startsWith(".id")) // text was found
+            str = new StringBuilder();
+            while(!ar[counter].startsWith(".id")) // text was found
+                str.append(ar[counter++]).append("\n");
+            res[1] = str.deleteCharAt(str.length()-1).toString(); // delete last \n
+            str = new StringBuilder();
+            int i;
+            for(i = res[1] == null ? 1 : counter; i < ar.length; i++)
             {
                 if(ar[i].startsWith(".id")) // event line
                     str.append(ar[i]).append("\n");

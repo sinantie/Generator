@@ -1,7 +1,6 @@
 package induction.problem.event3.generative.generation;
 
 import induction.problem.event3.MRToken;
-import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.params.Parameters;
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,14 +24,13 @@ public class SemParseWidget extends GenWidget
                      Map<Integer, Integer> eventTypeIndices)
     {
         super(events, fields, gens, numMethods, values, null, 
-              eventTypeAllowedOnTrack, eventTypeIndices);
+              eventTypeAllowedOnTrack, eventTypeIndices, new String[0]);
         scores = new double[Parameters.NUMBER_OF_METRICS_SEM_PAR];
     }
 
     /**
      * Constructor for gold-standard widget.
      * @param trueMrTokens the true events, for calculating Precision, Recall and F-1
-     * @param values the gold-standard values, for calculating generation-oriented metrics
      */
     public SemParseWidget(Collection<MRToken> trueMrTokens)
     {

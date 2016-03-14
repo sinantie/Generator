@@ -1,8 +1,10 @@
 #!/bin/bash
-
+# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo
+DATASET=GoldLogo
 threads=6
-input=datasets/A0/Train.data
-output=results/A0/alignments/model_3
+input=datasets/${DATASET}/Records.train.10
+output=results/${DATASET}/alignments/
+
 smooth=0.01
 
 CUR_DIR=`pwd`
@@ -18,7 +20,7 @@ java -Xmx16000m -cp lib/jung/collections-generic-4.01.jar:lib/commons-math-2.2.j
 -Options.stage1.numIters 15 \
 -numThreads $threads \
 -initType random \
--initNoise 0 \
+-initNoise 0.0001 \
 -indepEventTypes 0,10 \
 -indepFields 0,5 \
 -indepWords 0,5 \
@@ -27,11 +29,11 @@ java -Xmx16000m -cp lib/jung/collections-generic-4.01.jar:lib/commons-math-2.2.j
 -disallowConsecutiveRepeatFields \
 -dontCrossPunctuation \
 -Options.stage1.smoothing $smooth \
--noneFieldSmoothing 0 \
+-noneFieldSmoothing 0.01 \
 -useStopNode \
--allowNoneEvent
-
-#-outputFullPred \
+-allowNoneEvent \
+-outputFullPred 
+	
 #-Options.stage1.useVarUpdates \
 #-posAtSurfaceLevel \
 #-inputPosTagged

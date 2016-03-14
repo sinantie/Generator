@@ -228,6 +228,12 @@ public class ExtractRecordsStatistics
                     eventTypes.clear();
                 } // if
             } // for
+            // bug fix: if the sentence doesn't end with a full stop.
+            if(!eventTypes.isEmpty() && !Utils.isSentencePunctuation(model.wordToString(text[text.length - 1]))) 
+            {
+                er.addSentence(new ArrayList(eventTypes));
+                eventTypes.clear();
+            }
             // add the original sequence of event types (useful for extraction of RST trees)
             List<String> originalEventTypes = new ArrayList<String>();
             for(int i = 0; i < originalEventTypesIds.size(); i++) // HACK (overrides indexer functionality)!!!

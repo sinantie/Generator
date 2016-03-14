@@ -23,7 +23,6 @@ import induction.Options.JsonFormat;
 import induction.Options.LengthPrediction;
 import induction.Options.ModelType;
 import induction.Options.NgramWrapper;
-import util.Stemmer;
 import induction.Utils;
 import induction.utils.linearregression.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
@@ -842,7 +841,7 @@ public abstract class Event3Model extends WordModel
     {
         String eventInput = "", textInput = "", name = "", alignInput = "";
         Tree<String> recordTree = null;
-        boolean alignInputExists = false, textInputExists = false;
+        boolean alignInputExists, textInputExists;
         if(opts.examplesInSingleFile)
         {
             String[] res = Utils.extractExampleFromString(input);
@@ -888,12 +887,12 @@ public abstract class Event3Model extends WordModel
 //        System.out.println(name);
         if (!opts.useOnlyLabeledExamples || alignInputExists)
         {
-            final HashSet<String> excludedFields = new HashSet<String>();
+            final HashSet<String> excludedFields = new HashSet<>();
             excludedFields.addAll(Arrays.asList(opts.excludedFields));
-            final HashSet<String> excludedEventTypes = new HashSet<String>();
+            final HashSet<String> excludedEventTypes = new HashSet<>();
             excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
             // create a set of event ids that have been excluded from the model by the user
-            HashSet<Integer> excludedEventsIndices = new HashSet<Integer>();            
+            HashSet<Integer> excludedEventsIndices = new HashSet<>();            
             //Read events
             Map<Integer, Event> events  = null;
             try
@@ -931,22 +930,41 @@ public abstract class Event3Model extends WordModel
             // Read text
             if(textInputExists)
             {
-                final ArrayList<Integer> lineToStartText = new ArrayList<Integer>();
+                final ArrayList<Integer> lineToStartText = new ArrayList<>();
                 int lineIndex = 0, textIndex = 0;
-                ArrayList<String> textStr = new ArrayList();
+                ArrayList<String> textStr = new ArrayList<>();
                 String fullText = "";
-                for(String line : opts.examplesInSingleFile ?
-                    textInput.split("\n") : Utils.readLines(textInput))
+                String[] multipleReferences = new String[0];
+                if(opts.useMultipleReferences)
                 {
+                    if(!opts.examplesInSingleFile) 
+                        throw new UnsupportedOperationException("Examples with multiple references need to be in a single file.");
+                    String[] lines = textInput.split("\n");
                     lineToStartText.add(textIndex);
-                    for(String s : (opts.inputPosTagged ? line : line.toLowerCase()).split("\\s+"))
+                    for(String s : (opts.inputPosTagged ? lines[0] : lines[0].toLowerCase()).split("\\s+"))
                     {
                         textStr.add(s);
                         textIndex++;
                     } // for
                     lineIndex++;
-                    fullText += line + " ";
-                } // for
+                    fullText += lines[0] + " ";
+                    multipleReferences = lines;
+                }
+                else
+                {
+                    for(String line : opts.examplesInSingleFile ?
+                    textInput.split("\n") : Utils.readLines(textInput))
+                    {
+                        lineToStartText.add(textIndex);
+                        for(String s : (opts.inputPosTagged ? line : line.toLowerCase()).split("\\s+"))
+                        {
+                            textStr.add(s);
+                            textIndex++;
+                        } // for
+                        lineIndex++;
+                        fullText += line + " ";
+                    } // for
+                }                
                 lineToStartText.add(textIndex);
 
                 // POS tag example. Fill vocabulary with words plus their tags.
@@ -1034,13 +1052,13 @@ public abstract class Event3Model extends WordModel
 //                            null, null, null, text.length,
 //                            null, null, null, opts.fixedTextLength,
 //                            null, null, null, events.size()*opts.maxPhraseLength,
-                            new GenWidget(trueEvents, text, lineStartIndices)));
+                            new GenWidget(trueEvents, text, lineStartIndices, multipleReferences)));
                     } // if (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.generatePcfg)
                     {                                            
                         examples.add(new Example(this, name, events,
                             opts.fixRecordSelection ? text : null, null, null, textLength,
-                            new GenWidget(trueEvents, text, lineStartIndices, opts.fixRecordSelection ? recordTree : null)));
+                            new GenWidget(trueEvents, text, lineStartIndices, opts.fixRecordSelection ? recordTree : null, multipleReferences)));
                     } // if (generation WITH gold-standard text and possibly fixed Record Selection)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
@@ -1057,7 +1075,7 @@ public abstract class Event3Model extends WordModel
 //                                                      lineStartIndices,
 //                                                      eventTypeAllowedOnTrack,
 //                                                      eventTypeIndices)));
-                                           new GenWidget(trueEvents, text, lineStartIndices)));
+                                           new GenWidget(trueEvents, text, lineStartIndices, multipleReferences)));
                     }
                     else
                     {
@@ -1078,7 +1096,7 @@ public abstract class Event3Model extends WordModel
                     { 
                         examples.add(new Example(this, name, events,
                             null, null, null, textLength,
-                            new GenWidget(text)));
+                            new GenWidget(text, multipleReferences)));
                     } // else (generation WITH gold-standard)
                     else if(opts.modelType == Options.ModelType.semParse)
                     {
@@ -1090,7 +1108,7 @@ public abstract class Event3Model extends WordModel
                         examples.add(new Example(this, name, events, text,
                                                        labels, lineStartIndices,
                                                        text.length,
-                                           new GenWidget(text)));
+                                           new GenWidget(text, multipleReferences)));
                     }
                     else
                     {
@@ -1395,6 +1413,8 @@ public abstract class Event3Model extends WordModel
     /**
      * helper method for testing the generation output. Simulates generate(...) method
      * for a single example without the thread mechanism
+     * @param name
+     * @param lopts
      * @return a String with the generated SGML text output (contains results as well)
      */
     @Override
@@ -1405,7 +1425,7 @@ public abstract class Event3Model extends WordModel
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
 //        AParams counts = newParams();
-        List<String> outList = new ArrayList<String>();
+        List<String> outList = new ArrayList<>();
         AInferState inferState = null;
         for(AExample ex : examples)
         {
@@ -1432,7 +1452,10 @@ public abstract class Event3Model extends WordModel
      * Process single example in JSON Format - for client-server use. 
      * The method goes through the whole pipeline: convert JSON to event3 format,
      * read events, create inferState and generate.
+     * @param format
      * @param queryLink
+     * @param lopts
+     * @param args
      * @return 
      */
     public String processExamplesJson(JsonFormat format, 
@@ -1441,13 +1464,13 @@ public abstract class Event3Model extends WordModel
         // convert json to events
         JsonWrapper wrapper = new JsonWrapper(queryLink, format, testSetWordIndexer, args);
         
-        final HashSet<String> excludedFields = new HashSet<String>();
+        final HashSet<String> excludedFields = new HashSet<>();
         excludedFields.addAll(Arrays.asList(opts.excludedFields));
-        final HashSet<String> excludedEventTypes = new HashSet<String>();
+        final HashSet<String> excludedEventTypes = new HashSet<>();
         excludedEventTypes.addAll(Arrays.asList(opts.excludedEventTypes));
         // create a set of event ids that have been excluded from the model by the user
-        HashSet<Integer> excludedEventsIndices = new HashSet<Integer>();
-        List<AExample> examplesList = new ArrayList<AExample>(wrapper.getNumberOfOutputs());
+        HashSet<Integer> excludedEventsIndices = new HashSet<>();
+        List<AExample> examplesList = new ArrayList<>(wrapper.getNumberOfOutputs());
         for(int i = 0; i < wrapper.getNumberOfOutputs(); i++)
         {
             //Read events
@@ -1478,7 +1501,7 @@ public abstract class Event3Model extends WordModel
             }
             // create example
             examplesList.add((new Example(this, wrapper.getName()[i], events, null, null, null, textLength, 
-                    wrapper.hasText() ? new GenWidget(wrapper.getText().get(i)) : null)));
+                    wrapper.hasText() ? new GenWidget(wrapper.getText().get(i), new String[0]) : null)));
         } // for
         postSetupReadExamples(examplesList);
         // generate text !

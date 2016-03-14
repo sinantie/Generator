@@ -39,22 +39,23 @@ public class GenerationBlocksWorldTest
     public void setUp() 
     {
          String args = "-modelType generate "
-                    + "-testInputLists datasets/A0/Dev.data "
+                    + "-testInputLists datasets/GoldLogo/Records.dev.1 "
+                    + "-useMultipleReferences "
                     + "-inputFileExt events "
                     + "-examplesInSingleFile "
                     + "-outputFullPred "
                     + "-stagedParamsFile "
-                    + "results/A0/alignments/"
-                    + "model_3/1.exec/stage1.params.obj.gz "
+                    + "results/GoldLogo/alignments/"
+                    + "1.exec/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
                     + "-kBest 120 "
-                    + "-ngramModelFile results/A0/lang_file.arpa "
+                    + "-ngramModelFile datasets/GoldSplitLogo/Language.arpa "
 //                    + "-secondaryNgramModelFile atisLM/atis-all-train-3-gram-tagged.CDnumbers.tags_only.model.arpa "
                     + "-ngramWrapper kylm "
                     + "-allowConsecutiveEvents "
 //                    + "-reorderType eventTypeAndField "
                     + "-maxPhraseLength 5 "
-                    + "-binariseAtWordLevel "
+//                    + "-binariseAtWordLevel "
                     + "-ngramSize 3 "
                     + "-lengthPredictionMode fixed "
                     + "-fixedTextLength 12 "
@@ -63,8 +64,6 @@ public class GenerationBlocksWorldTest
 //                    + "-lengthPredictionFeatureType counts "
 //                    + "-lengthPredictionStartIndex 2 "
 //                    + "-lengthCompensation 0 "
-//                    + "-useDependencies "
-                    + "-interpolationFactor 1 "
 //                    + "-posAtSurfaceLevel "
                     + "-allowNoneEvent "
                     + "-useStopNode ";                    
@@ -75,7 +74,7 @@ public class GenerationBlocksWorldTest
         model = new GenerativeEvent3Model(opts);        
         model.init(InitType.staged, opts.initRandom, "");
         model.readExamples();        
-        model.logStats();        
+        model.logStats();
 //        opts.outputIterFreq = opts.stage1.numIters;
         lopts = opts.stage1;
         name = "stage1";

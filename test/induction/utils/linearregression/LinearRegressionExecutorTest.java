@@ -46,17 +46,17 @@ public class LinearRegressionExecutorTest
         int fold = 2;
         String type = "values";
         String args = "-mode train "
-//                    + "-inputFeaturesFile datasets/A0/Dev.data "
-//                    + "-outputFeaturesFile datasets/A0/Dev.data."+type+".features.csv "
-                    + "-inputFeaturesFile datasets/A0/Train.data "
-                    + "-outputFeaturesFile datasets/A0/Train.data."+type+".features.csv "
+                    + "-inputFeaturesFile datasets/GoldLogo/Records.dev "
+                    + "-outputFeaturesFile datasets/GoldLogo/Dev.data."+type+".features.csv "
+//                    + "-inputFeaturesFile datasets/GoldLogo/Records.train "
+//                    + "-outputFeaturesFile datasets/GoldLogo/Train.data."+type+".features.csv "
                     + "-examplesInSingleFile "
-                    + "-paramsFile results/A0/alignments/model_3/1.exec/stage1.params.obj.gz "
-                    + "-modelFile results/A0/lengthPrediction."+type+".linear-reg.model "
+                    + "-paramsFile results/GoldLogo/alignments/1.exec/stage1.params.obj.gz "
+                    + "-modelFile results/GoldLogo/lengthPrediction."+type+".linear-reg.model "
                     + "-type "+type+ " "
                     + "-startIndex 2 "
-                    + "-extractFeatures ";
-//                    + "-saveModel";
+                    + "-extractFeatures "
+                    + "-saveModel";
         LinearRegressionOptions opts = new LinearRegressionOptions();
         Execution.init(args.split(" "), new Object[]{opts}); // parse input params
         lrw = new LinearRegressionWekaWrapper(opts);

@@ -100,7 +100,7 @@ public class GenInferState extends InferState
         }
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                              newMatrixOne(), newMatrixOne(),
-                             ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
+                             ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices, new String[0]);
     }
     
     protected void createHypergraph(Hypergraph<Widget> hypergraph)
@@ -620,8 +620,8 @@ public class GenInferState extends InferState
                 hypergraph.addEdge(node, genFieldValue(i, c, event, field, posInFieldValue),
                         new Hypergraph.HyperedgeInfo<Widget>() {
                 public double getWeight() {
-                    return 1.0;
-                    //return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_VALUE);
+//                    return 1.0;
+                    return get(eventTypeParams.genChoices[field], Parameters.G_FIELD_VALUE);
                 }
                 public void setPosterior(double prob) {}
                 public Widget choose(Widget widget) {
@@ -650,28 +650,28 @@ public class GenInferState extends InferState
                 }
                 else
                 {
-//                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
-//                        public double getWeight() {
-//                            return 1.0;
-//                        }
-//                        public void setPosterior(double prob) { }
-//                        public GenWidget choose(GenWidget widget) { return widget; }
-//                        public Pair getWeightAtRank(int rank)
-//                        {
-//                            Pair p =  getAtRank(params.genericEmissions, rank);
-//                            p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
-//                            return p;
-//                        }
-//                        public Pair getDepWeight(int word)
-//                        {
-//                            return getLeafDepHead(word, i);              
-//                        }
-//                        public GenWidget chooseWord(GenWidget widget, int word)
-//                        {
-//                            widget.getText()[i] = word;
-//                            return widget;
-//                        }
-//                        });
+                    hypergraph.addEdge(node, new Hypergraph.HyperedgeInfoLM<GenWidget>() {
+                        public double getWeight() {
+                            return 1.0;
+                        }
+                        public void setPosterior(double prob) { }
+                        public GenWidget choose(GenWidget widget) { return widget; }
+                        public Pair getWeightAtRank(int rank)
+                        {
+                            Pair p =  getAtRank(params.genericEmissions, rank);
+                            p.value *= get(eventTypeParams.genChoices[field], Parameters.G_FIELD_GENERIC);
+                            return p;
+                        }
+                        public Pair getDepWeight(int word)
+                        {
+                            return getLeafDepHead(word, i);              
+                        }
+                        public GenWidget chooseWord(GenWidget widget, int word)
+                        {
+                            widget.getText()[i] = word;
+                            return widget;
+                        }
+                        });
                 }
             } // else
         }

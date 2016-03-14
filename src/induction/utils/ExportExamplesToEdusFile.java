@@ -91,7 +91,7 @@ public class ExportExamplesToEdusFile
         } catch (Exception ioe)
         {
             System.err.println(ioe.getMessage());
-            ioe.printStackTrace();
+            ioe.printStackTrace(System.err);
         }
     }
     
@@ -102,6 +102,7 @@ public class ExportExamplesToEdusFile
      * then keep the alignment up to the full-stop and assign the rest words of the phrase
      * to the next record alignment.
      * @param alignments
+     * @param words
      * @return 
      */
     public static String[] cleanRecordAlignments(String[] alignments, String[] words)
@@ -237,7 +238,7 @@ public class ExportExamplesToEdusFile
      */
     private String[] mapGoldStandardAlignmentsWeatherGov(String name, Alignment[] alignments, String[] text)
     {        
-        List<String> out = new ArrayList<String>();
+        List<String> out = new ArrayList<>();
         for(int i = 0; i < alignments.length; i++)
         {
             Alignment alignment = alignments[i];
@@ -549,13 +550,9 @@ public class ExportExamplesToEdusFile
     private boolean atEndOfSentence(String word, String[] text)
     {
         int lastIndex = text.length -1;
-        if(text[lastIndex].equals(word) || 
-                (text[lastIndex - 1].equals(word) && 
-                    (text[lastIndex].equals(".") || text[lastIndex].equals(",") )))
-        {
-            return true;
-        }
-        return false;       
+        return text[lastIndex].equals(word) || 
+                (text[lastIndex - 1].equals(word) &&
+                (text[lastIndex].equals(".") || text[lastIndex].equals(",") ));       
     }
     
     /**
@@ -569,7 +566,7 @@ public class ExportExamplesToEdusFile
      */
     private String[] mapGoldStandardAlignmentsWinHelp(String name, Alignment[] alignments, String[] text)
     {        
-        List<String> out = new ArrayList<String>();
+        List<String> out = new ArrayList<>();
         for(int i = 0; i < alignments.length; i++)
         {
             Alignment alignment = alignments[i];
@@ -650,7 +647,7 @@ public class ExportExamplesToEdusFile
      */
     private Map<String, String[]> readManualAnnotation(String manualAnnotationPath)
     {       
-        Map<String, String[]> map = new HashMap<String, String[]>();
+        Map<String, String[]> map = new HashMap<>();
         for(String line : Utils.readLines(manualAnnotationPath))
         {
             String[] temp = line.split(":");
@@ -667,7 +664,7 @@ public class ExportExamplesToEdusFile
      */
     private Map<String, String[]> readTextCorrections(String textCorrectionsPath)
     {       
-        Map<String, String[]> map = new HashMap<String, String[]>();
+        Map<String, String[]> map = new HashMap<>();
         for(String line : Utils.readLines(textCorrectionsPath))
         {
             String[] temp = line.split("\\^");
@@ -680,17 +677,34 @@ public class ExportExamplesToEdusFile
     {
         
         // WEATHERGOV
+//        Dataset dataset = Dataset.weatherGov;
+//        InputType type = InputType.goldStandard;
+//        // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
+//        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
+////        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
+//        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
+////        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
+////        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
+////        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
+//        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal";
+//        String outputFileAlignments = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal.align";   
+        
+        // BLOCKSWORLD
         Dataset dataset = Dataset.weatherGov;
-        InputType type = InputType.goldStandard;
-        // trainListPathsGabor, genDevListPathsGabor, genEvalListPathsGabor
-        String inputPath = "data/weatherGov/weatherGovTrainGabor.gz";
-//        String inputPath = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2";
-        String inputPathRecordAlignments = "results/output/weatherGov/alignments/model_3_gabor_no_sleet_windChill_15iter/stage1.train.pred.14.sorted";
-//        String inputPathRecordAlignments = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRulesPredAlign_modified2";
-//        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusAligned.gz";
-//        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
-        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal";
-        String outputFileAlignments = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal.align";        
+        InputType type = InputType.aligned;        
+        String inputPath = "datasets/GoldSplitLogo/Records.train";
+        String inputPathRecordAlignments = "results/GoldSplitLogo/alignments/0.exec/stage1.train.pred.14.sorted";
+        String outputFile = "datasets/GoldSplitLogo/Records.train.aligned_edus";
+        String outputFileAlignments = "datasets/GoldSplitLogo/Records.train.aligned_edus.align";   
+        
+        if(args.length == 5)
+        {
+            type = Enum.valueOf(InputType.class, args[0]);
+            inputPath = args[1];
+            inputPathRecordAlignments = args[2];
+            outputFile = args[3];
+            outputFileAlignments = args[4];
+        }
         new ExportExamplesToEdusFile(type, dataset, inputPath, inputPathRecordAlignments, outputFile, outputFileAlignments).execute();        
         
         // WINHELP - ALL

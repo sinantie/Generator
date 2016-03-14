@@ -196,14 +196,14 @@ public class DiscriminativeInferState extends Event3InferState
     protected Widget newWidget()
     {       
         HashMap<Integer, Integer> eventTypeIndices =
-                            new HashMap<Integer, Integer>(ex.events.size());
+                            new HashMap<>(ex.events.size());
         for(Event e : ex.events.values())
         {
             eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
         }
         return new GenWidget(newMatrix(), newMatrix(), newMatrix(), newMatrix(),
                              newMatrixOne(), newMatrixOne(),
-                             ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices);
+                             ((Event3Model)model).eventTypeAllowedOnTrack, eventTypeIndices, new String[0]);
     }    
 
     protected void resortDiscriminativeEmissions()

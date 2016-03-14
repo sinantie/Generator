@@ -29,13 +29,13 @@ public class ReorderAlignmentPredictions
     {
         String[] predictions = Utils.readLines(predFile);
         String[] predictionsOrdered = new String[predictions.length];
-        Map<String, Integer> refMap = new HashMap<String, Integer>();
+        Map<String, Integer> refMap = new HashMap<>();
         int i = 0;
         // grab id and order in file
         for(String ex : Utils.readLines(refFile))
         {
             String key = ex.split(":")[0];
-            if(!prefix.isEmpty())            
+            if(!(prefix.isEmpty() || prefix.equals("--")) )            
                 key = Utils.stripExtension(key.substring(key.indexOf(prefix)));
             refMap.put(key, i++);
 //            System.out.println(i);
@@ -63,12 +63,25 @@ public class ReorderAlignmentPredictions
     {
         boolean examplesInSingleFile = true;
         // weatherGov
-        String prefix = "data/weather-data-full/data/";
-        String goldFile = "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz";
-        String predFile = "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.pred.29";
-        String refFile = "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.full-pred.29";
+//        String prefix = "data/weather-data-full/data/";
+//        String goldFile = "data/weatherGov/weatherGovTrainGaborRecordTreebankUnaryRules.gz";
+//        String predFile = "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.pred.29";
+//        String refFile = "results/output/weatherGov/alignments/pcfg/model_3_gabor_record_pcfg_treebank_unaryRules_wordsPerRootRule_30iter/stage1.train.full-pred.29";
+//        
+        // blocksWorld
+        String prefix = "--";
+        String goldFile = "datasets/GoldLogo/Records.train";
+        String predFile = "results/GoldLogo/alignments/0.exec/stage1.train.pred.14";
+        String refFile = "results/GoldLogo/alignments/0.exec/stage1.train.full-pred.14";
         
-        
+        if(args.length > 0) 
+        {
+            prefix = args[0];
+            goldFile = args[1];
+            predFile = args[2];
+            refFile = args[3];
+            
+        }
         // winhelp all
 //        String prefix = "";
 //        String goldFile = "data/branavan/winHelpHLA/winHelpRL.cleaned.objType.norm.docs.all.newAnnotation";
