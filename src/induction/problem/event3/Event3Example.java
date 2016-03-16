@@ -277,6 +277,11 @@ public class Event3Example
         return out.deleteCharAt(out.length()-1).toString().split("\n");
     }
     
+    public String[] getFirstLineOfTextInOneLine()
+    {        
+        return getTextArray()[0].split(" ");
+    }
+    
     public String[] getTextInOneLine()
     {
         StringBuilder str = new StringBuilder();
@@ -362,9 +367,10 @@ public class Event3Example
      * to the event3 ver.2 format.
      * 
      * @param alignments a string containing word-by-word record alignments 
+     * @param multipleReferences true if input contains mutiple references; we only align to the first one.
      * @return a string in event3 ver.2 format containing the text and EDUs
      */
-    public String exportToEdusFormat(String[] alignments) throws Exception
+    public String exportToEdusFormat(String[] alignments, boolean multipleReferences) throws Exception
     {
         // compile text
         StringBuilder text = new StringBuilder();
@@ -377,7 +383,7 @@ public class Event3Example
         // compile EDUS.
         // collapse text into a single line; number of words should match the number
         // of record alignments        
-        String[] words = getTextInOneLine();
+        String[] words = multipleReferences ? getFirstLineOfTextInOneLine() : getTextInOneLine();
         // check that the number of words matches with the number of record alignments
         if(words.length != alignments.length)
             throw new Exception(getName() + ": Number of words does not match with the number of record alignments");

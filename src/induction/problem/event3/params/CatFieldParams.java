@@ -49,9 +49,9 @@ public class CatFieldParams extends FieldParams
         for(Vec v: emissions)
         {
             if(paramsType == ParamsType.PROBS)
-                out.append(forEachProb(v, labels[i++]));
+                out.append(forEachProbNonZero(v, labels[i++]));
             else
-                out.append(forEachCount(v, labels[i++]));
+                out.append(forEachCountNonZero(v, labels[i++]));
         }
         labels = getLabels(W, field.getV(), "catVE " + prefix + " ",
                     ((Event3Model)model).wordsToStringArray(), field.valuesToStringArray());

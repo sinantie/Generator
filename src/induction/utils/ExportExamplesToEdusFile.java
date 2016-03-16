@@ -32,22 +32,24 @@ public class ExportExamplesToEdusFile
     private InputType type;
     private Dataset dataset;    
     private Map<String, String[]> manualAnnotation, textCorrections;
+    private boolean multipleReferences;
     
     public ExportExamplesToEdusFile(InputType type, Dataset dataset, String path, String recordAlignmentsPath, 
-            String outputFile, String outputFileAlignments)
+            String outputFile, String outputFileAlignments, boolean multipleReferences)
     {
         this.type = type;
         this.dataset = dataset;
         this.inputPath = path;               
         this.recordAlignmentsPath = recordAlignmentsPath;
         this.outputFile = outputFile;        
-        this.outputFileAlignments = outputFileAlignments;        
+        this.outputFileAlignments = outputFileAlignments;
+        this.multipleReferences = multipleReferences;        
     }
     
     public ExportExamplesToEdusFile(InputType type, Dataset dataset, String path, String recordAlignmentsPath, 
-            String manualAnnotationPath, String textCorrections, String outputFile, String outputFileAlignments)
+            String manualAnnotationPath, String textCorrections, String outputFile, String outputFileAlignments, boolean multipleReferences)
     {
-        this(type, dataset, path, recordAlignmentsPath, outputFile, outputFileAlignments);
+        this(type, dataset, path, recordAlignmentsPath, outputFile, outputFileAlignments, multipleReferences);
         this.manualAnnotation = readManualAnnotation(manualAnnotationPath);
         this.textCorrections = readTextCorrections(textCorrections);
     }
@@ -78,12 +80,12 @@ public class ExportExamplesToEdusFile
                 switch(type)
                 {                    
                     case aligned : 
-                        ar = cleanRecordAlignments(recordAlignments[i++].split(" "), example.getTextInOneLine()); break;
+                        ar = cleanRecordAlignments(recordAlignments[i++].split(" "), multipleReferences ? example.getFirstLineOfTextInOneLine() : example.getTextInOneLine()); break;
                     case goldStandard : default : 
                         ar = mapGoldStandardAlignments(dataset, example.getName(), example.getAlignmentsPerLineArray(), example.getTextArray());                    
-//                    case goldStandard : mapGoldStandardAlignments(dataset, example.getName(), example.getAlignmentsPerLineArray(), example.getTextArray());
+//                    case goldStandard : mapGoldStandardAlignments(dataset, example.getName(), example.ogetAlignmentsPerLineArray(), example.getTextArray());
                 }
-                out.print(example.exportToEdusFormat(ar));
+                out.print(example.exportToEdusFormat(ar, multipleReferences));
                 outAlignments.println(Utils.arrayToString(ar));
             }
             out.close();
@@ -688,24 +690,26 @@ public class ExportExamplesToEdusFile
 ////        String outputFile = "data/weatherGov/weatherGovGenDevGaborRecordTreebankUnaryRules_modified2_EdusAligned";
 //        String outputFile = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal";
 //        String outputFileAlignments = "data/weatherGov/weatherGovTrainGaborEdusGoldNormal.align";   
+//        boolean multipleReferences = false;
         
         // BLOCKSWORLD
         Dataset dataset = Dataset.weatherGov;
         InputType type = InputType.aligned;        
-        String inputPath = "datasets/GoldSplitLogo/Records.train";
-        String inputPathRecordAlignments = "results/GoldSplitLogo/alignments/0.exec/stage1.train.pred.14.sorted";
-        String outputFile = "datasets/GoldSplitLogo/Records.train.aligned_edus";
-        String outputFileAlignments = "datasets/GoldSplitLogo/Records.train.aligned_edus.align";   
-        
-        if(args.length == 5)
+        String inputPath = "datasets/GoldDigit20/Records.train";
+        String inputPathRecordAlignments = "results/GoldDigit20/alignments/4.exec/stage1.train.pred.19.sorted";
+        String outputFile = "results/GoldDigit20/treebanks/Records.train.aligned_edus";
+        String outputFileAlignments = "results/GoldDigit20/treebanks/Records.train.align.edus.align";   
+        boolean multipleReferences = true;
+        if(args.length == 6)
         {
             type = Enum.valueOf(InputType.class, args[0]);
             inputPath = args[1];
             inputPathRecordAlignments = args[2];
             outputFile = args[3];
             outputFileAlignments = args[4];
+            multipleReferences = Boolean.valueOf(args[5]);
         }
-        new ExportExamplesToEdusFile(type, dataset, inputPath, inputPathRecordAlignments, outputFile, outputFileAlignments).execute();        
+        new ExportExamplesToEdusFile(type, dataset, inputPath, inputPathRecordAlignments, outputFile, outputFileAlignments, multipleReferences).execute();        
         
         // WINHELP - ALL
 //        Dataset dataset = Dataset.winHelp;

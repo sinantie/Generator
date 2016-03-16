@@ -4,10 +4,14 @@ import induction.Options;
 import induction.problem.AParams;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
+import induction.problem.event3.CatField;
 import induction.problem.event3.Event3Model;
 import induction.problem.event3.EventType;
+import induction.problem.event3.Field;
 import induction.problem.event3.discriminative.params.DiscriminativeEventTypeParams;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -23,6 +27,8 @@ public class Params extends AParams
     public EventTypeParams[] eventTypeParams;
     private EventType[] eventTypes;    
     private Options opts;
+    private Map<String, Vec> excludeVecsFromOptimisation;
+    
     public Params(Event3Model model, Options opts, VecFactory.Type vectorType)
     {
         super(model);
@@ -35,6 +41,8 @@ public class Params extends AParams
             eventTypeParams[t] = new EventTypeParams(model, eventTypes[t], model.W(), vectorType);
             addVec(eventTypeParams[t].getVecs());                        
         }
+        
+        excludeVecsFromOptimisation = tieCatFieldParameters(eventTypeParams, model.getOpts().tieCatFieldParameters, vectorType);
     }
     
     public Params(Event3Model model, Options opts,
@@ -104,6 +112,69 @@ public class Params extends AParams
         }
     }
     
+    private Map<String, Vec> tieCatFieldParameters(EventTypeParams[] eventTypeParams, String[] tieFieldParameters, VecFactory.Type vectorType) 
+    {
+        // Make note of vecs that have multiple references pointing back to them; we want to avoid smoothing them multiple times.
+        Map<String, Vec> excludeVecsFromOptimisation = new HashMap<>();
+        if(tieFieldParameters.length > 0)
+        {
+            // the array holds pairs: eventType.fieldName_parent eventType.fieldName_dependent ...
+            for(int i = 0; i < tieFieldParameters.length; i += 2)
+            {
+                String[] parentToks = tieFieldParameters[i].split("[.]");
+                String[] depToks = tieFieldParameters[i + 1].split("[.]");
+                int parentParamsId = getEventTypeParamsId(eventTypes, parentToks[0]);
+                int depParamsId = getEventTypeParamsId(eventTypes, depToks[0]);
+                if(parentParamsId != -1 && depParamsId != -1)
+                {
+                    EventType parentEventType = eventTypes[parentParamsId];
+                    EventType depEventType = eventTypes[depParamsId];
+                    int parentFieldId = parentEventType.getFieldIndex(parentToks[1]);
+                    int depFieldId = depEventType.getFieldIndex(depToks[1]);
+                    Vec[] parentVec = ((CatFieldParams)eventTypeParams[parentParamsId].
+                            fieldParams[parentFieldId]).emissions;                    
+                    Field depField = depEventType.getFields()[depFieldId];
+                    Field parentField = parentEventType.getFields()[parentFieldId];
+                    Vec[] depVec = ((CatFieldParams)eventTypeParams[depParamsId].fieldParams[depFieldId]).emissions;
+                    for(int j = 0; j < depField.getV(); j++) 
+                    {
+                        String name = depField.valueToString(j);
+                        if(((CatField)parentField).containsValue(name))
+                        {
+                            Vec parentFieldVec = parentVec[parentField.parseValue(0, name)];                            
+                            depVec[j] = parentFieldVec;
+                            String vecName = String.format("catE %s %s %s", depEventType.getName(), depField.getName(), name);
+                            getVecs().put(vecName, parentFieldVec);
+                            excludeVecsFromOptimisation.put(vecName, parentFieldVec);                            
+                        }                        
+                    }
+//                    Vec[] depVec = VecFactory.zeros2(vectorType, parentField.getV(), W);
+//                    ((CatFieldParams)eventTypeParams[depParamsId].fieldParams[depFieldId]).emissions = depVec;
+//                    for(int j = 0; j < parentField.getV(); j++) 
+//                    {
+//                        String name = parentField.valueToString(j);
+//                        Vec parentFieldVec = parentVec[j];
+//                        depVec[depField.parseValue(0, name)] = parentFieldVec;
+//                        getVecs().put(String.format("catE %s %s %s", depEventType.getName(), depField.getName(), name), parentFieldVec);
+//                    }
+                }
+            }
+        }
+        return excludeVecsFromOptimisation;
+    }
+    
+    private int getEventTypeParamsId(EventType[] eventTypes, String name) 
+    {
+        int i = 0;
+        for(EventType eventType : eventTypes)
+        {
+            if(eventType.getName().equals(name))
+                return i;
+            i++;
+        }
+        return -1;
+    }
+    
     @Override
     public void optimise(double smoothing)
     {
@@ -160,6 +231,10 @@ public class Params extends AParams
         if(opts.fixRecordSelection) // don't smooth pcfg probabilities as they are artificially initialised
         {
             super.optimiseExcluding(smoothing, cfgParams.getCfgRulesChoicesMap());
+        }
+        else if(!excludeVecsFromOptimisation.isEmpty())
+        {
+            super.optimiseExcluding(smoothing, excludeVecsFromOptimisation);
         }
         else
             super.optimise(smoothing);
@@ -264,6 +339,7 @@ public class Params extends AParams
             out.append("\n");
         }
 //        return out.toString();
+        out.flush();
     }
     
     public String outputGenericEmissions(ParamsType paramsType, String[] words)
@@ -272,6 +348,6 @@ public class Params extends AParams
             return forEachProbNonZero(genericEmissions, getLabels(W, "genericE ", words));
         else
             return forEachCountNonZero(genericEmissions, getLabels(W, "genericE ", words));
-    }
+    }   
     
 }

@@ -15,7 +15,7 @@ public class Options {
   public enum NgramWrapper {kylm, srilm, roark};
   public enum ReorderType {event, eventType, eventTypeAndField, ignore};
   public enum JsonFormat {wunderground,lowjet};
-  public enum LengthPrediction {gold, fixed, linearRegression, file};
+  public enum LengthPrediction {gold, fixed, linearRegression, file, multipleCandidates};
   // Input
   @Option public ArrayList<String> inputPaths = new ArrayList();
   @Option public ArrayList<String> inputLists = new ArrayList();
@@ -69,7 +69,8 @@ public class Options {
   @Option public boolean treatCatAsSym = false;
   @Option public boolean useStringLabels = true;
   @Option public boolean useOnlyLabeledExamples = false;
-
+  @Option public String[] tieCatFieldParameters = new String[0]; // List of <event type name>.<field name>
+  
   // Changes to the model can happen during training, so each of these specifies a starting and ending 
   // iteration for the corresponding flag to be on
   @Option public Pair<Integer,Integer> indepEventTypes = new Pair(0, 0);

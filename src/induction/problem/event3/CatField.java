@@ -56,6 +56,11 @@ public class CatField extends Field implements Serializable
         return indexer.getIndex(str);
     }
 
+    public boolean containsValue(String str)
+    {
+        return indexer.contains(str);
+    }
+    
     @Override
     public AParams newParams(Event3Model model, int numOfWords, VecFactory.Type vectorType, String prefix)
     {

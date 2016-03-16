@@ -29,7 +29,7 @@ public abstract class AParams implements Serializable
     public AParams(AModel model)
     {
         this.model = model;
-        vecsMap = new HashMap<String, Vec>();
+        vecsMap = new HashMap<>();
     }   
     
     public void setUniform(double x)

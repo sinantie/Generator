@@ -1,13 +1,15 @@
 #!/bin/bash
-# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo20
-DATASET=GoldLogo
-inputLists=datasets/${DATASET}/Records.dev.1
+# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo20, GoldLogoAll
+DATASET=GoldLogoAll
+inputLists=datasets/${DATASET}/Records.dev
+#ngramModelFile=datasets/GoldDigit/Language.arpa
+ngramModelFile=datasets/GoldSplitLogo/Language.arpa
 numThreads=6
-stagedParamsFile=results/${DATASET}/alignments/1.exec/stage1.params.obj.gz
+stagedParamsFile=results/${DATASET}/alignments/12.exec/stage1.params.obj.gz
 kBest=120
 # option are: gold, fixed, file, linearRegression
-lengthPredictionMode=linearRegression
-execDir=results/${DATASET}/generation/generation_kBest-${kBest}-${lengthPredictionMode}Length-withNone-noBinarise-1x-multiReferences/
+lengthPredictionMode=fixed
+execDir=results/${DATASET}/generation/generation_kBest-${kBest}-${lengthPredictionMode}Length-withNone-noBinarise-1x-multiReferences--tied-solo.RP-noNoneEvent/
 
 CUR_DIR=`pwd`
 cd ..
@@ -29,15 +31,15 @@ induction.runtime.Generation \
 -testInputLists ${inputLists} \
 -execDir ${execDir} \
 -stagedParamsFile ${stagedParamsFile} \
--ngramModelFile datasets/GoldSplitLogo/Language.arpa \
+-ngramModelFile ${ngramModelFile} \
 -lengthCompensation 0 \
 -useStopNode \
 -lengthPredictionMode ${lengthPredictionMode} \
 -fixedTextLength 12 \
--allowNoneEvent \
 -allowConsecutiveEvents \
 -useMultipleReferences
 
+#-allowNoneEvent \
 #-lengthPredictionModelFile gaborLists/genEvalGaborScaledPredLength_c6_g1.1.svr_round.length \
 #-binariseAtWordLevel \
 #-lengthPredictionModelFile A0/Dev.lengths \

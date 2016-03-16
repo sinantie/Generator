@@ -1,12 +1,14 @@
 #!/bin/bash
-inputPath=datasets/GoldLogo
+DATASET=GoldLogoAll
+inputPath=datasets/${DATASET}
 inputFile=Records.train
 input=${inputPath}/${inputFile}
-stagedParamsPath=results/GoldLogo/alignments/0.exec
+stagedParamsPath=results/${DATASET}/alignments/5.exec
 suffix=Aligned
 binarize=right
 inputPosTagged=false
-execDir=results/GoldLogo/treebanks/
+execDir=results/${DATASET}/treebanks/
+multipleReferences=true
 
 CUR_DIR=`pwd`
 cd ..
@@ -22,7 +24,7 @@ java -cp dist/Generator.jar:dist/lib/Helper.jar induction.utils.ReorderAlignment
 #options: aligned, goldStandard
 exportExamplesToEdusType=aligned
 predictedAlignments=${execDir}/${inputFile}.${exportExamplesToEdusType}Type.align
-${CUR_DIR}/export_examples_to_edus.sh ${exportExamplesToEdusType} ${input} ${sorted_align_file} ${execDir}/${inputFile}.${exportExamplesToEdusType}.edus ${predictedAlignments}
+${CUR_DIR}/export_examples_to_edus.sh ${exportExamplesToEdusType} ${input} ${sorted_align_file} ${execDir}/${inputFile}.${exportExamplesToEdusType}.edus ${predictedAlignments} ${multipleReferences}
 
 
 # 3. Extract Record Treebank
@@ -48,6 +50,7 @@ dist/stanford-postagger-2010-05-26.jar \
 -modifiedBinarization \
 -ruleCountThreshold 0 \
 -extractRecordTrees \
+-useMultipleReferences ${multipleReferences} \
 -predInput ${predictedAlignments}
 
 # For RST Only

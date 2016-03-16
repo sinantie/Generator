@@ -1144,7 +1144,7 @@ public class Utils
     
     public static List<Event3Example> readEvent3Examples(String inputPath, boolean examplesInSingleFile)
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add(inputPath);
         return readEvent3Examples(list, list, examplesInSingleFile);
     }
@@ -1152,7 +1152,7 @@ public class Utils
     public static List<Event3Example> readEvent3Examples(List<String> inputPaths, 
             List<String> inputLists, boolean examplesInSingleFile)
     {
-        List<Event3Example> examples = new ArrayList<Event3Example>();
+        List<Event3Example> examples = new ArrayList<>();
         try 
         {
             Event3Example example;

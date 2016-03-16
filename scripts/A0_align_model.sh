@@ -1,11 +1,11 @@
 #!/bin/bash
 # options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo
-DATASET=GoldLogo
-threads=6
-input=datasets/${DATASET}/Records.train.10
+DATASET=GoldDigitAll
+threads=4
+input=datasets/${DATASET}/Records.train
 output=results/${DATASET}/alignments/
 
-smooth=0.01
+smooth=0
 
 CUR_DIR=`pwd`
 cd ..
@@ -30,10 +30,15 @@ java -Xmx16000m -cp lib/jung/collections-generic-4.01.jar:lib/commons-math-2.2.j
 -dontCrossPunctuation \
 -Options.stage1.smoothing $smooth \
 -noneFieldSmoothing 0.01 \
+-noneEventTypeSmoothing 0 \
 -useStopNode \
--allowNoneEvent \
--outputFullPred 
-	
+-outputFullPred \
+-useMultipleReferences \
+-tieCatFieldParameters pos.RP solo.RP 
+
+#source.block MultiBlock.e1 source.block MultiBlock.e2
+#-allowNoneEvent \
+#-fixedGenericProb 0 \
 #-Options.stage1.useVarUpdates \
 #-posAtSurfaceLevel \
 #-inputPosTagged

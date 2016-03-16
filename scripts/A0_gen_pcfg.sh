@@ -1,13 +1,14 @@
 #!/bin/bash
-DATASET=GoldLogo
-inputLists=datasets/GoldLogo/Records.dev
-numThreads=6
-stagedParamsFile=results/${DATASET}/alignments/pcfg/3.exec/stage1.params.obj.gz
+DATASET=GoldLogoAll
+inputLists=datasets/${DATASET}/Records.dev
+numThreads=4
+stagedParamsFile=results/${DATASET}/alignments/pcfg/0.exec/stage1.params.obj.gz
 kBest=120
 # option are: gold, fixed, file
 lengthPredictionMode=fixed
 execDir=results/${DATASET}/generation/generation_pcfg_kBest-${kBest}-${lengthPredictionMode}Length-2/
 treebankRules=results/${DATASET}/treebanks/recordTreebankRulesRightBinarizeAligned
+ngramModelFile=datasets/GoldDigit/Language.arpa
 
 CUR_DIR=`pwd`
 cd ..
@@ -40,7 +41,8 @@ induction.runtime.Generation \
 -outputFullPred \
 -maxDocLength 20 \
 -useStopNode \
--docLengthBinSize 2
+-docLengthBinSize 2 \
+-useMultipleReferences
 
 #-allowNoneEvent \
 

@@ -608,9 +608,9 @@ public abstract class Event3Model extends WordModel
     public Map<Integer, Event> readEvents(String[] eventLines, HashSet<String> excludedEventTypes,
                                HashSet<String> excludedFields, HashSet<Integer> excludedEventsIndices)
     {
-        final HashSet<Integer> seenEventTypes = new HashSet<Integer>();
+        final HashSet<Integer> seenEventTypes = new HashSet<>();
 //        ArrayList<Event> events = new ArrayList<Event>(eventLines.length);
-        Map<Integer, Event> events = new HashMap<Integer, Event>(eventLines.length);
+        Map<Integer, Event> events = new HashMap<>(eventLines.length);
         ArrayList<Field> fields;
         ArrayList<Integer> values;
         // Format: <fieldtype><field>:<value>\t...
@@ -621,7 +621,7 @@ public abstract class Event3Model extends WordModel
                                               excludedFields, excludedEventsIndices);
             if(tokens == null) // excludedEventType
                 continue;
-            values = new ArrayList<Integer>(tokens.length);
+            values = new ArrayList<>(tokens.length);
             if (eventTypeIndex != -1 &&
                 (!opts.takeOneOfEventType ||
                 !seenEventTypes.contains(eventTypeIndex)))
@@ -633,7 +633,7 @@ public abstract class Event3Model extends WordModel
                 if (eventTypeIndex >= eventTypesBuffer.size()) // New event type (CAREFUL, changed from == to >=)
                 {
                     // parse fields
-                    fields = new ArrayList<Field>(tokens.length);
+                    fields = new ArrayList<>(tokens.length);
 
                     for(Token token: tokens)
                     {
@@ -1429,14 +1429,16 @@ public abstract class Event3Model extends WordModel
         AInferState inferState = null;
         for(AExample ex : examples)
         {
-            System.out.println("Processing " + ex.getName() + "...");
-            inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
-            testPerformance.add(ex, inferState.bestWidget);
-            if(opts.outputFullPred)
-                System.out.println(widgetToFullString(ex, inferState.bestWidget));
-            if(opts.outputPcfgTrees)
-                System.out.println(widgetToCfgTreeString(ex, inferState.bestWidget));            
-            outList.add(widgetToSGMLOutput(ex, inferState.bestWidget));
+            if(ex.getName().equals("Example_118")) {
+                System.out.println("Processing " + ex.getName() + "...");
+                inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
+                testPerformance.add(ex, inferState.bestWidget);
+                if(opts.outputFullPred)
+                    System.out.println(widgetToFullString(ex, inferState.bestWidget));
+                if(opts.outputPcfgTrees)
+                    System.out.println(widgetToCfgTreeString(ex, inferState.bestWidget));            
+                outList.add(widgetToSGMLOutput(ex, inferState.bestWidget));
+            }
         }
         System.out.println(testPerformance.output());
         return outList.get(0);

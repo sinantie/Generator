@@ -10,7 +10,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -38,10 +37,11 @@ public class InductionBlocksWorldTest
     @Before
     public void setUp() 
     {
+        String dataset = "GoldLogoAll";
          String args = "-modelType event3 "
                  + "-Options.stage1.numIters 15 "
                  + "-inputLists "
-                 + "datasets/A0/Train.data "                 
+                 + "datasets/"+dataset+"/Records.train.debug "                 
                  + "-examplesInSingleFile "
                  + "-indepEventTypes 0,10 "
                  + "-indepFields 0,5 "
@@ -54,9 +54,10 @@ public class InductionBlocksWorldTest
                  + "-noneFieldSmoothing 0 "
                  + "-useStopNode "
                  + "-allowNoneEvent "
+                 + "-tieCatFieldParameters pos.RP solo.RP "
 //                 + "-posAtSurfaceLevel "
 //                 + "-inputPosTagged "                // IMPORTANT!
-                 + "-Options.stage1.smoothing 0.01 ";
+                 + "-Options.stage1.smoothing 0 ";
 //                 + "-modelUnkWord "
         /*initialisation procedure from Induction class*/
         Options opts = new Options();

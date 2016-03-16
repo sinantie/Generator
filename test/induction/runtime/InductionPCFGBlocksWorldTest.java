@@ -39,13 +39,14 @@ public class InductionPCFGBlocksWorldTest
     @Before
     public void setUp()
     {
+        String dataset="GoldDigit20";
         String args =
                 "-modelType event3pcfg "
                 + "-Options.stage1.numIters 20 "
                 + "-examplesInSingleFile "
                 + "-inputLists "
-                + "datasets/GoldSplitLogo/Records.train.Aligned.trees "
-                + "-treebankRules results/GoldLogo/treebanks/recordTreebankRulesRightBinarizeAligned "
+                + "datasets/"+dataset+"/Records.train.Aligned.trees "
+                + "-treebankRules results/"+dataset+"/treebanks/recordTreebankRulesRightBinarizeAligned "
                 + "-fixRecordSelection "
                 + "-binarizedAtSentenceLevel " // CAREFUL: this is the case with the grammar of the paper, not RST (or CCM)
                 + "-wordsPerRootRule "
@@ -58,6 +59,7 @@ public class InductionPCFGBlocksWorldTest
                 + "-allowNoneEvent "
                 + "-maxDocLength 20 "
                 + "-docLengthBinSize 2 "
+                + "-useMultipleReferences "
 //                 + "-maxExamples 5 "
                 + "-conditionNoneEvent ";
 //                 + "-posAtSurfaceLevel "

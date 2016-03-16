@@ -1,8 +1,9 @@
 #!/bin/bash
 threads=6
-input=datasets/GoldLogo/Records.train.Aligned.trees
-output=results/GoldLogo/alignments/pcfg/
-treebankRules=results/GoldLogo/treebanks/recordTreebankRulesRightBinarizeAligned
+DATASET=GoldLogoAll
+input=datasets/${DATASET}/Records.train.Aligned.trees
+output=results/${DATASET}/alignments/pcfg/
+treebankRules=results/${DATASET}/treebanks/recordTreebankRulesRightBinarizeAligned
 
 CUR_DIR=`pwd`
 cd ..
@@ -35,7 +36,8 @@ induction.runtime.Induction \
 -binarizedAtSentenceLevel \
 -wordsPerRootRule \
 -maxDocLength 20 \
--docLengthBinSize 5 \
+-docLengthBinSize 2 \
+-useMultipleReferences \
 -useStopNode
 	
 # Record PCFG - Treebank Input
