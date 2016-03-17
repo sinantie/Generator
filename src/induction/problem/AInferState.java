@@ -127,7 +127,7 @@ public abstract class AInferState
         return bestWidget;
     }
 
-    public abstract void createHypergraph();
+    public abstract void createHypergraph(int textLength);
     public abstract void doInference();
     public abstract int getComplexity();
     public abstract void updateCounts();

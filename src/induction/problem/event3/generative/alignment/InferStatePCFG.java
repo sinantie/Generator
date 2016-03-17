@@ -37,11 +37,11 @@ public class InferStatePCFG extends InferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
-        super.initInferState(model);        
+        super.initInferState(model, textLength);
         // keep track of sentence boundaries
-        sentenceBoundaries = new LinkedList<Integer>();
+        sentenceBoundaries = new LinkedList<>();
         for(int i = 0; i < ex.getIsSentenceBoundaryArray().length; i++)
         {
             if(ex.getIsSentenceBoundaryArray()[i])

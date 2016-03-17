@@ -61,9 +61,9 @@ public class InferState extends Event3InferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
-        super.initInferState(model);
+        super.initInferState(model, textLength);
         words = ex.getText();
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)
@@ -122,7 +122,8 @@ public class InferState extends Event3InferState
         {
             // Default is to generate the labels from a generic distribution
             // unless we say otherwise
-            for(int i = 0; i < ex.N(); i++)
+//            for(int i = 0; i < ex.N(); i++)
+            for(int i = 0; i < N; i++)
             {
                 final int label = labels[i];
                 hypergraph.addEdge(hypergraph.prodStartNode(),

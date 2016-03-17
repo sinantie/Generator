@@ -57,10 +57,10 @@ public class DiscriminativeInferStateOracle extends DiscriminativeInferState
     }   
     
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
         
-        super.initInferState(model);
+        super.initInferState(model, textLength);
         // used for oracle only
         words = ex.getText();
         nums = new int[words.length];

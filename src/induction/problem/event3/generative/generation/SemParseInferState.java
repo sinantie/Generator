@@ -43,9 +43,9 @@ public class SemParseInferState extends GenInferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
-        super.initInferState(model);
+        super.initInferState(model, textLength);
         words = ex.getText();
         nums = new int[words.length];
         for(int w = 0; w < nums.length; w++)

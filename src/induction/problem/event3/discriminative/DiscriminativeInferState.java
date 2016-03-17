@@ -177,14 +177,15 @@ public class DiscriminativeInferState extends Event3InferState
     }
         
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLenth)
     {
         
-        super.initInferState(model);
+        super.initInferState(model, textLenth);
 
         this.vocabulary = ((Event3Model)model).getWordIndexer();
     }
         
+    @Override
     protected int[] newMatrixOne()
     {
         int[] out = new int[N];        

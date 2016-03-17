@@ -40,7 +40,6 @@ import induction.problem.event3.nodes.StringFieldValueNode;
 import induction.problem.event3.nodes.WordNode;
 import induction.problem.event3.params.TrackParams;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -70,7 +69,7 @@ public class GenInferState extends InferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
         wildcard_pc = -1;
         L = opts.maxPhraseLength;
@@ -85,7 +84,7 @@ public class GenInferState extends InferState
 //        segPenalty[4] = 1;
 //        segPenalty[5] = 0.05;
 //        segPenalty[6] = 0.9;
-        N = ex.N();
+        N = textLength; //ex.N();
         this.vocabulary = ((Event3Model)model).getWordIndexer();
     }               
 
@@ -93,7 +92,7 @@ public class GenInferState extends InferState
     protected Widget newWidget()
     {       
         HashMap<Integer, Integer> eventTypeIndices =
-                            new HashMap<Integer, Integer>(ex.events.size());
+                            new HashMap<>(ex.events.size());
         for(Event e : ex.events.values())
         {
             eventTypeIndices.put(e.getId(), e.getEventTypeIndex());
@@ -130,7 +129,8 @@ public class GenInferState extends InferState
         {
             WordNode startSymbol = new WordNode(-1, 0, -1, -1);
             hypergraph.addSumNode(startSymbol);
-            WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
+//            WordNode endSymbol = new WordNode(ex.N() + 1, 0, -1, -1);
+            WordNode endSymbol = new WordNode(N + 1, 0, -1, -1);
             if(!opts.useStopNode)
                 hypergraph.addSumNode(endSymbol);
             this.hypergraph.addEdge(startSymbol, new Hypergraph.HyperedgeInfoLM<GenWidget>()

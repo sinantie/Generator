@@ -39,9 +39,9 @@ public class InferStateSeg extends Event3InferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
-        super.initInferState(model);
+        super.initInferState(model, textLength);
 //        N = words.length;
         words = ex.getText();
         nums = new int[words.length];

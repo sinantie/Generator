@@ -880,7 +880,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             // create hypergraph - precompute local features on the fly
             inferState.setCalculateOracle(calculateOracle);       
             try{
-            inferState.createHypergraph();
+            inferState.createHypergraph(ex.N());
             inferState.setFeatures(features);
             inferState.doInference();
             }
@@ -968,7 +968,7 @@ public class DiscriminativeEvent3Model extends Event3Model implements Serializab
             // create hypergraph - precompute local features on the fly
             inferState.setCalculateOracle(calculateOracle);       
             try{
-            inferState.createHypergraph();
+            inferState.createHypergraph(ex.N());
             inferState.setFeatures(modelFeatures);
             inferState.doInference();
             }

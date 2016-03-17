@@ -40,19 +40,21 @@ public class LinearRegressionExecutorTest
     {
     }
 
-    @Test
+//    @Test
     public void testTrainA0()
     {
+        String dataset = "GoldLogoAll";
         int fold = 2;
         String type = "values";
         String args = "-mode train "
-                    + "-inputFeaturesFile datasets/GoldLogo/Records.dev "
-                    + "-outputFeaturesFile datasets/GoldLogo/Dev.data."+type+".features.csv "
-//                    + "-inputFeaturesFile datasets/GoldLogo/Records.train "
-//                    + "-outputFeaturesFile datasets/GoldLogo/Train.data."+type+".features.csv "
+                    + "-inputFeaturesFile datasets/"+dataset+"/Records.dev "
+                    + "-outputFeaturesFile datasets/"+dataset+"/Dev.data."+type+".features.csv "
+//                    + "-inputFeaturesFile datasets/"+dataset+"/Records.train "
+//                    + "-outputFeaturesFile datasets/"+dataset+"/Train.data."+type+".features.csv "
                     + "-examplesInSingleFile "
-                    + "-paramsFile results/GoldLogo/alignments/1.exec/stage1.params.obj.gz "
-                    + "-modelFile results/GoldLogo/lengthPrediction."+type+".linear-reg.model "
+                    + "-useMultipleReferences "
+                    + "-paramsFile results/"+dataset+"/alignments/7.exec/stage1.params.obj.gz "
+                    + "-modelFile results/"+dataset+"/lengthPrediction."+type+".linear-reg.model "
                     + "-type "+type+ " "
                     + "-startIndex 2 "
                     + "-extractFeatures "
@@ -75,6 +77,26 @@ public class LinearRegressionExecutorTest
             System.out.println(ex.getMessage());
         }
     }
+
+    @Test
+    public void testTestA0()
+    {        
+        String dataset = "GoldLogoAll";
+        String type = "values";
+        String args = "-mode test "
+                    + "-inputFile datasets/"+dataset+"/Records.dev "
+                    + "-examplesInSingleFile "
+                    + "-paramsFile results/"+dataset+"/alignments/7.exec/stage1.params.obj.gz "
+                    + "-modelFile datasets/"+dataset+"/train.linear.regression.model "
+                    + "-type "+type+ " "
+                    + "-startIndex 2 ";                    
+//                    + "-saveModel";
+        LinearRegressionOptions opts = new LinearRegressionOptions();
+        Execution.init(args.split(" "), new Object[]{opts}); // parse input params
+        lrw = new LinearRegressionWekaWrapper(opts);        
+        lrw.predict(opts.inputFile, opts.examplesInSingleFile);
+    }
+
     
 //    @Test
     public void testTrainWinHelp()
@@ -170,4 +192,5 @@ public class LinearRegressionExecutorTest
         lrw = new LinearRegressionWekaWrapper(opts);        
         lrw.predict(opts.inputFile, opts.examplesInSingleFile);
     }
+    
 }

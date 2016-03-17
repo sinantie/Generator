@@ -125,6 +125,37 @@ public class GenWidget extends Widget
         }        
     }
     
+    public void removeDuplicates() {
+        List<Integer> textList = new ArrayList<>();
+        List<Integer> numList = new ArrayList<>();
+        List<Integer> gensList = new ArrayList<>();        
+        List<Integer> eventsList = new ArrayList<>();        
+        List<Integer> fieldsList = new ArrayList<>();        
+        int prevId = -1;
+        for(int i = 0; i < text.length; i++) {
+            if(text[i] != prevId) {
+                textList.add(text[i]);
+                numList.add(nums[i]);
+                gensList.add(gens[0][i]);
+                eventsList.add(events[0][i]);
+                fieldsList.add(fields[0][i]);
+            }
+            prevId = text[i];
+        }
+        text = new int[textList.size()];
+        nums = new int[numList.size()];
+        gens[0] = new int[gensList.size()];
+        events[0] = new int[eventsList.size()];
+        fields[0] = new int[fieldsList.size()];
+        for(int i  = 0; i < textList.size(); i++) {
+            text[i] = textList.get(i);
+            nums[i] = numList.get(i);
+            gens[0][i] = gensList.get(i);
+            events[0][i] = eventsList.get(i);
+            fields[0][i] = fieldsList.get(i);
+        }
+    }
+    
     public int[] getNums()
     {
         return nums;

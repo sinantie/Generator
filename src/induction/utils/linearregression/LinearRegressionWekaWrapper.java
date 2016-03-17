@@ -38,7 +38,7 @@ public class LinearRegressionWekaWrapper
         {
             LogInfo.logs("Extracting feature vectors...");
             featureExtractor = new ExtractLengthPredictionFeatures(opts.outputFeaturesFile, 
-                    opts.inputFeaturesFile, opts.paramsFile, opts.type, opts.examplesInSingleFile, opts.startIndex);
+                    opts.inputFeaturesFile, opts.paramsFile, opts.type, opts.examplesInSingleFile, opts.useMultipleReferences, opts.startIndex);
             featureExtractor.execute();
         }
         init(opts.paramsFile, opts.modelFile, opts.startIndex, opts.type, opts.mode);
@@ -64,7 +64,7 @@ public class LinearRegressionWekaWrapper
                 model = (Classifier) SerializationHelper.read(modelFilename);
             // create host dataset
             String[] header = featureExtractor.getHeader().split(",");
-            ArrayList<Attribute> attrs = new ArrayList<Attribute>(header.length);
+            ArrayList<Attribute> attrs = new ArrayList<>(header.length);
             for(Feature feature : featureExtractor.getFeatures())
             {
                 switch(featureType)
@@ -142,9 +142,11 @@ public class LinearRegressionWekaWrapper
     private Instance createFeatureVector(String[] extractedValues, boolean label)
     {
         Instance featureVector = new SparseInstance(label ? numberOfAttributes + 1 : numberOfAttributes);
+         
         featureVector.setDataset(dataset);
         for(int i = 0; i < numberOfAttributes; i++)
         {
+            try{
             String s = extractedValues[i];
             switch(featureType)
             {
@@ -158,9 +160,13 @@ public class LinearRegressionWekaWrapper
                     }
                 } break;
             }
+            }catch(Exception e) 
+            { 
+//                System.out.println(e);
+            }
         } // for
         if(label)
-            featureVector.setValue(numberOfAttributes, Integer.valueOf(extractedValues[numberOfAttributes]));
+            featureVector.setValue(numberOfAttributes, Integer.valueOf(extractedValues[numberOfAttributes]));    
         return featureVector;
     }
 }

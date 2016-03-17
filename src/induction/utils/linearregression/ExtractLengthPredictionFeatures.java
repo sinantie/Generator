@@ -37,7 +37,7 @@ public class ExtractLengthPredictionFeatures
     private String[] emptyVector;    
     
     private FeatureType type;
-    private boolean examplesInOneFile;
+    private boolean examplesInOneFile, multipleReferences;
     private int startIndex, vectorLength;
     private List<Feature> features;
 
@@ -49,15 +49,17 @@ public class ExtractLengthPredictionFeatures
      * @param paramsFilename
      * @param type
      * @param examplesInOneFile
+     * @param multipleReferences
      * @param startIndex
      */
     public ExtractLengthPredictionFeatures(String outputFilename, String inputFilename, 
-            String paramsFilename, FeatureType type, boolean examplesInOneFile, int startIndex)
+            String paramsFilename, FeatureType type, boolean examplesInOneFile, boolean multipleReferences, int startIndex)
     {
         this(paramsFilename, type, startIndex);
         this.outputFilename = outputFilename;
         this.inputFilename = inputFilename;
-        this.examplesInOneFile = examplesInOneFile;        
+        this.examplesInOneFile = examplesInOneFile;
+        this.multipleReferences = multipleReferences;
     }
 
     public ExtractLengthPredictionFeatures(String paramsFilename, FeatureType type, int startIndex)
@@ -82,9 +84,9 @@ public class ExtractLengthPredictionFeatures
             ois.readObject(); // wordIndexer, don't need it
             ois.readObject(); // labelIndexer, don't need it
             EventType[] eventTypes = (EventType[]) ois.readObject(); // we only need this one
-            eventTypesIndex = new HashMap<String, Integer>();
+            eventTypesIndex = new HashMap<>();
             StringBuilder headStr = new StringBuilder(); // create header
-            features = new ArrayList<Feature>();
+            features = new ArrayList<>();
             for(EventType eventType: eventTypes)
             {
                 String eventName = eventType.getName();                
@@ -123,7 +125,10 @@ public class ExtractLengthPredictionFeatures
             fos.append(header);
             for(Event3Example example : Utils.readEvent3Examples(inputFilename, examplesInOneFile))
             {
-                fos.append(extractFeatures(example.getText(), example.getEvents()) + "\n");
+                if(multipleReferences)
+                    fos.append(extractFeatures(example.getFirstLineOfTextInOneLine().length, example.getEvents()) + "\n");
+                else    
+                    fos.append(extractFeatures(example.getText(), example.getEvents()) + "\n");
             }                  
             fos.close();
         }
@@ -133,7 +138,13 @@ public class ExtractLengthPredictionFeatures
     private String extractFeatures(String text, String events)
     {        
         // put the text length as label
-        return extractFeatures(events) + "," + text.split("[ \n]").length;
+        return extractFeatures(text.split("[ \n]").length, events);
+    }
+    
+    private String extractFeatures(int textLength, String events)
+    {        
+        // put the text length as label
+        return extractFeatures(events) + "," + textLength;
     }
 
     public String extractFeatures(String events)
@@ -171,7 +182,7 @@ public class ExtractLengthPredictionFeatures
                 }
                 else if(type == FeatureType.values)
                     // account only for the first event of this eventType
-                    if(vector[currentIndex].equals("--"))
+                    if(vector[currentIndex].equals("0"))
                     {
                         vector[currentIndex] = value;
                     }
@@ -196,7 +207,7 @@ public class ExtractLengthPredictionFeatures
         }
         else if (type==FeatureType.values)
         {
-            Arrays.fill(out, "--");
+            Arrays.fill(out, "0");
         }
         return out;
 
@@ -269,12 +280,14 @@ public class ExtractLengthPredictionFeatures
     {
         String paramsFilename, outputFilename, inputFilename;
         int startIndex;
+        boolean multipleReferences = false;
         if(args.length > 0)
         {
             paramsFilename = args[0];
             inputFilename = args[1];
             outputFilename = args[2];
             startIndex = Integer.valueOf(args[3]);
+            multipleReferences = Boolean.valueOf(args[4]);
         }
         else
         {
@@ -291,12 +304,13 @@ public class ExtractLengthPredictionFeatures
             outputFilename = "gaborLists/genEvalListPathsGabor.values.features.csv";
             inputFilename = "gaborLists/genEvalListPathsGabor";
             startIndex = 4; // 4 for weatherGov, 2 for atis
+            
         }
         FeatureType type = FeatureType.values;
         boolean examplesInOneFile = true;
         
         ExtractLengthPredictionFeatures ef = new ExtractLengthPredictionFeatures(outputFilename, inputFilename, 
-                paramsFilename, type, examplesInOneFile, startIndex);
+                paramsFilename, type, examplesInOneFile, multipleReferences, startIndex);
         ef.execute();
     }
 }

@@ -21,6 +21,7 @@ public class LinearRegressionOptions
     @Option(required=true) public Mode mode = Mode.test;
     @Option(required=true) public FeatureType type = FeatureType.counts;
     @Option(gloss="Examples in one file") public boolean examplesInSingleFile = false;
+    @Option(gloss="Example contains multiple references") public boolean useMultipleReferences = false;
     @Option(gloss="Extract features and then train") public boolean extractFeatures = false;
     @Option(gloss="Write model file to disk after training") public boolean saveModel = false;
         

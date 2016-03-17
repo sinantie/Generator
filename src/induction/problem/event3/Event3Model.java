@@ -21,6 +21,7 @@ import induction.Options.InitType;
 import induction.Options.InputFormat;
 import induction.Options.JsonFormat;
 import induction.Options.LengthPrediction;
+import static induction.Options.LengthPrediction.multipleCandidates;
 import induction.Options.ModelType;
 import induction.Options.NgramWrapper;
 import induction.Utils;
@@ -1429,9 +1430,12 @@ public abstract class Event3Model extends WordModel
         AInferState inferState = null;
         for(AExample ex : examples)
         {
-            if(ex.getName().equals("Example_118")) {
+            if(ex.getName().equals("Example_2")) {
                 System.out.println("Processing " + ex.getName() + "...");
-                inferState =  createInferState(ex, 1, null, temperature, lopts, 0, complexity);
+                inferState =  opts.lengthPredictionMode == multipleCandidates ? 
+                createMultipleInferStates(ex, 1, null, temperature, lopts, 0, complexity)
+                : createInferState(ex, 1, null, temperature, lopts, 0, complexity);
+                postProcess(inferState.bestWidget);
                 testPerformance.add(ex, inferState.bestWidget);
                 if(opts.outputFullPred)
                     System.out.println(widgetToFullString(ex, inferState.bestWidget));

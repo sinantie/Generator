@@ -17,7 +17,7 @@ public abstract class AHypergraphInferState//<Example extends AExample>
 {
     protected Options opts;
     protected AModel model;
-    protected final Hypergraph hypergraph = new Hypergraph<AWidget>();
+    protected final Hypergraph hypergraph = new Hypergraph<>();
     //protected final double logZ, elogZ, entropy, logVZ;    
 
     public AHypergraphInferState(AModel model, Example ex, Params params,
@@ -30,9 +30,9 @@ public abstract class AHypergraphInferState//<Example extends AExample>
     }
 
     @Override
-    public void createHypergraph()
+    public void createHypergraph(int textLength)
     {
-        initInferState(model);
+        initInferState(model, textLength);
         StopWatchSet.begin("createHypergraph");
         createHypergraph(hypergraph);
         StopWatchSet.end();
@@ -53,8 +53,8 @@ public abstract class AHypergraphInferState//<Example extends AExample>
 
     // Main functions to override: specifies the entire model
     protected abstract void createHypergraph(Hypergraph<Widget> hypergraph);
-    protected abstract AWidget newWidget();
-    protected abstract void initInferState(AModel model);
+    protected abstract AWidget newWidget();    
+    protected abstract void initInferState(AModel model, int textLength);
     public int getComplexity()
     {
         return hypergraph.numNodes();

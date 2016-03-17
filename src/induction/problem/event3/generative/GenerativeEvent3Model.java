@@ -21,6 +21,7 @@ import induction.problem.AInferState;
 import induction.problem.AParams;
 import induction.problem.AParams.ParamsType;
 import induction.problem.APerformance;
+import induction.problem.AWidget;
 import induction.problem.InferSpec;
 import induction.problem.Vec;
 import induction.problem.VecFactory;
@@ -35,10 +36,10 @@ import induction.problem.event3.generative.generation.GenerationPerformance;
 import induction.problem.event3.generative.alignment.InferState;
 import induction.problem.event3.generative.alignment.InferStatePCFG;
 import induction.problem.event3.generative.generation.GenInferStatePCFG;
+import induction.problem.event3.generative.generation.GenWidget;
 import induction.problem.event3.generative.generation.SemParseInferState;
 import induction.problem.event3.generative.generation.SemParsePerformance;
 import induction.problem.event3.params.CFGParams;
-import induction.problem.event3.params.TrackParams;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -483,6 +484,13 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         LogInfo.end_track();
     }    
 
+    @Override
+    protected void postProcess(AWidget widget) {
+        GenWidget w = (GenWidget)widget;
+        w.removeDuplicates();
+        
+    }
+    
     /**
      * helper method for testing the semantic parse output. Simulates generate(...) method
      * for a single example without the thread mechanism
@@ -530,7 +538,7 @@ public class GenerativeEvent3Model extends Event3Model implements Serializable
         testPerformance = newPerformance();
         AParams counts = newParams();
         AExample ex = examples.get(0);
-        Graph graph = new DirectedSparseGraph<String, String>();
+        Graph graph = new DirectedSparseGraph<>();
         AInferState inferState =  createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity, graph);
         testPerformance.add(ex, inferState.bestWidget);

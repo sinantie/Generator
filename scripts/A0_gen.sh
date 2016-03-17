@@ -1,15 +1,19 @@
 #!/bin/bash
 # options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo20, GoldLogoAll
 DATASET=GoldLogoAll
-inputLists=datasets/${DATASET}/Records.dev
+#Records.dev, Records.dev.down, Records.test, Records.test.down, AllWorlds.dev.records, AllWorlds.test.records
+inputLists=datasets/${DATASET}/Records.dev.down
 #ngramModelFile=datasets/GoldDigit/Language.arpa
 ngramModelFile=datasets/GoldSplitLogo/Language.arpa
-numThreads=6
-stagedParamsFile=results/${DATASET}/alignments/12.exec/stage1.params.obj.gz
+numThreads=4
+stagedParamsFile=results/${DATASET}/alignments/5.exec/stage1.params.obj.gz
 kBest=120
-# option are: gold, fixed, file, linearRegression
-lengthPredictionMode=fixed
-execDir=results/${DATASET}/generation/generation_kBest-${kBest}-${lengthPredictionMode}Length-withNone-noBinarise-1x-multiReferences--tied-solo.RP-noNoneEvent/
+lengthDeviation=2
+length=14
+lengthLambda=100
+# option are: gold, fixed, file, linearRegression, multipleCandidates
+lengthPredictionMode=multipleCandidates
+execDir=results/${DATASET}/generation-dev/generation_kBest-${kBest}-${lengthPredictionMode}Length-${length}-withNone-noBinarise-1x-multiReferences-lengthDeviation-${lengthDeviation}-lengthLambda-${lengthLambda}-noDups-GOLD/
 
 CUR_DIR=`pwd`
 cd ..
@@ -35,11 +39,14 @@ induction.runtime.Generation \
 -lengthCompensation 0 \
 -useStopNode \
 -lengthPredictionMode ${lengthPredictionMode} \
--fixedTextLength 12 \
+-fixedTextLength ${length} \
 -allowConsecutiveEvents \
--useMultipleReferences
+-allowNoneEvent \
+-useMultipleReferences \
+-lengthDeviation ${lengthDeviation} \
+-lengthLambda ${lengthLambda}
 
-#-allowNoneEvent \
+#-tieCatFieldParameters pos.RP solo.RP \
 #-lengthPredictionModelFile gaborLists/genEvalGaborScaledPredLength_c6_g1.1.svr_round.length \
 #-binariseAtWordLevel \
 #-lengthPredictionModelFile A0/Dev.lengths \

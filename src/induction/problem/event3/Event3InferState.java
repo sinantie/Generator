@@ -40,7 +40,7 @@ public abstract class Event3InferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
         wildcard_pc = -1;
         L = opts.maxPhraseLength;
@@ -49,7 +49,7 @@ public abstract class Event3InferState
         {
             segPenalty[l] = Math.exp(-Math.pow(l, opts.segPenalty));
         }
-        N = ex.N();
+        N = textLength; //ex.N();
     }
     
     protected int[] newMatrixOne()
@@ -61,7 +61,8 @@ public abstract class Event3InferState
     
     protected int[][] newMatrix()
     {        
-        int[][] out = new int[((Event3Model)model).C][ex.N()];
+//        int[][] out = new int[((Event3Model)model).C][ex.N()];
+        int[][] out = new int[((Event3Model)model).C][N];
         for(int i = 0; i < out.length; i++)
         {
             Arrays.fill(out[i], -1);

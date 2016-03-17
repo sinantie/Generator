@@ -747,7 +747,7 @@ public class GenerativeDMVModel extends WordModel implements Serializable
             useHarmonicWeights = true;
             AInferState currentInferState = newInferState(ex, params, counts, 
                     new InferSpec(1, true, false, false, false, false, false, 1, -1));
-            currentInferState.createHypergraph();
+            currentInferState.createHypergraph(ex.N());
             currentInferState.doInference(); // We don't need to do inference, we are only initialising the parameters
             currentInferState.updateCounts();
             

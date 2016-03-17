@@ -49,10 +49,10 @@ public class DMVInferState extends AHypergraphInferState<DepTree, DMVExample, DM
     }
      
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
         words = ex.getText();
-        N = ex.N();
+        N = textLength; //ex.N();
         this.vocabulary = ((WordModel)model).getWordIndexer();
     }
     

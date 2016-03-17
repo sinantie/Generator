@@ -28,9 +28,9 @@ public class GenInferStateSeg extends GenInferState
     }
 
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
-        super.initInferState(model);
+        super.initInferState(model, textLength);
         numberOfEvents = ex.events.values().size();
     }   
   

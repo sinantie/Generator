@@ -7,26 +7,31 @@ import fig.basic.Fmt;
 import fig.basic.FullStatFig;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
+import induction.BigDouble;
 import induction.LearnOptions;
 import induction.MyCallable;
 import induction.ngrams.NgramModel;
 import induction.Options;
 import induction.Options.InitType;
 import induction.Options.InputFormat;
+import static induction.Options.LengthPrediction.multipleCandidates;
 import induction.Utils;
 import induction.utils.linearregression.LinearRegressionWekaWrapper;
 import induction.ngrams.KylmNgramWrapper;
 import induction.ngrams.SrilmNgramWrapper;
 import induction.problem.AParams.ParamsType;
+import induction.problem.event3.Event3Model;
+import induction.problem.event3.generative.generation.GenWidget;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -34,13 +39,13 @@ import java.util.Random;
  */
 // A problem is defined by params, performance, example, inferState, model
 public abstract class AModel
-//                            <Widget extends AWidget,
-//                             Params extends AParams,
-//                             Performance extends APerformance<Widget>,
-//                             Example extends AExample<Widget>>
-//                             InferState extends AInferState<Widget, Example, Params> >
-                             implements ModelInterface
-{
+        //                            <Widget extends AWidget,
+        //                             Params extends AParams,
+        //                             Performance extends APerformance<Widget>,
+        //                             Example extends AExample<Widget>>
+        //                             InferState extends AInferState<Widget, Example, Params> >
+        implements ModelInterface {
+
     protected Options opts;
     protected AParams params;
 //    protected List<AExample> examples = new ArrayList<AExample>();
@@ -52,57 +57,52 @@ public abstract class AModel
     protected LinearRegressionWekaWrapper lengthPredictor;
     protected Queue<Integer> lengthList;
     protected String[] fullPredOutArray, pcfgTreesPredOutArray;
-    
+
     int currExample;
 
     protected MaxentTagger posTagger;
 
-    public AModel(Options opts)
-    {
+    public AModel(Options opts) {
         this.opts = opts;
-        maxExamples = opts.maxExamples;        
+        maxExamples = opts.maxExamples;
     }
 
-    public AParams getParams()
-    {
+    public AParams getParams() {
         return params;
     }
-    
+
     protected abstract AParams newParams();
+
     protected abstract APerformance newPerformance();
 
-    protected AExample tokensToExample(String[] tokens)
-    {
+    protected AExample tokensToExample(String[] tokens) {
         throw new UnsupportedOperationException("Not supported");
     }
 
     protected abstract AInferState newInferState(AExample ex, AParams params,
-                                                AParams counts, InferSpec ispec);
+            AParams counts, InferSpec ispec);
+
     protected abstract AInferState newInferState(AExample ex, AParams params,
-                                                AParams counts, InferSpec ispec, Graph graph);
+            AParams counts, InferSpec ispec, Graph graph);
 
     @Override
-    public void logStats()
-    {
+    public void logStats() {
         Execution.putLogRec("numExamples", examples.size());
     }
 
-    protected int genSample(Vec v)
-    {
+    protected int genSample(Vec v) {
         return v.sample(opts.genRandom);
     }
 
     protected abstract AExample genExample(int index);
 
     @Override
-    public void genExamples()
-    {
+    public void genExamples() {
         params.output(Execution.getFile("gen.params"), ParamsType.PROBS);
         Utils.begin_track("Generating %s examples", Utils.fmt(opts.genNumExamples));
         examples = new ArrayList(opts.genNumExamples);
         String[] examplesToString = new String[examples.size()];
-        for(int i = 0; i < examples.size(); i++)
-        {
+        for (int i = 0; i < examples.size(); i++) {
             examples.add(genExample(i));
             examplesToString[i] = exampleToString(examples.get(i));
         }
@@ -111,33 +111,29 @@ public abstract class AModel
     }
 
     protected abstract Integer[] widgetToIntSeq(AWidget widget);
+
     protected abstract String widgetToSGMLOutput(AExample ex, AWidget widget);
 
-    protected String widgetToFullString(AExample ex, AWidget widget)
-    {
+    protected String widgetToFullString(AExample ex, AWidget widget) {
         return exampleToString(ex) + " " + Utils.mkString(widgetToIntSeq(widget), " ");
     }
 
-    protected String widgetToCfgTreeString(AExample ex, AWidget widget)
-    {
+    protected String widgetToCfgTreeString(AExample ex, AWidget widget) {
         return "";
     }
-    
-    public List<AExample> getExamples()
-    {
+
+    public List<AExample> getExamples() {
         return examples;
     }
-    
+
     protected abstract String exampleToString(AExample ex);
 
-    protected void supervisedInitParams()
-    {
+    protected void supervisedInitParams() {
         Utils.begin_track("supervisedInitParams");
         final AParams counts = newParams();
         params.setUniform(1);
         Collection<InitParams> list = new ArrayList(examples.size());
-        for(int i = 0; i < examples.size(); i++)
-        {
+        for (int i = 0; i < examples.size(); i++) {
             list.add(new InitParams(i, examples.get(i), counts));
         }
         Utils.parallelForeach(opts.numThreads, list);
@@ -146,13 +142,11 @@ public abstract class AModel
         LogInfo.end_track();
     }
 
-    
     protected abstract void saveParams(String name);
-   
-    protected void uniformzInitParams()
-    {
-        params = newParams();     
-        
+
+    protected void uniformzInitParams() {
+        params = newParams();
+
 //      // Initialize with an E-step which puts a uniform distribution over z
 //      // This works for models with natural asymmetries such as word alignment and DMV,
 //      // but not for cluster-based models such as GMMs, PMMMs, HMMs,
@@ -161,8 +155,7 @@ public abstract class AModel
         AParams counts = newParams();
         params.setUniform(1);
         Collection<InitParams> list = new ArrayList(examples.size());
-        for(int i = 0; i < examples.size(); i++)
-        {
+        for (int i = 0; i < examples.size(); i++) {
             list.add(new InitParams(i, examples.get(i), counts));
         }
         Utils.parallelForeach(opts.numThreads, list);
@@ -173,86 +166,75 @@ public abstract class AModel
         LogInfo.end_track();
     }
 
-    protected void artificialInitParams()
-    {
+    protected void artificialInitParams() {
         params = newParams();
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    protected void baitInitParams()
-    {
+    protected void baitInitParams() {
         params = newParams();
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     // Default thing to do with a file: assume each example is a line
     // Override if want different behavior (e.g., WSJ)
-    protected void readExamples(String path, int maxExamples)
-    {
+    protected void readExamples(String path, int maxExamples) {
         String[] lines = Utils.readLines(path, maxExamples);
-        for(String line : lines)
-        {
+        for (String line : lines) {
             examples.add(tokensToExample(line.split("\\s+")));
             numExamples++;
         }
     }
 
     @Override
-    public void readExamples()
-    {
+    public void readExamples() {
         Utils.begin_track("Reading examples");
         numExamples = 0;
-        examples.clear();               
-        boolean setTrainTest = !opts.testInputPaths.isEmpty() ||
-                !opts.testInputLists.isEmpty();
+        examples.clear();
+        boolean setTrainTest = !opts.testInputPaths.isEmpty()
+                || !opts.testInputLists.isEmpty();
 
-        if (setTrainTest)
-        {
+        if (setTrainTest) {
             opts.trainStart = numExamples;
         }
         ArrayList<String> excludeLists = new ArrayList();
-        if(opts.excludeLists != null)
-        {
+        if (opts.excludeLists != null) {
             String[] temp = Utils.readLines(opts.excludeLists);
             excludeLists.addAll(Arrays.asList(temp));
         }
-        if(opts.examplesInSingleFile)
+        if (opts.examplesInSingleFile) {
             readFromSingleFile(opts.inputLists);
-        else
+        } else {
             read(opts.inputPaths, opts.inputLists, excludeLists);
-        if (setTrainTest)
-        {
+        }
+        if (setTrainTest) {
             opts.trainEnd = numExamples;
         }
 
         // Allow for the test examples
         maxExamples = Utils.safeAdd(maxExamples, opts.testMaxExamples);
 
-        if (setTrainTest)
-        {
+        if (setTrainTest) {
             opts.testStart = numExamples;
         }
-        if(opts.examplesInSingleFile)
+        if (opts.examplesInSingleFile) {
             readFromSingleFile(opts.testInputLists);
-        else
+        } else {
             read(opts.testInputPaths, opts.testInputLists, excludeLists);
-        if (setTrainTest)
-        {
+        }
+        if (setTrainTest) {
             opts.testEnd = numExamples;
         }
 
-        if (setTrainTest)
-        {
+        if (setTrainTest) {
             Utils.logss("readExamples: train: %s...%s; test: %s...%s",
-                        opts.trainStart, opts.trainEnd,
-                        opts.testStart, opts.testEnd);
+                    opts.trainStart, opts.trainEnd,
+                    opts.testStart, opts.testEnd);
         }
-        if(opts.outputFullPred && opts.forceOutputOrder)
-        {
+        if (opts.outputFullPred && opts.forceOutputOrder) {
             fullPredOutArray = new String[examples.size()];
         }
-        if(opts.outputPcfgTrees && opts.forceOutputOrder)
-        {
+        if (opts.outputPcfgTrees && opts.forceOutputOrder) {
             pcfgTreesPredOutArray = new String[examples.size()];
         }
 //        examples = (Example[]) new AExample[examplesList.size()];
@@ -260,33 +242,26 @@ public abstract class AModel
         LogInfo.end_track();
     }
 
-    private boolean needMoreExamples()
-    {
+    private boolean needMoreExamples() {
         return numExamples < maxExamples;
     }
 
-    private boolean validName(String path)
-    {
-        return (Utils.isEmpty(opts.inputFileExt) ||
-               path.endsWith(opts.inputFileExt)) &&
-               !path.startsWith("#");
+    private boolean validName(String path) {
+        return (Utils.isEmpty(opts.inputFileExt)
+                || path.endsWith(opts.inputFileExt))
+                && !path.startsWith("#");
     }
 
-    private void addPath(String path)
-    {
+    private void addPath(String path) {
         File file = new File(path);
-        if(file.isDirectory())
-        {
-            for(String fileStr : Utils.sortWithEmbeddedInt(file.list()))
-            {
-                if(needMoreExamples())
-                {
+        if (file.isDirectory()) {
+            for (String fileStr : Utils.sortWithEmbeddedInt(file.list())) {
+                if (needMoreExamples()) {
                     addPath(path + "/" + fileStr);
                 }
             } // for
         } // if
-        else if(needMoreExamples() && validName(path))
-        {
+        else if (needMoreExamples() && validName(path)) {
             Utils.begin_track("%s (%s examples so far)", path, ++numExamples);
             readExamples(path, maxExamples - numExamples);
             LogInfo.end_track();
@@ -294,18 +269,14 @@ public abstract class AModel
     }
 
     private void read(ArrayList<String> inputPaths, ArrayList<String> inputLists,
-                      ArrayList<String> excludeLists)
-    {
-        for(String path : inputPaths)
-        {
+            ArrayList<String> excludeLists) {
+        for (String path : inputPaths) {
             addPath(path);
         }
-        for(String path : inputLists) // file that contains paths
+        for (String path : inputLists) // file that contains paths
         {
-            for(String line : Utils.readLines(path))
-            {
-                if(needMoreExamples() && !excludeLists.contains(line))
-                {
+            for (String line : Utils.readLines(path)) {
+                if (needMoreExamples() && !excludeLists.contains(line)) {
 //                    addPath(pathName(path, line));
                     addPath(line);
                 }
@@ -313,19 +284,14 @@ public abstract class AModel
         } // for
     }
 
-    protected void readFromSingleFile(ArrayList<String> inputLists)
-    {
-        for(String file : inputLists)
-        {            
-            if(new File(file).exists())
-            {
+    protected void readFromSingleFile(ArrayList<String> inputLists) {
+        for (String file : inputLists) {
+            if (new File(file).exists()) {
                 String key = null;
                 StringBuilder str = new StringBuilder();
-                for(String line : Utils.readLines(file))
-                {                    
-                    if(line.startsWith("Example_") || line.equals("$NAME"))
-                    {
-                        if(key != null && !key.equals("$NAME")) // only for the first example
+                for (String line : Utils.readLines(file)) {
+                    if (line.startsWith("Example_") || line.equals("$NAME")) {
+                        if (key != null && !key.equals("$NAME")) // only for the first example
                         {
                             ++numExamples;
                             readExamples(str.toString(), maxExamples - numExamples);
@@ -341,104 +307,121 @@ public abstract class AModel
         }
     }
 
-    private String pathName(String path, String f)
-    {
-        if(f.charAt(0) == '/')
-        {
+    private String pathName(String path, String f) {
+        if (f.charAt(0) == '/') {
             return f;
         }
         return new File(path).getParent() + "/" + f;
     }
+
     @Override
-    public void preInit() {}
+    public void preInit() {
+    }
 
     public abstract void stagedInitParams();
-    
+
     @Override
-    public void init(InitType initType, Random initRandom, String name)
-    {
-      Utils.begin_track("Init parameters: %s", initType);    
-      switch(initType)
-      {
-          case random : params = newParams();
-                        params.randomise(initRandom, opts.initNoise);
-                        params.optimise(opts.initSmoothing); break;
-          case bait : baitInitParams(); break;
-          case staged : stagedInitParams(); break;
-          case supervised : supervisedInitParams(); break;
-          case uniformz : uniformzInitParams(); break;
-          case artificial: artificialInitParams(); break;
-          default : throw new UnsupportedOperationException("Invalid init type");
-      }
-      //params.output(Execution.getFile("init.params"));     
-      LogInfo.end_track();
+    public void init(InitType initType, Random initRandom, String name) {
+        Utils.begin_track("Init parameters: %s", initType);
+        switch (initType) {
+            case random:
+                params = newParams();
+                params.randomise(initRandom, opts.initNoise);
+                params.optimise(opts.initSmoothing);
+                break;
+            case bait:
+                baitInitParams();
+                break;
+            case staged:
+                stagedInitParams();
+                break;
+            case supervised:
+                supervisedInitParams();
+                break;
+            case uniformz:
+                uniformzInitParams();
+                break;
+            case artificial:
+                artificialInitParams();
+                break;
+            default:
+                throw new UnsupportedOperationException("Invalid init type");
+        }
+        //params.output(Execution.getFile("init.params"));     
+        LogInfo.end_track();
     }
 
-    protected boolean isTrain(int i)
-    {
+    protected boolean isTrain(int i) {
         return opts.trainStart <= i && i < opts.trainEnd;
     }
-    protected boolean isTest(int i)
-    {
+
+    protected boolean isTest(int i) {
         return opts.testStart <= i && i < opts.testEnd;
     }
 
     // ext specifies the iteration or example number
     // Use the given params (which are actually counts so we can evaluate even in batch EM)
-    protected void record(String ext, String name, FullStatFig complexity, boolean outputPerformance)
-    {
+    protected void record(String ext, String name, FullStatFig complexity, boolean outputPerformance) {
         Utils.logs("Inference complexity: %s", complexity);
-        if (!(trainPerformance == null || trainPerformance.isEmpty()))
-        {
+        if (!(trainPerformance == null || trainPerformance.isEmpty())) {
             trainPerformance.record("train");
-            if(outputPerformance)
+            if (outputPerformance) {
                 trainPerformance.output(
-                    Execution.getFile(name+".train.performance."+ext));
+                        Execution.getFile(name + ".train.performance." + ext));
+            }
         }
-        if (!(testPerformance == null || testPerformance.isEmpty()))
-        {
+        if (!(testPerformance == null || testPerformance.isEmpty())) {
             testPerformance.record("test");
-            if(outputPerformance)
+            if (outputPerformance) {
                 testPerformance.output(
-                    Execution.getFile(name+".test.performance."+ext));
+                        Execution.getFile(name + ".test.performance." + ext));
+            }
         }
     }
 
     private void processExample(int i, AExample ex, double stepSize, AParams counts,
-                                double temperature, LearnOptions lopts,
-                                int iter, FullStatFig complexity)
-    {
-        processInferState(createInferState(ex, stepSize, counts, temperature,
-                lopts, iter, complexity), i, ex);
+            double temperature, LearnOptions lopts,
+            int iter, FullStatFig complexity) {
+        processInferState(opts.lengthPredictionMode == multipleCandidates
+                ? createMultipleInferStates(ex, stepSize, counts, temperature, lopts, iter, complexity)
+                : createInferState(ex, stepSize, counts, temperature, lopts, iter, complexity), i, ex);
+//        processInferState(createInfeState(ex, stepSize, counts, temperature,
+//                lopts, iter, complexity), i, ex);
     }
 
     protected AInferState createInferState(AExample ex, double stepSize,
             AParams counts, double temperature, LearnOptions lopts, int iter,
-            FullStatFig complexity, Graph graph)
-    {
+            FullStatFig complexity, Graph graph) {
+        return createInferState(ex, ex.N(), stepSize, counts, temperature, lopts, iter, complexity, graph);
+    }
+
+    protected AInferState createInferState(AExample ex, int textLength, double stepSize,
+            AParams counts, double temperature, LearnOptions lopts, int iter,
+            FullStatFig complexity, Graph graph) {
         AInferState currentInferState = newInferState(ex, params, counts,
-        new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
-                      false, lopts.mixParamsCounts, lopts.useVarUpdates,
-                      stepSize, iter), graph);
-        currentInferState.createHypergraph();
+                new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
+                        false, lopts.mixParamsCounts, lopts.useVarUpdates,
+                        stepSize, iter), graph);
+        currentInferState.createHypergraph(textLength);
         currentInferState.doInference();
-        synchronized(complexity)
-        {
+        synchronized (complexity) {
             complexity.add(currentInferState.getComplexity());
         }
         return currentInferState;
     }
 
     /**
-     * Create the inference state model. This includes instantiating the
-     * correct model (generative or discriminative) based on the implementing
-     * sub-class, creating the hypergraph, doing inference (inside-outside or viterbi)
-     * and updating the statistics
+     * Create the inference state model. This includes instantiating the correct
+     * model (generative or discriminative) based on the implementing sub-class,
+     * creating the hypergraph, doing inference (inside-outside or viterbi) and
+     * updating the statistics
+     *
      * @param ex the example to create the inference state on
      * @param stepSize the update scale (useful in online EM)
-     * @param counts an empty set of parameters that is going to filled in
-     * (for training, at the E-step only)
-     * @param temperature value used for cooling during training (online EM only)
+     * @param counts an empty set of parameters that is going to filled in (for
+     * training, at the E-step only)
+     * @param temperature value used for cooling during training (online EM
+     * only)
      * @param lopts learning options
      * @param iter the iteration we are running the experiment
      * @param complexity useful statistics
@@ -446,134 +429,135 @@ public abstract class AModel
      */
     protected AInferState createInferState(AExample ex, double stepSize,
             AParams counts, double temperature, LearnOptions lopts, int iter,
-            FullStatFig complexity)
-    {
+            FullStatFig complexity) {
+        return createInferState(ex, ex.N(), stepSize, counts, temperature, lopts, iter, complexity);
+    }
+
+    protected AInferState createInferState(AExample ex, int textLength, double stepSize,
+            AParams counts, double temperature, LearnOptions lopts, int iter,
+            FullStatFig complexity) {
         AInferState currentInferState = newInferState(ex, params, counts,
-        new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
-                      false, lopts.mixParamsCounts, lopts.useVarUpdates,
-                      stepSize, iter));
-        currentInferState.createHypergraph();
+                new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
+                        false, lopts.mixParamsCounts, lopts.useVarUpdates,
+                        stepSize, iter));
+        currentInferState.createHypergraph(textLength);
         currentInferState.doInference();
-        synchronized(complexity)
-        {
+        synchronized (complexity) {
             complexity.add(currentInferState.getComplexity());
         }
         return currentInferState;
     }
 
     /**
-     * Create the inference state model. This only instantiates the
-     * correct model (generative or discriminative) based on the implementing
-     * sub-class
+     * Create the inference state model. This only instantiates the correct
+     * model (generative or discriminative) based on the implementing sub-class
+     *
      * @param ex the example to create the inference state on
      * @param stepSize the update scale (useful in online EM)
-     * @param counts an empty set of parameters that is going to filled in
-     * (for training, at the E-step only)
-     * @param temperature value used for cooling during training (online EM only)
+     * @param counts an empty set of parameters that is going to filled in (for
+     * training, at the E-step only)
+     * @param temperature value used for cooling during training (online EM
+     * only)
      * @param lopts learning options
      * @param iter the iteration we are running the experiment
      * @return an inference state model
      */
     protected AInferState createInferState(AExample ex, double stepSize,
-            AParams counts, double temperature, LearnOptions lopts, int iter)
-    {
+            AParams counts, double temperature, LearnOptions lopts, int iter) {
         return newInferState(ex, params, counts,
-        new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
-                      false, lopts.mixParamsCounts, lopts.useVarUpdates,
-                      stepSize, iter));
+                new InferSpec(temperature, !lopts.hardUpdate, true, lopts.hardUpdate,
+                        false, lopts.mixParamsCounts, lopts.useVarUpdates,
+                        stepSize, iter));
     }
-    
-    private void processInferState(AInferState inferState, int i, AExample ex)
-    {
-        if (isTrain(i))
-        {
+
+    private void processInferState(AInferState inferState, int i, AExample ex) {
+        if (isTrain(i)) {
             inferState.updateCounts();
-            synchronized(trainPerformance)
-            {
+            synchronized (trainPerformance) {
                 trainPerformance.add(inferState.stats());
 //                trainPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
                 trainPerformance.add(ex, inferState.bestWidget);
-                if(trainPredOut != null)
-                {
+                if (trainPredOut != null) {
                     trainPredOut.println(Utils.mkString(widgetToIntSeq(inferState.bestWidget), " "));
                 }
-                if(trainFullPredOut != null)
-                {
-                    if(opts.forceOutputOrder)
+                if (trainFullPredOut != null) {
+                    if (opts.forceOutputOrder) {
                         fullPredOutArray[i] = widgetToFullString(ex, inferState.bestWidget);
-                    else
+                    } else {
                         trainFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
+                    }
                 }
             }
         }
-        if (isTest(i))
-        {
-            synchronized(testPerformance)
-            {
+        if (isTest(i)) {
+            synchronized (testPerformance) {
                 testPerformance.add(inferState.stats());
 //                testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
+                postProcess(inferState.bestWidget);
                 testPerformance.add(ex, inferState.bestWidget);
-                if(testPredOut != null)
-                {
-                    if(opts.modelType == Options.ModelType.generate ||
-                       opts.modelType == Options.ModelType.generatePcfg)
+                if (testPredOut != null) {
+                    if (opts.modelType == Options.ModelType.generate
+                            || opts.modelType == Options.ModelType.generatePcfg) {
                         testPredOut.println(widgetToSGMLOutput(ex, inferState.bestWidget));
-                    else
+                    } else {
                         testPredOut.println(Utils.mkString(widgetToIntSeq(inferState.bestWidget), " "));
+                    }
                 }
-                if(testFullPredOut != null)
-                {
-                    if(opts.forceOutputOrder)
+                if (testFullPredOut != null) {
+                    if (opts.forceOutputOrder) {
                         fullPredOutArray[i] = widgetToFullString(ex, inferState.bestWidget);
-                    else
+                    } else {
                         testFullPredOut.println(widgetToFullString(ex, inferState.bestWidget));
+                    }
                 }
-                if(testPcfgTreesPredOut != null)
-                {
-                    if(opts.forceOutputOrder)
+                if (testPcfgTreesPredOut != null) {
+                    if (opts.forceOutputOrder) {
                         pcfgTreesPredOutArray[i] = widgetToCfgTreeString(ex, inferState.bestWidget);
-                    else
+                    } else {
                         testPcfgTreesPredOut.println(widgetToCfgTreeString(ex, inferState.bestWidget));
+                    }
                 }
             }
         }
     }
 
-    protected void writeFullPredOut(PrintWriter out, String[] array)
-    {
+    protected void writeFullPredOut(PrintWriter out, String[] array) {
         int i = 0;
-        for(String example : array)
-        {
-            if(opts.inputFormat == InputFormat.zmert)
+        for (String example : array) {
+            if (opts.inputFormat == InputFormat.zmert) {
                 out.println(String.format("%d%s%s %s", i++, example, opts.kBest, opts.interpolationFactor));
-            else
+            } else {
                 out.println(example);
+            }
         }
     }
-    public String summary(int i)
-    {
-        if (isTrain(i))
-            return "train: "+trainPerformance.summary();
-        else if (isTest(i))
-            return "test: "+testPerformance.summary();
-        else return "(skip)";
-    }                   
-       
+
+    public String summary(int i) {
+        if (isTrain(i)) {
+            return "train: " + trainPerformance.summary();
+        } else if (isTest(i)) {
+            return "test: " + testPerformance.summary();
+        } else {
+            return "(skip)";
+        }
+    }
 
     /**
-     * helper method for testing the learning output. Simulates learn(...) method
-     * for a single example without the thread mechanism
+     * helper method for testing the learning output. Simulates learn(...)
+     * method for a single example without the thread mechanism
+     *
+     * @param name
+     * @param lopts
      * @return a String with the aligned events' indices
      */
-    public String testStagedLearn(String name, LearnOptions lopts)
-    {
+    public String testStagedLearn(String name, LearnOptions lopts) {
         opts.alignmentModel = lopts.alignmentModel;
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
         AParams counts = newParams();
         AExample ex = examples.get(0);
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+        AInferState inferState = createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity);
         testPerformance.add(inferState.stats());
 //        testPerformance.add(ex.getTrueWidget(), inferState.bestWidget);
@@ -600,40 +584,37 @@ public abstract class AModel
 //        return "";
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
-    
+
     /**
-     * helper method for testing the learning output. Simulates learn(...) method
-     * for a number of examples without the thread mechanism.
+     * helper method for testing the learning output. Simulates learn(...)
+     * method for a number of examples without the thread mechanism.
+     *
+     * @param name
+     * @param lopts
      * @return a String with the aligned events' indices of the last example
      */
-    public String testInitLearn(String name, LearnOptions lopts)
-    {
+    public String testInitLearn(String name, LearnOptions lopts) {
         opts.alignmentModel = lopts.alignmentModel;
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         int iter = 0;
         AInferState inferState = null;
-        while (iter < lopts.numIters)
-        {
-            System.out.println("Iteration " + (iter+1));
+        while (iter < lopts.numIters) {
+            System.out.println("Iteration " + (iter + 1));
             trainPerformance = newPerformance();
             AParams counts = newParams();
 //            if(opts.initType == InitType.staged && iter == 0)
 //                counts.setVecs(params.getVecs());
 //            Example ex = examples.get(0);
-            for(AExample ex: examples)
-            {
+            for (AExample ex : examples) {
 //                System.out.println(ex.getName());
-                try
-                {
-                    inferState =  createInferState(ex, 1, counts, temperature,
-                        lopts, iter, complexity);
+                try {
+                    inferState = createInferState(ex, 1, counts, temperature,
+                            lopts, iter, complexity);
                     inferState.updateCounts();
                     trainPerformance.add(ex, inferState.bestWidget);
 //                    System.out.println(widgetToFullString(ex, inferState.bestWidget));
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
                     System.out.println("Error in example: " + ex.getName());
                     e.printStackTrace(LogInfo.stderr);
 //                    e.printStackTrace();
@@ -642,7 +623,7 @@ public abstract class AModel
             }
             // M step
             params = counts;
-            params.optimise(lopts.smoothing);            
+            params.optimise(lopts.smoothing);
             iter++;
             record(String.valueOf(iter), name, complexity, true);
             System.out.println("accuracy=" + Fmt.D(trainPerformance.getAccuracy()));
@@ -654,101 +635,139 @@ public abstract class AModel
 //        System.out.println(trainPerformance.output());
         return Utils.mkString(widgetToIntSeq(inferState.bestWidget), " ");
     }
-    
+
     /**
-     * helper method for testing the generation output. Simulates generate(...) method
-     * for a single example without the thread mechanism
-     * @return a String with the generated SGML text output (contains results as well)
+     * helper method for testing the generation output. Simulates generate(...)
+     * method for a single example without the thread mechanism
+     *
+     * @param name
+     * @param lopts
+     * @return a String with the generated SGML text output (contains results as
+     * well)
      */
-    public String testGenerate(String name, LearnOptions lopts)
-    {
+    public String testGenerate(String name, LearnOptions lopts) {
         opts.alignmentModel = lopts.alignmentModel;
-        if(opts.ngramModelFile != null)
+        if (opts.ngramModelFile != null) {
             ngramModel = new SrilmNgramWrapper(opts.ngramModelFile, opts.ngramSize);
+        }
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
 //        AParams counts = newParams();
         AExample ex = examples.get(0);
-        AInferState inferState =  createInferState(ex, 1, null, temperature,
-                lopts, 0, complexity);
+        AInferState inferState = opts.lengthPredictionMode == multipleCandidates
+                ? createMultipleInferStates(ex, 1, null, temperature, lopts, 0, complexity)
+                : createInferState(ex, 1, null, temperature, lopts, 0, complexity);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));
         return widgetToSGMLOutput(ex, inferState.bestWidget);
     }
-    
-    public Graph testGenerateVisualise(String name, LearnOptions lopts)
-    {
+
+    public Graph testGenerateVisualise(String name, LearnOptions lopts) {
         opts.alignmentModel = lopts.alignmentModel;
-        if(opts.ngramModelFile != null)
+        if (opts.ngramModelFile != null) {
             ngramModel = new KylmNgramWrapper(opts.ngramModelFile);
+        }
         FullStatFig complexity = new FullStatFig();
         double temperature = lopts.initTemperature;
         testPerformance = newPerformance();
         AParams counts = newParams();
 //        AExample ex = examples.get(examples.size()-1);
         AExample ex = examples.get(1621);
-        Graph graph = new DirectedSparseGraph<String, String>();
-        AInferState inferState =  createInferState(ex, 1, counts, temperature,
+        Graph graph = new DirectedSparseGraph<>();
+        AInferState inferState = createInferState(ex, 1, counts, temperature,
                 lopts, 0, complexity, graph);
         testPerformance.add(ex, inferState.bestWidget);
         System.out.println(widgetToFullString(ex, inferState.bestWidget));
         return graph;
     }
-    
-    protected class InitParams extends MyCallable
-    {
+
+    protected AInferState createMultipleInferStates(AExample ex, double stepSize, AParams counts, double temperature,
+            LearnOptions lopts, int iter, FullStatFig complexity) {
+        int lengthDeviation = opts.lengthDeviation;
+        int fixedLength = opts.fixedTextLength;
+        AInferState maxInferState = null;
+        double maxScore = Double.NEGATIVE_INFINITY;        
+        for (int length = Math.max(2, fixedLength - lengthDeviation); length < fixedLength + lengthDeviation; length++) {
+            AInferState cur = createInferState(ex, length, stepSize, counts, temperature, lopts, iter, complexity);
+            GenWidget bestWidget = (GenWidget)cur.bestWidget;
+            postProcess(bestWidget);
+            double score = normalisedLogScore(cur.logVZ, length);
+            double lmScore = normalisedLogScore(NgramModel.getSentenceLMLogProb(ngramModel, ((Event3Model)this).getWordIndexer(), 
+                    false, false, "", length, IntStream.of((bestWidget).getText()).boxed().collect(Collectors.toList())), length);
+            double combinedScore = score + opts.lengthLambda * lmScore;
+            if (combinedScore > maxScore) {
+                maxInferState = cur;
+                maxScore = combinedScore;
+            }           
+//            System.out.println(score + " " + lmScore + " " + combinedScore + " " + length
+//                    + " " + IntStream.of(bestWidget.getFields()[0]).boxed().collect(Collectors.toList()).toString()
+//                    + " " + IntStream.of(bestWidget.getEvents()[0]).boxed().collect(Collectors.toList()).toString()
+//                    + " " + widgetToFullString(ex, cur.bestWidget));
+        }
+        return maxInferState;
+    }
+
+    private double normalisedLogScore(double score, int length) {
+
+//        return Math.pow(BigDouble.fromLogDouble(score).toDouble(), 1.0d / (double) length);
+        return score / (double) length;
+    }
+
+    protected void postProcess(AWidget bestWidget) {
+        
+    }
+
+    protected class InitParams extends MyCallable {
+
         private AExample ex;
         private int i;
         private AParams counts;
         boolean outputLog;
-        
-        InitParams(int i, AExample ex, AParams counts)
-        {
+
+        InitParams(int i, AExample ex, AParams counts) {
             this.i = i;
             this.ex = ex;
             this.counts = counts;
             outputLog = opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0;
-        }     
+        }
 
         @Override
-        public Object call() throws Exception
-        {
-            if(outputLog) 
+        public Object call() throws Exception {
+            if (outputLog) {
                 Utils.begin_track("Example %s/%s", Utils.fmt(i), Utils.fmt(examples.size()));
+            }
             initExample();
-            if(outputLog) 
+            if (outputLog) {
                 LogInfo.end_track();
+            }
             return null;
         }
-        
-        
-        private void initExample()
-        {
-        // 02/15/09: just realized this; but we've been using uniformzInitParams for NAACL 2009 - need to check what happened there
-        // Hack: set useVarUpdates = true so that get() uses getCount rather than getProb
-        // Otherwise, this does the same thing as uniform on the parameters, which introduces strange biases
-            AInferState currentInferState = newInferState(ex, params, counts, 
+
+        private void initExample() {
+            // 02/15/09: just realized this; but we've been using uniformzInitParams for NAACL 2009 - need to check what happened there
+            // Hack: set useVarUpdates = true so that get() uses getCount rather than getProb
+            // Otherwise, this does the same thing as uniform on the parameters, which introduces strange biases
+            AInferState currentInferState = newInferState(ex, params, counts,
                     new InferSpec(1, true, false, false, false, false, true, 1, -1));
-            currentInferState.createHypergraph();
+            currentInferState.createHypergraph(ex.N());
             currentInferState.doInference(); // We don't need to do inference, we are only initialising the parameters
             currentInferState.updateCounts();
-            
+
         }
     }
 
-    protected class BatchEM<T> extends MyCallable
-    {
-        protected  AExample ex;
-        protected  int i, iter;
-        protected  AParams counts;
-        protected  double temperature;
-        protected  LearnOptions lopts;
-        protected  FullStatFig complexity;
+    protected class BatchEM<T> extends MyCallable {
+
+        protected AExample ex;
+        protected int i, iter;
+        protected AParams counts;
+        protected double temperature;
+        protected LearnOptions lopts;
+        protected FullStatFig complexity;
 
         public BatchEM(int i, AExample ex, AParams counts, double temperature,
-                LearnOptions lopts, int iter, FullStatFig complexity)
-        {
+                LearnOptions lopts, int iter, FullStatFig complexity) {
             this.i = i;
             this.ex = ex;
             this.counts = counts;
@@ -757,15 +776,14 @@ public abstract class AModel
             this.iter = iter;
             this.complexity = complexity;
         }
+
         @Override
-        public T call() throws Exception
-        {
+        public T call() throws Exception {
             processExample(i, ex, 1, counts, temperature, lopts, iter, complexity);
-            if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0)
-            {
-                Utils.begin_track("Example %s/%s: %s", Utils.fmt(i+1),
-                         Utils.fmt(examples.size()), summary(i));            
-                Execution.putOutput("currExample", i);            
+            if (opts.outputExampleFreq != 0 && i % opts.outputExampleFreq == 0) {
+                Utils.begin_track("Example %s/%s: %s", Utils.fmt(i + 1),
+                        Utils.fmt(examples.size()), summary(i));
+                Execution.putOutput("currExample", i);
                 LogInfo.end_track();
             }
             return null;

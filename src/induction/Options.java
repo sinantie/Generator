@@ -179,6 +179,8 @@ public class Options {
   @Option(gloss="length prediction mode") public LengthPrediction lengthPredictionMode = LengthPrediction.gold;
   @Option(gloss="ngram model input file") public String lengthPredictionModelFile;
   @Option(gloss="Fixed text length (default=29 for weather-data)") public int fixedTextLength = 12;
+  @Option(gloss="Deviation in terms of word length to generate (default=5, for multipleCandidate lengthPredictionMode only)") public int lengthDeviation = 5;
+  @Option(gloss="Length lambda to compute model_score + lambda * lm_score (default=0.5, for multipleCandidate lengthPredictionMode only)") public double lengthLambda = 0.5;
   @Option(gloss="Feature type for length prediction vector (default=value)") public LinearRegressionOptions.FeatureType
     lengthPredictionFeatureType = LinearRegressionOptions.FeatureType.values;
   @Option(gloss="Position of eventType in events file (default=2 for ATIS)") public int lengthPredictionStartIndex = 2;

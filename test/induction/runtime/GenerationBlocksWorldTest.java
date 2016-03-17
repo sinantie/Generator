@@ -10,7 +10,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -46,7 +45,7 @@ public class GenerationBlocksWorldTest
                     + "-outputFullPred "
                     + "-stagedParamsFile "
                     + "results/GoldLogoAll/alignments/"
-                    + "5.exec/stage1.params.obj.gz "
+                    + "9.exec/stage1.params.obj.gz "
                     + "-disallowConsecutiveRepeatFields "
                     + "-kBest 120 "
                     + "-ngramModelFile datasets/GoldSplitLogo/Language.arpa "
@@ -59,6 +58,8 @@ public class GenerationBlocksWorldTest
                     + "-ngramSize 3 "
                     + "-lengthPredictionMode multipleCandidates "
                     + "-fixedTextLength 12 "
+                    + "-lengthDeviation 8 "
+                    + "-lengthLambda 100 "
 //                    + "-lengthPredictionMode linearRegression "
 //                    + "-lengthPredictionModelFile ../datasets/atis/train/lengthPrediction.counts.linear-reg.model "
 //                    + "-lengthPredictionFeatureType counts "

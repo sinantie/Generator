@@ -49,18 +49,18 @@ public class GenInferStatePCFG extends GenInferState
         recordTree = ex.getTrueWidget() != null ? ex.getTrueWidget().getRecordTree() : null;
         indexer = model.getRulesIndexer();
         minWordsPerNonTerminal = model.getMinWordsPerNonTerminal();        
-        excludedCfgRules = new HashSet<CFGRule>();
+        excludedCfgRules = new HashSet<>();
         cfgRules = cloneCfgRules(model.getCfgRules());
     }        
     
     @Override
-    protected void initInferState(AModel model)
+    protected void initInferState(AModel model, int textLength)
     {
-        super.initInferState(model);        
+        super.initInferState(model, textLength);        
         if(opts.fixRecordSelection)
         {
             // keep track of sentence boundaries
-            sentenceBoundaries = new LinkedList<Integer>();
+            sentenceBoundaries = new LinkedList<>();
             for(int i = 0; i < ex.getIsSentenceBoundaryArray().length; i++)
             {
                 if(ex.getIsSentenceBoundaryArray()[i])
