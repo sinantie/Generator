@@ -1,0 +1,13 @@
+/nbproject/private/ld/
+/nbproject/private/
+/datasets/Gold*
+/datasets/A0
+/datasets/*.txt
+/datasets/NoSolo
+/datasets/Sentences.dev
+/datasets/test_*
+/build/
+/dist/
+/lib/Helper_old.jar
+/lib/stanford-corenlp-3.5.1-models.jar
+/results/

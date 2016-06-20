@@ -1,0 +1,2529 @@
+Example_1
+what flights go from dallas to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_2
+what flights go from phoenix to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_3
+i need an early flight from milwaukee to denver
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:early
+0 0 1 2
+Example_4
+what types of ground transportation are available in denver
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:denver	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_5
+what flights go from denver to st. louis on tuesday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:st_louis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_6
+is ground transportation available in st. louis
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:st_louis	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_7
+i need to fly from st. louis to milwaukee on wednesday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_8
+flights from washington to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_9
+flights from atlanta to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:atlanta	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_10
+flights from san diego to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_diego	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_11
+i would like flight information from phoenix to denver
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_12
+could i have flight information on flights from salt lake city to phoenix please
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_13
+could i have flight information on flights from pittsburgh to phoenix please
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_14
+i would like information on flights leaving from washington dc to denver
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_15
+i need information on flights from washington to boston that leave on a saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_16
+i need the flights from washington to montreal on a saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_17
+i need the fares on flights from washington to toronto on a saturday
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:toronto	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 1 2 4
+Example_18
+i want to go from boston to washington on a saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:washington	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_19
+i need a flight from cleveland to dallas that leaves before noon see if too much information
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1200	@typed:<
+0 0 1 2
+Example_20
+get fares from washington to boston
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_21
+get saturday fares from washington to boston
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 1 2 4
+Example_22
+get fares from washington to montreal
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_23
+get saturday fares from washington to montreal
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 1 2 4
+Example_24
+get saturday fares from washington to toronto
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:toronto	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 1 2 4
+Example_25
+get the saturday fare from washington to toronto
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:toronto	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 1 2 4
+Example_26
+list saturday flights from washington to boston
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:boston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_27
+list saturday flights from boston to washington
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:washington	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_28
+get flights from milwaukee to dtw
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:dtw	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_29
+list flights from milwaukee to detroit
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:detroit	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_30
+get flights from detroit to toronto
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:detroit	@manufacturer:--	@price:--	@stop:--	@to:toronto	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_31
+get flights from toronto to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_32
+get last flight from oakland to salt lake city on wednesday or first flight from oakland to salt lake city on thursday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:4	.type:search	@of:departure_time	@typed:argmax	@what:flight
+.id:6	.type:search	@of:departure_time	@typed:argmin	@what:flight
+.id:8	.type:day	@day:wednesday	@dep_ar_ret:departure
+.id:9	.type:day	@day:thursday	@dep_ar_ret:departure
+.id:10	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 0 1 4 6 8 9 10
+Example_33
+get first flight from oakland to salt lake city on thursday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:departure_time	@typed:argmin	@what:flight
+.id:2	.type:day	@day:thursday	@dep_ar_ret:departure
+0 0 1 2
+Example_34
+get last flight from oakland to salt lake city on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:departure_time	@typed:argmax	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_35
+list last wednesday flight from oakland to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:departure_time	@typed:argmax	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_36
+get flight from toronto to san diego stopping at dtw
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:dtw	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_37
+get flights between st. petersburg and charlotte
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_petersburg	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_38
+i need a flight from milwaukee to indianapolis leaving monday before 9am
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:indianapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:900	@typed:<
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_39
+i need a flight departing from milwaukee to indianapolis leaving monday before 8am
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:indianapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:800	@typed:<
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_40
+is there ground transportation available at the indianapolis airport
+.id:0	.type:ground_transportation	@from_airport:ind	@info:--	@to_city:--	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_41
+i need flight information for a flight departing from indianapolis to cleveland departing tuesday at noon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:cleveland	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:--	@dep_ar:departure	@time:1200
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_42
+i need flight information for a flight departing from cleveland to milwaukee wednesday after 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1800	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_43
+i need flight information for flights departing from cleveland going back to milwaukee wednesday after 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_44
+i need flight information for flights departing from cleveland to milwaukee on wednesday after 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_45
+i need flight information for flights departing from cleveland to milwaukee on wednesday after 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_46
+i need a flight from denver to salt lake city on monday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2
+Example_47
+is there ground transportation available at the denver airport
+.id:0	.type:ground_transportation	@from_airport:den	@info:--	@to_city:--	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_48
+i need flight and airline information for a flight from denver to salt lake city on monday departing after 5pm
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:flight	@typed:lambda	@what:airline
+.id:4	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:5	.type:day	@day:monday	@dep_ar_ret:departure
+0 1 2 3 4 5
+Example_49
+is there ground transportation available at the salt lake city airport
+.id:0	.type:ground_transportation	@from_airport:slc	@info:--	@to_city:--	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_50
+i need a flight from salt lake city to phoenix departing wednesday after 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_51
+is there ground transportation available at the phoenix airport
+.id:0	.type:ground_transportation	@from_airport:phx	@info:--	@to_city:--	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_52
+i need a flight from oakland to salt lake city on wednesday departing after 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1800	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_53
+i need flight and fare information for thursday departing prior to 9am from oakland going to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:condition	@arg1:departure_time	@arg2:900	@typed:<
+.id:5	.type:day	@day:thursday	@dep_ar_ret:departure
+0 1 2 3 4 5
+Example_54
+i need flight and fare information departing from oakland to salt lake city on thursday before 8am
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:condition	@arg1:departure_time	@arg2:800	@typed:<
+.id:5	.type:day	@day:thursday	@dep_ar_ret:departure
+0 1 2 3 4 5
+Example_55
+i need flight numbers and airlines for flights departing from oakland to salt lake city on thursday departing before 8am
+.id:2	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:3	.type:search	@of:flight	@typed:lambda	@what:flight_number
+.id:4	.type:search	@of:flight	@typed:lambda	@what:airline
+.id:6	.type:condition	@arg1:departure_time	@arg2:800	@typed:<
+.id:7	.type:day	@day:thursday	@dep_ar_ret:departure
+0 2 3 4 6 7
+Example_56
+i need flight numbers for those flights departing on thursday before 8am from oakland going to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+.id:4	.type:condition	@arg1:departure_time	@arg2:800	@typed:<
+.id:5	.type:day	@day:thursday	@dep_ar_ret:departure
+0 1 2 4 5
+Example_57
+list airports in arizona nevada and california please
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+.id:3	.type:airport	@from:--	@location:arizona	@to:--
+.id:4	.type:airport	@from:--	@location:nevada	@to:--
+.id:5	.type:airport	@from:--	@location:california	@to:--
+.id:2	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 3 4 5 2
+Example_58
+list california nevada arizona airports
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+.id:3	.type:airport	@from:--	@location:arizona	@to:--
+.id:4	.type:airport	@from:--	@location:nevada	@to:--
+.id:5	.type:airport	@from:--	@location:california	@to:--
+.id:2	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 3 4 5 2
+Example_59
+list the arizona airport
+.id:0	.type:airport	@from:--	@location:arizona	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_60
+list california airports
+.id:0	.type:airport	@from:--	@location:california	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_61
+list flights from las vegas to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:las_vegas	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_62
+list california airports
+.id:0	.type:airport	@from:--	@location:california	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_63
+list airports
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 1
+Example_64
+list wednesday night flights from oakland to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:late
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_65
+list flights from oakland to salt lake city before 6am thursday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:600	@typed:<
+.id:3	.type:day	@day:thursday	@dep_ar_ret:departure
+.id:4	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2 3 4
+Example_66
+which airlines fly between toronto and san diego
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:airline
+0 1 2
+Example_67
+please list afternoon flights between st. petersburg and charlotte
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_petersburg	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+0 0 1 2
+Example_68
+what is tpa
+.id:0	.type:const	@typed:airport	@value:tpa
+0 0
+Example_69
+what are the flights from cleveland to dallas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_70
+please list only the flights from cleveland to dallas that leave before noon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1200	@typed:<
+0 0 1 2
+Example_71
+what type of aircraft are flying from cleveland to dallas before noon
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:aircraft_code
+.id:4	.type:condition	@arg1:departure_time	@arg2:1200	@typed:<
+0 1 2 4
+Example_72
+i need information on flights from indianapolis to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_73
+i need a flight from memphis to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_74
+i need a ticket from nashville to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:nashville	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_75
+i need a ticket from nashville tennessee to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:nashville	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_76
+i need flight information from milwaukee to tampa
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:tampa	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_77
+i need to rent a car at tampa
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:tampa	@typed:rental_car
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_78
+i need a daily flight from st. louis to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:--	@when:daily
+0 0 1 2
+Example_79
+i need flights departing from oakland and arriving salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:oakland	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_80
+i need information on flights from toronto to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_81
+i need information on flights from toronto to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_82
+i want a flight from toronto to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_83
+i need information on flights between st. petersburg and charlotte
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_petersburg	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_84
+i need the flight numbers of flights leaving from cleveland and arriving at dallas
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_85
+which flights go from new york to miami and back
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_86
+what does fare code qo mean
+.id:0	.type:const	@typed:fare_basis_code	@value:qo
+0 0
+Example_87
+show me flights from milwaukee to orlando one way
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_88
+what the abbreviation us stand for
+.id:0	.type:const	@typed:airline	@value:us
+0 0
+Example_89
+i'd like a one way ticket from milwaukee to orlando either wednesday evening or thursday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+.id:3	.type:when	@dep-ar:departure	@when:evening
+.id:4	.type:day	@day:thursday	@dep_ar_ret:departure
+.id:5	.type:when	@dep-ar:departure	@when:morning
+.id:6	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 0 1 2 3 4 5 6
+Example_90
+show me flights from milwaukee to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_91
+what does fare code f mean
+.id:0	.type:const	@typed:fare_basis_code	@value:f
+0 0
+Example_92
+what does fare code h mean
+.id:0	.type:const	@typed:fare_basis_code	@value:h
+0 0
+Example_93
+what does fare code y mean
+.id:0	.type:const	@typed:fare_basis_code	@value:y
+0 0
+Example_94
+what are restrictions ap/57
+.id:0	.type:const	@typed:restriction	@value:ap_57
+0 0
+Example_95
+please show me first class flights from indianapolis to memphis one way leaving before 10am
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1000	@typed:<
+0 0 1 2
+Example_96
+now show me all round trip flights from burbank to seattle that arrive before 7pm in seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1900	@typed:<
+0 0 1 2
+Example_97
+round trip flights from orlando to montreal please
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_98
+what airline is dl
+.id:0	.type:const	@typed:airline	@value:dl
+0 0
+Example_99
+show me all delta airlines flights from montreal to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:montreal	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_100
+show me all flights from orlando to montreal please
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_101
+which airline is kw
+.id:0	.type:const	@typed:airline	@value:kw
+0 0
+Example_102
+please list all flights from new york to miami any any type of class
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_103
+what does fare code bh mean
+.id:0	.type:const	@typed:fare_basis_code	@value:bh
+0 0
+Example_104
+show me a return flight from miami to jfk please
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:jfk	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_105
+what does fare code bh mean
+.id:0	.type:const	@typed:fare_basis_code	@value:bh
+0 0
+Example_106
+what does fare code bh mean
+.id:0	.type:const	@typed:fare_basis_code	@value:bh
+0 0
+Example_107
+what does fare code bh mean
+.id:0	.type:const	@typed:fare_basis_code	@value:bh
+0 0
+Example_108
+what does fare code bh mean
+.id:0	.type:const	@typed:fare_basis_code	@value:bh
+0 0
+Example_109
+show me one way flights from milwaukee to orlando after 6pm on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1800	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_110
+show me the flights from indianapolis to memphis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_111
+show me round trip flights from burbank to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_112
+show me round trip flights from orlando to montreal
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_113
+show me nonstop flights from montreal to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:montreal	@manufacturer:--	@price:--	@stop:nonstop	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_114
+show me round trips between montreal and orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:montreal	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_115
+show me round trip flights from montreal to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:montreal	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_116
+show me the cheapest one way flights from montreal to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:montreal	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:fare	@typed:argmin	@what:flight
+0 0 1
+Example_117
+show me the cheapest one way flights from orlando to montreal
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:1	.type:search	@of:fare	@typed:argmin	@what:flight
+0 0 1
+Example_118
+show me the cheapest economy flights from miami to new york
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:economy	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:fare	@typed:argmin	@what:flight
+0 0 1
+Example_119
+kansas city to las vegas economy
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:economy	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_120
+kansas city to las vegas economy
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:economy	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_121
+what airline is hp
+.id:0	.type:const	@typed:airline	@value:hp
+0 0
+Example_122
+ground transportation in las vegas
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:las_vegas	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_123
+ground transportation for las vegas
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:las_vegas	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_124
+las vegas to baltimore economy
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:las_vegas	@manufacturer:--	@price:economy	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_125
+las vegas to baltimore economy
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:las_vegas	@manufacturer:--	@price:economy	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_126
+baltimore to kansas city economy
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:economy	@stop:--	@to:kansas_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_127
+what airline is us
+.id:0	.type:const	@typed:airline	@value:us
+0 0
+Example_128
+which airline is us
+.id:0	.type:const	@typed:airline	@value:us
+0 0
+Example_129
+which airline is us
+.id:0	.type:const	@typed:airline	@value:us
+0 0
+Example_130
+which airline is us
+.id:0	.type:const	@typed:airline	@value:us
+0 0
+Example_131
+which airline is us
+.id:0	.type:const	@typed:airline	@value:us
+0 0
+Example_132
+columbus to chicago one way before 10am
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:columbus	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1000	@typed:<
+0 0 1 2
+Example_133
+what airline is hp
+.id:0	.type:const	@typed:airline	@value:hp
+0 0
+Example_134
+st petersburg to detroit
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_petersburg	@manufacturer:--	@price:--	@stop:--	@to:detroit	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_135
+from milwaukee to orlando one way after 5pm wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_136
+and from milwaukee to atlanta before 10am daily
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1000	@typed:<
+.id:3	.type:when	@dep-ar:--	@when:daily
+0 0 1 2 3
+Example_137
+what airline is yx
+.id:0	.type:const	@typed:airline	@value:yx
+0 0
+Example_138
+show me all flights from san jose to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_jose	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_139
+show me all flights from san jose to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_jose	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_140
+what airline is hp
+.id:0	.type:const	@typed:airline	@value:hp
+0 0
+Example_141
+show me ground transportation in phoenix
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:phoenix	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_142
+show me flights from phoenix to fort worth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:fort_worth	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_143
+show me ground transportation in fort worth
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:fort_worth	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_144
+show me flights from fort worth to san jose
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:fort_worth	@manufacturer:--	@price:--	@stop:--	@to:san_jose	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_145
+show me first class flights from new york to miami round trip
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_146
+show me first class flights from new york to miami round trip
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_147
+show me all round trip flights from new york to miami nonstop
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:nonstop	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_148
+show me all round trip flights from miami to new york nonstop
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:nonstop	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_149
+show me one way flights from indianapolis to memphis before 10am on any day
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1000	@typed:<
+0 0 1 2
+Example_150
+what does fare code f mean
+.id:0	.type:const	@typed:fare_basis_code	@value:f
+0 0
+Example_151
+show me round trip flights from burbank to tacoma
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:tacoma	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_152
+what does the restriction ap58 mean
+.id:0	.type:const	@typed:restriction	@value:ap_58
+0 0
+Example_153
+what does fare code h mean
+.id:0	.type:const	@typed:fare_basis_code	@value:h
+0 0
+Example_154
+what airline is as
+.id:0	.type:const	@typed:airline	@value:as
+0 0
+Example_155
+what airline is as
+.id:0	.type:const	@typed:airline	@value:as
+0 0
+Example_156
+what airline is as
+.id:0	.type:const	@typed:airline	@value:as
+0 0
+Example_157
+what airline is a s as in sam
+.id:0	.type:const	@typed:airline	@value:as
+0 0
+Example_158
+show me nonstop flights from st. petersburg to toronto
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_petersburg	@manufacturer:--	@price:--	@stop:nonstop	@to:toronto	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_159
+show me nonstop flights from toronto to st. petersburg
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:nonstop	@to:st_petersburg	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_160
+show me the nonstop flights and fares from toronto to st. petersburg
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:nonstop	@to:st_petersburg	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_161
+show me the nonstop flights from toronto to st. petersburg
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:nonstop	@to:st_petersburg	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_162
+show me weekday flights from milwaukee to orlando one way
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:--	@when:weekday
+0 0 1 2
+Example_163
+show me weekday flights from milwaukee to orlando one way
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:--	@when:weekday
+0 0 1 2
+Example_164
+what airline is hp
+.id:0	.type:const	@typed:airline	@value:hp
+0 0
+Example_165
+list flights from chicago to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_166
+list flights from chicago to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_167
+list flights from kansas city to denver
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_168
+list flights from denver to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_169
+list flights from phoenix to las vegas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_170
+list flights from las vegas to san diego
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:las_vegas	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_171
+list flights from chicago to kansas city in the morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:kansas_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2
+Example_172
+list flights from houston to san jose
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:san_jose	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_173
+list flights from houston to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_174
+list flights from milwaukee to san jose on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:san_jose	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_175
+list flights from san jose to dallas on friday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_jose	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_176
+list flights from dallas to houston
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:houston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_177
+list distance from airports to downtown in new york
+.id:0	.type:ground_transportation	@from_airport:new_york	@info:miles_distant	@to_city:new_york	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_178
+list airports in new york
+.id:0	.type:airport	@from:--	@location:new_york	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_179
+list airports in new york
+.id:0	.type:airport	@from:--	@location:new_york	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_180
+list airports in la
+.id:0	.type:airport	@from:--	@location:los_angeles	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_181
+list airports
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 1
+Example_182
+list airports in la
+.id:0	.type:airport	@from:--	@location:los_angeles	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_183
+list airports in la
+.id:0	.type:airport	@from:--	@location:los_angeles	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_184
+list the airports in la
+.id:0	.type:airport	@from:--	@location:los_angeles	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_185
+list la
+.id:0	.type:const	@typed:city	@value:los_angeles
+0 0
+Example_186
+list la
+.id:0	.type:const	@typed:city	@value:los_angeles
+0 0
+Example_187
+list flights from new york to la
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_188
+list flights from la guardia to burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:lga	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_189
+list flights from la to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_190
+list flights from ontario california to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:ontario	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_191
+list flights from ontario california to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:ontario	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_192
+list flights from indianapolis to memphis with fares on monday
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:monday	@dep_ar_ret:departure
+0 1 2 3 4
+Example_193
+list flights from indianapolis to memphis on monday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2
+Example_194
+list flights from memphis to miami on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_195
+list flights from miami to indianapolis on sunday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:indianapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_196
+list flights from charlotte on saturday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_197
+list type of aircraft for all flights from charlotte
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:aircraft_code
+0 1 2
+Example_198
+list flights and fares from tacoma to orlando round trip leaving saturday returning next saturday
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:tacoma	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 1 2 3 4
+Example_199
+what class is fare code q
+.id:0	.type:const	@typed:fare_basis_code	@value:q
+0 0
+Example_200
+list flights from orlando to tacoma on saturday of fare basis code of q
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:orlando	@manufacturer:--	@price:--	@stop:--	@to:tacoma	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:fare_basis_code	@equals:q
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_201
+list airfares for first class round trip from detroit to st. petersburg
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:detroit	@manufacturer:--	@price:--	@stop:--	@to:st_petersburg	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_202
+list coach round trip airfare from detroit to st. petersburg
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:coach	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:detroit	@manufacturer:--	@price:--	@stop:--	@to:st_petersburg	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_203
+list flights from pittsburgh to newark on monday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_204
+list flights from minneapolis to pittsburgh on friday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:minneapolis	@manufacturer:--	@price:--	@stop:--	@to:pittsburgh	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_205
+list flights before 9am from cincinnati to tampa
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:tampa	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:900	@typed:<
+0 0 1 2
+Example_206
+list flights from cincinnati to tampa before noon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:tampa	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1200	@typed:<
+0 0 1 2
+Example_207
+list flights from tampa to cincinnati after 3pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tampa	@manufacturer:--	@price:--	@stop:--	@to:cincinnati	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1500	@typed:>
+0 0 1 2
+Example_208
+list airlines that fly from seattle to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:airline
+0 1 2
+Example_209
+list delta flights from seattle to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_210
+list seating capacities of delta flights from seattle to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:capacity
+0 1 2
+Example_211
+list delta flights from seattle to salt lake city with aircraft type
+.id:1	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:--	@typed:lambda	@what:aircraft_code
+0 1 2 3
+Example_212
+what ground transportation is there in baltimore
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:baltimore	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_213
+list ground transportation in baltimore
+.id:0	.type:ground_transportation	@from_airport:--	@info:--	@to_city:baltimore	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_214
+list flights from baltimore to san francisco on friday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_215
+give me the flights from los angeles to pittsburgh on tuesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:--	@to:pittsburgh	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2
+Example_216
+give me the flights from pittsburgh to los angeles thursday evening
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:evening
+.id:3	.type:day	@day:thursday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_217
+give me the round trip flights from cleveland to miami next wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_218
+give me the fares for round trip flights from cleveland to miami next wednesday
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 1 2 4
+Example_219
+give me the flights and fares for a trip to cleveland from miami on wednesday
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:cleveland	@year:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:search	@of:--	@typed:lambda	@what:fare
+.id:4	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 1 2 3 4
+Example_220
+give me the fares from miami to cleveland next sunday
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:cleveland	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+.id:4	.type:day	@day:sunday	@dep_ar_ret:departure
+0 1 2 4
+Example_221
+give me the flights from milwaukee to phoenix on saturday or sunday on american airlines
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+.id:3	.type:day	@day:sunday	@dep_ar_ret:departure
+.id:4	.type:condition	@arg1:day	@arg2:--	@typed:or
+0 0 1 2 3 4
+Example_222
+give me the flights from phoenix to milwaukee on wednesday evening
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:evening
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_223
+give me the flights from phoenix to milwaukee on wednesday on american airlines
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_224
+give me the flights from phoenix to milwaukee on american airlines
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_225
+give me the flights from phoenix to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_226
+give me the meal flights departing early saturday morning from chicago to seattle nonstop
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:nonstop	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:early
+.id:4	.type:when	@dep-ar:departure	@when:morning
+.id:5	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4 5
+Example_227
+give me the flights from chicago to seattle saturday morning that have meals
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:morning
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4
+Example_228
+give me flights from seattle to chicago that have meals on continental
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+0 0 1 2
+Example_229
+give me the flights from seattle to chicago that have meals on continental saturday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:morning
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4
+Example_230
+give me the flights from chicago to seattle on continental that have meals early saturday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:early
+.id:4	.type:when	@dep-ar:departure	@when:morning
+.id:5	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4 5
+Example_231
+give me a combination of continental flights from chicago to seattle that have meals early saturday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:early
+.id:4	.type:when	@dep-ar:departure	@when:morning
+.id:5	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4 5
+Example_232
+give me the saturday morning flights with meals from chicago to minneapolis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:minneapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:morning
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4
+Example_233
+give me the saturday morning flights on continental that have meals from chicago to minneapolis
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:minneapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:morning
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4
+Example_234
+give me the saturday morning flights from chicago to st. paul on continental that have meals
+.id:0	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:st_paul	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:has_meal
+.id:3	.type:when	@dep-ar:departure	@when:morning
+.id:4	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3 4
+Example_235
+give me the flights from new york to las vegas nonstop
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:nonstop	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_236
+give me the flights from memphis to las vegas nonstop
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:nonstop	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_237
+give me the cheapest round trip flights from indianapolis to orlando around december twenty fifth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:fare	@typed:argmin	@what:flight
+.id:2	.type:day_number	@day_number:25	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:december
+0 0 1 2 3
+Example_238
+i need a friday flight from newark to tampa
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:tampa	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_239
+i need a sunday flight from tampa to charlotte
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tampa	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_240
+give me a flight from charlotte to baltimore on tuesday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_241
+can i have a morning flight from baltimore to newark please
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2
+Example_242
+cheapest round trip fare from indianapolis to orlando on december twenty fifth
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+.id:4	.type:day_number	@day_number:25	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:december
+0 1 2 4 5
+Example_243
+cheapest one way fare from indianapolis to orlando on december twenty seventh
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+.id:4	.type:day_number	@day_number:27	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:december
+0 1 2 4 5
+Example_244
+flight number from dallas to houston
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:houston	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_245
+flight number from houston to dallas
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_246
+saturday flight on american airlines from milwaukee to phoenix
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_247
+flight numbers on american airlines from phoenix to milwaukee
+.id:1	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_248
+flight numbers from chicago to seattle
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_249
+flight numbers from chicago to seattle on continental
+.id:1	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_250
+flight numbers from seattle to chicago on continental
+.id:1	.type:flight	@aircraft_code:--	@airline:co	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight_number
+0 1 2
+Example_251
+is there a fare from pittsburgh to cleveland under 200 dollars
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:cleveland	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:flight
+.id:3	.type:condition	@arg1:fare	@arg2:200	@typed:<
+0 0 2 3
+Example_252
+how much is coach flight from pittsburgh to atlanta
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:coach	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:atlanta	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_253
+newark to tampa on friday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:tampa	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_254
+tampa to charlotte sunday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tampa	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_255
+charlotte to baltimore on tuesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:baltimore	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2
+Example_256
+baltimore to newark wednesday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_257
+dallas to houston after 1201am
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:houston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1	@typed:>
+0 0 1 2
+Example_258
+houston to dallas before midnight
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:0	@typed:<
+0 0 1 2
+Example_259
+indianapolis to orlando december twenty seventh
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day_number	@day_number:27	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:december
+0 0 1 2 3
+Example_260
+cheapest fare from indianapolis to orlando on the twenty seventh of december
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+.id:4	.type:day_number	@day_number:27	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:december
+0 1 2 4 5
+Example_261
+cheapest fare round trip from indianapolis to orlando on december twenty seventh
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+.id:4	.type:day_number	@day_number:27	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:december
+0 1 2 4 5
+Example_262
+cleveland to miami on wednesday arriving before 4pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cleveland	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1600	@typed:<
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_263
+miami to cleveland sunday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:cleveland	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_264
+new york city to las vegas and memphis to las vegas on sunday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_265
+new york city to las vegas and memphis to las vegas on sunday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_266
+new york to las vegas sunday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_267
+memphis to las vegas sunday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_268
+new york to las vegas on sunday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_269
+chicago to seattle saturday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_270
+chicago to las vegas saturday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_271
+los angeles to pittsburgh afternoon tuesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:--	@to:pittsburgh	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_272
+los angeles to pittsburgh afternoon on monday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:--	@to:pittsburgh	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_273
+pittsburgh to los angeles thursday evening
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:pittsburgh	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:evening
+.id:3	.type:day	@day:thursday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_274
+milwaukee to phoenix on saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_275
+phoenix to milwaukee on sunday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_276
+phoenix to milwaukee on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_277
+a flight from baltimore to san francisco arriving between 5 and 8pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:baltimore	@manufacturer:--	@price:--	@stop:--	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1700	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:<
+0 0 1 2 3
+Example_278
+how many northwest flights leave st. paul
+.id:0	.type:flight	@aircraft_code:--	@airline:nw	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_paul	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:count	@what:flight
+0 0 1
+Example_279
+how many northwest flights leave washington dc
+.id:0	.type:flight	@aircraft_code:--	@airline:nw	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:count	@what:flight
+0 0 1
+Example_280
+how many flights does northwest have leaving dulles
+.id:0	.type:flight	@aircraft_code:--	@airline:nw	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:iad	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:count	@what:flight
+0 0 1
+Example_281
+what cities does northwest fly out of
+.id:0	.type:flight	@aircraft_code:--	@airline:nw	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:any	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:city	@from:any	@location:--	@services:--	@stop:--	@to:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:city
+0 0 1 2
+Example_282
+list the cities from which northwest flies
+.id:0	.type:flight	@aircraft_code:--	@airline:nw	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:any	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:city	@from:any	@location:--	@services:--	@stop:--	@to:--
+.id:2	.type:search	@of:--	@typed:lambda	@what:city
+0 0 1 2
+Example_283
+what cities does northwest fly to
+.id:0	.type:flight	@aircraft_code:--	@airline:nw	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:any	@year:--
+.id:1	.type:city	@from:--	@location:--	@services:--	@stop:--	@to:any
+.id:2	.type:search	@of:--	@typed:lambda	@what:city
+0 0 1 2
+Example_284
+i would like a connecting flight from dallas to san francisco leaving after 4 o'clock
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:connecting	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1600	@typed:>
+0 0 1 2
+Example_285
+please list all the flights from dallas to san francisco
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:dallas	@manufacturer:--	@price:--	@stop:--	@to:san_francisco	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_286
+tell me again the morning flights on american airlines from philadelphia to dallas
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:philadelphia	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2
+Example_287
+tell me the flights that leave philadelphia and go to dallas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:philadelphia	@manufacturer:--	@price:--	@stop:--	@to:dallas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_288
+what is a d9s
+.id:0	.type:const	@typed:aircraft_code	@value:d9s
+0 0
+Example_289
+what type of plane is a d9s
+.id:0	.type:const	@typed:aircraft_code	@value:d9s
+0 0
+Example_290
+what is a d9s
+.id:0	.type:const	@typed:aircraft_code	@value:d9s
+0 0
+Example_291
+show me the airports serviced by tower air
+.id:0	.type:airport	@from:--	@location:ff	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_292
+show me the first class and coach flights between jfk and orlando
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:4	.type:flight	@aircraft_code:--	@airline:--	@class_type:coach	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:2	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 3 4 2
+Example_293
+show me the first class and coach flights from kennedy airport to miami
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:4	.type:flight	@aircraft_code:--	@airline:--	@class_type:coach	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:2	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 3 4 2
+Example_294
+show me the first class and coach flights from jfk to miami
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:3	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:4	.type:flight	@aircraft_code:--	@airline:--	@class_type:coach	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:2	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 3 4 2
+Example_295
+are meals ever served on tower air
+.id:0	.type:flight	@aircraft_code:--	@airline:ff	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:flight	@typed:lambda	@what:meal_code
+0 0 1
+Example_296
+are snacks served on tower air
+.id:0	.type:flight	@aircraft_code:--	@airline:ff	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:snack
+0 0 1 2
+Example_297
+show delta airlines flights from jfk to miami
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:jfk	@manufacturer:--	@price:--	@stop:--	@to:miami	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_298
+show delta airlines from boston to salt lake
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_299
+show delta airlines flights from boston to salt lake
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_300
+show delta airlines flights from boston to salt lake city
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_301
+what are the fares for flights between boston and washington dc
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:washington	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_302
+what is the least expensive fare from boston to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+0 1 2
+Example_303
+what are the lowest fares from washington dc to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:washington	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+0 1 2
+Example_304
+what is the lowest fare from bwi to salt lake city
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:bwi	@manufacturer:--	@price:--	@stop:--	@to:salt_lake_city	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+0 1 2
+Example_305
+show me the cost of a first class ticket from detroit to las vegas and back
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:first	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:detroit	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:fare
+0 1 2
+Example_306
+what is the earliest arriving flight from boston to washington dc
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:washington	@year:--
+.id:1	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+0 0 1
+Example_307
+what is the earliest arriving flight between boston and washington dc
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:washington	@year:--
+.id:1	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+0 0 1
+Example_308
+what's the earliest arriving flight between boston and washington dc
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:--	@to:washington	@year:--
+.id:1	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+0 0 1
+Example_309
+what is the earliest arriving flight from houston to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+0 0 1
+Example_310
+what is the earliest arriving flight from houston to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:arrival_time	@typed:argmin	@what:flight
+0 0 1
+Example_311
+show me the flights between houston and orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_312
+show me the flights between houston and orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_313
+show me the flights from houston to orlando
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_314
+list all flights leaving denver between 8pm and 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:2100	@typed:<
+.id:3	.type:condition	@arg1:departure_time	@arg2:2000	@typed:>
+0 0 1 2 3
+Example_315
+what is the seating capacity on the aircraft 733
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:733
+0 0 1
+Example_316
+what is the seating capacity of a 72s
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:72s
+0 0 1
+Example_317
+what is the seating capacity of the aircraft 72s
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:72s
+0 0 1
+Example_318
+what is the seating capacity of the aircraft m80
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:m80
+0 0 1
+Example_319
+what is the seating capacity of the type of aircraft m80
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:m80
+0 0 1
+Example_320
+what is the seating capacity of an m80
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:m80
+0 0 1
+Example_321
+what airlines serve denver
+.id:0	.type:airline	@equals:--	@services:denver
+.id:1	.type:search	@of:--	@typed:lambda	@what:airline
+0 0 1
+Example_322
+list the airlines with flights to or from denver
+.id:2	.type:search	@of:flight	@typed:lambda	@what:airline
+.id:5	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:6	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:4	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 2 5 6 4
+Example_323
+what airlines fly into denver
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:airline
+0 1 2
+Example_324
+list all flights arriving in denver between 8 and 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+0 0 1 2 3
+Example_325
+what is the capacity of the 73s
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:73s
+0 0 1
+Example_326
+what is 73s
+.id:0	.type:const	@typed:aircraft_code	@value:73s
+0 0
+Example_327
+what is seating capacity on the aircraft 73s
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:73s
+0 0 1
+Example_328
+what is the seating capacity of a 757
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:757
+0 0 1
+Example_329
+how many people will a 757 hold
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:757
+0 0 1
+Example_330
+how many passengers can fly on a 757
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:757
+0 0 1
+Example_331
+list all of the daily flights arriving in denver between 8 and 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+.id:4	.type:when	@dep-ar:--	@when:daily
+0 0 1 2 3 4
+Example_332
+list all of the daily flights arriving in denver from 8 to 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+.id:4	.type:when	@dep-ar:--	@when:daily
+0 0 1 2 3 4
+Example_333
+show me all of the daily flights arriving in denver between 8pm and 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+.id:4	.type:when	@dep-ar:--	@when:daily
+0 0 1 2 3 4
+Example_334
+what is the seating capacity of the 757
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:757
+0 0 1
+Example_335
+tell me about the m80 aircraft
+.id:0	.type:const	@typed:aircraft_code	@value:m80
+0 0
+Example_336
+tell me about the m80 aircraft
+.id:0	.type:const	@typed:aircraft_code	@value:m80
+0 0
+Example_337
+tell me about the type of aircraft called an m80
+.id:0	.type:const	@typed:aircraft_code	@value:m80
+0 0
+Example_338
+what is the seating capacity of the 733
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:733
+0 0 1
+Example_339
+what is the seating capacity of the m80
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:m80
+0 0 1
+Example_340
+what is the seating capacity on the aircraft m80
+.id:0	.type:search	@of:--	@typed:const	@what:capacity
+.id:1	.type:const	@typed:aircraft_code	@value:m80
+0 0 1
+Example_341
+list all flights arriving or leaving denver between 8 and 9pm
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+.id:4	.type:when	@dep-ar:--	@when:daily
+.id:6	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:7	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:denver	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:5	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 1 2 3 4 6 7 5
+Example_342
+list all flights arriving in denver between 8 and 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+.id:4	.type:when	@dep-ar:--	@when:daily
+0 0 1 2 3 4
+Example_343
+list all flights on all types of aircraft arriving in denver between 8 and 9pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:denver	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:2000	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:2100	@typed:<
+.id:4	.type:when	@dep-ar:--	@when:daily
+0 0 1 2 3 4
+Example_344
+please list all flights from nashville to memphis on monday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:nashville	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_345
+please list the flights from nashville to memphis on monday morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:nashville	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_346
+is there ground transportation from the memphis airport into town when if i arrive at 842 in the morning
+.id:0	.type:ground_transportation	@from_airport:memphis	@info:--	@to_city:memphis	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_347
+please list the flights from memphis to new york city on a monday night
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:late
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_348
+what is cvg
+.id:0	.type:const	@typed:airport	@value:cvg
+0 0
+Example_349
+what ground transportation is available from la guardia airport into new york city
+.id:0	.type:ground_transportation	@from_airport:lga	@info:--	@to_city:new_york	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_350
+is there ground transportation from lga into new york city
+.id:0	.type:ground_transportation	@from_airport:lga	@info:--	@to_city:new_york	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_351
+please list the ground transportation from lga into new york city
+.id:0	.type:ground_transportation	@from_airport:lga	@info:--	@to_city:new_york	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_352
+please list ground transportation from ewr into new york city
+.id:0	.type:ground_transportation	@from_airport:ewr	@info:--	@to_city:new_york	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_353
+show me the morning flights from memphis to new york city
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2
+Example_354
+give me the flights from new york city to nashville leaving after 5pm on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:new_york	@manufacturer:--	@price:--	@stop:--	@to:nashville	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1700	@typed:>
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_355
+tell me about the ground transportation from nashville airport
+.id:0	.type:ground_transportation	@from_airport:bna	@info:--	@to_city:--	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_356
+what are the nonstop flights from cincinnati to charlotte leaving after noon and arriving before 7pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:nonstop	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1200	@typed:>
+.id:3	.type:condition	@arg1:arrival_time	@arg2:1900	@typed:<
+0 0 1 2 3
+Example_357
+how many flights does alaska airlines have to burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:as	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:count	@what:flight
+0 0 1
+Example_358
+list the alaska airline flights from burbank to anywhere
+.id:0	.type:flight	@aircraft_code:--	@airline:as	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_359
+list the alaska airline flights from burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:as	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_360
+which airline is as
+.id:0	.type:const	@typed:airline	@value:as
+0 0
+Example_361
+list the alaska airlines flights arriving in burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:as	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_362
+list the alaska airlines flights departing from burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:as	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_363
+list all alaska airlines flights
+.id:0	.type:flight	@aircraft_code:--	@airline:as	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_364
+list all flights departing from seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:seattle	@manufacturer:--	@price:--	@stop:--	@to:--	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_365
+list the flights from indianapolis to memphis that leave before noon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1200	@typed:<
+0 0 1 2
+Example_366
+list the cheapest fare from charlotte to las vegas
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:2	.type:search	@of:flight	@typed:min	@what:fare
+0 1 2
+Example_367
+i want a flight from los angeles to charlotte early in the morning
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:early
+.id:3	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2 3
+Example_368
+i would like a morning flight from charlotte to newark
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2
+Example_369
+i'd like a morning flight from newark to los angeles
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+0 0 1 2
+Example_370
+i'd like an evening flight from newark to los angeles
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:evening
+0 0 1 2
+Example_371
+i would like a flight that leaves on sunday from montreal quebec to san diego california
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:montreal	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_372
+i would like a flight on tuesday which leaves from san diego to indianapolis indiana and that leaves in the afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_diego	@manufacturer:--	@price:--	@stop:--	@to:indianapolis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_373
+i would like to leave thursday morning from indianapolis to toronto
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:indianapolis	@manufacturer:--	@price:--	@stop:--	@to:toronto	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:thursday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_374
+i would like a flight on friday morning from toronto to montreal
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:toronto	@manufacturer:--	@price:--	@stop:--	@to:montreal	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_375
+i would like a flight from cincinnati to burbank on american
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_376
+what type of aircraft is used for the american flight leaving at 419pm
+.id:1	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:2	.type:search	@of:flight	@typed:lambda	@what:aircraft_code
+.id:4	.type:time	@approx:--	@dep_ar:departure	@time:1619
+0 1 2 4
+Example_377
+i need a flight leaving kansas city to chicago leaving next wednesday and returning the following day
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_378
+what flights go from long beach to st. louis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:long_beach	@manufacturer:--	@price:--	@stop:--	@to:st_louis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_379
+what are the flights from memphis to las vegas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:las_vegas	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_380
+what are the flights from las vegas to ontario
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:las_vegas	@manufacturer:--	@price:--	@stop:--	@to:ontario	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_381
+what are the flights from ontario to memphis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:ontario	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_382
+what type of ground transportation is there at the las vegas airport
+.id:0	.type:ground_transportation	@from_airport:las	@info:--	@to_city:--	@typed:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_383
+is there taxi service at the ontario airport
+.id:0	.type:ground_transportation	@from_airport:ont	@info:--	@to_city:--	@typed:taxi
+.id:1	.type:search	@of:--	@typed:lambda	@what:ground_transportation
+0 0 1
+Example_384
+what are the flights from tampa to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:tampa	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_385
+what are the flights from milwaukee to seattle
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:seattle	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_386
+what are the flights from la guardia to san jose on united
+.id:0	.type:flight	@aircraft_code:--	@airline:ua	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:lga	@manufacturer:--	@price:--	@stop:--	@to:san_jose	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_387
+what are the flights on mondays that travel from charlotte north carolina to phoenix arizona
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2
+Example_388
+what are the flights from phoenix arizona to st. paul minnesota on tuesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:st_paul	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2
+Example_389
+what are the flights on thursday leaving from st. paul minnesota to st. louis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_paul	@manufacturer:--	@price:--	@stop:--	@to:st_louis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:thursday	@dep_ar_ret:departure
+0 0 1 2
+Example_390
+what are the flights from st. louis to charlotte north carolina leaving on friday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_391
+what are the flights from boston to orlando that stop in new york
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:boston	@manufacturer:--	@price:--	@stop:new_york	@to:orlando	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_392
+i need a morning flight from burbank to milwaukee on next monday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_393
+how about a flight from milwaukee to st. louis that leaves monday night
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:st_louis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:late
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_394
+and a flight from st. louis to burbank that leaves tuesday afternoon
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:afternoon
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_395
+how about a flight leaving tuesday night from st. louis to burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:late
+.id:3	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_396
+i need a flight from salt lake to newark airport that arrives on saturday before 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:ewr	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1800	@typed:<
+.id:3	.type:day	@day:saturday	@dep_ar_ret:arrival
+0 0 1 2 3
+Example_397
+i'd like a flight from cincinnati to newark airport that arrives on saturday before 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:ewr	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1800	@typed:<
+.id:3	.type:day	@day:saturday	@dep_ar_ret:arrival
+0 0 1 2 3
+Example_398
+i need a flight on american airlines from miami to chicago that arrives around 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:yes	@dep_ar:arrival	@time:1700
+0 0 1 2
+Example_399
+i need a flight from memphis to tacoma that goes through los angeles
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:los_angeles	@to:tacoma	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_400
+what are the flights between cincinnati and san jose california which leave after 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:san_jose	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1800	@typed:>
+0 0 1 2
+Example_401
+what are the nonstop flights between san jose and houston texas
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_jose	@manufacturer:--	@price:--	@stop:nonstop	@to:houston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_402
+what are the nonstop flights between houston and memphis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:nonstop	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_403
+what are the flights between memphis and cincinnati on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:cincinnati	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_404
+what are the american flights from newark to nashville
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:nashville	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_405
+the flights from ontario to westchester that stop in chicago
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:ontario	@manufacturer:--	@price:--	@stop:chicago	@to:westchester_county	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_406
+please list the flights from los angeles to charlotte
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:--	@to:charlotte	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_407
+please list the flights from charlotte to newark
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:charlotte	@manufacturer:--	@price:--	@stop:--	@to:newark	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_408
+please list the flights from newark to los angeles
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:los_angeles	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_409
+please list the flights from cincinnati to burbank on american airlines
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_410
+please give me the flights from kansas city to chicago on june sixteenth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day_number	@day_number:16	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:june
+0 0 1 2 3
+Example_411
+please give me the flights from chicago to kansas city on june seventeenth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:kansas_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day_number	@day_number:17	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:june
+0 0 1 2 3
+Example_412
+please list all the flights from kansas city to chicago on june sixteenth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day_number	@day_number:16	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:june
+0 0 1 2 3
+Example_413
+please list all the flights from chicago to kansas city on june seventeenth
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:chicago	@manufacturer:--	@price:--	@stop:--	@to:kansas_city	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day_number	@day_number:17	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:june
+0 0 1 2 3
+Example_414
+i'd like to travel from burbank to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_415
+can you find me a flight from salt lake city to new york city next saturday before arriving before 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1800	@typed:<
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_416
+can you find me another flight from cincinnati to new york on saturday before 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:departure_time	@arg2:1800	@typed:<
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_417
+can you list all of the delta flights from salt lake city to new york next saturday arriving before 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:dl	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1800	@typed:<
+.id:3	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_418
+i'd like to fly from miami to chicago on on american airlines arriving around 5pm
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:yes	@dep_ar:arrival	@time:1700
+0 0 1 2
+Example_419
+i'd like to travel from kansas city to chicago next wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_420
+i'd like a round trip flight from kansas city to chicago on wednesday may twenty sixth arriving at 7pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:--	@dep_ar:arrival	@time:1900
+.id:3	.type:day	@day:wednesday	@dep_ar_ret:departure
+.id:4	.type:day_number	@day_number:26	@dep_ar_ret:departure
+.id:5	.type:month	@dep_ar_ret:departure	@month:may
+0 0 1 2 3 4 5
+Example_421
+yes i'd like to find a flight from memphis to tacoma stopping in los angeles
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:los_angeles	@to:tacoma	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_422
+find flight from san diego to phoenix on monday am
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_diego	@manufacturer:--	@price:--	@stop:--	@to:phoenix	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:when	@dep-ar:departure	@when:morning
+.id:3	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2 3
+Example_423
+find flight from phoenix to detroit on monday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:phoenix	@manufacturer:--	@price:--	@stop:--	@to:detroit	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2
+Example_424
+find flight from detroit to san diego on tuesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:detroit	@manufacturer:--	@price:--	@stop:--	@to:san_diego	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:tuesday	@dep_ar_ret:departure
+0 0 1 2
+Example_425
+find flight from cincinnati to san jose on monday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:san_jose	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:monday	@dep_ar_ret:departure
+0 0 1 2
+Example_426
+find flight from san jose to houston on wednesday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:san_jose	@manufacturer:--	@price:--	@stop:--	@to:houston	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:wednesday	@dep_ar_ret:departure
+0 0 1 2
+Example_427
+find flight from houston to memphis on friday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:houston	@manufacturer:--	@price:--	@stop:--	@to:memphis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:friday	@dep_ar_ret:departure
+0 0 1 2
+Example_428
+find flight from memphis to cincinnati on sunday
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:cincinnati	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:sunday	@dep_ar_ret:departure
+0 0 1 2
+Example_429
+find american flight from newark to nashville around 630pm
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:newark	@manufacturer:--	@price:--	@stop:--	@to:nashville	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:time	@approx:yes	@dep_ar:departure	@time:1830
+0 0 1 2
+Example_430
+please find a flight round trip from los angeles to tacoma washington with a stopover in san francisco not exceeding the price of 300 dollars for june tenth 1993
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:los_angeles	@manufacturer:--	@price:--	@stop:san_francisco	@to:tacoma	@year:1993
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:cost	@arg2:300	@typed:<
+.id:3	.type:day_number	@day_number:10	@dep_ar_ret:departure
+.id:4	.type:month	@dep_ar_ret:departure	@month:june
+0 0 1 2 3 4
+Example_431
+are there any flights on june tenth from burbank to tacoma
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:tacoma	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day_number	@day_number:10	@dep_ar_ret:departure
+.id:3	.type:month	@dep_ar_ret:departure	@month:june
+0 0 1 2 3
+Example_432
+please find a flight from ontario to westchester that makes a stop in chicago on may seventeenth one way with dinner
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:oneway	@engine:--	@fare:--	@flight_number:--	@from:ontario	@manufacturer:--	@price:--	@stop:chicago	@to:westchester_county	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:meal	@equals:dinner
+.id:3	.type:day_number	@day_number:17	@dep_ar_ret:departure
+.id:4	.type:month	@dep_ar_ret:departure	@month:may
+0 0 1 2 3 4
+Example_433
+like to book a flight from burbank to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_434
+show me all the flights from burbank to milwaukee
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_435
+find me all the flights from milwaukee to st. louis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:st_louis	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_436
+now show me all the flights from st. louis to burbank
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_437
+is there one airline that flies from burbank to milwaukee milwaukee to st. louis and from st. louis to burbank
+.id:0	.type:airline	@equals:any	@services:--
+.id:1	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:--	@to:milwaukee	@year:--
+.id:2	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:milwaukee	@manufacturer:--	@price:--	@stop:--	@to:st_louis	@year:--
+.id:3	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:st_louis	@manufacturer:--	@price:--	@stop:--	@to:burbank	@year:--
+.id:4	.type:search	@of:flight	@typed:lambda	@what:airline
+.id:5	.type:condition	@arg1:--	@arg2:--	@typed:or
+0 0 1 2 3 4 5
+Example_438
+find me all the round trip flights from burbank to milwaukee stopping in st. louis
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:burbank	@manufacturer:--	@price:--	@stop:st_louis	@to:milwaukee	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_439
+i'd like to book two flights to westchester county
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:--	@manufacturer:--	@price:--	@stop:--	@to:westchester_county	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_440
+i want to book a flight from salt lake city to westchester county
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:salt_lake_city	@manufacturer:--	@price:--	@stop:--	@to:westchester_county	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_441
+tell me all the airports near westchester county
+.id:0	.type:airport	@from:--	@location:westchester_county	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_442
+i'd like to book a flight from cincinnati to new york city on united airlines for next saturday
+.id:0	.type:flight	@aircraft_code:--	@airline:ua	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:day	@day:saturday	@dep_ar_ret:departure
+0 0 1 2
+Example_443
+tell me all the airports in the new york city area
+.id:0	.type:airport	@from:--	@location:new_york	@to:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:airport
+0 0 1
+Example_444
+please find all the flights from cincinnati to any airport in the new york city area that arrive next saturday before 6pm
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+.id:2	.type:condition	@arg1:arrival_time	@arg2:1800	@typed:<
+.id:3	.type:day	@day:saturday	@dep_ar_ret:arrival
+0 0 1 2 3
+Example_445
+find me a flight from cincinnati to any airport in the new york city area
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:cincinnati	@manufacturer:--	@price:--	@stop:--	@to:new_york	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_446
+i'd like to fly from miami to chicago on american airlines
+.id:0	.type:flight	@aircraft_code:--	@airline:aa	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:miami	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_447
+i would like to book a round trip flight from kansas city to chicago
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:round_trip	@engine:--	@fare:--	@flight_number:--	@from:kansas_city	@manufacturer:--	@price:--	@stop:--	@to:chicago	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
+Example_448
+find me a flight that flies from memphis to tacoma
+.id:0	.type:flight	@aircraft_code:--	@airline:--	@class_type:--	@direction:--	@engine:--	@fare:--	@flight_number:--	@from:memphis	@manufacturer:--	@price:--	@stop:--	@to:tacoma	@year:--
+.id:1	.type:search	@of:--	@typed:lambda	@what:flight
+0 0 1
