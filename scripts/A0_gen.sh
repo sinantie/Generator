@@ -1,18 +1,18 @@
 #!/bin/bash
-# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo20, GoldLogoAll
-DATASET=GoldLogoAll
+# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo20, GoldLogoRTSPAll
+DATASET=GoldLogoRTSPAll
 #Records.dev, Records.dev.down, Records.test, Records.test.down, AllWorlds.dev.records, AllWorlds.test.records
-inputLists=datasets/${DATASET}/Records.dev.down
+inputLists=datasets/${DATASET}/Train.records
 #ngramModelFile=datasets/GoldDigit/Language.arpa
 ngramModelFile=datasets/GoldSplitLogo/Language.arpa
 numThreads=4
-stagedParamsFile=results/${DATASET}/alignments/5.exec/stage1.params.obj.gz
+stagedParamsFile=results/${DATASET}/alignments/1.exec/stage1.params.obj.gz
 kBest=120
 lengthDeviation=2
-length=14
+length=12
 lengthLambda=100
 # option are: gold, fixed, file, linearRegression, multipleCandidates
-lengthPredictionMode=multipleCandidates
+lengthPredictionMode=fixed
 execDir=results/${DATASET}/generation-dev/generation_kBest-${kBest}-${lengthPredictionMode}Length-${length}-withNone-noBinarise-1x-multiReferences-lengthDeviation-${lengthDeviation}-lengthLambda-${lengthLambda}-noDups-GOLD/
 
 CUR_DIR=`pwd`

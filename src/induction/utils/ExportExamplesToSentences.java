@@ -3,6 +3,7 @@ package induction.utils;
 import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
 import fig.basic.IOUtils;
 import fig.basic.LogInfo;
 import induction.Utils;
@@ -14,37 +15,45 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Parses an input list or path of text files and outputs each to a given output file,
- * each text entry per line, with <code>ngramSize</code> <s> at the beginning,
- * and </s> at the end. All instances of numbers may be replaced with the keyword
+ * Parses an input list or path of text files and outputs each to a given output
+ * file, each text entry per line, with <code>ngramSize</code> <s> at the
+ * beginning, and </s> at the end. All instances of numbers may be replaced with
+ * the keyword
  * <num>
+ *
  * @author konstas
  */
-public class ExportExamplesToSentences
-{
+public class ExportExamplesToSentences {
+
     String target, source, HEADER = "", fileExtension;
     int ngramSize;
     BufferedOutputStream bos;
     TokenizerFactory<Word> tokenizer;
+    private final MaxentTagger tagger;
     String tagDelimiter;
-    final String SOS = "<START>", EOS = "</START>";
-    
-    public enum SourceType {PATH, LIST, FILE};
+    final String SOS = "<s>", EOS = "</s>";
+
+    public enum SourceType {
+        PATH, LIST, FILE
+    };
     SourceType type;
     boolean replaceNumbers, toLowerCase, stripWords;
 
-    public ExportExamplesToSentences(String targetFile, String sourceDir, int ngramSize, 
-                          SourceType type, String fileExtension, 
-                          boolean replaceNumbers, boolean toLowerCase,
-                          boolean stripWords, String tagDelimiter)
-    {
+    public ExportExamplesToSentences(String targetFile, String sourceDir, int ngramSize,
+            SourceType type, String fileExtension,
+            boolean replaceNumbers, boolean toLowerCase,
+            boolean stripWords, String tagDelimiter) {
         this.target = targetFile;
         this.source = sourceDir;
         this.ngramSize = ngramSize;
         this.tokenizer = PTBTokenizer.factory();
+        this.tagger = new MaxentTagger(MaxentTagger.DEFAULT_JAR_PATH);
         this.type = type;
         this.fileExtension = fileExtension;
         this.replaceNumbers = replaceNumbers;
@@ -53,30 +62,24 @@ public class ExportExamplesToSentences
         this.tagDelimiter = tagDelimiter;
     }
 
-    public void execute(boolean tokeniseOnly)
-    {
-        try
-        {
-            for(int i = 0; i < ngramSize - 1; i++)
-            {
+    public void execute(boolean tokeniseOnly) {
+        try {
+            for (int i = 0; i < ngramSize - 1; i++) {
                 HEADER += SOS + " ";
             }
             bos = new BufferedOutputStream(new FileOutputStream(target));
-            if(tokeniseOnly)
+            if (tokeniseOnly) {
                 tokeniseSource();
-            else
-            {
-                if(type == SourceType.PATH)
-                    addPath(source);
-                else if(type == SourceType.LIST)
-                    addList(source);
-                else
-                    processExamplesInSingleFile(source);
+                computeCorpusStatistics();
+            } else if (type == SourceType.PATH) {
+                addPath(source);
+            } else if (type == SourceType.LIST) {
+                addList(source);
+            } else {
+                processExamplesInSingleFile(source);
             }
             bos.close();
-        }
-        catch(IOException ioe)
-        {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
         }
@@ -84,53 +87,43 @@ public class ExportExamplesToSentences
 
     /**
      * Parses a file that contains a list of the files to be processed
+     *
      * @param path
      */
-    private void addList(String path)
-    {
-        for(String line : Utils.readLines(path))
-        {
+    private void addList(String path) {
+        for (String line : Utils.readLines(path)) {
             addPath(line);
         } // for
     }
 
     /**
      * Recursively processes files under the <code>path</code> directory
+     *
      * @param path
      */
-    private void addPath(String path)
-    {
+    private void addPath(String path) {
         File file = new File(path);
-        if(file.isDirectory())
-        {
-            for(String fileStr : Utils.sortWithEmbeddedInt(file.list()))
-            {
+        if (file.isDirectory()) {
+            for (String fileStr : Utils.sortWithEmbeddedInt(file.list())) {
                 addPath(path + "/" + fileStr);
             } // for
         } // if
-        else
-        {
-            if(!file.getName().endsWith(fileExtension))
-            {
+        else {
+            if (!file.getName().endsWith(fileExtension)) {
                 path = IOUtils.stripFileExt(path) + "." + fileExtension;
             }
             processFile(path);
         }
     }
 
-    private void processExamplesInSingleFile(String source)
-    {
+    private void processExamplesInSingleFile(String source) {
         List<Event3Example> examples = Utils.readEvent3Examples(source, true);
-        for(Event3Example ex : examples)
-        {
-            try
-            {
+        for (Event3Example ex : examples) {
+            try {
                 writeToFile(processExample(ex.getText()));
-            }            
-            catch(IOException ioe)
-            {
+            } catch (IOException ioe) {
                 System.err.println(ioe.getMessage());
-            }   
+            }
         }
 //        if(new File(source).exists())
 //        {
@@ -152,96 +145,112 @@ public class ExportExamplesToSentences
 //            processEventExample(str.toString()); // don't forget last example
 //        }
     }
-    
-    protected void processFile(String path)
-    {       
-        try
-        {
+
+    protected void processFile(String path) {
+        try {
             BufferedReader br = new BufferedReader(new FileReader(path));
             String line = "", textInOneLine = "";
-            while((line = br.readLine()) != null)
-            {
+            while ((line = br.readLine()) != null) {
                 textInOneLine += line + " ";
             }
             br.close();
             writeToFile(processExample(textInOneLine));
-        }
-        catch(IOException ioe)
-        {
+        } catch (IOException ioe) {
             LogInfo.error("Error reading file " + path);
         }
     }
-    
-    protected void processEventExample(String input)
-    {
-        try
-        {
+
+    protected void processEventExample(String input) {
+        try {
             writeToFile(processExample(Utils.extractExampleFromString(input)[1]));
-        }
-        catch(IOException ioe)
-        {
+        } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
-        }        
+        }
     }
-    
-    protected String processExample(String input)
-    {
+
+    protected String processExample(String input) {
         StringBuilder textOut = new StringBuilder(HEADER);
-        for(String s : input.trim().split(" "))
-        {
-            String word = stripWords ? Utils.stripWord(s, true, tagDelimiter) : s;            
-            textOut.append( (replaceNumbers && (word.matches("-\\p{Digit}+|" + // negative numbers
-                         "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
-                         (word.matches("\\p{Digit}+") && // numbers
-                          !(word.contains("am") || word.contains("pm")))) // but not hours!
-                   ) ?  "<num> " : word).append(" ");            
+        for (String s : input.trim().split(" ")) {
+            String word = stripWords ? Utils.stripWord(s, true, tagDelimiter) : s;
+            textOut.append((replaceNumbers && (word.matches("-\\p{Digit}+|"
+                    + // negative numbers
+                    "-?\\p{Digit}+\\.\\p{Digit}+")
+                    || // decimals
+                    (word.matches("\\p{Digit}+")
+                    && // numbers
+                    !(word.contains("am") || word.contains("pm")))) // but not hours!
+                    ) ? "<num> " : word).append(" ");
         }
         return textOut.toString();
     }
-    
-    protected void writeToFile(String input) throws IOException
-    {
-        bos.write(( (toLowerCase ? input.trim().toLowerCase() : input.trim())
-                  + " "+EOS + "\n").getBytes());
+
+    protected void writeToFile(String input) throws IOException {
+        bos.write(((toLowerCase ? input.trim().toLowerCase() : input.trim())
+                + " " + EOS + "\n").getBytes());
     }
-    
+
     /**
      * Tokenises source file. Assumes <s> and </s> are already placed in source
      */
-    public void tokeniseSource()
-    {
-        try
-        {
+    public void tokeniseSource() {
+        try {
             BufferedReader br = new BufferedReader(new FileReader(source));
             String line = "", out = "";
-            while((line = br.readLine()) != null)
-            {
+            while ((line = br.readLine()) != null) {
                 out = "";
 //                for(String s : tokenizer.tokenize(line.substring(HEADER.length(), line.length() - 5))) // ignore <s>'s and </s>
-                for(Word w : tokenizer.getTokenizer(new StringReader(line.substring(HEADER.length(), line.length() - 5))).tokenize()) // ignore <s>'s and </s>
+//                for(Word w : tokenizer.getTokenizer(new StringReader(line.substring(HEADER.length(), line.length() - 5))).tokenize()) // ignore <s>'s and </s>
+                for (Word w : tokenizer.getTokenizer(new StringReader(line.contains("<s>")
+                        ? line.substring(HEADER.length(), line.length() - 5)
+                        : line)).tokenize()) // ignore <s>'s and </s>
                 {
                     String s = w.word();
                     // tokenisation might give numbers not found previously
-                    out += (replaceNumbers && (s.matches("-\\p{Digit}+|" + // negative numbers
-                                 "-?\\p{Digit}+\\.\\p{Digit}+") || // decimals
-                                 s.matches("-?\\p{Digit}+,\\p{Digit}+") || // decimals
-                                 (s.matches("\\p{Digit}+") && // numbers
-                                  !(s.contains("am") || s.contains("pm")))) // but not hours!
-                           ) ?  "<num> " : s + " ";
+                    out += (replaceNumbers && (s.matches("-\\p{Digit}+|"
+                            + // negative numbers
+                            "-?\\p{Digit}+\\.\\p{Digit}+")
+                            || // decimals
+                            s.matches("-?\\p{Digit}+,\\p{Digit}+")
+                            || // decimals
+                            (s.matches("\\p{Digit}+")
+                            && // numbers
+                            !(s.contains("am") || s.contains("pm")))) // but not hours!
+                            ) ? "<num> " : s + " ";
                 }
-                bos.write((HEADER + out + " "+EOS+"\n").getBytes());
+                bos.write((HEADER + out + " " + EOS + "\n").getBytes());
             }
             br.close();
-        }
-        catch(IOException ioe)
-        {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
         }
     }
 
-    public static void main(String[] args)
-    {
+    public void computeCorpusStatistics() {
+        Set<String> stopWords = new HashSet<>(Arrays.asList(Utils.readLines("lib/stopwords.txt")));
+        List<String> lines = Arrays.asList(Utils.readLines(source));
+        HistMap<String> unigrams = new HistMap<>();
+        HistMap<String> unigramsTyped = new HistMap<>();
+        HistMap<String> pos = new HistMap<>();
+        for (String line : lines) {
+            List<Word> tokens = tokenizer.getTokenizer(new StringReader(line)).tokenize();            
+            tokens.stream()
+                    .filter(word -> !stopWords.contains(word.word().toLowerCase()))
+                    .forEach(word -> unigrams.add(word.word().toLowerCase()));
+            tagger.tagSentence(tokens).stream()
+                    .filter(word -> !stopWords.contains(word.word().toLowerCase()))
+                    .map(tagged -> {
+                        unigramsTyped.add(String.format("%s/%s", tagged.tag().equals("NNP") ? tagged.word() : tagged.word().toLowerCase(), tagged.tag()));
+                        return tagged.tag();
+                    })
+                    .forEach(pos::add);
+        }        
+        Utils.write(String.format("%s.unigrams", source), unigrams.toString());
+        Utils.write(String.format("%s.unigramsTyped", source), unigramsTyped.toString());
+        Utils.write(String.format("%s.pos", source), pos.toString());
+    }
+
+    public static void main(String[] args) {
         //ATIS
 //        String source = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers";
 //        String target = "/home/konstas/EDI/candc/candc-1.00/atis5000.sents.full.tagged.CDnumbers.tags_only.sentences";
@@ -255,22 +264,24 @@ public class ExportExamplesToSentences
 //        String source = "data/branavan/winHelpHLA/winHelpRL.sents.all";
 //        String target = "data/branavan/winHelpHLA/winHelpRL-split-3-gram.sentences";        
         //AMR-LDC
-        String source = "../hackathon/data/ldc/split/training/training-thres-5.event3";
-        String target = "../hackathon/data/ldc/split/training/training-3-gram.sentences";
-        boolean tokeniseOnly = false, replaceNumbers = true, toLowerCase = false, stripWords = false;
-        int ngramSize = 3;
+//        String source = "../hackathon/data/ldc/split/training/training-thres-5.event3";
+//        String target = "../hackathon/data/ldc/split/training/training-3-gram.sentences";
+        //ROC-Stories
+        String source = "/Users/ikonstas/data/ROC_stories/short_stories_dataset_v3_sentence_only.txt";
+        String target = "/Users/ikonstas/data/ROC_stories/short_stories_dataset_v3_sentence_only.txt.tok";
+        boolean tokeniseOnly = true, replaceNumbers = false, toLowerCase = false, stripWords = false;
+        int ngramSize = 5;
         int folds = 1;
-        for(int i = 1; i <= folds; i++)    
-        {
+        for (int i = 1; i <= folds; i++) {
             String tagDelimiter = "_";
             // FOLDS
 //            String source = "data/branavan/winHelpHLA/folds/winHelpFold"+i+"PathsTrain";
 //            String target = "winHelpLM/winHelpRL-split-fold"+i+"-3-gram.sentences";            
-            
-            String fileExtension = "text.tagged";            
-            ExportExamplesToSentences lmp = new ExportExamplesToSentences(target, source, ngramSize, 
-                                                    SourceType.FILE, fileExtension, 
-                                                    replaceNumbers, toLowerCase, stripWords, tagDelimiter);
+
+            String fileExtension = "text.tagged";
+            ExportExamplesToSentences lmp = new ExportExamplesToSentences(target, source, ngramSize,
+                    SourceType.FILE, fileExtension,
+                    replaceNumbers, toLowerCase, stripWords, tagDelimiter);
             lmp.execute(tokeniseOnly);
         }
     }

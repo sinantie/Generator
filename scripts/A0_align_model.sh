@@ -1,8 +1,8 @@
 #!/bin/bash
-# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo
-DATASET=GoldDigitAll
+# options are: GoldDigit, GoldSplitLogo, GoldLogo, GoldLogo, GoldLogoRTSPAll
+DATASET=GoldLogoRTSPAll
 threads=4
-input=datasets/${DATASET}/Records.train
+input=datasets/${DATASET}/Train.records
 output=results/${DATASET}/alignments/
 
 smooth=0
@@ -33,8 +33,10 @@ java -Xmx16000m -cp lib/jung/collections-generic-4.01.jar:lib/commons-math-2.2.j
 -noneEventTypeSmoothing 0 \
 -useStopNode \
 -outputFullPred \
--useMultipleReferences \
--tieCatFieldParameters pos.RP solo.RP 
+-allowNoneEvent \
+-useMultipleReferences
+
+#-tieCatFieldParameters source.block target.block
 
 #source.block MultiBlock.e1 source.block MultiBlock.e2
 #-allowNoneEvent \
